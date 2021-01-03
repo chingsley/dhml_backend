@@ -18,6 +18,7 @@
     "db:migrate:undo:dev": " sequelize db:migrate:undo:all --env development",
     "db:reset:dev": "npm run db:migrate:undo:dev && npm run db:migrate:dev",
     "seed:dev": "npm run db:reset:dev && sequelize db:seed:all --env development",
+    "testingthings": "nodemon --exec babel-node ./playground/testingthings.js",
     "--------------------": "-----------------------------",
     "db:reset:test": "sequelize db:migrate:undo:all --env test && sequelize db:migrate --env test",
     "test:watchAll": "cross-env NODE_ENV=test jest --detectOpenHandles --watchAll",
