@@ -1,0 +1,12 @@
+{
+    "plugins": ["plugins/markdown"],
+    "source": {
+        "include": ["src/**", "myProject/_private"],
+        "exclude": ["src/database"],
+        "includePattern": ".+\\.js(doc|x)?$",
+        "excludePattern": "(^|\\/|\\\\)_"
+    },
+    "opts": {
+        "destination": "./doc/"
+     }
+}

@@ -1,0 +1,39 @@
+{
+  "presets": [
+    ["@babel/preset-env", { "corejs": "3.1.3", "useBuiltIns": "usage" }]
+  ],
+  "plugins": [
+    "@babel/plugin-proposal-optional-chaining",
+    "@babel/plugin-proposal-class-properties",
+    [
+      "module-resolver",
+      {
+        "root": ["./"],
+        "alias": {
+          "@api": "./src/api/",
+          "@api_v1": "./src/api/v1",
+          "@apiV2": "./src/api/v2",
+          "@v1Controller": "./src/api/v1/modules",
+          "@v2Controller": "./src/api/v1/modules",
+          "@module": "./src/api/v1/modules",
+          "@service": "./src/shared/service",
+          "@security": "./src/shared/security",
+          "@http": "./src/shared/service/http",
+          "@middleware": "./src/api/v1/middleware",
+          "@validation_middleware": "./src/api/v1/middleware/validations/validation",
+          "@utils": "./src/utils",
+          "@response": "./src/utils/response",
+          "@logger": "./src/utils/logger",
+          "@settings": "./src/settings.json",
+          "@root": "./src",
+          "@server_response": "./src/response.json",
+          "@shared": "./src/shared",
+          "@models": "./src/database/models",
+          "@app": "./src/app",
+          "@database": "./src/database",
+          "@dbconfig": "./src/database/config/env"
+        }
+      }
+    ]
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "Access Gateway Api documentation",
+  "description": "Documentation for the REST api access provided at Access Gate way",
+  "title": "Access gateway documentation",
+  "url" : "https://api.accessbankplc.com",
+  "header": {
+    "title": "Introduction",
+    "filename": "doc-header.md"
+  },
+  "footer": {
+    "title": "Powered",
+    "filename": "doc-footer.md"
+  },
+  "template": {
+    "withCompare": true,
+    "withGenerator": true,
+    "aloneDisplay": false
+  }
+}

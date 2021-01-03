@@ -1,0 +1,7 @@
+{
+  "LGN001": "no user matches the supplied email/username",
+  "LGN002": "incorrect password",
+  "PRT001": "password reset token is not a valid uuid",
+  "PRT002": "password reset token not found",
+  "PRT003": "password reset token has expired"
+}
