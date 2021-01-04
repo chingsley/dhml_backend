@@ -6,10 +6,9 @@ module.exports = {
       {
         id: {
           allowNull: false,
+          autoIncrement: true,
           primaryKey: true,
-          unique: true,
-          type: Sequelize.UUID,
-          defaultValue: Sequelize.UUIDV4,
+          type: Sequelize.INTEGER,
         },
         enrolleeIdNo: {
           type: Sequelize.STRING,

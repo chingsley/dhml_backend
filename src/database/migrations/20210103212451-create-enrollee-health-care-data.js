@@ -4,14 +4,13 @@ module.exports = {
     return queryInterface.createTable('EnrolleeHealthCareData', {
       id: {
         allowNull: false,
+        autoIncrement: true,
         primaryKey: true,
-        unique: true,
-        type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
+        type: Sequelize.INTEGER,
       },
       enrolleeId: {
         allowNull: false,
-        type: Sequelize.UUID,
+        type: Sequelize.INTEGER,
         references: {
           model: 'Enrollees',
           key: 'id',
@@ -19,13 +18,15 @@ module.exports = {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       },
-      primaryProvider: {
-        type: Sequelize.STRING,
+      hcpId: {
         allowNull: false,
-      },
-      hcpCode: {
-        type: Sequelize.STRING,
-        allowNull: false,
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'HealthCareProviders',
+          key: 'id',
+        },
+        onDelete: 'RESTRICT',
+        onUpdate: 'CASCADE',
       },
       bloodGroup: {
         type: Sequelize.STRING,
