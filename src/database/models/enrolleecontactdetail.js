@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       enrolleeId: {
         allowNull: false,
-        type: DataTypes.UUID,
+        type: DataTypes.INTEGER,
         references: {
           model: 'Enrollees',
           key: 'id',
