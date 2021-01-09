@@ -6,14 +6,57 @@ module.exports = {
       {
         id: {
           allowNull: false,
-          autoIncrement: true,
-          primaryKey: true,
-          type: Sequelize.INTEGER,
-        },
-        enrolleeIdNo: {
-          type: Sequelize.STRING,
-          allowNull: false,
           unique: true,
+          primaryKey: true,
+          type: Sequelize.STRING,
+        },
+        // id: {
+        //   allowNull: false,
+        //   autoIncrement: true,
+        //   primaryKey: true,
+        //   type: Sequelize.INTEGER,
+        // },
+        // enrolmentId: {
+        //   type: Sequelize.STRING,
+        //   allowNull: false,
+        //   unique: true,
+        // },
+        // principalId: {
+        //   type: Sequelize.INTEGER,
+        //   references: {
+        //     model: 'Enrollees',
+        //     key: 'id',
+        //   },
+        //   onDelete: 'RESTRICT',
+        //   onUpdate: 'CASCADE',
+        // },
+        principalId: {
+          type: Sequelize.STRING,
+          references: {
+            model: 'Enrollees',
+            key: 'id',
+          },
+          onDelete: 'RESTRICT',
+          onUpdate: 'CASCADE',
+        },
+        relationshipToPrincipal: {
+          type: Sequelize.STRING,
+        },
+        dependantClass: {
+          type: Sequelize.STRING,
+        },
+        dependantType: {
+          type: Sequelize.STRING,
+        },
+        hcpId: {
+          allowNull: false,
+          type: Sequelize.INTEGER,
+          references: {
+            model: 'HealthCareProviders',
+            key: 'id',
+          },
+          onDelete: 'RESTRICT',
+          onUpdate: 'CASCADE',
         },
         scheme: {
           type: Sequelize.STRING,
@@ -34,9 +77,13 @@ module.exports = {
         },
         serviceNumber: {
           type: Sequelize.STRING,
+          unique: true,
+          allowNull: true,
         },
         staffNumber: {
           type: Sequelize.STRING,
+          unique: true,
+          allowNull: true,
         },
         title: {
           type: Sequelize.STRING,
@@ -64,19 +111,53 @@ module.exports = {
         maritalStatus: {
           type: Sequelize.STRING,
         },
-        idType: {
-          type: Sequelize.STRING,
+        identificationType: {
+          type: Sequelize.STRING, // idType
         },
-        idNumber: {
-          type: Sequelize.STRING,
-        },
-        sponsor: {
-          type: Sequelize.STRING,
-        },
-        sponsorIdNumber: {
-          type: Sequelize.STRING,
+        identificationNumber: {
+          type: Sequelize.STRING, // idNumber
         },
         serviceStatus: {
+          type: Sequelize.STRING,
+        },
+        phoneNumber: {
+          type: Sequelize.STRING,
+        },
+        email: {
+          type: Sequelize.STRING,
+        },
+        residentialAddress: {
+          type: Sequelize.STRING,
+        },
+        stateOfResidence: {
+          type: Sequelize.STRING,
+        },
+        lga: {
+          type: Sequelize.STRING,
+        },
+        bloodGroup: {
+          type: Sequelize.STRING,
+          allowNull: false,
+        },
+        significantMedicalHistory: {
+          type: Sequelize.STRING,
+        },
+        photograph: {
+          type: Sequelize.STRING,
+        },
+        birthCertificate: {
+          type: Sequelize.STRING,
+        },
+        marriageCertificate: {
+          type: Sequelize.STRING,
+        },
+        idCard: {
+          type: Sequelize.STRING,
+        },
+        deathCertificate: {
+          type: Sequelize.STRING,
+        },
+        letterOfNok: {
           type: Sequelize.STRING,
         },
         createdAt: {

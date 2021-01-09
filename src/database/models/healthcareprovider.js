@@ -16,7 +16,10 @@ module.exports = (sequelize, DataTypes) => {
   );
   // eslint-disable-next-line no-unused-vars
   HealthCareProvider.associate = function (models) {
-    // associations can be defined here
+    HealthCareProvider.hasMany(models.Enrollee, {
+      foreignKey: 'hcpId',
+      as: 'enrollees',
+    });
   };
   return HealthCareProvider;
 };

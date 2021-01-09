@@ -18,5 +18,14 @@ class Response {
     const encrypted = this.req.clientCypher.encrypt(JSON.stringify(payload));
     return this.res.status(this.statusCode).send(encrypted);
   }
+
+  static handleError(methodName, error, req, res, next) {
+    try {
+      const { status, error: err, ...rest } = JSON.parse(error.message);
+      return res.status(status).json({ errors: err, ...rest });
+    } catch (e) {
+      return next(`${methodName}: ${error.message}`);
+    }
+  }
 }
 export default Response;

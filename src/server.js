@@ -61,9 +61,9 @@ server.use('/api', routes);
 server.use((error, req, res, next) => {
   if (error) {
     if (typeof error === 'object') {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ errors: [error.message] });
     } else {
-      res.status(500).json({ error });
+      res.status(500).json({ errors: [error] });
     }
   } else {
     next();
