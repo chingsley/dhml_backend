@@ -10,26 +10,6 @@ module.exports = {
           primaryKey: true,
           type: Sequelize.STRING,
         },
-        // id: {
-        //   allowNull: false,
-        //   autoIncrement: true,
-        //   primaryKey: true,
-        //   type: Sequelize.INTEGER,
-        // },
-        // enrolmentId: {
-        //   type: Sequelize.STRING,
-        //   allowNull: false,
-        //   unique: true,
-        // },
-        // principalId: {
-        //   type: Sequelize.INTEGER,
-        //   references: {
-        //     model: 'Enrollees',
-        //     key: 'id',
-        //   },
-        //   onDelete: 'RESTRICT',
-        //   onUpdate: 'CASCADE',
-        // },
         principalId: {
           type: Sequelize.STRING,
           references: {
