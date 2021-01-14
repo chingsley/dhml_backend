@@ -2,8 +2,26 @@ import { Joi } from '../config';
 
 export const newEnrolleeSchema = {
   personalDataSchema: Joi.object({
-    // id: Joi.string().trim().required(),
-    principalId: Joi.string().trim(),
+    enrolmentType: Joi.string()
+      .trim()
+      .valid('principal', 'dependant')
+      .required(),
+    principalId: Joi.string()
+      .when('enrolmentType', {
+        is: 'dependant',
+        then: Joi.string().trim().required(),
+        otherwise: Joi.string().trim(),
+      })
+      .error(
+        new Error(
+          'To register a dependant, please specify the princIpal"s enrolment ID'
+        )
+      ),
+    relationshipToPrincipal: Joi.string().trim().when('enrolmentType', {
+      is: 'principal',
+      then: Joi.forbidden(),
+      otherwise: Joi.string().trim(),
+    }),
     dependantType: Joi.string().trim(),
     scheme: Joi.string().trim().required().valid('AFRSHIP', 'VCSHIP', 'DSSHIP'),
     surname: Joi.string().trim().required(),
@@ -49,9 +67,6 @@ export const newEnrolleeSchema = {
 
 export const patchEnrolleeSchema = {
   personalDataSchema: Joi.object({
-    principalId: Joi.string().trim(),
-    dependantType: Joi.string().trim(),
-    scheme: Joi.string().trim().valid('AFRSHIP', 'VCSHIP', 'DSSHIP'),
     surname: Joi.string().trim(),
     firstName: Joi.string().trim(),
     middleName: Joi.string().trim(),
@@ -69,6 +84,7 @@ export const patchEnrolleeSchema = {
     identificationType: Joi.string().trim(),
     identificationNumber: Joi.string().trim(),
     serviceStatus: Joi.string().trim().valid('serving', 'retired'),
+    relationshipToPrincipal: Joi.string().trim(),
   }),
   contactDetailsSchema: Joi.object({
     phoneNumber: Joi.string().trim(),

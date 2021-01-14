@@ -1,25 +1,10 @@
 'use strict';
-// import { Op } from 'sequelize';
 const { throwError } = require('../../shared/helpers');
 
 module.exports = (sequelize, DataTypes) => {
   const Enrollee = sequelize.define(
     'Enrollee',
     {
-      // enrolmentId: {
-      //   type: DataTypes.STRING,
-      //   allowNull: false,
-      //   unique: true,
-      // },
-      // principalId: {
-      //   type: DataTypes.INTEGER,
-      //   references: {
-      //     model: 'Enrollees',
-      //     key: 'id',
-      //   },
-      //   onDelete: 'RESTRICT',
-      //   onUpdate: 'CASCADE',
-      // },
       id: {
         allowNull: false,
         unique: true,
@@ -157,35 +142,26 @@ module.exports = (sequelize, DataTypes) => {
   );
   // eslint-disable-next-line no-unused-vars
   Enrollee.associate = function (models) {
+    Enrollee.hasMany(models.Enrollee, {
+      foreignKey: 'principalId',
+      as: 'dependants',
+    });
+    Enrollee.belongsTo(models.Enrollee, {
+      foreignKey: 'principalId',
+      as: 'principal',
+    });
     Enrollee.belongsTo(models.HealthCareProvider, {
       foreignKey: 'hcpId',
       as: 'hcp',
     });
   };
-  Enrollee.findBy = async function (
-    field,
-    value,
-    options = { isRequired: false }
-  ) {
-    const found = await this.findOne({ where: { [field]: value } });
-    if (!found && options.isRequired) {
-      throwError({
-        status: 404,
-        error: [`no enrollee matches the ${field} of ${value}`],
-      });
-    }
-    return found;
-  };
   Enrollee.createPrincipal = async function (enrolleeData) {
     enrolleeData.id = await this.generatePrincipalId();
     return await this.create(enrolleeData);
   };
-  Enrollee.prototype.addDependant = async function (
-    dependantData,
-    { transaction }
-  ) {
+  Enrollee.prototype.addDependant = async function (dependantData) {
     dependantData.id = await this.generateDependantId();
-    return await Enrollee.create(dependantData, { transaction });
+    return await Enrollee.create(dependantData);
   };
   Enrollee.generatePrincipalId = async function () {
     const [lastRegisteredPrincipal] = await this.findAll({
@@ -200,16 +176,48 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Enrollee.prototype.generateDependantId = async function () {
-    const [lastDependant] = await Enrollee.findAll({
-      where: { principalId: this.id },
-      order: [['createdAt', 'DESC']],
-      limit: 1,
-    });
+    const [lastDependant] = this.dependants.sort(
+      (d1, d2) => d2.createdAt - d1.createdAt
+    );
     if (!lastDependant) {
       return `${this.id}-1`;
     } else {
       return `${this.id}-${Number(lastDependant.id.split('-')[1]) + 1}`;
     }
+  };
+  Enrollee.prototype.checkDependantLimit = function (newDependant) {
+    if (this.scheme === newDependant.scheme) {
+      const sameSchemeDependants = this.dependants.filter(
+        (depndt) => depndt.scheme === this.scheme
+      );
+      if (sameSchemeDependants.length > 4) {
+        throwError({
+          status: 400,
+          error: [
+            `The principal, ${this.firstName} ${this.surname}, has reached the limit(5) of allowed dependants under ${newDependant.scheme}`,
+          ],
+        });
+      }
+    }
+  };
+  Enrollee.findOneWhere = async function (condition, options) {
+    const {
+      throwErrorIfNotFound = false,
+      errorMsg = 'Record not found',
+      include = [],
+    } = options;
+    const found = await this.findOne({
+      where: { ...condition },
+      include,
+    });
+    if (!found && throwErrorIfNotFound) {
+      throwError({
+        status: 404,
+        error: [errorMsg],
+        errorCode: options.errorCode,
+      });
+    }
+    return found;
   };
 
   return Enrollee;
