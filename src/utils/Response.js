@@ -21,10 +21,17 @@ class Response {
 
   static handleError(methodName, error, req, res, next) {
     try {
-      const { status, error: err, ...rest } = JSON.parse(error.message);
+      const { status, error: err, ...rest } = JSON.parse(
+        error.message || error.error
+      );
       return res.status(status).json({ errors: err, ...rest });
     } catch (e) {
-      return next(`${methodName}: ${error.message}`);
+      return next(
+        `${methodName}: ${
+          error.message ||
+          'Uncaught Exception. Please contact the technical support team'
+        }`
+      );
     }
   }
 }

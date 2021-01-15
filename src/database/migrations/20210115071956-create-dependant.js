@@ -2,7 +2,7 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable(
-      'Enrollees',
+      'Dependants',
       {
         id: {
           allowNull: false,
@@ -13,7 +13,7 @@ module.exports = {
         principalId: {
           type: Sequelize.STRING,
           references: {
-            model: 'Enrollees',
+            model: 'Principals',
             key: 'id',
           },
           onDelete: 'RESTRICT',
@@ -158,6 +158,6 @@ module.exports = {
   },
   // eslint-disable-next-line no-unused-vars
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Enrollees');
+    return queryInterface.dropTable('Dependants');
   },
 };

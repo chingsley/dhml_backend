@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary';
 import moment from 'moment';
+import { throwError } from '../shared/helpers';
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -8,10 +9,19 @@ cloudinary.config({
 
 class Cloudinary {
   static async uploadToCloudinary(image, id) {
-    const res = await cloudinary.uploader.upload(image.tempFilePath, {
-      public_id: id,
-    });
-    return res.url;
+    try {
+      const res = await cloudinary.uploader.upload(image.tempFilePath, {
+        public_id: id,
+      });
+      return res.url;
+    } catch (error) {
+      throwError({
+        status: 500,
+        error: [
+          'Failed to upload documents, please check your internet connection and try again.',
+        ],
+      });
+    }
   }
 
   static async uploadImage(reqFiles) {
