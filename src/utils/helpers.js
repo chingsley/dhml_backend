@@ -1,7 +1,19 @@
 export const setMinutes = (x) => new Date(Date.now() + Number(x) * 60 * 1000);
 
-export const zeroPadding = (id) => {
-  const maxLength = 5;
+// the maximum will never be reached
+export function getRandomInt(max, options = {}) {
+  const { min = 0 } = options;
+  return Math.floor(Math.random() * (max - min) + min);
+}
+
+// // range from min to max (both inclusive)
+// export function getRandomInt(max, options = {}) {
+//   const { min = 0 } = options;
+//   return Math.floor(Math.random() * (max - min + 1) + min);
+// }
+
+export const zeroPadding = (id, maxLength = 5) => {
+  // const maxLength = 5;
   if (Number(id).toString().length < maxLength) {
     return '0'.repeat(maxLength - Number(id).toString().length) + Number(id);
   } else {
