@@ -1,10 +1,9 @@
-'use strict';
-const getSampleHCPs = require('../../shared/samples/hcp.samples');
+const getSampleStaffList = require('../../shared/samples/staff.samples');
 
 module.exports = {
   // eslint-disable-next-line no-unused-vars
   up: (queryInterface, Sequelize) => {
-    return queryInterface.bulkInsert('HealthCareProviders', getSampleHCPs());
+    return queryInterface.bulkInsert('Staffs', getSampleStaffList(50));
   },
 
   // eslint-disable-next-line no-unused-vars
