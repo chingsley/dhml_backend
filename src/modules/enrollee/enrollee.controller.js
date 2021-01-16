@@ -1,4 +1,4 @@
-import Response from '../utils/Response';
+import Response from '../../utils/Response';
 import EnrolleeService from './enrollee.service';
 
 export default class EnrolleeController {

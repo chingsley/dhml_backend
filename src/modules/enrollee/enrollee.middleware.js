@@ -1,10 +1,9 @@
-// import { color, log } from '../utils/logger';
-import Response from '../utils/Response';
-import { validateSchema } from '../validators/joi/config';
+import Response from '../../utils/Response';
+import { validateSchema } from '../../validators/joi/config';
 import {
   newEnrolleeSchema,
   groupEnrolleeDetails,
-} from '../validators/joi/schemas/enrollee.schema';
+} from '../../validators/joi/schemas/enrollee.schema';
 
 // import { SCHEMES } from '../shared/config';
 

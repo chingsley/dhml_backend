@@ -1,12 +1,12 @@
 import Joi from '@hapi/joi';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
-import db from '../database/models';
-import Jwt from '../utils/Jwt';
-import helper from '../utils/helpers';
-import Email from '../utils/Email';
+import db from '../../database/models';
+import Jwt from '../../utils/Jwt';
+import helper from '../../utils/helpers';
+import Email from '../../utils/Email';
 import UserService from '../resources/user/user.services';
-import roles, { accountOwner } from '../utils/allowedRoles';
+import roles, { accountOwner } from '../../utils/allowedRoles';
 
 /**
  * AuthService inherits from UserSerice, while

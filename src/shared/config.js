@@ -1,5 +1,5 @@
 require('dotenv').config();
 
 module.exports = {
-  // SCHEMES: process.env.SCHEMES.split(','),
+  MAX_STAFF_COUNT: 500,
 };
