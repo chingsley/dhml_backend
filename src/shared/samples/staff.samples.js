@@ -11,6 +11,7 @@ const {
   lorem,
 } = faker;
 const { zeroPadding, getRandomInt } = require('../../utils/helpers');
+const { designations } = require('./designations.sample');
 
 function getSampleStaffList(count) {
   const sampleStaffList = [];
@@ -46,7 +47,7 @@ function getSampleStaffList(count) {
       presentAppointment: name.jobTitle(),
       dateOfPresentAppointment: date.past(),
       presentGradeLevel: getRandomInt(15),
-      designation: name.jobTitle(),
+      designation: designations[getRandomInt(designations.length)],
       departmentOrUnit: `${commerce.department()} Unit`,
       deployment: address.state(),
       location: address.state(),
@@ -55,7 +56,7 @@ function getSampleStaffList(count) {
       salaryPerAnnum: finance.amount(),
       bank: `${random.word()} bank`,
       branch: `${random.word()} branch`,
-      pfa: `${random.word()} Pension Func`,
+      pfa: `${random.word()} Pension Fund`,
       dateOfJoiningDhmlCooperativeSociety: date.past(),
       primarySchoolAttended: `${random.word()} Primary School, ${address.state()} FROM: 1988-08-16, TO: 1994-08-16`,
       secondarySchoolAttended: `${random.word()} Secondary School, ${address.state()} FROM: 1988-08-16, TO: 1994-08-16`,
@@ -69,7 +70,7 @@ function getSampleStaffList(count) {
       hodRemarks: 'Complete details, approved',
       mdComment: 'Complete details, approved',
       nextOfKin: getName(),
-      relationshipWithNok: relations[getRandomInt(relations.length - 1)],
+      relationshipWithNok: relations[getRandomInt(relations.length)],
       addressOfNok: getAddress(),
       phoneNumberOfNok: phone.phoneNumber(),
     });
