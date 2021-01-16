@@ -1,29 +1,37 @@
 import db from '../database/models';
-import { Op } from 'sequelize';
 import { throwError } from '../shared/helpers';
 import Cloudinary from '../utils/Cloudinary';
+import { zeroPadding, getAvailableIds } from '../utils/helpers';
+import { castIdToInt } from '../database/scripts/princpal.scripts';
 
 export default class EnrolleeService {
-  static async enrolPrincipal(enrolleeData, files) {
-    await this.validateUniqueFields(enrolleeData);
+  constructor(enrolleeData, files) {
+    this.enrolleeData = enrolleeData;
+    this.files = files;
+  }
+  async enrolPrincipal() {
+    const enrolleeData = this.enrolleeData;
+    const files = this.files;
+    await this.validateUniqueFields(this.enrolleeData);
+
+    if (enrolleeData.enrolmentType === 'special-principal') {
+      const { id } = enrolleeData;
+      await this.validateSpecialPrincipalId(id);
+      enrolleeData.id = zeroPadding(id);
+    } else {
+      enrolleeData.id = await db.Principal.generateNewPrincipalId();
+    }
     const uploadedImages = files ? await Cloudinary.bulkUpload(files) : {};
-    const enrollee = await db.Enrollee.createPrincipal({
+    const enrollee = await db.Principal.createPrincipal({
       ...enrolleeData,
       ...uploadedImages,
-    });
-    await enrollee.reload({
-      include: [
-        {
-          model: db.HealthCareProvider,
-          as: 'hcp',
-          attributes: ['code', 'name'],
-        },
-      ],
     });
     return enrollee;
   }
 
-  static async enrolDependant(dependantData, files) {
+  async enrolDependant() {
+    const dependantData = this.enrolleeData;
+    const files = this.files;
     await this.validateUniqueFields(dependantData);
     const { principalId } = dependantData;
     const principal = await this.getPrincipalById(principalId, {
@@ -31,29 +39,27 @@ export default class EnrolleeService {
     });
     this.validateDependantScheme(principal.scheme, dependantData.scheme);
     principal.checkDependantLimit(dependantData);
-    dependantData.id = principal.generateDependantId();
-    dependantData.dependantClass =
-      principal.scheme === dependantData.scheme
-        ? 'same-scheme-dependant'
-        : 'other-scheme-dependant';
-    dependantData.dependantType = `${principal.scheme}-TO-${dependantData.scheme}`;
+    dependantData.id = principal.generateNewDependantId();
     const uploadedImages = files ? await Cloudinary.bulkUpload(files) : {};
-    const data = await principal.addDependant({
-      ...dependantData,
-      ...uploadedImages,
-    });
+    const data = await db.Dependant.createDependant(
+      {
+        ...dependantData,
+        ...uploadedImages,
+      },
+      principal
+    );
     return data;
   }
 
-  static async getPrincipalById(id, { throwErrorIfNotFound }) {
-    const principal = await db.Enrollee.findOneWhere(
-      { id, principalId: { [Op.is]: null } }, // only dependenants have a value for column principalId
+  async getPrincipalById(id, { throwErrorIfNotFound }) {
+    const principal = await db.Principal.findOneWhere(
+      { id },
       {
         throwErrorIfNotFound,
         errorMsg: `Invalid principal enrolment ID. No record found for ID ${id}`,
         errorCode: 'E001',
         include: [
-          { model: db.Enrollee, as: 'dependants' },
+          { model: db.Dependant, as: 'dependants' },
           {
             model: db.HealthCareProvider,
             as: 'hcp',
@@ -65,11 +71,11 @@ export default class EnrolleeService {
     return principal;
   }
 
-  static async validateUniqueFields(enrolleeData, enrolleeId) {
+  async validateUniqueFields(enrolleeData, enrolleeId) {
     const uniqueFields = ['serviceNumber', 'staffNumber'];
     for (let field of uniqueFields) {
       if (enrolleeData[field]) {
-        const found = await db.Enrollee.findOne({
+        const found = await db.Principal.findOne({
           where: { [field]: enrolleeData[field] },
         });
         if (found && found.id !== enrolleeId) {
@@ -84,7 +90,41 @@ export default class EnrolleeService {
     }
   }
 
-  static validateDependantScheme(prinicpalScheme, dependantScheme) {
+  async validateSpecialPrincipalId(id) {
+    if (Number(id) < 1 || Number(id) > 230) {
+      const errorMsg =
+        'Invalid Special Enrolment ID, allowed values must be in the range 1 - 230';
+      throwError({
+        status: 400,
+        error: [errorMsg],
+      });
+    }
+    const { dialect } = db.sequelize.options;
+    const specialPrincipalIds = await db.Principal.findAll({
+      where: db.sequelize.where(
+        db.sequelize.literal(castIdToInt(dialect)),
+        '<',
+        231
+      ),
+      attributes: [[db.sequelize.literal(castIdToInt(dialect)), 'id']],
+      raw: true,
+    });
+    const usedIDs = specialPrincipalIds.map(({ id }) => id);
+    if (usedIDs.includes(Number(id))) {
+      const pool = Array.from(Array(231).keys()).slice(1);
+      const availableIds = getAvailableIds(pool, usedIDs);
+      throwError({
+        status: 400,
+        error: [
+          `The Enrolment ID: ${id} has been taken, please choose from the available list: ${availableIds.join(
+            ','
+          )}`,
+        ],
+      });
+    }
+  }
+
+  validateDependantScheme(prinicpalScheme, dependantScheme) {
     const allowed =
       prinicpalScheme === dependantScheme || dependantScheme === 'VCSHIP';
     if (!allowed) {

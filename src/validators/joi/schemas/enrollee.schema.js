@@ -4,19 +4,18 @@ export const newEnrolleeSchema = {
   personalDataSchema: Joi.object({
     enrolmentType: Joi.string()
       .trim()
-      .valid('principal', 'dependant')
+      .valid('principal', 'special-principal', 'dependant')
       .required(),
-    principalId: Joi.string()
-      .when('enrolmentType', {
-        is: 'dependant',
-        then: Joi.string().trim().required(),
-        otherwise: Joi.string().trim(),
-      })
-      .error(
-        new Error(
-          'To register a dependant, please specify the princIpal"s enrolment ID'
-        )
-      ),
+    id: Joi.string().when('enrolmentType', {
+      is: 'special-principal',
+      then: Joi.string().trim().required(),
+      otherwise: Joi.forbidden(),
+    }),
+    principalId: Joi.string().when('enrolmentType', {
+      is: 'dependant',
+      then: Joi.string().trim().required(),
+      otherwise: Joi.forbidden(),
+    }),
     relationshipToPrincipal: Joi.string().trim().when('enrolmentType', {
       is: 'principal',
       then: Joi.forbidden(),
@@ -51,7 +50,6 @@ export const newEnrolleeSchema = {
   }),
   healthCareDataSchema: Joi.object({
     bloodGroup: Joi.string().trim().required(),
-    // significantMedicalHistory: Joi.array().items(Joi.string()),
     significantMedicalHistory: Joi.string().trim(),
     hcpId: Joi.number().required(),
   }),
@@ -95,7 +93,6 @@ export const patchEnrolleeSchema = {
   }),
   healthCareDataSchema: Joi.object({
     bloodGroup: Joi.string().trim(),
-    // significantMedicalHistory: Joi.array().items(Joi.string()),
     significantMedicalHistory: Joi.string().trim(),
     hcpId: Joi.number(),
   }),
