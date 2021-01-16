@@ -28,6 +28,9 @@ module.exports = {
         middleName: {
           type: Sequelize.STRING,
         },
+        gender: {
+          type: Sequelize.STRING,
+        },
         permanentHomeAddress: {
           type: Sequelize.TEXT,
         },

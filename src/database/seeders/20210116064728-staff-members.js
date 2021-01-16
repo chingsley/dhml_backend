@@ -1,9 +1,9 @@
-const getSampleStaffList = require('../../shared/samples/staff.samples');
+const { getSampleStaffList } = require('../../shared/samples/staff.samples');
 
 module.exports = {
   // eslint-disable-next-line no-unused-vars
   up: (queryInterface, Sequelize) => {
-    return queryInterface.bulkInsert('Staffs', getSampleStaffList(50));
+    return queryInterface.bulkInsert('Staffs', getSampleStaffList());
   },
 
   // eslint-disable-next-line no-unused-vars
