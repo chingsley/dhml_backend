@@ -11,6 +11,7 @@ const {
   lorem,
 } = faker;
 const { zeroPadding, getRandomInt } = require('../../utils/helpers');
+const { MAX_STAFF_COUNT } = require('../config');
 const { designations } = require('./designations.sample');
 
 const sampleStaffList = [];
@@ -20,8 +21,6 @@ const qualifications = ['HND', 'Bachelors', 'Masters', 'Ph.D'];
 const getName = () => `${name.lastName()} ${name.firstName()}`;
 const getAddress = () =>
   `${address.zipCode()} ${address.city()},  ${address.state()}, ${address.country()}`;
-
-const MAX_STAFF_COUNT = 500;
 
 for (let i = 0; i < MAX_STAFF_COUNT; i++) {
   const maritalStatus = random.arrayElement(['married', 'single']);
@@ -90,4 +89,4 @@ function getSampleStaffList(count = MAX_STAFF_COUNT) {
   return sampleStaffList.slice(0, count);
 }
 
-module.exports = { getSampleStaffList, sampleStaffList, MAX_STAFF_COUNT };
+module.exports = { getSampleStaffList, sampleStaffList };

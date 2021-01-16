@@ -6,7 +6,7 @@ import authRoutes from './authRoutes';
 // import usersRoutes from '../../user/user.routes';
 // import rolesRoutes from '../../role/role.routes';
 // import authRoutes from '../../auth/auth.routes';
-import enrollmentRoutes from '../../enrollee/enrollee.routes';
+import enrollmentRoutes from '../../modules/enrollee/enrollee.routes';
 
 const router = express.Router();
 

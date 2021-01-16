@@ -1,5 +1,5 @@
-import db from '../database/models';
-import Cloudinary from '../utils/Cloudinary';
+import db from '../../database/models';
+import Cloudinary from '../../utils/Cloudinary';
 import AppService from '../app/app.service';
 
 export default class UserService extends AppService {

@@ -1,8 +1,8 @@
-import db from '../database/models';
-import { throwError } from '../shared/helpers';
-import Cloudinary from '../utils/Cloudinary';
-import { zeroPadding, getAvailableIds } from '../utils/helpers';
-import { castIdToInt } from '../database/scripts/princpal.scripts';
+import db from '../../database/models';
+import { throwError } from '../../shared/helpers';
+import Cloudinary from '../../utils/Cloudinary';
+import { zeroPadding, getAvailableIds } from '../../utils/helpers';
+import { castIdToInt } from '../../database/scripts/princpal.scripts';
 
 export default class EnrolleeService {
   constructor(enrolleeData, files) {

@@ -1,4 +1,7 @@
 'use strict';
+
+const { t24Hours } = require('../../utils/timers');
+
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
     'User',
@@ -22,6 +25,31 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      roleId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Roles',
+          key: 'id',
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'RESTRICT',
+      },
+      isActive: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      },
+      hasChangedDefaultPassword: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
+      defaultPasswordExpiry: {
+        allowNull: false,
+        type: DataTypes.DATE,
+        defaultValue: t24Hours,
+      },
     },
     {}
   );
@@ -29,6 +57,10 @@ module.exports = (sequelize, DataTypes) => {
     User.belongsTo(models.Staff, {
       foreignKey: 'staffId',
       as: 'staffInfo',
+    });
+    User.hasOne(models.Password, {
+      foreignKey: 'userId',
+      as: 'password',
     });
   };
   return User;
