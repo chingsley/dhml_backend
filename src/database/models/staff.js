@@ -21,6 +21,9 @@ module.exports = (sequelize, DataTypes) => {
       middleName: {
         type: DataTypes.STRING,
       },
+      gender: {
+        type: DataTypes.STRING,
+      },
       permanentHomeAddress: {
         type: DataTypes.TEXT,
       },
@@ -151,7 +154,10 @@ module.exports = (sequelize, DataTypes) => {
     {}
   );
   Staff.associate = function (models) {
-    // associations can be defined here
+    Staff.hasOne(models.User, {
+      foreignKey: 'staffId',
+      as: 'userInfo',
+    });
   };
   return Staff;
 };
