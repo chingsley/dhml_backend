@@ -1,14 +1,14 @@
-const SUPERADMIN = 'superadmin';
-const ADMIN = 'admin';
-const DEPT_USER = 'dept user';
-const VERIFIER = 'verifier';
-const ENROLMENT_OFFICER = 'enrolment officer';
-const HCP = 'hcp';
-const HOD_MEDICAL = 'hod medical';
-const HOD_VHS = 'hod vhs';
-const HOD_ADMIN = 'hod admin';
-const HOD_STORES = 'hod stores';
-const HOD_ACCOUNT = 'hod account';
+export const SUPERADMIN = 'superadmin';
+export const ADMIN = 'admin';
+export const DEPT_USER = 'dept user';
+export const VERIFIER = 'verifier';
+export const ENROLMENT_OFFICER = 'enrolment officer';
+export const HCP = 'hcp';
+export const HOD_MEDICAL = 'hod medical';
+export const HOD_VHS = 'hod vhs';
+export const HOD_ADMIN = 'hod admin';
+export const HOD_STORES = 'hod stores';
+export const HOD_ACCOUNT = 'hod account';
 
 module.exports = {
   SUPERADMIN,

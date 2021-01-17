@@ -1,3 +1,11 @@
+import db from '../../database/models';
+import {
+  ACCOUNT_NOT_FOUND_CODE,
+  ACCOUNT_NOT_FOUND_ERROR,
+  AUTH004,
+  ACCESS_DENIED,
+} from '../../shared/constants/errors.constants';
+import { throwError } from '../../shared/helpers';
 import Jwt from '../../utils/Jwt';
 import Response from '../../utils/Response';
 import { validateSchema } from '../../validators/joi/config';
@@ -47,15 +55,31 @@ export default class AuthMiddleware {
     }
   };
 
-  // static authorize(arrayOfPermittedRoles) {
-  //   return async (req, res, next) => {
-  //     try {
-  //       const authService = new AuthService(req, res);
-  //       await authService.handleAuthorization(arrayOfPermittedRoles);
-  //       return next();
-  //     } catch (error) {
-  //       return AppMiddleware.handleError(error, req, res, next);
-  //     }
-  //   };
-  // }
+  static authorize(arrayOfPermittedRoles) {
+    return async (req, res, next) => {
+      try {
+        const { userId } = req;
+        const user = await db.User.findOneWhere(
+          { id: userId },
+          {
+            include: { model: db.Role, as: 'role' },
+            throwErrorIfNotFound: true,
+            errorMsg: ACCOUNT_NOT_FOUND_ERROR,
+            errorCode: ACCOUNT_NOT_FOUND_CODE,
+          }
+        );
+        const { role: userRole } = user;
+        if (!arrayOfPermittedRoles.includes(userRole.title)) {
+          throwError({
+            status: 401,
+            error: ACCESS_DENIED,
+            errorCode: AUTH004,
+          });
+        }
+        return next();
+      } catch (error) {
+        return Response.handleError('authorize', error, req, res, next);
+      }
+    };
+  }
 }

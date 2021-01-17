@@ -1,6 +1,7 @@
 'use strict';
 
 const { throwError } = require('../../shared/helpers');
+const { isExpired } = require('../../utils/helpers');
 const { t24Hours } = require('../../utils/timers');
 
 module.exports = (sequelize, DataTypes) => {
@@ -50,6 +51,15 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         type: DataTypes.DATE,
         defaultValue: t24Hours,
+      },
+      hasExpiredDefaultPassword: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return (
+            !this.hasChangedDefaultPassword &&
+            isExpired(this.defaultPasswordExpiry)
+          );
+        },
       },
     },
     {}
