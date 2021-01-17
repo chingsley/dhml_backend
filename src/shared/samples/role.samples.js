@@ -10,7 +10,7 @@ const {
   HOD_ADMIN,
   HOD_STORES,
   HOD_ACCOUNT,
-} = require('../constants');
+} = require('../constants/roles.constants');
 
 const sampleRoles = [
   SUPERADMIN,

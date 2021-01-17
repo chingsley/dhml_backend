@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const { MAX_USER_COUNT } = require('../config');
+const { MAX_USER_COUNT } = require('../constants/seeders.constants');
 const BCRYPT_SALT = Number(process.env.BCRYPT_SALT);
 const sampleValue = bcrypt.hashSync('Testing*123', BCRYPT_SALT);
 

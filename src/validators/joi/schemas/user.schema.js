@@ -5,4 +5,5 @@ export const newUserSchema = Joi.object({
   email: Joi.string().email().trim().required(),
   username: Joi.string().trim(),
   roleId: Joi.number().min(1).required(),
+  returnPassword: Joi.number().valid(0, 1).default(0),
 });

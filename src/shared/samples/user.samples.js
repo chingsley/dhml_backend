@@ -1,7 +1,7 @@
 const faker = require('faker');
 const { getRandomInt } = require('../../utils/helpers');
-const { MAX_USER_COUNT } = require('../config');
-const ROLES = require('../constants/roles.contants');
+const ROLES = require('../constants/roles.constants');
+const { MAX_USER_COUNT } = require('../constants/seeders.constants');
 const rolesCount = Object.keys(ROLES).length;
 
 const { internet } = faker;

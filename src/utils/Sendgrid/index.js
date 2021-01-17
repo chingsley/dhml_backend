@@ -2,7 +2,7 @@ const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 const { log } = console;
 
-export default class Email {
+export default class Sendgrid {
   static async send({ email, message, html }) {
     try {
       if (!message && !html) {
