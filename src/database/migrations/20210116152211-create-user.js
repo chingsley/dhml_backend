@@ -11,7 +11,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      staffId: {
+      staffIdNo: {
         type: Sequelize.STRING,
         allowNull: false,
         references: {

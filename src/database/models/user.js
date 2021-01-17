@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
     'User',
     {
-      staffId: {
+      staffIdNo: {
         type: DataTypes.STRING,
         allowNull: false,
         references: {
@@ -55,7 +55,7 @@ module.exports = (sequelize, DataTypes) => {
   );
   User.associate = function (models) {
     User.belongsTo(models.Staff, {
-      foreignKey: 'staffId',
+      foreignKey: 'staffIdNo',
       as: 'staffInfo',
     });
     User.hasOne(models.Password, {

@@ -3,16 +3,22 @@ import { throwError } from '../../shared/helpers';
 import Cloudinary from '../../utils/Cloudinary';
 import { zeroPadding, getAvailableIds } from '../../utils/helpers';
 import { castIdToInt } from '../../database/scripts/princpal.scripts';
+import AppService from '../app/app.service';
 
-export default class EnrolleeService {
+export default class EnrolleeService extends AppService {
   constructor(enrolleeData, files) {
+    super(enrolleeData, files);
     this.enrolleeData = enrolleeData;
     this.files = files;
   }
   async enrolPrincipal() {
     const enrolleeData = this.enrolleeData;
     const files = this.files;
-    await this.validateUniqueFields(this.enrolleeData);
+    await this.validateUnique(['serviceNumber', 'staffNumber'], {
+      model: db.Principal,
+      reqBody: this.enrolleeData,
+      resourceType: 'Principal',
+    });
 
     if (enrolleeData.enrolmentType === 'special-principal') {
       const { id } = enrolleeData;
@@ -32,7 +38,6 @@ export default class EnrolleeService {
   async enrolDependant() {
     const dependantData = this.enrolleeData;
     const files = this.files;
-    await this.validateUniqueFields(dependantData);
     const { principalId } = dependantData;
     const principal = await this.getPrincipalById(principalId, {
       throwErrorIfNotFound: true,
@@ -69,25 +74,6 @@ export default class EnrolleeService {
       }
     );
     return principal;
-  }
-
-  async validateUniqueFields(enrolleeData, enrolleeId) {
-    const uniqueFields = ['serviceNumber', 'staffNumber'];
-    for (let field of uniqueFields) {
-      if (enrolleeData[field]) {
-        const found = await db.Principal.findOne({
-          where: { [field]: enrolleeData[field] },
-        });
-        if (found && found.id !== enrolleeId) {
-          throwError({
-            status: 400,
-            error: [
-              `An enrollee with ${field}: ${enrolleeData[field]} already exists`,
-            ],
-          });
-        }
-      }
-    }
   }
 
   async validateSpecialPrincipalId(id) {

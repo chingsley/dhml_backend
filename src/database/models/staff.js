@@ -1,4 +1,7 @@
 'use strict';
+
+const { throwError } = require('../../shared/helpers');
+
 module.exports = (sequelize, DataTypes) => {
   const Staff = sequelize.define(
     'Staff',
@@ -155,9 +158,26 @@ module.exports = (sequelize, DataTypes) => {
   );
   Staff.associate = function (models) {
     Staff.hasOne(models.User, {
-      foreignKey: 'staffId',
+      foreignKey: 'staffIdNo',
       as: 'userInfo',
     });
+  };
+  Staff.findByStaffIdNo = async function (staffIdNo, options) {
+    const {
+      throwErrorIfNotFound,
+      errorMsg = `Record not found. No staff matches the ID of ${staffIdNo}`,
+    } = options;
+    const found = await this.findOne({
+      where: { staffIdNo },
+    });
+    if (!found && throwErrorIfNotFound) {
+      throwError({
+        status: 400,
+        error: [errorMsg],
+        errorCode: options.errorCode,
+      });
+    }
+    return found;
   };
   return Staff;
 };

@@ -77,6 +77,7 @@
     "moment": "^2.27.0",
     "morgan": "^1.9.1",
     "mysql2": "^2.1.0",
+    "nanoid": "^3.1.20",
     "passport-jwt": "^4.0.0",
     "paymentsdk": "^1.0.2",
     "pg": "^7.18.1",

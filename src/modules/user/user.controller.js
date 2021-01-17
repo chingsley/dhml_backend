@@ -1,27 +1,14 @@
+import Response from '../../utils/Response';
 import UserService from './user.services';
-import AppController from '../app/app.controller';
-import Jwt from '../utils/Jwt';
-import db from '../database/models';
 
-const { sequelize } = db;
-
-export default class UserController extends AppController {
+export default class UserController {
   static async registerUser(req, res, next) {
-    const t = await sequelize.transaction();
     try {
-      const userService = new UserService(req, res);
-      const user = await userService.createUser(t);
-      await t.commit();
-      return res.status(201).json({
-        message: 'account successfully created',
-        data: {
-          user: { ...user.dataValues, password: undefined },
-          token: Jwt.generateToken(user),
-        },
-      });
+      const userService = new UserService(req.body);
+      const user = await userService.createUser();
+      return res.send({ message: 'successful', data: user });
     } catch (error) {
-      await t.rollback();
-      UserController.handleError(error, req, res, next);
+      Response.handleError('registerUser', error, req, res, next);
     }
   }
 
