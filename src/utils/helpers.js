@@ -1,5 +1,8 @@
 export const setMinutes = (x) => new Date(Date.now() + Number(x) * 60 * 1000);
 
+export const isEmptyObject = (obj) =>
+  Object.keys(obj).length === 0 && obj.constructor === Object;
+
 // the maximum will never be reached
 export function getRandomInt(max, options = {}) {
   const { min = 0 } = options;

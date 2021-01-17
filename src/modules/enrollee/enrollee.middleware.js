@@ -17,7 +17,6 @@ export default class EnrolleeMiddleware {
         uploadsSchema,
       } = newEnrolleeSchema;
       const result = groupEnrolleeDetails({ ...req.body });
-      // console.log(req.body);
       const { personalData, contactDetails, healthcareData, uploads } = result;
       await validateSchema(personalDataSchema, personalData, 'Personal Data: ');
       await validateSchema(
@@ -25,7 +24,6 @@ export default class EnrolleeMiddleware {
         contactDetails,
         'Contact Details: '
       );
-      // console.log(healthcareData);
       await validateSchema(
         healthCareDataSchema,
         healthcareData,
