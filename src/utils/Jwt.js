@@ -5,9 +5,8 @@ import moment from 'moment';
 class Jwt {
   static generateToken(user) {
     const payload = {
-      subject: user.uuid,
-      username: user.username,
-      role: user.role?.name || 'user',
+      subject: user.id,
+      role: user.role?.title || 'dept user',
       timestamp: moment().format('YYYYMMDDHHmmss'),
     };
     const options = { expiresIn: '1d' };

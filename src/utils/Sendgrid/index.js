@@ -18,11 +18,7 @@ export default class Sendgrid {
         text: message || html,
         html: html || '',
       };
-      // console.log(
-      //   'here................ 3',
-      //   process.env.NODE_ENV,
-      //   !process.env.NODE_ENV.match(/^production$|^test$/gi)
-      // );
+
       const result = await sgMail.send(msg);
       !process.env.NODE_ENV?.match(/^production$|^test$/gi) &&
         log(result, message);

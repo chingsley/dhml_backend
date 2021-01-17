@@ -1,6 +1,11 @@
-import AppController from './app.controller';
+import { Cypher } from '../../utils/Cypher';
+import { isEmptyObject } from '../../utils/helpers';
+import Response from '../../utils/Response';
 
-export default class AppMiddleware extends AppController {
+const { AES_KEY, IV_KEY } = process.env;
+const cypher = new Cypher(AES_KEY, IV_KEY);
+
+export default class AppMiddleware {
   static validateImageUpload(req, res, next) {
     try {
       if (req.files) {
@@ -32,7 +37,22 @@ export default class AppMiddleware extends AppController {
       }
       return next();
     } catch (error) {
-      return next(error.message);
+      return Response('validateImageUpload', error, req, res, next);
     }
   }
+
+  static decryptRequestBody = async (req, res, next) => {
+    try {
+      if (isEmptyObject(req.body) || !req.body.data) {
+        return next();
+      }
+      const { data: encryptedData } = req.body;
+      const decryptedBody = cypher.decrypt(encryptedData);
+      req.body = JSON.parse(decryptedBody);
+
+      return next();
+    } catch (error) {
+      return Response('decryptRequestBody', error, req, res, next);
+    }
+  };
 }

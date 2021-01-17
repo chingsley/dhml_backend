@@ -1,5 +1,6 @@
 'use strict';
 
+const { throwError } = require('../../shared/helpers');
 const { t24Hours } = require('../../utils/timers');
 
 module.exports = (sequelize, DataTypes) => {
@@ -62,6 +63,22 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'userId',
       as: 'password',
     });
+    User.belongsTo(models.Role, {
+      foreignKey: 'roleId',
+      as: 'role',
+    });
+  };
+  User.findOneWhere = async function (condition, options) {
+    const {
+      throwErrorIfNotFound = true,
+      errorMsg = 'No User matches the specified condition',
+      include = [],
+    } = options;
+    const found = await User.findOne({ where: condition, include });
+    if (!found && throwErrorIfNotFound) {
+      throwError({ status: 400, error: [errorMsg] });
+    }
+    return found;
   };
   return User;
 };
