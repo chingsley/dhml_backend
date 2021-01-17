@@ -1,9 +1,39 @@
 import { Op } from 'sequelize';
+import bcrypt from 'bcryptjs';
+import db from '../../database/models';
+import { throwError } from '../../shared/helpers';
 
 export default class AppService {
-  constructor(req, res) {
-    this.req = req;
-    this.res = res;
+  constructor(reqBody, reqFiles) {
+    this.reqBody = reqBody;
+    this.reqFiles = reqFiles;
+  }
+
+  async validateUnique(
+    fields,
+    { model, reqBody, resourceId = undefined, resourceType }
+  ) {
+    for (let field of fields) {
+      const value = reqBody[field];
+      if (value) {
+        const found = await model.findOne({
+          where: { [field]: value },
+        });
+        if (found && found.id !== resourceId) {
+          throwError({
+            status: 400,
+            error: [`${resourceType} with ${field}: ${value} already exists`],
+          });
+        }
+      }
+    }
+  }
+
+  async validateStaffIdNo(staffIdNo) {
+    return await db.Staff.findByStaffIdNo(staffIdNo, {
+      throwErrorIfNotFound: true,
+      errorMsg: `Staff ID: ${staffIdNo} not found`,
+    });
   }
 
   filterBy(arrOfFields) {
@@ -26,6 +56,12 @@ export default class AppService {
         limit: Number(pageSize),
       };
     }
+  }
+
+  hashPassword(passwordString) {
+    const BCRYPT_SALT = Number(process.env.BCRYPT_SALT);
+    const hashedPassword = bcrypt.hashSync(passwordString, BCRYPT_SALT);
+    return hashedPassword;
   }
 
   throwError = (responseObj) => {

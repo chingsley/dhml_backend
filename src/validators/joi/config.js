@@ -13,8 +13,8 @@ export const validateSchema = async (schema, payload, subject = '') => {
     dateOfBirth: 'date of birth cannot be in the future',
   };
   try {
-    const formatted = await schema.validateAsync(payload);
-    return formatted;
+    const joiFormatted = await schema.validateAsync(payload);
+    return { joiFormatted };
   } catch (error) {
     if (error.details?.[0].type?.match(/string.pattern.base/i)) {
       throwError({

@@ -21,9 +21,7 @@ class Response {
 
   static handleError(methodName, error, req, res, next) {
     try {
-      const { status, error: err, ...rest } = JSON.parse(
-        error.message || error.error
-      );
+      const { status, error: err, ...rest } = JSON.parse(error.message);
       return res.status(status).json({ errors: err, ...rest });
     } catch (e) {
       return next(

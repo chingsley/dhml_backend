@@ -1,22 +1,41 @@
 import db from '../../database/models';
-import Cloudinary from '../../utils/Cloudinary';
+import NanoId from '../../utils/NanoId';
 import AppService from '../app/app.service';
 
+const { sequelize } = db;
+
 export default class UserService extends AppService {
-  constructor(req, res) {
-    super(req, res);
+  constructor(userData) {
+    super(userData);
+    this.userData = userData;
   }
 
-  createUser = async (t) => {
-    const newUser = this.req.body;
-    await this.rejectDuplicateEmail(newUser.email);
-    await this.rejectDuplicateUsername(newUser.username);
-    newUser.roleId = await this.getRoleId('user');
-    newUser.image = this.req.files
-      ? await Cloudinary.uploadImage(this.req.files)
-      : newUser.image;
-    return db.User.create(newUser, { transaction: t });
-  };
+  async createUser() {
+    const t = await sequelize.transaction();
+    try {
+      const { staffIdNo } = this.userData;
+      await this.validateStaffIdNo(staffIdNo);
+      await this.validateUnique(['email', 'staffIdNo'], {
+        resourceType: 'User',
+        model: db.User,
+        reqBody: this.userData,
+      });
+      const user = await db.User.create(this.userData, { transaction: t });
+      const defaultPass = await this.generateDefaultPwd();
+      await db.Password.create(
+        { value: this.hashPassword(defaultPass), userId: user.id },
+        { transaction: t }
+      );
+      // [send user password to mail, or return it in response depending on the settings]
+      await t.commit();
+      return user;
+    } catch (error) {
+      await t.rollback();
+      throw error;
+      // or
+      // throw new Error(error.message);
+    }
+  }
 
   fetchAllUsers = () => {
     return db.User.findAndCountAll({
@@ -32,25 +51,31 @@ export default class UserService extends AppService {
     });
   };
 
-  rejectDuplicateEmail = async (email) => {
-    const user = await this.findBy('email', email);
-    if (user && `${this.req.params.id}` !== `${user.id}`) {
-      this.throwError({
-        status: 409,
-        err: `email ${email} already exists. Duplicate email is not allowed`,
-      });
-    }
-  };
+  async generateDefaultPwd() {
+    const pool =
+      '123456789ABCDEFGHJKLMNQRSTUVWXYZabcdefghijkmnoqrstuvwxyz*$#@!^_-+&';
+    return await NanoId.getValue({ length: 8, pool });
+  }
 
-  rejectDuplicateUsername = async (username) => {
-    const user = await this.findBy('username', username);
-    if (user && `${this.req.params.id}` !== `${user.id}`) {
-      this.throwError({
-        status: 409,
-        err: `username ${username} already exists. Duplicate username is not allowed`,
-      });
-    }
-  };
+  // rejectDuplicateEmail = async (email) => {
+  //   const user = await this.findBy('email', email);
+  //   if (user && `${this.req.params.id}` !== `${user.id}`) {
+  //     this.throwError({
+  //       status: 409,
+  //       err: `email ${email} already exists. Duplicate email is not allowed`,
+  //     });
+  //   }
+  // };
+
+  // rejectDuplicateUsername = async (username) => {
+  //   const user = await this.findBy('username', username);
+  //   if (user && `${this.req.params.id}` !== `${user.id}`) {
+  //     this.throwError({
+  //       status: 409,
+  //       err: `username ${username} already exists. Duplicate username is not allowed`,
+  //     });
+  //   }
+  // };
 
   findBy = (field, value) => {
     return db.User.findOne({
@@ -59,15 +84,15 @@ export default class UserService extends AppService {
     });
   };
 
-  getRoleId = async (roleName) => {
-    const [role] = await db.Role.findOrCreate({
-      where: { name: roleName },
-    });
+  // getRoleId = async (roleName) => {
+  //   const [role] = await db.Role.findOrCreate({
+  //     where: { name: roleName },
+  //   });
 
-    if (!role) {
-      throw new Error(`role name ${roleName} does not exist`);
-    }
+  //   if (!role) {
+  //     throw new Error(`role name ${roleName} does not exist`);
+  //   }
 
-    return role.id;
-  };
+  //   return role.id;
+  // };
 }
