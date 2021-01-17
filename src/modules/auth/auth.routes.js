@@ -12,4 +12,12 @@ router.post(
   AuthController.loginUser
 );
 
+router.post(
+  '/password/change',
+  AuthMiddleware.verifyToken,
+  AppMiddleware.decryptRequestBody,
+  AuthMiddleware.validatepasswordChangeDetails,
+  AuthController.changePassword
+);
+
 export default router;

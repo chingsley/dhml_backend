@@ -11,4 +11,16 @@ export default class AuthController {
       Response.handleError('loginUser', error, req, res, next);
     }
   }
+
+  static async changePassword(req, res, next) {
+    try {
+      const authService = new AuthService(req.body);
+      const data = await authService.handlePasswordChange(req.userId);
+      return res
+        .status(200)
+        .json({ message: 'Password changed was successful', data });
+    } catch (error) {
+      Response.handleError('loginUser', error, req, res, next);
+    }
+  }
 }
