@@ -11,7 +11,7 @@ const {
   lorem,
 } = faker;
 const { zeroPadding, getRandomInt } = require('../../utils/helpers');
-const { MAX_STAFF_COUNT } = require('../config');
+const { MAX_STAFF_COUNT } = require('../constants/seeders.constants');
 const { designations } = require('./designations.sample');
 
 const sampleStaffList = [];

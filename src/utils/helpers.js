@@ -13,7 +13,6 @@ export function getRandomInt(max, options = {}) {
 // }
 
 export const zeroPadding = (id, maxLength = 5) => {
-  // const maxLength = 5;
   if (Number(id).toString().length < maxLength) {
     return '0'.repeat(maxLength - Number(id).toString().length) + Number(id);
   } else {

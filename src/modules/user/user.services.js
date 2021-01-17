@@ -1,5 +1,7 @@
 import db from '../../database/models';
 import NanoId from '../../utils/NanoId';
+import NodeMailer from '../../utils/NodeMailer';
+import { passwordMsgTemplate } from '../../utils/templates/forPassword';
 import AppService from '../app/app.service';
 
 const { sequelize } = db;
@@ -13,8 +15,9 @@ export default class UserService extends AppService {
   async createUser() {
     const t = await sequelize.transaction();
     try {
-      const { staffIdNo } = this.userData;
+      const { staffIdNo, roleId, returnPassword } = this.userData;
       await this.validateStaffIdNo(staffIdNo);
+      await this.validateRoleId(roleId); // define in appService
       await this.validateUnique(['email', 'staffIdNo'], {
         resourceType: 'User',
         model: db.User,
@@ -26,9 +29,19 @@ export default class UserService extends AppService {
         { value: this.hashPassword(defaultPass), userId: user.id },
         { transaction: t }
       );
-      // [send user password to mail, or return it in response depending on the settings]
+      const result = user.dataValues;
+      if (returnPassword) {
+        result.defaultPassword = defaultPass;
+      } else {
+        await NodeMailer.sendMail({
+          subject: 'INTEGRATED HEALTH MANAGEMENT SYSTEM',
+          emails: user.email,
+          html: passwordMsgTemplate(defaultPass),
+          notificationType: 'password',
+        });
+      }
       await t.commit();
-      return user;
+      return result;
     } catch (error) {
       await t.rollback();
       throw error;
@@ -57,15 +70,11 @@ export default class UserService extends AppService {
     return await NanoId.getValue({ length: 8, pool });
   }
 
-  // rejectDuplicateEmail = async (email) => {
-  //   const user = await this.findBy('email', email);
-  //   if (user && `${this.req.params.id}` !== `${user.id}`) {
-  //     this.throwError({
-  //       status: 409,
-  //       err: `email ${email} already exists. Duplicate email is not allowed`,
-  //     });
-  //   }
-  // };
+  async validateRoleId(roleId) {
+    const errorMsg = `Role with id: ${roleId} does not exist`;
+    const options = { thowErrorIfNotFound: true, errorMsg };
+    await db.Role.findOneWhere({ id: roleId }, options);
+  }
 
   // rejectDuplicateUsername = async (username) => {
   //   const user = await this.findBy('username', username);
