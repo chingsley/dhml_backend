@@ -3,6 +3,8 @@ import db from '../../database/models';
 import Jwt from '../../utils/Jwt';
 import AppService from '../app/app.service';
 
+const { JWT_SECTET } = process.env;
+
 export default class AuthService extends AppService {
   constructor(reqBody) {
     super(reqBody);
@@ -16,6 +18,23 @@ export default class AuthService extends AppService {
       user: { ...user.dataValues, password: undefined },
       token: Jwt.generateToken(user),
     };
+  };
+
+  handlePasswordChange = async function (userId) {
+    const { oldPassword, newPassword } = this.reqBody;
+    const user = await db.User.findOneWhere(
+      { id: userId },
+      {
+        include: { model: db.Password, as: 'password' },
+        throwErrorIfNotFound: true,
+        errorMsg: 'Failed Authorization. User account not found',
+        errorCode: 'AUTH003',
+      }
+    );
+    const { password } = user;
+    await this.validatePassword(oldPassword, password.value);
+    await password.update({ value: bcrypt.hashSync(newPassword, JWT_SECTET) });
+    return { ...user.dataValues, password: undefined };
   };
 
   findUserByEmail = async function (email) {

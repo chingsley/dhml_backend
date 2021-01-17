@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 const { JWT_SECRET } = process.env;
 import moment from 'moment';
+import { throwError } from '../shared/helpers';
 
 class Jwt {
   static generateToken(user) {
@@ -13,11 +14,15 @@ class Jwt {
     return jwt.sign(payload, JWT_SECRET, options);
   }
 
-  static verifyToken(token) {
+  static decode(token) {
     try {
       return jwt.verify(token, JWT_SECRET);
-    } catch (error) {
-      return false;
+    } catch (err) {
+      throwError({
+        status: 401,
+        error: 'access denied',
+        errorCode: 'AUTH002',
+      });
     }
   }
 }
