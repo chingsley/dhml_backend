@@ -23,6 +23,10 @@ export const zeroPadding = (id, maxLength = 5) => {
   }
 };
 
+export const isExpired = (expiryDate) => {
+  return expiryDate.getTime() - new Date().getTime() < 0;
+};
+
 export const getAvailableIds = (pool, taken) => {
   const flush = (result) => {
     if (result.temp.length < 3) {

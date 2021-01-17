@@ -1,5 +1,13 @@
 import bcrypt from 'bcryptjs';
 import db from '../../database/models';
+import {
+  ACCOUNT_NOT_FOUND_CODE,
+  ACCOUNT_NOT_FOUND_ERROR,
+  DEFAULT_PWD_EXPIRED,
+  EMAIL_NOT_FOUND_CODE,
+  INVALID_CREDENTIAL,
+  PASSWORD_INCORRECT_CODE,
+} from '../../shared/constants/errors.constants';
 import Jwt from '../../utils/Jwt';
 import AppService from '../app/app.service';
 
@@ -27,8 +35,8 @@ export default class AuthService extends AppService {
       {
         include: { model: db.Password, as: 'password' },
         throwErrorIfNotFound: true,
-        errorMsg: 'Failed Authorization. User account not found',
-        errorCode: 'AUTH003',
+        errorMsg: ACCOUNT_NOT_FOUND_ERROR,
+        errorCode: ACCOUNT_NOT_FOUND_CODE,
       }
     );
     const { password } = user;
@@ -48,20 +56,25 @@ export default class AuthService extends AppService {
     if (!user) {
       this.throwError({
         status: 401,
-        err: 'Login failed. Invalid credentials.',
-        errorCode: 'LGN001',
+        err: INVALID_CREDENTIAL,
+        errorCode: EMAIL_NOT_FOUND_CODE,
+      });
+    } else if (user.hasExpiredDefaultPassword) {
+      this.throwError({
+        status: 401,
+        err: DEFAULT_PWD_EXPIRED,
       });
     }
     return user;
   };
 
-  validatePassword = function (inputPass, savedPwdHash) {
-    const isCorrectPassword = bcrypt.compareSync(inputPass, savedPwdHash);
+  validatePassword = function (inputPass, savedPasswordHash) {
+    const isCorrectPassword = bcrypt.compareSync(inputPass, savedPasswordHash);
     if (!isCorrectPassword) {
       this.throwError({
         status: 401,
-        err: 'Login failed. Invalid credentials.',
-        errorCode: 'LGN002',
+        err: INVALID_CREDENTIAL,
+        errorCode: PASSWORD_INCORRECT_CODE,
       });
     }
   };
