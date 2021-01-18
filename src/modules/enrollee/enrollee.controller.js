@@ -17,4 +17,13 @@ export default class EnrolleeController {
       Response.handleError('EnrolleeController', error, req, res, next);
     }
   }
+  static async getEnrollees(req, res, next) {
+    try {
+      const enrolleeService = new EnrolleeService();
+      const data = enrolleeService.getAllEnrollees();
+      return res.status(201).json({ data });
+    } catch (error) {
+      Response.handleError('EnrolleeController', error, req, res, next);
+    }
+  }
 }
