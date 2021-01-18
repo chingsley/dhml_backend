@@ -2,7 +2,10 @@ import express from 'express';
 import {
   ADMIN,
   ENROLMENT_OFFICER,
+  HOD_MEDICAL,
+  HOD_VHS,
   SUPERADMIN,
+  VERIFIER,
 } from '../../shared/constants/roles.constants';
 import AuthMiddleware from '../auth/auth.middleware';
 import EnrolleeController from './enrollee.controller';
@@ -12,8 +15,8 @@ const router = express.Router();
 
 router.post(
   '/',
-  // AuthMiddleware.verifyToken,
-  // AuthMiddleware.authorize([SUPERADMIN, ADMIN, ENROLMENT_OFFICER]),
+  AuthMiddleware.verifyToken,
+  AuthMiddleware.authorize([SUPERADMIN, ADMIN, ENROLMENT_OFFICER]),
   EnrolleeMiddleware.validateNewEnrollee,
   EnrolleeController.addNewEnrollee
 );
@@ -21,7 +24,14 @@ router.post(
 router.get(
   '/',
   AuthMiddleware.verifyToken,
-  AuthMiddleware.authorize([SUPERADMIN, ADMIN, ENROLMENT_OFFICER]),
+  AuthMiddleware.authorize([
+    SUPERADMIN,
+    ADMIN,
+    ENROLMENT_OFFICER,
+    HOD_MEDICAL,
+    HOD_VHS,
+    VERIFIER,
+  ]),
   EnrolleeController.getEnrollees
 );
 

@@ -7,10 +7,11 @@ import { getReservedPrincipalIDs } from '../../database/scripts/enrollee.scripts
 import AppService from '../app/app.service';
 
 export default class EnrolleeService extends AppService {
-  constructor(enrolleeData, files) {
-    super(enrolleeData, files);
-    this.enrolleeData = enrolleeData;
+  constructor({ body, files, query }) {
+    super({ body, files, query });
+    this.enrolleeData = body;
     this.files = files;
+    this.query = query;
   }
   async enrolPrincipal() {
     const enrolleeData = this.enrolleeData;
@@ -58,12 +59,9 @@ export default class EnrolleeService extends AppService {
   }
 
   async getAllEnrollees() {
-    // const principals = await db.Enrollee.findAndCountAll();
-    // const dependants = await db.Enrollee.findAndCountAll();
-    // return {
-    //   count: principals.count + dependants.count,
-    //   rows: [...principals.rows, ...dependants.rows],
-    // };
+    return await db.Enrollee.findAndCountAll({
+      ...this.paginate(),
+    });
   }
 
   async getPrincipalById(id, { throwErrorIfNotFound }) {
