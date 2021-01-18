@@ -4,7 +4,7 @@ import AuthService from './auth.services';
 export default class AuthController {
   static async loginUser(req, res, next) {
     try {
-      const authService = new AuthService(req.body);
+      const authService = new AuthService(req);
       const data = await authService.handleLogin();
       return res.status(200).json({ message: 'login succesful', data });
     } catch (error) {
@@ -14,7 +14,7 @@ export default class AuthController {
 
   static async changePassword(req, res, next) {
     try {
-      const authService = new AuthService(req.body);
+      const authService = new AuthService(req);
       const data = await authService.handlePasswordChange(req.userId);
       return res
         .status(200)
