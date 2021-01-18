@@ -1,50 +1,31 @@
 'use strict';
 
-import bcrypt from 'bcryptjs';
-
-const { BCRYPT_SALT } = process.env;
+const { throwError } = require('../../shared/helpers');
+const { isExpired } = require('../../utils/helpers');
+const { t24Hours } = require('../../utils/timers');
 
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
     'User',
     {
-      uuid: {
-        unique: true,
-        allowNull: false,
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
-      },
-      firstName: {
+      staffIdNo: {
         type: DataTypes.STRING,
         allowNull: false,
-      },
-      lastName: {
-        type: DataTypes.STRING,
+        references: {
+          model: 'Staffs',
+          key: 'staffIdNo',
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
       },
       email: {
         type: DataTypes.STRING,
-        unique: true,
         allowNull: false,
-        validate: {
-          isEmail: true,
-        },
+        unique: true,
       },
       username: {
         type: DataTypes.STRING,
-        unique: true,
         allowNull: false,
-      },
-      password: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      image: {
-        type: DataTypes.TEXT,
-      },
-      isVerified: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
       },
       roleId: {
         type: DataTypes.INTEGER,
@@ -53,39 +34,61 @@ module.exports = (sequelize, DataTypes) => {
           model: 'Roles',
           key: 'id',
         },
-        onDelete: 'RESTRICT',
-        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+        onUpdate: 'RESTRICT',
+      },
+      isActive: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      },
+      hasChangedDefaultPassword: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
+      defaultPasswordExpiry: {
+        allowNull: false,
+        type: DataTypes.DATE,
+        defaultValue: t24Hours,
+      },
+      hasExpiredDefaultPassword: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return (
+            !this.hasChangedDefaultPassword &&
+            isExpired(this.defaultPasswordExpiry)
+          );
+        },
       },
     },
     {}
   );
   User.associate = function (models) {
+    User.belongsTo(models.Staff, {
+      foreignKey: 'staffIdNo',
+      as: 'staffInfo',
+    });
+    User.hasOne(models.Password, {
+      foreignKey: 'userId',
+      as: 'password',
+    });
     User.belongsTo(models.Role, {
       foreignKey: 'roleId',
       as: 'role',
     });
-    User.hasOne(models.PasswordReset, {
-      foreignKey: 'userId',
-      as: 'passwordReset',
-      onDelete: 'CASCADE',
-    });
   };
-
-  User.addHook('beforeCreate', async (user) => {
-    if (user.password) {
-      user.password = bcrypt.hashSync(user.password, Number(BCRYPT_SALT));
+  User.findOneWhere = async function (condition, options) {
+    const {
+      throwErrorIfNotFound = true,
+      errorMsg = 'No User matches the specified condition',
+      include = [],
+    } = options;
+    const found = await User.findOne({ where: condition, include });
+    if (!found && throwErrorIfNotFound) {
+      throwError({ status: 400, error: [errorMsg] });
     }
-  });
-
-  User.addHook('beforeBulkCreate', async (users) => {
-    for (let i = 0; i < users.length; i++) {
-      if (users[i].dataValues.password) {
-        users[i].dataValues.password = bcrypt.hashSync(
-          users[i].dataValues.password,
-          Number(BCRYPT_SALT)
-        );
-      }
-    }
-  });
+    return found;
+  };
   return User;
 };

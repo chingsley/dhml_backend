@@ -39,7 +39,6 @@ describe('authController', () => {
           email: user.email,
           password: sampleUsers[0].password,
         });
-        // console.log(res.body)
         const { data } = res.body;
         expect(res.status).toBe(200);
         expect(data.user).toEqual(
