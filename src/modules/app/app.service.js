@@ -4,9 +4,10 @@ import db from '../../database/models';
 import { throwError } from '../../shared/helpers';
 
 export default class AppService {
-  constructor(reqBody, reqFiles) {
-    this.reqBody = reqBody;
-    this.reqFiles = reqFiles;
+  constructor({ body, files, query }) {
+    this.body = body;
+    this.files = files;
+    this.query = query;
   }
 
   async validateUnique(
@@ -49,11 +50,11 @@ export default class AppService {
   }
 
   paginate() {
-    const { page, pageSize } = this.req.query;
+    const { page, pageSize } = this.query;
     if (page && pageSize) {
       return {
-        offset: Number(page * pageSize),
-        limit: Number(pageSize),
+        offset: Number(page * pageSize) || 0,
+        limit: Number(pageSize) || null,
       };
     }
   }

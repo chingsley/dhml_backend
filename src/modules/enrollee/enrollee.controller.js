@@ -5,7 +5,7 @@ export default class EnrolleeController {
   static async addNewEnrollee(req, res, next) {
     try {
       const { enrolmentType } = req.body;
-      const enrolleeService = new EnrolleeService(req.body, req.files);
+      const enrolleeService = new EnrolleeService(req);
       const enrollee = enrolmentType.match(/principal/i)
         ? await enrolleeService.enrolPrincipal()
         : await enrolleeService.enrolDependant();
@@ -20,7 +20,7 @@ export default class EnrolleeController {
   }
   static async getEnrollees(req, res, next) {
     try {
-      const enrolleeService = new EnrolleeService();
+      const enrolleeService = new EnrolleeService(req);
       const data = await enrolleeService.getAllEnrollees();
       return res.status(201).json({ data });
     } catch (error) {
