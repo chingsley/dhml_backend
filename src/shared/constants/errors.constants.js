@@ -7,6 +7,7 @@ export const EMAIL_NOT_FOUND_CODE = 'LGN001';
 export const PASSWORD_INCORRECT_CODE = 'LGN002';
 export const ACCESS_DENIED = 'Access denied';
 export const AUTH004 = 'AUTH004';
+export const NO_DEFAULT_PASSWORD_USER = `Access denied. Please change your default password`;
 
 export default {
   ACCOUNT_NOT_FOUND_ERROR,

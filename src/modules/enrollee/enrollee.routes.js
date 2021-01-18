@@ -18,4 +18,10 @@ router.post(
   EnrolleeController.addNewEnrollee
 );
 
+router.get(
+  '/',
+  AuthMiddleware.verifyToken,
+  AuthMiddleware.authorize([SUPERADMIN, ADMIN, ENROLMENT_OFFICER])
+);
+
 export default router;

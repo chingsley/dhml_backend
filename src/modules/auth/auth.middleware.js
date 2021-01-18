@@ -4,6 +4,7 @@ import {
   ACCOUNT_NOT_FOUND_ERROR,
   AUTH004,
   ACCESS_DENIED,
+  NO_DEFAULT_PASSWORD_USER,
 } from '../../shared/constants/errors.constants';
 import { throwError } from '../../shared/helpers';
 import Jwt from '../../utils/Jwt';
@@ -68,6 +69,13 @@ export default class AuthMiddleware {
             errorCode: ACCOUNT_NOT_FOUND_CODE,
           }
         );
+        // // password change feature is not ready on the frontend
+        // if (!user.hasChangedDefaultPassword) {
+        //   throwError({
+        //     status: 401,
+        //     error: NO_DEFAULT_PASSWORD_USER,
+        //   });
+        // }
         const { role: userRole } = user;
         if (!arrayOfPermittedRoles.includes(userRole.title)) {
           throwError({

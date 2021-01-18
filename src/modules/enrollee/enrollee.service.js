@@ -56,6 +56,8 @@ export default class EnrolleeService extends AppService {
     return data;
   }
 
+  async getAllEnrollees() {}
+
   async getPrincipalById(id, { throwErrorIfNotFound }) {
     const principal = await db.Principal.findOneWhere(
       { id },
