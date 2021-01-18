@@ -16,14 +16,14 @@ module.exports = (sequelize, DataTypes) => {
   );
   // eslint-disable-next-line no-unused-vars
   HealthCareProvider.associate = function (models) {
-    HealthCareProvider.hasMany(models.Principal, {
+    HealthCareProvider.hasMany(models.Enrollee, {
       foreignKey: 'hcpId',
-      as: 'principals',
+      as: 'enrollees',
     });
-    HealthCareProvider.hasMany(models.Dependant, {
-      foreignKey: 'hcpId',
-      as: 'dependants',
-    });
+    // HealthCareProvider.hasMany(models.Dependant, {
+    //   foreignKey: 'hcpId',
+    //   as: 'dependants',
+    // });
   };
   return HealthCareProvider;
 };
