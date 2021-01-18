@@ -1,17 +1,35 @@
 'use strict';
-
+import { QueryTypes } from 'sequelize';
 const { throwError } = require('../../shared/helpers');
 const { zeroPadding } = require('../../utils/helpers');
-const { castIdToInt } = require('../scripts/princpal.scripts');
+const { getLastRegisteredPrincipal } = require('../scripts/enrollee.scripts');
 
 module.exports = (sequelize, DataTypes) => {
-  const Principal = sequelize.define(
-    'Principal',
+  const Enrollee = sequelize.define(
+    'Enrollee',
     {
       id: {
         allowNull: false,
         unique: true,
         primaryKey: true,
+        type: DataTypes.STRING,
+      },
+      principalId: {
+        type: DataTypes.STRING,
+        references: {
+          model: 'Principals',
+          key: 'id',
+        },
+        onDelete: 'RESTRICT',
+        onUpdate: 'CASCADE',
+      },
+      relationshipToPrincipal: {
+        type: DataTypes.STRING,
+      },
+      dependantClass: {
+        type: DataTypes.STRING,
+      },
+      dependantType: {
         type: DataTypes.STRING,
       },
       hcpId: {
@@ -129,18 +147,22 @@ module.exports = (sequelize, DataTypes) => {
     },
     {}
   );
-  Principal.associate = function (models) {
-    Principal.hasMany(models.Dependant, {
+  Enrollee.associate = function (models) {
+    Enrollee.hasMany(models.Enrollee, {
       foreignKey: 'principalId',
       as: 'dependants',
     });
-    Principal.belongsTo(models.HealthCareProvider, {
+    Enrollee.belongsTo(models.Enrollee, {
+      foreignKey: 'principalId',
+      as: 'principal',
+    });
+    Enrollee.belongsTo(models.HealthCareProvider, {
       foreignKey: 'hcpId',
       as: 'hcp',
     });
   };
-  Principal.createPrincipal = async function (enrolleeData) {
-    const enrollee = await Principal.create(enrolleeData);
+  Enrollee.createPrincipal = async function (enrolleeData) {
+    const enrollee = await Enrollee.create(enrolleeData);
     await enrollee.reload({
       include: [
         {
@@ -152,13 +174,32 @@ module.exports = (sequelize, DataTypes) => {
     });
     return enrollee;
   };
-  Principal.generateNewPrincipalId = async function () {
-    const { dialect } = sequelize.options;
-    const [lastRegisteredPrincipal] = await Principal.findAll({
-      where: sequelize.where(sequelize.literal(castIdToInt(dialect)), '>', 230),
-      order: [['createdAt', 'DESC']],
-      limit: 1,
+  Enrollee.createDependant = async function (dependantData, principal) {
+    dependantData.dependantClass =
+      principal.scheme === dependantData.scheme
+        ? 'same-scheme-dependant'
+        : 'other-scheme-dependant';
+    dependantData.dependantType = `${principal.scheme}-TO-${dependantData.scheme}`;
+    const enrollee = await Enrollee.create(dependantData);
+    await enrollee.reload({
+      include: [
+        {
+          model: enrollee.sequelize.models.HealthCareProvider,
+          as: 'hcp',
+          attributes: ['code', 'name'],
+        },
+      ],
     });
+    return enrollee;
+  };
+  Enrollee.generateNewPrincipalId = async function () {
+    const { dialect } = sequelize.options;
+    const [lastRegisteredPrincipal] = await sequelize.query(
+      getLastRegisteredPrincipal(dialect),
+      {
+        type: QueryTypes.SELECT,
+      }
+    );
     if (!lastRegisteredPrincipal) {
       return zeroPadding(231);
     } else {
@@ -166,7 +207,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
 
-  Principal.prototype.generateNewDependantId = function () {
+  Enrollee.prototype.generateNewDependantId = function () {
     const [lastDependant] = this.dependants.sort(
       (d1, d2) => d2.createdAt - d1.createdAt
     );
@@ -176,7 +217,7 @@ module.exports = (sequelize, DataTypes) => {
       return `${this.id}-${Number(lastDependant.id.split('-')[1]) + 1}`;
     }
   };
-  Principal.prototype.checkDependantLimit = function (newDependant) {
+  Enrollee.prototype.checkDependantLimit = function (newDependant) {
     if (
       this.scheme === newDependant.scheme &&
       newDependant.scheme !== 'VCSHIP'
@@ -193,7 +234,7 @@ module.exports = (sequelize, DataTypes) => {
       }
     }
   };
-  Principal.findOneWhere = async function (condition, options) {
+  Enrollee.findOneWhere = async function (condition, options) {
     const {
       throwErrorIfNotFound = false,
       errorMsg = 'Record not found',
@@ -212,6 +253,5 @@ module.exports = (sequelize, DataTypes) => {
     }
     return found;
   };
-
-  return Principal;
+  return Enrollee;
 };

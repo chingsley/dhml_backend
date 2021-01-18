@@ -6,8 +6,8 @@ module.exports = {
   up: (queryInterface, Sequelize) => {
     // return queryInterface.bulkInsert('Roles', sampleRoles);
     return Promise.all([
-      queryInterface.bulkInsert('Principals', principals),
-      queryInterface.bulkInsert('Dependants', dependants),
+      queryInterface.bulkInsert('Enrollees', principals),
+      queryInterface.bulkInsert('Enrollees', dependants),
     ]);
   },
 
@@ -15,8 +15,8 @@ module.exports = {
   down: (queryInterface, Sequelize) => {
     // return queryInterface.bulkDelete('Roles', null, {});
     return Promise.all([
-      queryInterface.bulkDelete('Dependants', null, {}),
-      queryInterface.bulkDelete('Principals', null, {}),
+      queryInterface.bulkDelete('Enrollees', null, {}),
+      // queryInterface.bulkDelete('Principals', null, {}),
     ]);
   },
 };

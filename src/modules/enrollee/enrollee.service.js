@@ -1,8 +1,9 @@
 import db from '../../database/models';
 import { throwError } from '../../shared/helpers';
 import Cloudinary from '../../utils/Cloudinary';
+import { QueryTypes } from 'sequelize';
 import { zeroPadding, getAvailableIds } from '../../utils/helpers';
-import { castIdToInt } from '../../database/scripts/princpal.scripts';
+import { getReservedPrincipalIDs } from '../../database/scripts/enrollee.scripts';
 import AppService from '../app/app.service';
 
 export default class EnrolleeService extends AppService {
@@ -15,7 +16,7 @@ export default class EnrolleeService extends AppService {
     const enrolleeData = this.enrolleeData;
     const files = this.files;
     await this.validateUnique(['serviceNumber', 'staffNumber'], {
-      model: db.Principal,
+      model: db.Enrollee,
       reqBody: this.enrolleeData,
       resourceType: 'Principal',
     });
@@ -25,10 +26,10 @@ export default class EnrolleeService extends AppService {
       await this.validateSpecialPrincipalId(id);
       enrolleeData.id = zeroPadding(id);
     } else {
-      enrolleeData.id = await db.Principal.generateNewPrincipalId();
+      enrolleeData.id = await db.Enrollee.generateNewPrincipalId();
     }
     const uploadedImages = files ? await Cloudinary.bulkUpload(files) : {};
-    const enrollee = await db.Principal.createPrincipal({
+    const enrollee = await db.Enrollee.createPrincipal({
       ...enrolleeData,
       ...uploadedImages,
     });
@@ -46,7 +47,7 @@ export default class EnrolleeService extends AppService {
     principal.checkDependantLimit(dependantData);
     dependantData.id = principal.generateNewDependantId();
     const uploadedImages = files ? await Cloudinary.bulkUpload(files) : {};
-    const data = await db.Dependant.createDependant(
+    const data = await db.Enrollee.createDependant(
       {
         ...dependantData,
         ...uploadedImages,
@@ -56,17 +57,24 @@ export default class EnrolleeService extends AppService {
     return data;
   }
 
-  async getAllEnrollees() {}
+  async getAllEnrollees() {
+    // const principals = await db.Enrollee.findAndCountAll();
+    // const dependants = await db.Enrollee.findAndCountAll();
+    // return {
+    //   count: principals.count + dependants.count,
+    //   rows: [...principals.rows, ...dependants.rows],
+    // };
+  }
 
   async getPrincipalById(id, { throwErrorIfNotFound }) {
-    const principal = await db.Principal.findOneWhere(
+    const principal = await db.Enrollee.findOneWhere(
       { id },
       {
         throwErrorIfNotFound,
         errorMsg: `Invalid principal enrolment ID. No record found for ID ${id}`,
         errorCode: 'E001',
         include: [
-          { model: db.Dependant, as: 'dependants' },
+          { model: db.Enrollee, as: 'dependants' },
           {
             model: db.HealthCareProvider,
             as: 'hcp',
@@ -88,16 +96,15 @@ export default class EnrolleeService extends AppService {
       });
     }
     const { dialect } = db.sequelize.options;
-    const specialPrincipalIds = await db.Principal.findAll({
-      where: db.sequelize.where(
-        db.sequelize.literal(castIdToInt(dialect)),
-        '<',
-        231
-      ),
-      attributes: [[db.sequelize.literal(castIdToInt(dialect)), 'id']],
-      raw: true,
-    });
-    const usedIDs = specialPrincipalIds.map(({ id }) => id);
+    const specialPrincipalIds = await db.sequelize.query(
+      getReservedPrincipalIDs(dialect),
+      {
+        type: QueryTypes.SELECT,
+      }
+    );
+    // the Number(id) in next line is not necessary b/c the
+    // query(check the script file) already casts the id to integer
+    const usedIDs = specialPrincipalIds.map(({ id }) => Number(id));
     if (usedIDs.includes(Number(id))) {
       const pool = Array.from(Array(231).keys()).slice(1);
       const availableIds = getAvailableIds(pool, usedIDs);
