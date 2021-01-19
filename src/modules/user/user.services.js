@@ -7,9 +7,11 @@ import AppService from '../app/app.service';
 const { sequelize } = db;
 
 export default class UserService extends AppService {
-  constructor(userData) {
-    super(userData);
-    this.userData = userData;
+  constructor({ body, files, query }) {
+    super({ body, files, query });
+    this.userData = body;
+    this.files = files;
+    this.query = query;
   }
 
   async createUser() {
@@ -54,12 +56,16 @@ export default class UserService extends AppService {
     return db.User.findAndCountAll({
       attributes: { exclude: ['password'] },
       where: {
-        ...this.filterBy(['firstName', 'lastName', 'username', 'email']),
+        ...this.filterBy(['username', 'email']),
       },
       ...this.paginate(),
       include: [
-        { model: db.Role, as: 'role', attributes: ['name'] },
-        { model: db.Project, as: 'projects' },
+        { model: db.Role, as: 'role', attributes: ['title'] },
+        {
+          model: db.Staff,
+          as: 'staffInfo',
+          where: { ...this.filterBy(['firstName', 'surname', 'middleName']) },
+        },
       ],
     });
   };

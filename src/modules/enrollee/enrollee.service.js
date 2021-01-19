@@ -5,6 +5,7 @@ import { QueryTypes } from 'sequelize';
 import { zeroPadding, getAvailableIds } from '../../utils/helpers';
 import { getReservedPrincipalIDs } from '../../database/scripts/enrollee.scripts';
 import AppService from '../app/app.service';
+import enrolleeAttributes from '../../shared/attributes/enrollee.attributes';
 
 export default class EnrolleeService extends AppService {
   constructor({ body, files, query }) {
@@ -60,7 +61,22 @@ export default class EnrolleeService extends AppService {
 
   async getAllEnrollees() {
     return await db.Enrollee.findAndCountAll({
+      where: {
+        ...this.filterBy(enrolleeAttributes.personalData),
+      },
       ...this.paginate(),
+      include: [
+        {
+          model: db.HealthCareProvider,
+          as: 'hcp',
+          where: {
+            ...this.filterBy(['hcpName', 'hcpCode'], {
+              hcpName: 'name',
+              hcpCode: 'code',
+            }),
+          },
+        },
+      ],
     });
   }
 
