@@ -1,15 +1,17 @@
-const { getSampleUsers } = require('../../shared/samples/user.samples');
+const getSampleStaffAndUsers = require('../../shared/samples/staff.samples');
 
-const { sampleUsers } = getSampleUsers();
+const { sampleStaffList, sampleUsers } = getSampleStaffAndUsers();
 
 module.exports = {
   // eslint-disable-next-line no-unused-vars
-  up: (queryInterface, Sequelize) => {
-    return queryInterface.bulkInsert('Users', sampleUsers);
+  up: async (queryInterface, Sequelize) => {
+    await queryInterface.bulkInsert('Staffs', sampleStaffList);
+    await queryInterface.bulkInsert('Users', sampleUsers);
   },
 
   // eslint-disable-next-line no-unused-vars
-  down: (queryInterface, Sequelize) => {
-    return queryInterface.bulkDelete('Users', null, {});
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.bulkDelete('Users', null, {});
+    await queryInterface.bulkDelete('Staffs', null, {});
   },
 };

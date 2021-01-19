@@ -15,7 +15,6 @@ const router = express.Router();
 
 router.post(
   '/',
-  AuthMiddleware.verifyToken,
   AuthMiddleware.authorize([SUPERADMIN, ADMIN, ENROLMENT_OFFICER]),
   EnrolleeMiddleware.validateNewEnrollee,
   EnrolleeController.addNewEnrollee
@@ -23,7 +22,6 @@ router.post(
 
 router.get(
   '/',
-  AuthMiddleware.verifyToken,
   AuthMiddleware.authorize([
     SUPERADMIN,
     ADMIN,

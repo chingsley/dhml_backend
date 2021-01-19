@@ -14,7 +14,7 @@ router.post(
 
 router.post(
   '/password/change',
-  AuthMiddleware.verifyToken,
+  AuthMiddleware.authorizeUserWithValidToken,
   AppMiddleware.decryptRequestBody,
   AuthMiddleware.validatepasswordChangeDetails,
   AuthController.changePassword

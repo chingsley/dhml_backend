@@ -37,6 +37,16 @@ const ranks = [
   'NWO',
 ];
 
+// export const getEnrolleesV2 = (
+//   count = {
+//     principal: 100,
+//     dependantsPerPrincal: 4,
+//     child: 2,
+//     spouse: 1,
+//     others: 1,
+//   }
+// ) => {};
+
 export const getEnrollees = (countPrincipals = MAX_PRINCIPALS_COUNT) => {
   const principals = [];
   const dependants = [];
@@ -93,7 +103,7 @@ export const getEnrollees = (countPrincipals = MAX_PRINCIPALS_COUNT) => {
       let rtp;
       let scheme = aPrincipal.scheme;
       let gender = random.arrayElement(['male', 'female']);
-      if (i < 2) {
+      if (i < 3) {
         rtp = 'child';
       } else if (i === 3) {
         rtp = 'spouse';

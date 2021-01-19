@@ -1,12 +1,12 @@
 import bcrypt from 'bcryptjs';
 import db from '../../database/models';
 import {
-  ACCOUNT_NOT_FOUND_CODE,
+  AUTH003,
   ACCOUNT_NOT_FOUND_ERROR,
   DEFAULT_PWD_EXPIRED,
-  EMAIL_NOT_FOUND_CODE,
+  LGN001,
   INVALID_CREDENTIAL,
-  PASSWORD_INCORRECT_CODE,
+  LGN002,
 } from '../../shared/constants/errors.constants';
 import Jwt from '../../utils/Jwt';
 import AppService from '../app/app.service';
@@ -37,7 +37,7 @@ export default class AuthService extends AppService {
         include: { model: db.Password, as: 'password' },
         throwErrorIfNotFound: true,
         errorMsg: ACCOUNT_NOT_FOUND_ERROR,
-        errorCode: ACCOUNT_NOT_FOUND_CODE,
+        errorCode: AUTH003,
       }
     );
     const { password } = user;
@@ -58,7 +58,7 @@ export default class AuthService extends AppService {
       this.throwError({
         status: 401,
         err: INVALID_CREDENTIAL,
-        errorCode: EMAIL_NOT_FOUND_CODE,
+        errorCode: LGN001,
       });
     } else if (user.hasExpiredDefaultPassword) {
       this.throwError({
@@ -75,7 +75,7 @@ export default class AuthService extends AppService {
       this.throwError({
         status: 401,
         err: INVALID_CREDENTIAL,
-        errorCode: PASSWORD_INCORRECT_CODE,
+        errorCode: LGN002,
       });
     }
   };

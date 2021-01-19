@@ -1,16 +1,18 @@
 /* eslint-disable quotes */
-export const ACCOUNT_NOT_FOUND_ERROR = `Failed Authorization. User account not found`;
-export const ACCOUNT_NOT_FOUND_CODE = 'AUTH003';
-export const DEFAULT_PWD_EXPIRED = 'Login failed. Expired default password';
-export const INVALID_CREDENTIAL = 'Login failed. Invalid credentials';
-export const EMAIL_NOT_FOUND_CODE = 'LGN001';
-export const PASSWORD_INCORRECT_CODE = 'LGN002';
 export const ACCESS_DENIED = 'Access denied';
-export const AUTH004 = 'AUTH004';
+export const INVALID_CREDENTIAL = 'Login failed. Invalid credentials';
+export const DEFAULT_PWD_EXPIRED = 'Login failed. Expired default password';
+export const ACCOUNT_NOT_FOUND_ERROR = `Failed Authorization. User account not found`;
 export const NO_DEFAULT_PASSWORD_USER = `Access denied. Please change your default password`;
+export const LGN002 = 'LGN002';
+export const LGN001 = 'LGN001';
+export const AUTH003 = 'AUTH003';
+export const AUTH004 = 'AUTH004';
+export const AUTH001 = 'AUTH001';
+export const AUTH002 = 'AUTH002';
 
 export default {
   ACCOUNT_NOT_FOUND_ERROR,
-  ACCOUNT_NOT_FOUND_CODE,
+  AUTH003,
   DEFAULT_PWD_EXPIRED,
 };
