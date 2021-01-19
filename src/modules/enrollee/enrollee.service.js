@@ -109,9 +109,9 @@ export default class EnrolleeService extends AppService {
         error: [errorMsg],
       });
     }
-    const { dialect } = db.sequelize.options;
+    const { dialect, database } = db.sequelize.options;
     const specialPrincipalIds = await db.sequelize.query(
-      getReservedPrincipalIDs(dialect),
+      getReservedPrincipalIDs(dialect, database),
       {
         type: QueryTypes.SELECT,
       }

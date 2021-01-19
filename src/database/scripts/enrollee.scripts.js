@@ -6,7 +6,7 @@ export const castIdToInt = (dialect) => {
   return query[dialect];
 };
 
-export const getLastRegisteredPrincipal = (dialect) => {
+export const getLastRegisteredPrincipal = (dialect, dbName) => {
   const query = {
     postgres: `
     SELECT *
@@ -24,7 +24,7 @@ export const getLastRegisteredPrincipal = (dialect) => {
     mysql: `
     SELECT * 
     FROM  
-        (SELECT * FROM dhml.Enrollees  
+        (SELECT * FROM ${dbName}.Enrollees  
         WHERE principalId IS NULL) AS sub
         WHERE CAST(id AS UNSIGNED) > 230
         ORDER BY sub.id DESC
@@ -34,7 +34,7 @@ export const getLastRegisteredPrincipal = (dialect) => {
   return query[dialect];
 };
 
-export const getReservedPrincipalIDs = (dialect) => {
+export const getReservedPrincipalIDs = (dialect, dbName) => {
   const query = {
     postgres: `
     SELECT cast("id" as INTEGER) AS id
@@ -50,7 +50,7 @@ export const getReservedPrincipalIDs = (dialect) => {
     mysql: `
     SELECT cast(id as UNSIGNED) AS id
     FROM  
-        (SELECT * FROM dhml.Enrollees  
+        (SELECT * FROM ${dbName}.Enrollees  
         WHERE principalId IS NULL) AS sub
         WHERE CAST(id AS UNSIGNED) < 231
         ORDER BY sub.id ASC;

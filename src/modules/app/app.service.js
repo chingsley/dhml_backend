@@ -53,8 +53,8 @@ export default class AppService {
     const filterObj = arrOfFields.reduce((obj, key) => {
       if (queryParams[key]) {
         const field = map[key] || key;
-        const value = queryParams[key]; // use .toLowercase => ueryParams[key].toLowerCase(), but first you have to convert all value to lower case before saving in the database
-        return { ...obj, [field]: { [Op.like]: `%${value}%` } };
+        const value = queryParams[key];
+        return { ...obj, [field]: { [Op.like]: `%${value}%` } }; // use .toLowercase => ueryParams[key].toLowerCase(), but first you have to convert all value to lower case before saving in the database
       }
       return obj;
     }, {});
