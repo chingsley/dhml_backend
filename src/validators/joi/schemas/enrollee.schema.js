@@ -1,3 +1,4 @@
+import enrolleeAttributes from '../../../shared/attributes/enrollee.attributes';
 import { Joi } from '../config';
 
 export const newEnrolleeSchema = {
@@ -106,46 +107,7 @@ export const patchEnrolleeSchema = {
   }),
 };
 
-export const attributes = {
-  personalData: [
-    'EnrolmentId',
-    'principalId',
-    'scheme',
-    'surname',
-    'firstName',
-    'middleName',
-    'rank',
-    'serviceNumber',
-    'staffNumber',
-    'title',
-    'designation',
-    'armOfService',
-    'department',
-    'employer',
-    'dateOfBirth',
-    'gender',
-    'maritalStatus',
-    'identificationType',
-    'identificationNumber',
-    'serviceStatus',
-  ],
-  contactDetails: [
-    'phoneNumber',
-    'email',
-    'residentialAddress',
-    'stateOfResidence',
-    'lga',
-  ],
-  healthcareData: ['bloodGroup', 'significantMedicalHistory', 'hcpId'],
-  uploads: [
-    'photograph',
-    'birthCertificate',
-    'marriageCertificate',
-    'idCard',
-    'deathCertificate',
-    'letterOfNok',
-  ],
-};
+const attributes = enrolleeAttributes;
 
 export const groupEnrolleeDetails = (enrollee) => {
   return Object.entries(enrollee).reduce(
