@@ -193,9 +193,9 @@ module.exports = (sequelize, DataTypes) => {
     return enrollee;
   };
   Enrollee.generateNewPrincipalId = async function () {
-    const { dialect } = sequelize.options;
+    const { dialect, database } = sequelize.options;
     const [lastRegisteredPrincipal] = await sequelize.query(
-      getLastRegisteredPrincipal(dialect),
+      getLastRegisteredPrincipal(dialect, database),
       {
         type: QueryTypes.SELECT,
       }
