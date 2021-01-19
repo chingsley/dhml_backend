@@ -1,3 +1,4 @@
+import Response from '../../utils/Response';
 import RoleService from './role.services';
 
 export default class RoleController {
@@ -7,7 +8,7 @@ export default class RoleController {
       const data = await roleService.fetchAllRoles();
       return res.status(200).json({ data });
     } catch (error) {
-      RoleController.handleError(error, req, res, next);
+      Response.handleError('getAllRoles', error, req, res, next);
     }
   }
 }

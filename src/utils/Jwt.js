@@ -8,7 +8,6 @@ class Jwt {
   static generateToken(user) {
     const payload = {
       subject: user.id,
-      role: user.role?.title || 'dept user',
       timestamp: moment().format('YYYYMMDDHHmmss'),
     };
     const options = { expiresIn: '1d' };

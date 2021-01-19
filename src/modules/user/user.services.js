@@ -60,7 +60,7 @@ export default class UserService extends AppService {
       },
       ...this.paginate(),
       include: [
-        { model: db.Role, as: 'role', attributes: ['title'] },
+        { model: db.Role, as: 'role', attributes: ['id', 'title'] },
         {
           model: db.Staff,
           as: 'staffInfo',
@@ -81,33 +81,4 @@ export default class UserService extends AppService {
     const options = { thowErrorIfNotFound: true, errorMsg };
     await db.Role.findOneWhere({ id: roleId }, options);
   }
-
-  // rejectDuplicateUsername = async (username) => {
-  //   const user = await this.findBy('username', username);
-  //   if (user && `${this.req.params.id}` !== `${user.id}`) {
-  //     this.throwError({
-  //       status: 409,
-  //       err: `username ${username} already exists. Duplicate username is not allowed`,
-  //     });
-  //   }
-  // };
-
-  findBy = (field, value) => {
-    return db.User.findOne({
-      where: { [field]: value },
-      include: [{ model: db.Role, as: 'role' }],
-    });
-  };
-
-  // getRoleId = async (roleName) => {
-  //   const [role] = await db.Role.findOrCreate({
-  //     where: { name: roleName },
-  //   });
-
-  //   if (!role) {
-  //     throw new Error(`role name ${roleName} does not exist`);
-  //   }
-
-  //   return role.id;
-  // };
 }
