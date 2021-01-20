@@ -20,4 +20,4 @@ const getSampleUsers = (count = MAX_USER_COUNT) => {
 };
 
 module.exports = { getSampleUsers };
-Array.from(Array(rolesCount + 1).keys());
+// Array.from(Array(rolesCount + 1).keys());

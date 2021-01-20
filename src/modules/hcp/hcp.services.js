@@ -1,7 +1,7 @@
 import db from '../../database/models';
 import AppService from '../app/app.service';
 
-export default class RoleService extends AppService {
+export default class HcpService extends AppService {
   constructor({ body, files, query }) {
     super({ body, files, query });
     this.body = body;
@@ -9,10 +9,9 @@ export default class RoleService extends AppService {
     this.query = query;
   }
 
-  fetchAllRoles() {
-    return db.Role.findAndCountAll({
-      where: { ...this.filterBy(['title']) },
-      attributes: ['id', 'title'],
+  async fetchAllHcp() {
+    return await db.HealthCareProvider.findAndCountAll({
+      where: { ...this.filterBy(['code', 'name']) },
       ...this.paginate(),
     });
   }

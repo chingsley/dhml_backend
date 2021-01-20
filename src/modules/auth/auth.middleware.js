@@ -1,9 +1,10 @@
 import db from '../../database/models';
 import {
-  ACCOUNT_NOT_FOUND_CODE,
+  AUTH003,
   ACCOUNT_NOT_FOUND_ERROR,
   AUTH004,
   ACCESS_DENIED,
+  AUTH001,
   NO_DEFAULT_PASSWORD_USER,
 } from '../../shared/constants/errors.constants';
 import { throwError } from '../../shared/helpers';
@@ -39,45 +40,47 @@ export default class AuthMiddleware {
     }
   }
 
-  static verifyToken = async (req, res, next) => {
+  static authorizeUserWithValidToken(req, res, next) {
     try {
-      const token = req.headers.authorization;
-      if (!token) {
-        return res
-          .status(401)
-          .json({ error: 'access denied', errorCode: 'AUTH001' });
-      }
-      const { subject: userId } = Jwt.decode(token);
-
-      req.userId = userId;
-      next();
+      this.verifyToken(req.headers);
+      return next();
     } catch (error) {
-      Response.handleError('verifyToken', error, req, res, next);
+      return Response.handleError(
+        'authorizeUserWithValidToken',
+        error,
+        req,
+        res,
+        next
+      );
     }
-  };
+  }
 
-  static authorize(arrayOfPermittedRoles) {
+  /**
+   *
+   * @param {array} allowedRoles
+   * contains array of roles that are allowed
+   * to access the endpoint. e.g .authorzie(['admin', 'superadmin])
+   * If allowedRoles is not specified (undefined),
+   * e.g AuthMiddleware.authorize() then anyone
+   * with a valid token can acccess the endpoint
+   */
+  static authorize(allowedRoles) {
     return async (req, res, next) => {
       try {
-        const { userId } = req;
+        const { userId } = this.verifyToken(req.headers);
         const user = await db.User.findOneWhere(
           { id: userId },
           {
             include: { model: db.Role, as: 'role' },
             throwErrorIfNotFound: true,
             errorMsg: ACCOUNT_NOT_FOUND_ERROR,
-            errorCode: ACCOUNT_NOT_FOUND_CODE,
+            errorCode: AUTH003,
           }
         );
-        // // password change feature is not ready on the frontend
-        // if (!user.hasChangedDefaultPassword) {
-        //   throwError({
-        //     status: 401,
-        //     error: NO_DEFAULT_PASSWORD_USER,
-        //   });
-        // }
+        this.rejectDefaultPasswordUser(user);
         const { role: userRole } = user;
-        if (!arrayOfPermittedRoles.includes(userRole.title)) {
+        if (!allowedRoles) return next();
+        if (!allowedRoles.includes(userRole.title)) {
           throwError({
             status: 401,
             error: ACCESS_DENIED,
@@ -90,4 +93,26 @@ export default class AuthMiddleware {
       }
     };
   }
+
+  static verifyToken = (reqHeaders) => {
+    const token = reqHeaders.authorization;
+    if (!token) {
+      throwError({
+        status: 401,
+        error: ACCESS_DENIED,
+        errorCode: AUTH001,
+      });
+    }
+    const { subject: userId } = Jwt.decode(token);
+    return { userId };
+  };
+
+  static rejectDefaultPasswordUser = (user) => {
+    if (!user.hasChangedDefaultPassword) {
+      throwError({
+        status: 401,
+        error: NO_DEFAULT_PASSWORD_USER,
+      });
+    }
+  };
 }
