@@ -55,6 +55,15 @@ export default class AuthMiddleware {
     }
   }
 
+  /**
+   *
+   * @param {array} allowedRoles
+   * contains array of roles that are allowed
+   * to access the endpoint. e.g .authorzie(['admin', 'superadmin])
+   * If allowedRoles is not specified (undefined),
+   * e.g AuthMiddleware.authorize() then anyone
+   * with a valid token can acccess the endpoint
+   */
   static authorize(allowedRoles) {
     return async (req, res, next) => {
       try {
@@ -70,6 +79,7 @@ export default class AuthMiddleware {
         );
         this.rejectDefaultPasswordUser(user);
         const { role: userRole } = user;
+        if (!allowedRoles) return next();
         if (!allowedRoles.includes(userRole.title)) {
           throwError({
             status: 401,
