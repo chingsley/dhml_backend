@@ -58,6 +58,7 @@ export default class UserService extends AppService {
       where: {
         ...this.filterBy(['username', 'email']),
       },
+      order: [['createdAt', 'DESC']],
       ...this.paginate(),
       include: [
         { model: db.Role, as: 'role', attributes: ['id', 'title'] },
