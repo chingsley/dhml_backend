@@ -97,11 +97,13 @@ function getSampleStaffAndUsers(count = MAX_STAFF_COUNT) {
       addressOfNok: getAddress(),
       phoneNumberOfNok: phone.phoneNumber(),
     };
+
+    staff.email = internet.email(staff.firstName);
     sampleStaffList.push(staff);
     if (sampleUsers.length < MAX_USER_COUNT) {
       sampleUsers.push({
         staffIdNo: staff.staffIdNo,
-        email: internet.email(staff.firstName),
+        email: staff.email,
         username: internet.userName(staff.firstName),
         roleId: getRandomInt(rolesCount + 1, { min: 1 }),
         hasChangedDefaultPassword: true,

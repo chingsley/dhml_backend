@@ -13,6 +13,7 @@ export default class StaffService extends AppService {
   async fetchAllStaff() {
     return await db.Staff.findAndCountAll({
       where: { ...this.filterBy(queryAttributes) },
+      order: [['createdAt', 'DESC']],
       ...this.paginate(),
     });
   }

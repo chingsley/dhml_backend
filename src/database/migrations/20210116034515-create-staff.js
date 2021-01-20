@@ -19,6 +19,9 @@ module.exports = {
           primaryKey: true,
           unique: true,
         },
+        email: {
+          type: Sequelize.STRING,
+        },
         surname: {
           type: Sequelize.STRING,
         },
