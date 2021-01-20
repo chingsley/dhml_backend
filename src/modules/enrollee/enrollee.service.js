@@ -64,6 +64,7 @@ export default class EnrolleeService extends AppService {
       where: {
         ...this.filterBy(enrolleeAttributes.personalData),
       },
+      order: [['createdAt', 'DESC']],
       ...this.paginate(),
       include: [
         {

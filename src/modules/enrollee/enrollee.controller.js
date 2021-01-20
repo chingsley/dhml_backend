@@ -9,12 +9,8 @@ export default class EnrolleeController {
       const enrollee = enrolmentType.match(/principal/i)
         ? await enrolleeService.enrolPrincipal()
         : await enrolleeService.enrolDependant();
-      // const enrollee = enrolmentType.match(/principal/i)
-      //   ? await EnrolleeService.enrolPrincipal(req.body, req.files)
-      //   : await EnrolleeService.enrolDependant(req.body, req.files);
       return res.status(201).json({ data: enrollee });
     } catch (error) {
-      // console.log(error);
       Response.handleError('EnrolleeController', error, req, res, next);
     }
   }
