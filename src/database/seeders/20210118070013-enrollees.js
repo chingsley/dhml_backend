@@ -1,6 +1,10 @@
-const { getEnrollees } = require('../../shared/samples/enrollee.samples');
+const getEnrollees = require('../../shared/samples/enrollee.samples');
 
-const { principals, dependants } = getEnrollees();
+const { principals, dependants } = getEnrollees({
+  numOfPrincipals: 100,
+  sameSchemeDepPerPrincipal: 2,
+  vcshipDepPerPrincipal: 1,
+});
 
 module.exports = {
   // eslint-disable-next-line no-unused-vars
