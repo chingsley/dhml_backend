@@ -43,7 +43,7 @@ export default class EnrolleeService extends AppService {
     const dependantData = this.enrolleeData;
     const files = this.files;
     const { principalId } = dependantData;
-    const principal = await this.getPrincipalById(principalId, {
+    const principal = await this.getEnrolleeById(principalId, {
       throwErrorIfNotFound: true,
     });
     this.validateDependantScheme(principal.scheme, dependantData.scheme);
@@ -83,24 +83,27 @@ export default class EnrolleeService extends AppService {
   }
 
   async toggleEnrolleeVerification() {
-    const { enrolleeId } = this.params;
-    const enrollee = await db.Enrollee.findOneWhere(
-      { id: enrolleeId },
-      {
-        throwErrorIfNotFound: true,
-        errorMsg: `Invalid Enrollee Id. No record found for ID ${enrolleeId}`,
-      }
-    );
+    const { enrolleeId: id } = this.params;
+    const options = { throwErrorIfNotFound: true };
+    const enrollee = await this.getEnrolleeById(id, options);
     await enrollee.update({ isVerified: !enrollee.isVerified });
     return enrollee;
   }
 
-  async getPrincipalById(id, { throwErrorIfNotFound }) {
-    const principal = await db.Enrollee.findOneWhere(
+  async destroyEnrollee() {
+    const { enrolleeId: id } = this.params;
+    const options = { throwErrorIfNotFound: true };
+    const enrollee = await this.getEnrolleeById(id, options);
+    await enrollee.destroy();
+    return enrollee;
+  }
+
+  async getEnrolleeById(id, { throwErrorIfNotFound }) {
+    const enrollee = await db.Enrollee.findOneWhere(
       { id },
       {
         throwErrorIfNotFound,
-        errorMsg: `Invalid principal enrolment ID. No record found for ID ${id}`,
+        errorMsg: `Invalid Enrollee ID. No record found for ID ${id}`,
         errorCode: 'E001',
         include: [
           { model: db.Enrollee, as: 'dependants' },
@@ -112,7 +115,7 @@ export default class EnrolleeService extends AppService {
         ],
       }
     );
-    return principal;
+    return enrollee;
   }
 
   async validateSpecialPrincipalId(id) {

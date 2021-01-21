@@ -11,7 +11,7 @@ export default class EnrolleeController {
         : await enrolleeService.enrolDependant();
       return res.status(201).json({ data: enrollee });
     } catch (error) {
-      Response.handleError('EnrolleeController', error, req, res, next);
+      Response.handleError('addNewEnrollee', error, req, res, next);
     }
   }
   static async getEnrollees(req, res, next) {
@@ -20,7 +20,7 @@ export default class EnrolleeController {
       const data = await enrolleeService.getAllEnrollees();
       return res.status(201).json({ data });
     } catch (error) {
-      Response.handleError('EnrolleeController', error, req, res, next);
+      Response.handleError('getEnrollees', error, req, res, next);
     }
   }
   static async verifyEnrollee(req, res, next) {
@@ -29,7 +29,16 @@ export default class EnrolleeController {
       const data = await enrolleeService.toggleEnrolleeVerification();
       return res.status(200).json({ message: 'Operation successful', data });
     } catch (error) {
-      Response.handleError('EnrolleeController', error, req, res, next);
+      Response.handleError('verifyEnrollee', error, req, res, next);
+    }
+  }
+  static async deleteEnrollee(req, res, next) {
+    try {
+      const enrolleeService = new EnrolleeService(req);
+      const data = await enrolleeService.destroyEnrollee();
+      return res.status(200).json({ message: 'Operation successful', data });
+    } catch (error) {
+      Response.handleError('deleteEnrollee', error, req, res, next);
     }
   }
 }
