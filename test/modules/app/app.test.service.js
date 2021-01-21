@@ -1,7 +1,7 @@
 import moment from 'moment';
-import { getSamplePasswords } from '../../../src/shared/samples/password.samples';
 import getSampleStaffs from '../../../src/shared/samples/staff.samples';
 import db from '../../../src/database/models';
+import getSampleUsers from '../../../src/shared/samples/user.samples';
 const bcrypt = require('bcryptjs');
 const BCRYPT_SALT = Number(process.env.BCRYPT_SALT);
 
@@ -37,22 +37,25 @@ class TestService {
     }
   }
 
-  static async seedUsers(noOfUsers, userRole = 'dept user') {
-    const { sampleStaffList, sampleUsers } = getSampleStaffs(noOfUsers);
-    await db.Staff.bulkCreate(sampleStaffList);
+  static async seedUsers(noOfUsers = 1, userRole = 'dept user') {
+    const { sampleStaffs } = getSampleStaffs(noOfUsers);
+    const { sampleUsers } = getSampleUsers(sampleStaffs);
+    await db.Staff.bulkCreate(sampleStaffs);
     const role = await db.Role.create({ title: userRole });
-    const usersWithRoles = sampleUsers.map((user) => ({
-      ...user,
-      roleId: role.id,
-    }));
-    const users = await db.User.bulkCreate(usersWithRoles);
+    const users = await db.User.bulkCreate(
+      sampleUsers.map((user) => ({
+        ...user,
+        roleId: role.id,
+      }))
+    );
     const password = this.getHash('Testing*123');
-    const samplePasswords = users.map((user) => ({
-      userId: user.id,
-      value: password,
-    }));
-    await db.Password.bulkCreate(samplePasswords);
-    return users;
+    await db.Password.bulkCreate(
+      users.map((user) => ({
+        userId: user.id,
+        value: password,
+      }))
+    );
+    return { users };
   }
 
   static getHash(sampleValue = 'Testing*123') {
