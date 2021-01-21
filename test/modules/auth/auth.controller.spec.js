@@ -15,30 +15,26 @@ describe('authController', () => {
     sgMail.send = originalSendGridImplemenation;
   });
   describe('loginUser', () => {
-    let user;
+    let res;
     beforeAll(async () => {
       await TestService.resetDB();
-      const result = await TestService.seedUsers(1);
-      console.log(result);
+      const {
+        users: [user],
+      } = await TestService.seedUsers(1);
+      res = await app.post('/api/v1/auth/login').send({
+        email: user.email,
+        password: 'Testing*123',
+      });
     });
 
     it('logs in a user with valid email and password', async (done) => {
       try {
-        // const res = await app.post('/api/v1/auth/login').send({
-        //   email: user.email,
-        //   password: sampleUsers[0].password,
-        // });
-        // const { data } = res.body;
-        // expect(res.status).toBe(200);
-        // expect(data.user).toEqual(
-        //   expect.objectContaining({
-        //     id: user.id,
-        //     uuid: user.uuid,
-        //     email: user.email,
-        //     username: user.username,
-        //   })
-        // );
-        // expect(data).toHaveProperty('token');
+        const { data } = res.body;
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty('message');
+        expect(res.body).toHaveProperty('data');
+        expect(data).toHaveProperty('user');
+        expect(data).toHaveProperty('token');
         done();
       } catch (e) {
         done(e);

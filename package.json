@@ -34,7 +34,8 @@
     "test:watchAll": "cross-env NODE_ENV=test jest --detectOpenHandles --watchAll",
     "test": "npm run db:reset:test && cross-env NODE_ENV=test jest --detectOpenHandles --watch",
     "coverage": "npm run db:reset:test && cross-env DB_ENV=test jest --detectOpenHandles --verbose --coverage --forceExit",
-    "test:authController": "jest test/modules/auth/auth.controller.spec.js --detectOpenHandles --verbose --watch"
+    "test:authController": "jest test/modules/auth/auth.controller.spec.js --detectOpenHandles --verbose --watch",
+    "------------------------": "-----------------------------"
   },
   "dependencies": {
     "@babel/cli": "^7.8.4",
@@ -102,7 +103,7 @@
     "eslint-plugin-jest": "^23.7.0",
     "esm": "^3.2.25",
     "faker": "^5.1.0",
-    "husky": "^4.2.3",
+    "husky": "^4.3.7",
     "jest": "^25.5.4",
     "jsdoc": "^3.6.4",
     "lint-staged": "^10.2.2",
@@ -137,7 +138,7 @@
   },
   "husky": {
     "hooks": {
-      "lint": "npm run lint ",
+      "lint": "npm run lint",
       "pre-commit": "npm run coverage"
     }
   },
