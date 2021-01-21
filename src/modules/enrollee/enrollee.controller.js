@@ -23,6 +23,15 @@ export default class EnrolleeController {
       Response.handleError('getEnrollees', error, req, res, next);
     }
   }
+  static async updateEnrollee(req, res, next) {
+    try {
+      const enrolleeService = new EnrolleeService(req);
+      const data = await enrolleeService.updateEnrolleeData();
+      return res.status(201).json({ message: 'Operation sucessful', data });
+    } catch (error) {
+      Response.handleError('getEnrollees', error, req, res, next);
+    }
+  }
   static async verifyEnrollee(req, res, next) {
     try {
       const enrolleeService = new EnrolleeService(req);

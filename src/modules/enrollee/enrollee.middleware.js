@@ -3,9 +3,8 @@ import { validateSchema } from '../../validators/joi/config';
 import {
   newEnrolleeSchema,
   groupEnrolleeDetails,
+  patchEnrolleeSchema,
 } from '../../validators/joi/schemas/enrollee.schema';
-
-// import { SCHEMES } from '../shared/config';
 
 export default class EnrolleeMiddleware {
   static async validateNewEnrollee(req, res, next) {
@@ -16,8 +15,49 @@ export default class EnrolleeMiddleware {
         healthCareDataSchema,
         uploadsSchema,
       } = newEnrolleeSchema;
-      const result = groupEnrolleeDetails({ ...req.body });
-      const { personalData, contactDetails, healthcareData, uploads } = result;
+      const result = groupEnrolleeDetails({ ...req.body, ...req.files });
+      const {
+        personalData,
+        contactDetails,
+        healthcareData,
+        uploads,
+        unknowns,
+      } = result;
+      await validateSchema(personalDataSchema, personalData, 'Personal Data: ');
+      await validateSchema(
+        contactDetailsSchema,
+        contactDetails,
+        'Contact Details: '
+      );
+      await validateSchema(
+        healthCareDataSchema,
+        healthcareData,
+        'Healthcare data: '
+      );
+
+      await validateSchema(uploadsSchema, uploads, 'Uploads: ');
+      await validateSchema(uploadsSchema, unknowns, 'Unkown field: ');
+      return next();
+    } catch (error) {
+      Response.handleError('validateNewEnrollee', error, req, res, next);
+    }
+  }
+  static async validateEnrolleeUpdate(req, res, next) {
+    try {
+      const {
+        personalDataSchema,
+        contactDetailsSchema,
+        healthCareDataSchema,
+        uploadsSchema,
+      } = patchEnrolleeSchema;
+      const result = groupEnrolleeDetails({ ...req.body, ...req.files });
+      const {
+        personalData,
+        contactDetails,
+        healthcareData,
+        uploads,
+        unknowns,
+      } = result;
       await validateSchema(personalDataSchema, personalData, 'Personal Data: ');
       await validateSchema(
         contactDetailsSchema,
@@ -30,8 +70,7 @@ export default class EnrolleeMiddleware {
         'Healthcare data: '
       );
       await validateSchema(uploadsSchema, uploads, 'Uploads: ');
-      // return res.send('testing...');
-      // // EnrolleeMiddleware.validateDependantScheme('VCSHIP', 'DSSHIP');
+      await validateSchema(uploadsSchema, unknowns, 'Cannot Update: ');
       return next();
     } catch (error) {
       Response.handleError('validateNewEnrollee', error, req, res, next);

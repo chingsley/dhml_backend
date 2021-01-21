@@ -55,12 +55,12 @@ export const newEnrolleeSchema = {
     hcpId: Joi.number().required(),
   }),
   uploadsSchema: Joi.object({
-    photograph: Joi.string().trim(),
-    birthCertificate: Joi.string().trim(),
-    marriageCertificate: Joi.string().trim(),
-    idCard: Joi.string().trim(),
-    deathCertificate: Joi.string().trim(),
-    letterOfNok: Joi.string().trim(),
+    photograph: Joi.any(),
+    birthCertificate: Joi.any(),
+    marriageCertificate: Joi.any(),
+    idCard: Joi.any(),
+    deathCertificate: Joi.any(),
+    letterOfNok: Joi.any(),
   }),
 };
 
@@ -98,12 +98,12 @@ export const patchEnrolleeSchema = {
     hcpId: Joi.number(),
   }),
   uploadsSchema: Joi.object({
-    photograph: Joi.string().trim(),
-    birthCertificate: Joi.string().trim(),
-    marriageCertificate: Joi.string().trim(),
-    idCard: Joi.string().trim(),
-    deathCertificate: Joi.string().trim(),
-    letterOfNok: Joi.string().trim(),
+    photograph: Joi.any(),
+    birthCertificate: Joi.any(),
+    marriageCertificate: Joi.any(),
+    idCard: Joi.any(),
+    deathCertificate: Joi.any(),
+    letterOfNok: Joi.any(),
   }),
 };
 
@@ -118,8 +118,10 @@ export const groupEnrolleeDetails = (enrollee) => {
         objectToBeReturned.healthcareData[key] = value;
       } else if (attributes.uploads.includes(key)) {
         objectToBeReturned.uploads[key] = value;
-      } else {
+      } else if (attributes.personalData.includes(key)) {
         objectToBeReturned.personalData[key] = value;
+      } else {
+        objectToBeReturned.unknowns[key] = value;
       }
       return objectToBeReturned;
     },
@@ -128,6 +130,7 @@ export const groupEnrolleeDetails = (enrollee) => {
       contactDetails: {},
       healthcareData: {},
       uploads: {},
+      unknowns: {},
     }
   );
 };
