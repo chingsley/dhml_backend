@@ -32,6 +32,12 @@ router.get(
   EnrolleeController.getEnrollees
 );
 router.patch(
+  '/:enrolleeId',
+  AuthMiddleware.authorize([SUPERADMIN, ADMIN, VERIFIER]),
+  EnrolleeMiddleware.validateEnrolleeUpdate,
+  EnrolleeController.updateEnrollee
+);
+router.patch(
   '/:enrolleeId/toggle_verify',
   AuthMiddleware.authorize([SUPERADMIN, ADMIN, VERIFIER]),
   EnrolleeController.verifyEnrollee

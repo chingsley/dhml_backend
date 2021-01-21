@@ -82,20 +82,39 @@ export default class EnrolleeService extends AppService {
     });
   }
 
+  async updateEnrolleeData() {
+    // const { enrolleeId: id } = this.params;
+    // const options = { throwErrorIfNotFound: true };
+    // const enrollee = await this.getEnrolleeById(id, options);
+    const fls = this.files;
+    const enrollee = await this.findWithReqParams();
+    const uploadedImages = fls ? await Cloudinary.bulkUpload(fls) : {};
+    await enrollee.update({ ...this.body, uploadedImages });
+    return enrollee;
+  }
+
   async toggleEnrolleeVerification() {
-    const { enrolleeId: id } = this.params;
-    const options = { throwErrorIfNotFound: true };
-    const enrollee = await this.getEnrolleeById(id, options);
+    // const { enrolleeId: id } = this.params;
+    // const options = { throwErrorIfNotFound: true };
+    // const enrollee = await this.getEnrolleeById(id, options);
+    const enrollee = await this.findWithReqParams();
     await enrollee.update({ isVerified: !enrollee.isVerified });
     return enrollee;
   }
 
   async destroyEnrollee() {
-    const { enrolleeId: id } = this.params;
-    const options = { throwErrorIfNotFound: true };
-    const enrollee = await this.getEnrolleeById(id, options);
+    // const { enrolleeId: id } = this.params;
+    // const options = { throwErrorIfNotFound: true };
+    // const enrollee = await this.getEnrolleeById(id, options);
+    const enrollee = await this.findWithReqParams();
     await enrollee.destroy();
     return enrollee;
+  }
+
+  async findWithReqParams() {
+    const { enrolleeId: id } = this.params;
+    const options = { throwErrorIfNotFound: true };
+    return await this.getEnrolleeById(id, options);
   }
 
   async getEnrolleeById(id, { throwErrorIfNotFound }) {
