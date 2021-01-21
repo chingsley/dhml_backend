@@ -16,7 +16,7 @@ module.exports = {
             model: 'Enrollees',
             key: 'id',
           },
-          onDelete: 'RESTRICT',
+          onDelete: 'CASCADE',
           onUpdate: 'CASCADE',
         },
         relationshipToPrincipal: {

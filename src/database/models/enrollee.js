@@ -39,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
           model: 'HealthCareProviders',
           key: 'id',
         },
-        onDelete: 'RESTRICT',
+        onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       },
       scheme: {
