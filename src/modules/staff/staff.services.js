@@ -5,11 +5,12 @@ import { queryAttributes } from '../../shared/attributes/staff.attributes';
 import AppService from '../app/app.service';
 
 export default class StaffService extends AppService {
-  constructor({ body, files, query }) {
-    super({ body, files, query });
+  constructor({ body, files, query, params }) {
+    super({ body, files, query, params });
     this.body = body;
     this.files = files;
     this.query = query;
+    this.params = params;
   }
 
   async fetchAllStaff() {

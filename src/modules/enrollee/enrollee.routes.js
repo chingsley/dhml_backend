@@ -19,6 +19,11 @@ router.post(
   EnrolleeMiddleware.validateNewEnrollee,
   EnrolleeController.addNewEnrollee
 );
+router.patch(
+  '/:enrolleeId/toggle_verify',
+  AuthMiddleware.authorize([SUPERADMIN, ADMIN, VERIFIER]),
+  EnrolleeController.verifyEnrollee
+);
 
 router.get(
   '/',

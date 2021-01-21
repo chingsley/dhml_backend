@@ -8,11 +8,12 @@ import AppService from '../app/app.service';
 import enrolleeAttributes from '../../shared/attributes/enrollee.attributes';
 
 export default class EnrolleeService extends AppService {
-  constructor({ body, files, query }) {
-    super({ body, files, query });
+  constructor({ body, files, query, params }) {
+    super({ body, files, query, params });
     this.enrolleeData = body;
     this.files = files;
     this.query = query;
+    this.params = params;
   }
   async enrolPrincipal() {
     const enrolleeData = this.enrolleeData;
@@ -79,6 +80,19 @@ export default class EnrolleeService extends AppService {
         },
       ],
     });
+  }
+
+  async toggleEnrolleeVerification() {
+    const { enrolleeId } = this.params;
+    const enrollee = await db.Enrollee.findOneWhere(
+      { id: enrolleeId },
+      {
+        throwErrorIfNotFound: true,
+        errorMsg: `Invalid Enrollee Id. No record found for ID ${enrolleeId}`,
+      }
+    );
+    await enrollee.update({ isVerified: !enrollee.isVerified });
+    return enrollee;
   }
 
   async getPrincipalById(id, { throwErrorIfNotFound }) {

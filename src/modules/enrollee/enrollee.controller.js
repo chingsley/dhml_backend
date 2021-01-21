@@ -23,4 +23,13 @@ export default class EnrolleeController {
       Response.handleError('EnrolleeController', error, req, res, next);
     }
   }
+  static async verifyEnrollee(req, res, next) {
+    try {
+      const enrolleeService = new EnrolleeService(req);
+      const data = await enrolleeService.toggleEnrolleeVerification();
+      return res.status(200).json({ message: 'Operation successful', data });
+    } catch (error) {
+      Response.handleError('EnrolleeController', error, req, res, next);
+    }
+  }
 }
