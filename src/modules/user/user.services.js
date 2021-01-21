@@ -7,11 +7,12 @@ import AppService from '../app/app.service';
 const { sequelize } = db;
 
 export default class UserService extends AppService {
-  constructor({ body, files, query }) {
-    super({ body, files, query });
+  constructor({ body, files, query, params }) {
+    super({ body, files, query, params });
     this.userData = body;
     this.files = files;
     this.query = query;
+    this.params = params;
   }
 
   async createUser() {
