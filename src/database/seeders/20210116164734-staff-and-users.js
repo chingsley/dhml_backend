@@ -11,7 +11,10 @@ module.exports = {
   // eslint-disable-next-line no-unused-vars
   up: async (queryInterface, Sequelize) => {
     await queryInterface.bulkInsert('Staffs', sampleStaffs);
-    await queryInterface.bulkInsert('Users', sampleUsers);
+    await queryInterface.bulkInsert('Users', [
+      { ...sampleUsers[0], email: 'info.erregen@gmail.com', roleId: 1 }, // same email should match same record in staff. fix that.
+      ...sampleUsers.slice(1),
+    ]);
   },
 
   // eslint-disable-next-line no-unused-vars
