@@ -11,19 +11,22 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      category: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      state: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
     },
     {}
   );
-  // eslint-disable-next-line no-unused-vars
   HealthCareProvider.associate = function (models) {
     HealthCareProvider.hasMany(models.Enrollee, {
       foreignKey: 'hcpId',
       as: 'enrollees',
     });
-    // HealthCareProvider.hasMany(models.Dependant, {
-    //   foreignKey: 'hcpId',
-    //   as: 'dependants',
-    // });
   };
   return HealthCareProvider;
 };

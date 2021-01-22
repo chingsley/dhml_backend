@@ -8,23 +8,6 @@ import server from '../../src/server';
 const app = supertest(server.server);
 
 class AuthTestHelper extends UserTestHelper {
-  async getUserPasswordResetToken(userEmail) {
-    const user = await db.User.findOne({
-      where: { email: userEmail },
-      include: { model: db.PasswordReset, as: 'passwordReset' },
-    });
-    return user.passwordReset.resetToken;
-  }
-
-  async updatePasswordResetToken(resetToken, update) {
-    const token = await db.PasswordReset.findOne({ where: { resetToken } });
-    if (!token) {
-      throw new Error(`${resetToken} not found in the db`);
-    }
-    await token.update({ ...update });
-    return token;
-  }
-
   async mockTokenLevel(role) {
     const password = 'pretend_correct_password';
     const originalImplementation = db.User.findOne;

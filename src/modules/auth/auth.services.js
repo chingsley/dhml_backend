@@ -14,9 +14,12 @@ import AppService from '../app/app.service';
 const { JWT_SECTET } = process.env;
 
 export default class AuthService extends AppService {
-  constructor({ body, files, query }) {
-    super({ body, files, query });
+  constructor({ body, files, query, params }) {
+    super({ body, files, query, params });
     this.reqBody = body;
+    this.files = files;
+    this.query = query;
+    this.params = params;
   }
 
   handleLogin = async () => {

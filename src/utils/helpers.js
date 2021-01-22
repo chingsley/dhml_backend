@@ -27,6 +27,20 @@ export const isExpired = (expiryDate) => {
   return expiryDate.getTime() - new Date().getTime() < 0;
 };
 
+export const downcaseAllFields = (arrayOfObjects) => {
+  const converted = arrayOfObjects.map((hcp) => {
+    return Object.entries(hcp).reduce((result, [key, value]) => {
+      if (typeof value === 'string') {
+        result[key] = value.toLowerCase();
+      } else {
+        result[key] = value;
+      }
+      return result;
+    }, {});
+  });
+  return converted;
+};
+
 export const getAvailableIds = (pool, taken) => {
   const flush = (result) => {
     if (result.temp.length < 3) {

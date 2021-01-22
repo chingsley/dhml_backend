@@ -39,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
           model: 'HealthCareProviders',
           key: 'id',
         },
-        onDelete: 'RESTRICT',
+        onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       },
       scheme: {
@@ -144,6 +144,11 @@ module.exports = (sequelize, DataTypes) => {
       letterOfNok: {
         type: DataTypes.STRING,
       },
+      isVerified: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
     },
     {}
   );
@@ -239,6 +244,7 @@ module.exports = (sequelize, DataTypes) => {
       throwErrorIfNotFound = false,
       errorMsg = 'Record not found',
       include = [],
+      status = 404,
     } = options;
     const found = await this.findOne({
       where: { ...condition },
@@ -246,7 +252,7 @@ module.exports = (sequelize, DataTypes) => {
     });
     if (!found && throwErrorIfNotFound) {
       throwError({
-        status: 404,
+        status,
         error: [errorMsg],
         errorCode: options.errorCode,
       });

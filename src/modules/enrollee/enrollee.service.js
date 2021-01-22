@@ -8,11 +8,12 @@ import AppService from '../app/app.service';
 import enrolleeAttributes from '../../shared/attributes/enrollee.attributes';
 
 export default class EnrolleeService extends AppService {
-  constructor({ body, files, query }) {
-    super({ body, files, query });
+  constructor({ body, files, query, params }) {
+    super({ body, files, query, params });
     this.enrolleeData = body;
     this.files = files;
     this.query = query;
+    this.params = params;
   }
   async enrolPrincipal() {
     const enrolleeData = this.enrolleeData;
@@ -42,7 +43,7 @@ export default class EnrolleeService extends AppService {
     const dependantData = this.enrolleeData;
     const files = this.files;
     const { principalId } = dependantData;
-    const principal = await this.getPrincipalById(principalId, {
+    const principal = await this.getEnrolleeById(principalId, {
       throwErrorIfNotFound: true,
     });
     this.validateDependantScheme(principal.scheme, dependantData.scheme);
@@ -62,7 +63,9 @@ export default class EnrolleeService extends AppService {
   async getAllEnrollees() {
     return await db.Enrollee.findAndCountAll({
       where: {
-        ...this.filterBy(enrolleeAttributes.personalData),
+        ...this.filterBy(enrolleeAttributes.personalData, {
+          modelName: 'Enrollee',
+        }),
       },
       order: [['createdAt', 'DESC']],
       ...this.paginate(),
@@ -72,21 +75,80 @@ export default class EnrolleeService extends AppService {
           as: 'hcp',
           where: {
             ...this.filterBy(['hcpName', 'hcpCode'], {
-              hcpName: 'name',
-              hcpCode: 'code',
+              modelName: 'HealthCareProvider',
+              map: {
+                hcpName: 'name',
+                hcpCode: 'code',
+              },
             }),
           },
         },
       ],
     });
   }
+  getById() {
+    return db.Enrollee.findAll({
+      where: {
+        id: this.params.enrolleeId,
+      },
+      include: [
+        {
+          model: db.HealthCareProvider,
+          as: 'hcp',
+        },
+        {
+          model: db.Enrollee,
+          as: 'dependants',
+          include: {
+            model: db.HealthCareProvider,
+            as: 'hcp',
+          },
+        },
+      ],
+    });
+  }
 
-  async getPrincipalById(id, { throwErrorIfNotFound }) {
-    const principal = await db.Enrollee.findOneWhere(
+  async updateEnrolleeData() {
+    // const { enrolleeId: id } = this.params;
+    // const options = { throwErrorIfNotFound: true };
+    // const enrollee = await this.getEnrolleeById(id, options);
+    const fls = this.files;
+    const enrollee = await this.findWithReqParams();
+    const uploadedImages = fls ? await Cloudinary.bulkUpload(fls) : {};
+    await enrollee.update({ ...this.body, uploadedImages });
+    return enrollee;
+  }
+
+  async toggleEnrolleeVerification() {
+    // const { enrolleeId: id } = this.params;
+    // const options = { throwErrorIfNotFound: true };
+    // const enrollee = await this.getEnrolleeById(id, options);
+    const enrollee = await this.findWithReqParams();
+    await enrollee.update({ isVerified: !enrollee.isVerified });
+    return enrollee;
+  }
+
+  async destroyEnrollee() {
+    // const { enrolleeId: id } = this.params;
+    // const options = { throwErrorIfNotFound: true };
+    // const enrollee = await this.getEnrolleeById(id, options);
+    const enrollee = await this.findWithReqParams();
+    await enrollee.destroy();
+    return enrollee;
+  }
+
+  async findWithReqParams() {
+    const { enrolleeId: id } = this.params;
+    const options = { throwErrorIfNotFound: true };
+    return await this.getEnrolleeById(id, options);
+  }
+
+  async getEnrolleeById(id, { throwErrorIfNotFound }) {
+    const enrollee = await db.Enrollee.findOneWhere(
       { id },
       {
         throwErrorIfNotFound,
-        errorMsg: `Invalid principal enrolment ID. No record found for ID ${id}`,
+        errorMsg: `Invalid Enrollee ID. No record found for ID ${id}`,
         errorCode: 'E001',
         include: [
           { model: db.Enrollee, as: 'dependants' },
@@ -98,7 +160,7 @@ export default class EnrolleeService extends AppService {
         ],
       }
     );
-    return principal;
+    return enrollee;
   }
 
   async validateSpecialPrincipalId(id) {

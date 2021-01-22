@@ -1,6 +1,7 @@
 import { Joi } from '../config';
 
 export const staffQuerySchema = Joi.object({
+  unregisteredOnly: Joi.string().trim().valid('true', 'false'),
   pageSize: Joi.number().integer().min(1),
   page: Joi.number().integer().min(0),
   staffFileNo: Joi.string().trim(),

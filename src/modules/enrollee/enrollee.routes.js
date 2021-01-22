@@ -19,7 +19,6 @@ router.post(
   EnrolleeMiddleware.validateNewEnrollee,
   EnrolleeController.addNewEnrollee
 );
-
 router.get(
   '/',
   AuthMiddleware.authorize([
@@ -31,6 +30,27 @@ router.get(
     VERIFIER,
   ]),
   EnrolleeController.getEnrollees
+);
+router.get(
+  '/:enrolleeId',
+  AuthMiddleware.authorize([SUPERADMIN, ADMIN, ENROLMENT_OFFICER, VERIFIER]),
+  EnrolleeController.getEnrolleeById
+);
+router.patch(
+  '/:enrolleeId',
+  AuthMiddleware.authorize([SUPERADMIN, ADMIN, VERIFIER]),
+  EnrolleeMiddleware.validateEnrolleeUpdate,
+  EnrolleeController.updateEnrollee
+);
+router.patch(
+  '/:enrolleeId/toggle_verify',
+  AuthMiddleware.authorize([SUPERADMIN, ADMIN, VERIFIER]),
+  EnrolleeController.verifyEnrollee
+);
+router.delete(
+  '/:enrolleeId',
+  AuthMiddleware.authorize([SUPERADMIN]),
+  EnrolleeController.deleteEnrollee
 );
 
 export default router;

@@ -12,16 +12,8 @@ const {
   internet,
 } = faker;
 const { zeroPadding, getRandomInt } = require('../../utils/helpers');
-const {
-  MAX_STAFF_COUNT,
-  MAX_USER_COUNT,
-} = require('../constants/seeders.constants');
+const { MAX_STAFF_COUNT } = require('../constants/seeders.constants');
 const { designations } = require('./designations.sample');
-const ROLES = require('../constants/roles.constants');
-const rolesCount = Object.keys(ROLES).length;
-
-// const sampleStaffList = [];
-// const sampleUsers = [];
 const genders = ['female', 'male'];
 const relations = ['brother', 'sister', 'father', 'mother', 'aunt', 'uncle'];
 const qualifications = ['HND', 'Bachelors', 'Masters', 'Ph.D'];
@@ -29,16 +21,15 @@ const getName = () => `${name.lastName()} ${name.firstName()}`;
 const getAddress = () =>
   `${address.zipCode()} ${address.city()},  ${address.state()}, ${address.country()}`;
 
-function getSampleStaffAndUsers(count = MAX_STAFF_COUNT) {
+function getSampleStaffs(count = MAX_STAFF_COUNT) {
   if (count > MAX_STAFF_COUNT) {
     throw new Error(
       `the maximum staff/users count you can generate is ${MAX_STAFF_COUNT}`
     );
   }
 
-  const sampleStaffList = [];
-  const sampleUsers = [];
-  for (let i = 0; i < MAX_STAFF_COUNT; i++) {
+  const sampleStaffs = [];
+  for (let i = 0; i < count; i++) {
     const maritalStatus = random.arrayElement(['married', 'single']);
     const children = {
       single: 0,
@@ -99,18 +90,9 @@ function getSampleStaffAndUsers(count = MAX_STAFF_COUNT) {
     };
 
     staff.email = internet.email(staff.firstName);
-    sampleStaffList.push(staff);
-    if (sampleUsers.length < MAX_USER_COUNT) {
-      sampleUsers.push({
-        staffIdNo: staff.staffIdNo,
-        email: staff.email,
-        username: internet.userName(staff.firstName),
-        roleId: getRandomInt(rolesCount + 1, { min: 1 }),
-        hasChangedDefaultPassword: true,
-      });
-    }
+    sampleStaffs.push(staff);
   }
-  return { sampleStaffList, sampleUsers };
+  return { sampleStaffs };
 }
 
-module.exports = getSampleStaffAndUsers;
+module.exports = getSampleStaffs;

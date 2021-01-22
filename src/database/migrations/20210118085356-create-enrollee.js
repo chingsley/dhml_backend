@@ -16,7 +16,7 @@ module.exports = {
             model: 'Enrollees',
             key: 'id',
           },
-          onDelete: 'RESTRICT',
+          onDelete: 'CASCADE',
           onUpdate: 'CASCADE',
         },
         relationshipToPrincipal: {
@@ -139,6 +139,11 @@ module.exports = {
         },
         letterOfNok: {
           type: Sequelize.STRING,
+        },
+        isVerified: {
+          type: Sequelize.BOOLEAN,
+          allowNull: false,
+          defaultValue: false,
         },
         createdAt: {
           allowNull: false,

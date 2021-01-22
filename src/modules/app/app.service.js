@@ -48,7 +48,48 @@ export default class AppService {
    * is like 'John'. But the param hcpCode='FCT/0091/S' with map specified as { code: hcpCode } will
    * search in the table where 'code' is like 'FCT/0091/S'
    */
-  filterBy(arrOfFields, map = {}) {
+  filterBy(arrOfFields, options = {}) {
+    const { map = {} } = options;
+    const queryParams = this.query;
+    const filterObj = arrOfFields.reduce((obj, key) => {
+      if (queryParams[key]) {
+        const field = map[key] || key;
+        const value = queryParams[key];
+        return { ...obj, [field]: { [Op.like]: `%${value}%` } }; // use .toLowercase => ueryParams[key].toLowerCase(), but first you have to convert all value to lower case before saving in the database
+      }
+      return obj;
+    }, {});
+
+    return filterObj;
+  }
+  filterBy2(arrOfFields, options = {}) {
+    const queryParams = this.query;
+    const { modelName, map = {} } = options;
+    const filterObj = arrOfFields.reduce((obj, key) => {
+      if (queryParams[key]) {
+        const field = map[key] || key;
+        const value = queryParams[key];
+        return {
+          ...obj,
+          [field]: db.sequelize.where(
+            db.sequelize.fn('LOWER', db.sequelize.col(`${modelName}.${field}`)),
+            'LIKE',
+            `%${value.toLowerCase()}%`
+          ),
+        }; // use .toLowercase => ueryParams[key].toLowerCase(), but first you have to convert all value to lower case before saving in the database
+      }
+      return obj;
+    }, {});
+
+    return filterObj;
+  }
+
+  /**
+   * Sames as filterBy but is case sensitive (for mysql db)
+   * @param {array} arrOfFields array of fields to filter by
+   * @param {object} map map fields to their actual name in the database
+   */
+  mysqlFilterBy(arrOfFields, map = {}) {
     const queryParams = this.query;
     const filterObj = arrOfFields.reduce((obj, key) => {
       if (queryParams[key]) {
