@@ -13,10 +13,31 @@ export default class HcpService extends AppService {
   async fetchAllHcp() {
     return await db.HealthCareProvider.findAndCountAll({
       where: {
-        ...this.filterBy(['code', 'name'], { modelName: 'HealthCareProvider' }),
+        ...this.filterHcp(),
       },
       order: [['createdAt', 'DESC']],
       ...this.paginate(),
+    });
+  }
+  async fetchManifest() {
+    return await db.HealthCareProvider.findAndCountAll({
+      where: { ...this.filterHcp() },
+      include: {
+        model: db.Enrollee,
+        as: 'enrollees',
+        where: { principalId: null },
+        include: { model: db.Enrollee, as: 'dependants' },
+      },
+      ...this.paginate(),
+    });
+  }
+  async filterHcp() {
+    return this.filterBy(['hcpCode', 'hcpName'], {
+      modelName: 'HealthCareProvider',
+      map: {
+        hcpCode: 'code',
+        hcpName: 'name',
+      },
     });
   }
 }

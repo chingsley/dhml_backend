@@ -11,4 +11,13 @@ export default class HcpController {
       Response.handleError('getAllHcp', error, req, res, next);
     }
   }
+  static async getManifest(req, res, next) {
+    try {
+      const hcpService = new HcpService(req);
+      const data = await hcpService.fetchManifest();
+      return res.status(200).json({ data });
+    } catch (error) {
+      Response.handleError('getAllHcp', error, req, res, next);
+    }
+  }
 }
