@@ -149,6 +149,18 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: false,
       },
+      isPrincipal: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return this.principalId === null;
+        },
+      },
+      isDependant: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return this.principalId !== null;
+        },
+      },
     },
     {}
   );
@@ -261,3 +273,10 @@ module.exports = (sequelize, DataTypes) => {
   };
   return Enrollee;
 };
+
+// isPrincipal() {
+//   return this.principalId === null;
+// }
+// isDependant() {
+//   return !this.isPrincipal();
+// }
