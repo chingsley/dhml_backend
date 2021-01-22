@@ -4,6 +4,7 @@ export default {
     'enrolmentType',
     'principalId',
     'scheme',
+    'relationshipToPrincipal',
     'surname',
     'firstName',
     'middleName',
