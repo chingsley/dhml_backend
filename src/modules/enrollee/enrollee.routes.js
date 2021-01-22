@@ -31,6 +31,11 @@ router.get(
   ]),
   EnrolleeController.getEnrollees
 );
+router.get(
+  '/:enrolleeId',
+  AuthMiddleware.authorize([SUPERADMIN, ADMIN, ENROLMENT_OFFICER, VERIFIER]),
+  EnrolleeController.getEnrolleeById
+);
 router.patch(
   '/:enrolleeId',
   AuthMiddleware.authorize([SUPERADMIN, ADMIN, VERIFIER]),

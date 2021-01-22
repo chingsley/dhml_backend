@@ -63,7 +63,9 @@ export default class EnrolleeService extends AppService {
   async getAllEnrollees() {
     return await db.Enrollee.findAndCountAll({
       where: {
-        ...this.filterBy(enrolleeAttributes.personalData),
+        ...this.filterBy(enrolleeAttributes.personalData, {
+          modelName: 'Enrollee',
+        }),
       },
       order: [['createdAt', 'DESC']],
       ...this.paginate(),
@@ -73,9 +75,33 @@ export default class EnrolleeService extends AppService {
           as: 'hcp',
           where: {
             ...this.filterBy(['hcpName', 'hcpCode'], {
-              hcpName: 'name',
-              hcpCode: 'code',
+              modelName: 'HealthCareProvider',
+              map: {
+                hcpName: 'name',
+                hcpCode: 'code',
+              },
             }),
+          },
+        },
+      ],
+    });
+  }
+  getById() {
+    return db.Enrollee.findAll({
+      where: {
+        id: this.params.enrolleeId,
+      },
+      include: [
+        {
+          model: db.HealthCareProvider,
+          as: 'hcp',
+        },
+        {
+          model: db.Enrollee,
+          as: 'dependants',
+          include: {
+            model: db.HealthCareProvider,
+            as: 'hcp',
           },
         },
       ],

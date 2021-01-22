@@ -57,7 +57,7 @@ export default class UserService extends AppService {
     return db.User.findAndCountAll({
       attributes: { exclude: ['password'] },
       where: {
-        ...this.filterBy(['username', 'email']),
+        ...this.filterBy(['username', 'email'], { modelName: 'User' }),
       },
       order: [['createdAt', 'DESC']],
       ...this.paginate(),
@@ -66,7 +66,11 @@ export default class UserService extends AppService {
         {
           model: db.Staff,
           as: 'staffInfo',
-          where: { ...this.filterBy(['firstName', 'surname', 'middleName']) },
+          where: {
+            ...this.filterBy(['firstName', 'surname', 'middleName'], {
+              modelName: 'Staff',
+            }),
+          },
         },
       ],
     });

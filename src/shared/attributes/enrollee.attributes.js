@@ -1,5 +1,6 @@
 export default {
   personalData: [
+    'id',
     'enrolmentType',
     'principalId',
     'scheme',

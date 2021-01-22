@@ -12,7 +12,9 @@ export default class HcpService extends AppService {
 
   async fetchAllHcp() {
     return await db.HealthCareProvider.findAndCountAll({
-      where: { ...this.filterBy(['code', 'name']) },
+      where: {
+        ...this.filterBy(['code', 'name'], { modelName: 'HealthCareProvider' }),
+      },
       order: [['createdAt', 'DESC']],
       ...this.paginate(),
     });

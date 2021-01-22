@@ -1,4 +1,5 @@
 const getEnrollees = require('../../shared/samples/enrollee.samples');
+// const { downcaseAllFields } = require('../../utils/helpers');
 
 const { principals, dependants } = getEnrollees({
   numOfPrincipals: 100,
