@@ -12,7 +12,7 @@ export default class RoleService extends AppService {
 
   fetchAllRoles() {
     return db.Role.findAndCountAll({
-      where: { ...this.filterBy(['title']) },
+      where: { ...this.filterBy(['title'], { modelName: 'Role' }) },
       attributes: ['id', 'title'],
       ...this.paginate(),
     });

@@ -23,6 +23,16 @@ export default class EnrolleeController {
       Response.handleError('getEnrollees', error, req, res, next);
     }
   }
+  static async getEnrolleeById(req, res, next) {
+    try {
+      const enrolleeService = new EnrolleeService(req);
+      const data = await enrolleeService.getById();
+      return res.status(201).json({ data });
+    } catch (error) {
+      Response.handleError('getEnrollees', error, req, res, next);
+    }
+  }
+
   static async updateEnrollee(req, res, next) {
     try {
       const enrolleeService = new EnrolleeService(req);
