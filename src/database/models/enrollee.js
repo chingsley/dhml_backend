@@ -226,7 +226,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Enrollee.prototype.generateNewDependantId = function () {
     const [lastDependant] = this.dependants.sort(
-      (d1, d2) => d2.createdAt - d1.createdAt
+      (d1, d2) => Number(d2.id.split('-')[1]) - Number(d1.id.split('-')[1])
     );
     if (!lastDependant) {
       return `${this.id}-1`;
