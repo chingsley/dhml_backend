@@ -1,4 +1,5 @@
 import db from '../../database/models';
+import { Op } from 'sequelize';
 import { throwError } from '../../shared/helpers';
 import Cloudinary from '../../utils/Cloudinary';
 import { QueryTypes } from 'sequelize';
@@ -125,6 +126,13 @@ export default class EnrolleeService extends AppService {
     // const enrollee = await this.getEnrolleeById(id, options);
     const enrollee = await this.findWithReqParams();
     await enrollee.update({ isVerified: !enrollee.isVerified });
+    if (enrollee.principalId === null) {
+      const dependantIds = enrollee.dependants.map((depndt) => depndt.id);
+      await db.Enrollee.update(
+        { isVerified: !enrollee.isVerified },
+        { where: { id: { [Op.in]: dependantIds } } }
+      );
+    }
     return enrollee;
   }
 
