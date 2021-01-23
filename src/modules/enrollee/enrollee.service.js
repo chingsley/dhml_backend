@@ -54,6 +54,7 @@ export default class EnrolleeService extends AppService {
     const data = await db.Enrollee.createDependant(
       {
         ...dependantData,
+        hcpId: dependantData.hcpId || principal.hcpId,
         ...uploadedImages,
       },
       principal
