@@ -19,6 +19,7 @@ export default class EnrolleeService extends AppService {
   async enrolPrincipal() {
     const enrolleeData = this.enrolleeData;
     const files = this.files;
+    await this.ensureValidStaffNumber(enrolleeData.staffNumber);
     await this.validateUnique(['serviceNumber', 'staffNumber'], {
       model: db.Enrollee,
       reqBody: this.enrolleeData,
@@ -116,9 +117,20 @@ export default class EnrolleeService extends AppService {
     // const enrollee = await this.getEnrolleeById(id, options);
     const fls = this.files;
     const enrollee = await this.findWithReqParams();
+    const { dependants, ...rest } = this.body;
+    if (dependants.length > 0) {
+      await this.updateDependants(dependants);
+    }
     const uploadedImages = fls ? await Cloudinary.bulkUpload(fls) : {};
-    await enrollee.update({ ...this.body, uploadedImages });
+    await enrollee.update({ ...rest, uploadedImages });
     return enrollee;
+  }
+
+  async updateDependants(dependants) {
+    const promiseArr = dependants.map(({ id, ...rest }) =>
+      db.Enrollee.update({ ...rest }, { where: { id } })
+    );
+    await Promise.all(promiseArr);
   }
 
   async toggleEnrolleeVerification() {
@@ -217,5 +229,19 @@ export default class EnrolleeService extends AppService {
       });
     }
     return allowed;
+  }
+
+  async ensureValidStaffNumber(staffIdNo) {
+    if (staffIdNo) {
+      await this.findOneRecord({
+        where: { staffIdNo },
+        modelName: 'Staff',
+        errorIfNotFound: `Invalid staffIdNo, no record found for ID ${staffIdNo}`,
+        include: {
+          model: db.User,
+          as: 'userInfo',
+        },
+      });
+    }
   }
 }
