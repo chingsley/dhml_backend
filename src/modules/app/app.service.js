@@ -122,4 +122,25 @@ export default class AppService {
   throwError = (responseObj) => {
     throw new Error(JSON.stringify(responseObj));
   };
+
+  async findOneRecord(options = {}) {
+    const {
+      modelName,
+      where = {},
+      include = [],
+      isRequired = true,
+      errorIfNotFound,
+    } = options;
+    const record = await db[modelName].findOne({
+      where,
+      include,
+    });
+    if (!record && isRequired) {
+      throwError({
+        status: 400,
+        errorMsg: errorIfNotFound || `Missing record for ${modelName}`,
+      });
+    }
+    return record;
+  }
 }

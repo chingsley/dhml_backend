@@ -64,6 +64,12 @@ module.exports = {
           type: Sequelize.STRING,
           unique: true,
           allowNull: true,
+          references: {
+            model: 'Staffs',
+            key: 'staffIdNo',
+          },
+          onDelete: 'CASCADE',
+          onUpdate: 'CASCADE',
         },
         title: {
           type: Sequelize.STRING,

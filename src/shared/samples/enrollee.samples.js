@@ -1,3 +1,4 @@
+import { MAX_STAFF_COUNT } from '../constants/seeders.constants';
 import { enrolleeUploads } from './uploads.sample';
 const { designations } = require('./designations.sample');
 
@@ -61,6 +62,12 @@ export const getEnrollees = (options = {}) => {
   return { principals, dependants };
 };
 
+export const staffIdNos = Array.from(Array(MAX_STAFF_COUNT).keys())
+  .slice(1)
+  .map((id) => `STF/${zeroPadding(id, 4)}`);
+
+// console.log('staffIdNos = ', staffIdNos);
+
 function getPrincipal(index) {
   const i = index;
   const isMillitary = i % 2 === 0;
@@ -84,7 +91,7 @@ function getPrincipal(index) {
     surname: name.lastName(),
     rank: isMillitary ? random.arrayElement(ranks) : null,
     serviceNumber: i % 2 === 0 ? `SN/${zeroPadding(j)}` : null,
-    staffNumber: i % 2 !== 0 ? `STF/${zeroPadding(j)}` : null,
+    staffNumber: i % 2 !== 0 ? staffIdNos[i] : null,
     title: title,
     designation: designation,
     armOfService: armOfService,
