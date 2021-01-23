@@ -6,7 +6,7 @@ import { QueryTypes } from 'sequelize';
 import { zeroPadding, getAvailableIds } from '../../utils/helpers';
 import { getReservedPrincipalIDs } from '../../database/scripts/enrollee.scripts';
 import AppService from '../app/app.service';
-import enrolleeAttributes from '../../shared/attributes/enrollee.attributes';
+import { enrolleeFilterables } from '../../shared/attributes/enrollee.attributes';
 
 export default class EnrolleeService extends AppService {
   constructor({ body, files, query, params }) {
@@ -20,6 +20,7 @@ export default class EnrolleeService extends AppService {
     const enrolleeData = this.enrolleeData;
     const files = this.files;
     await this.ensureValidStaffNumber(enrolleeData.staffNumber);
+    await this.ensureValidHcpId(enrolleeData.hcpId);
     await this.validateUnique(['serviceNumber', 'staffNumber'], {
       model: db.Enrollee,
       reqBody: this.enrolleeData,
@@ -66,9 +67,8 @@ export default class EnrolleeService extends AppService {
   async getAllEnrollees() {
     return await db.Enrollee.findAndCountAll({
       where: {
-        ...this.filterBy(enrolleeAttributes.personalData, {
-          modelName: 'Enrollee',
-        }),
+        ...this.filterBy(enrolleeFilterables),
+        ...this.exactMatch(['isVerified', 'id']),
       },
       order: [['createdAt', 'DESC']],
       ...this.paginate(),
@@ -78,7 +78,6 @@ export default class EnrolleeService extends AppService {
           as: 'hcp',
           where: {
             ...this.filterBy(['hcpName', 'hcpCode'], {
-              modelName: 'HealthCareProvider',
               map: {
                 hcpName: 'name',
                 hcpCode: 'code',
@@ -123,6 +122,7 @@ export default class EnrolleeService extends AppService {
     }
     const uploadedImages = fls ? await Cloudinary.bulkUpload(fls) : {};
     await enrollee.update({ ...rest, uploadedImages });
+    await enrollee.reload();
     return enrollee;
   }
 
@@ -229,19 +229,5 @@ export default class EnrolleeService extends AppService {
       });
     }
     return allowed;
-  }
-
-  async ensureValidStaffNumber(staffIdNo) {
-    if (staffIdNo) {
-      await this.findOneRecord({
-        where: { staffIdNo },
-        modelName: 'Staff',
-        errorIfNotFound: `Invalid staffIdNo, no record found for ID ${staffIdNo}`,
-        include: {
-          model: db.User,
-          as: 'userInfo',
-        },
-      });
-    }
   }
 }

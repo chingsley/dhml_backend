@@ -37,4 +37,8 @@ export class Cypher {
     const decryptedData = Buffer.concat([decrypted, decipher.final()]);
     return decryptedData.toString();
   }
+
+  formatRequest(reqBody) {
+    return { data: this.encrypt(JSON.stringify(reqBody)) };
+  }
 }
