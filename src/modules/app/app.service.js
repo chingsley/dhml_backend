@@ -119,6 +119,30 @@ export default class AppService {
     return hashedPassword;
   }
 
+  async ensureValidStaffNumber(staffIdNo) {
+    if (staffIdNo) {
+      await this.findOneRecord({
+        where: { staffIdNo },
+        modelName: 'Staff',
+        errorIfNotFound: `Invalid staffIdNo, no record found for ID ${staffIdNo}`,
+        include: {
+          model: db.User,
+          as: 'userInfo',
+        },
+      });
+    }
+  }
+
+  async ensureValidHcpId(hcpId) {
+    if (hcpId) {
+      await this.findOneRecord({
+        where: { id: hcpId },
+        modelName: 'HealthCareProvider',
+        errorIfNotFound: `Invalid hcpId, no record found for ID ${hcpId}`,
+      });
+    }
+  }
+
   throwError = (responseObj) => {
     throw new Error(JSON.stringify(responseObj));
   };

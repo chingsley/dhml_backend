@@ -20,6 +20,7 @@ export default class EnrolleeService extends AppService {
     const enrolleeData = this.enrolleeData;
     const files = this.files;
     await this.ensureValidStaffNumber(enrolleeData.staffNumber);
+    await this.ensureValidHcpId(enrolleeData.hcpId);
     await this.validateUnique(['serviceNumber', 'staffNumber'], {
       model: db.Enrollee,
       reqBody: this.enrolleeData,
@@ -229,19 +230,5 @@ export default class EnrolleeService extends AppService {
       });
     }
     return allowed;
-  }
-
-  async ensureValidStaffNumber(staffIdNo) {
-    if (staffIdNo) {
-      await this.findOneRecord({
-        where: { staffIdNo },
-        modelName: 'Staff',
-        errorIfNotFound: `Invalid staffIdNo, no record found for ID ${staffIdNo}`,
-        include: {
-          model: db.User,
-          as: 'userInfo',
-        },
-      });
-    }
   }
 }
