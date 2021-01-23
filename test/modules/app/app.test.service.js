@@ -4,6 +4,7 @@ import db from '../../../src/database/models';
 import getSampleUsers from '../../../src/shared/samples/user.samples';
 const bcrypt = require('bcryptjs');
 const BCRYPT_SALT = Number(process.env.BCRYPT_SALT);
+const ROLES = require('../../../src/shared/constants/roles.constants');
 
 export const tomorrow = moment().add(1, 'days').format('YYYY-MM-DD');
 export const today = moment().format('YYYY-MM-DD');
@@ -57,6 +58,12 @@ class TestService {
     );
     return { users };
   }
+  // static async getToken(staff, role) {
+  //   const { sampleUsers }
+  //  const stff = await db.staff.upsert(staff);
+  //  const user = await db.User.upsert()
+
+  // }
 
   static getHash(sampleValue = 'Testing*123') {
     return bcrypt.hashSync(sampleValue, BCRYPT_SALT);

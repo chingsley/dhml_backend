@@ -100,4 +100,5 @@ export const patchEnrolleeSchema = Joi.object({
   idCard: Joi.any(),
   deathCertificate: Joi.any(),
   letterOfNok: Joi.any(),
+  dependants: Joi.array().items(Joi.object()),
 });
