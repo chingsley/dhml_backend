@@ -25,7 +25,10 @@ export default class StaffService extends AppService {
       );
     } else {
       return await db.Staff.findAndCountAll({
-        where: { ...this.filterBy(queryAttributes, { modelName: 'Staff' }) },
+        where: {
+          ...this.filterBy(queryAttributes),
+          ...this.exactMatch(['staffIdNo']),
+        },
         order: [['createdAt', 'DESC']],
         ...this.paginate(),
       });
