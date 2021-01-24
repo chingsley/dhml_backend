@@ -1,14 +1,22 @@
+import bcrypt from 'bcryptjs';
+import supertest from 'supertest';
 import moment from 'moment';
+
 import getSampleStaffs from '../../../src/shared/samples/staff.samples';
 import db from '../../../src/database/models';
 import getSampleUsers from '../../../src/shared/samples/user.samples';
-const bcrypt = require('bcryptjs');
-const BCRYPT_SALT = Number(process.env.BCRYPT_SALT);
-const ROLES = require('../../../src/shared/constants/roles.constants');
+import { TEST_PASSWORD } from '../../../src/shared/constants/passwords.constants';
+import server from '../../../src/server';
+import { Cypher } from '../../../src/utils/Cypher';
+import getSampleHCPs from '../../../src/shared/samples/hcp.samples';
 
+const { AES_KEY, IV_KEY, BCRYPT_SALT } = process.env;
 export const tomorrow = moment().add(1, 'days').format('YYYY-MM-DD');
 export const today = moment().format('YYYY-MM-DD');
 export const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+
+const app = supertest(server.server);
+const cypher = new Cypher(AES_KEY, IV_KEY);
 
 class TestService {
   constructor({ sampleStaff, sampleStaffs, sampleUser, sampleUsers }) {
@@ -58,15 +66,39 @@ class TestService {
     );
     return { users };
   }
-  // static async getToken(staff, role) {
-  //   const { sampleUsers }
-  //  const stff = await db.staff.upsert(staff);
-  //  const user = await db.User.upsert()
+  static async getToken(staff, roleTitle) {
+    const { sampleUsers } = getSampleUsers([staff]);
+    await db.Staff.upsert(staff);
+    let role = await db.Role.findOne({ where: { title: roleTitle } });
+    if (!role) {
+      role = await db.Role.create({ title: roleTitle });
+    }
+    const [user] = await db.User.upsert(
+      { ...sampleUsers[0], roleId: role.id },
+      { returning: true }
+    );
 
-  // }
+    await db.Password.upsert({
+      userId: user.id,
+      value: this.getHash(TEST_PASSWORD),
+    });
+
+    const res = await app.post('/api/v1/auth/login').send(
+      cypher.formatRequest({
+        email: user.email,
+        password: TEST_PASSWORD,
+      })
+    );
+    const { data } = res.body;
+    return { user: data.user, token: data.token };
+  }
+
+  static seedHCPs(count) {
+    return db.HealthCareProvider.bulkCreate(getSampleHCPs(count));
+  }
 
   static getHash(sampleValue = 'Testing*123') {
-    return bcrypt.hashSync(sampleValue, BCRYPT_SALT);
+    return bcrypt.hashSync(sampleValue, Number(BCRYPT_SALT));
   }
 }
 

@@ -55,73 +55,27 @@ export default class AppService {
       if (queryParams[key]) {
         const field = map[key] || key;
         const value = queryParams[key];
-        return { ...obj, [field]: { [Op.like]: `%${value}%` } }; // use .toLowercase => ueryParams[key].toLowerCase(), but first you have to convert all value to lower case before saving in the database
+        return { ...obj, [field]: { [Op.iLike]: `%${value}%` } }; // use .toLowercase => ueryParams[key].toLowerCase(), but first you have to convert all value to lower case before saving in the database
       }
       return obj;
     }, {});
 
     return filterObj;
   }
-  filterBy2(arrOfFields, options = {}) {
-    const queryParams = this.query;
-    const { modelName, map = {} } = options;
-    const filterObj = arrOfFields.reduce((obj, key) => {
-      if (queryParams[key]) {
-        const field = map[key] || key;
-        const value = queryParams[key];
-        return {
-          ...obj,
-          [field]: db.sequelize.where(
-            db.sequelize.fn('LOWER', db.sequelize.col(`${modelName}.${field}`)),
-            'LIKE',
-            `%${value.toLowerCase()}%`
-          ),
-        }; // use .toLowercase => ueryParams[key].toLowerCase(), but first you have to convert all value to lower case before saving in the database
-      }
-      return obj;
-    }, {});
-
-    return filterObj;
-  }
-
-  /**
-   * Sames as filterBy but is case sensitive (for mysql db)
-   * @param {array} arrOfFields array of fields to filter by
-   * @param {object} map map fields to their actual name in the database
-   */
-  mysqlFilterBy(arrOfFields, map = {}) {
+  exactMatch(arrOfFields, options = {}) {
+    const { map = {} } = options;
     const queryParams = this.query;
     const filterObj = arrOfFields.reduce((obj, key) => {
       if (queryParams[key]) {
         const field = map[key] || key;
         const value = queryParams[key];
-        return { ...obj, [field]: { [Op.like]: `%${value}%` } }; // use .toLowercase => ueryParams[key].toLowerCase(), but first you have to convert all value to lower case before saving in the database
+        return { ...obj, [field]: value };
       }
       return obj;
     }, {});
 
     return filterObj;
   }
-
-  paginate() {
-    const { page, pageSize } = this.query;
-    if (page && pageSize) {
-      return {
-        offset: Number(page * pageSize) || 0,
-        limit: Number(pageSize) || null,
-      };
-    }
-  }
-
-  hashPassword(passwordString) {
-    const BCRYPT_SALT = Number(process.env.BCRYPT_SALT);
-    const hashedPassword = bcrypt.hashSync(passwordString, BCRYPT_SALT);
-    return hashedPassword;
-  }
-
-  throwError = (responseObj) => {
-    throw new Error(JSON.stringify(responseObj));
-  };
 
   async findOneRecord(options = {}) {
     const {
@@ -143,4 +97,48 @@ export default class AppService {
     }
     return record;
   }
+
+  paginate() {
+    const { page, pageSize } = this.query;
+    if (page && pageSize) {
+      return {
+        offset: Number(page * pageSize) || 0,
+        limit: Number(pageSize) || null,
+      };
+    }
+  }
+
+  hashPassword(passwordString) {
+    const BCRYPT_SALT = Number(process.env.BCRYPT_SALT);
+    const hashedPassword = bcrypt.hashSync(passwordString, BCRYPT_SALT);
+    return hashedPassword;
+  }
+
+  async ensureValidStaffNumber(staffIdNo) {
+    if (staffIdNo) {
+      await this.findOneRecord({
+        where: { staffIdNo },
+        modelName: 'Staff',
+        errorIfNotFound: `Invalid staffIdNo, no record found for ID ${staffIdNo}`,
+        include: {
+          model: db.User,
+          as: 'userInfo',
+        },
+      });
+    }
+  }
+
+  async ensureValidHcpId(hcpId) {
+    if (hcpId) {
+      await this.findOneRecord({
+        where: { id: hcpId },
+        modelName: 'HealthCareProvider',
+        errorIfNotFound: `Invalid hcpId, no record found for ID ${hcpId}`,
+      });
+    }
+  }
+
+  throwError = (responseObj) => {
+    throw new Error(JSON.stringify(responseObj));
+  };
 }
