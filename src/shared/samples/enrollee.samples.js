@@ -101,7 +101,6 @@ function getPrincipal(index) {
     gender: gender,
     maritalStatus: random.arrayElement(['single', 'married']),
     serviceStatus: random.arrayElement(['serving', 'retired']),
-    residentialAddress: address.secondaryAddress(),
   };
 }
 
@@ -150,6 +149,7 @@ function getBaseFeatures() {
     identificationNumber: zeroPadding(getRandomInt(18988769902), 9),
     phoneNumber: phone.phoneNumber(),
     stateOfResidence: address.state(),
+    residentialAddress: address.secondaryAddress(),
     lga: address.county(),
     bloodGroup: random.arrayElement(['A+', 'B+', 'O+', 'AB+']),
     significantMedicalHistory: '[diabetes, allergies]',

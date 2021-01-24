@@ -49,7 +49,6 @@ export default class AppMiddleware {
       const { data: encryptedData } = req.body;
       const decryptedBody = cypher.decrypt(encryptedData);
       req.body = JSON.parse(decryptedBody);
-
       return next();
     } catch (error) {
       return Response('decryptRequestBody', error, req, res, next);
