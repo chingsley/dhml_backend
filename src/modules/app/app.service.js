@@ -2,6 +2,7 @@ import { Op } from 'sequelize';
 import bcrypt from 'bcryptjs';
 import db from '../../database/models';
 import { throwError } from '../../shared/helpers';
+import { QueryTypes } from 'sequelize';
 
 export default class AppService {
   constructor({ body, files, query }) {
@@ -136,6 +137,13 @@ export default class AppService {
         errorIfNotFound: `Invalid hcpId, no record found for ID ${hcpId}`,
       });
     }
+  }
+
+  executeQuery(queryFunction, reqQuery) {
+    const { dialect, database } = db.sequelize.options;
+    return db.sequelize.query(queryFunction(dialect, database, reqQuery), {
+      type: QueryTypes.SELECT,
+    });
   }
 
   throwError = (responseObj) => {

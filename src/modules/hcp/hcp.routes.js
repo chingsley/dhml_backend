@@ -11,6 +11,11 @@ router.get(
   AuthMiddleware.authorize(),
   HcpController.getAllHcp
 );
-router.get('/manifest', AuthMiddleware.authorize(), HcpController.getManifest);
+router.get(
+  '/manifest',
+  HcpMiddleware.validateQuery,
+  AuthMiddleware.authorize(),
+  HcpController.getManifest
+);
 
 export default router;
