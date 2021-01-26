@@ -1,7 +1,7 @@
-import Joi from '@hapi/joi';
+// import Joi from '@hapi/joi';
 import { throwError } from '../../shared/helpers';
 import Response from '../../utils/Response';
-import { validateSchema } from '../../validators/joi/config';
+import { Joi, validateSchema } from '../../validators/joi/config';
 
 export default class HcpMiddleware {
   static async validateQuery(req, res, next) {
@@ -14,7 +14,14 @@ export default class HcpMiddleware {
         hcpCode: Joi.string().trim(),
         hcpName: Joi.string().trim(),
         value: Joi.string().trim(),
-        date: Joi.date(),
+        date: Joi.date()
+          .format('YYYY-MM-DD')
+          .max('now')
+          .error(
+            new Error(
+              'date filter must have the format YYYY-MM-DD and cannot be in the future'
+            )
+          ),
       });
       await validateSchema(querySchema, req.query);
       const { hcpCode, hcpName, value } = req.query;

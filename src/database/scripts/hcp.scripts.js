@@ -4,38 +4,40 @@ import { days } from '../../utils/timers';
 export const getManifest = (dialect, dbName, reqQuery = {}) => {
   const { limit, offset } = getPaginationParameters(reqQuery);
 
-  const { value, hcpCode, hcpName } = reqQuery;
-  const fallback = 'WHERE p.code IS NOT NULL OR d.code IS NOT NULL';
+  const { value, hcpCode, hcpName, date = days.today } = reqQuery;
+  const fallback = '"hcpCode" IS NOT NULL';
   const generalSearch =
     value &&
-    `WHERE LOWER(d.code) LIKE '%${value.toLowerCase()}%' OR LOWER(p.code) LIKE '%${value.toLowerCase()}%' OR LOWER(d.name) LIKE '%${value.toLowerCase()}%' OR LOWER(p.name) LIKE '%${value.toLowerCase()}%'`;
+    `LOWER("hcpCode") LIKE '%${value.toLowerCase()}%' OR LOWER("hcpName") LIKE '%${value.toLowerCase()}%'`;
   const filterByHcpCode =
-    hcpCode &&
-    `WHERE LOWER(d.code) LIKE '%${hcpCode.toLowerCase()}%' OR LOWER(p.code) LIKE '%${hcpCode.toLowerCase()}%'`;
+    hcpCode && `LOWER("hcpCode") LIKE '%${hcpCode.toLowerCase()}%'`;
   const filterByHcpName =
-    hcpName &&
-    `WHERE LOWER(d.name) LIKE '%${hcpName.toLowerCase()}%' OR LOWER(p.name) LIKE '%${hcpName.toLowerCase()}%'`;
+    hcpName && `LOWER("hcpName") LIKE '%${hcpName.toLowerCase()}%'`;
   const filter =
     filterByHcpName || filterByHcpCode || generalSearch || fallback;
   const query = {
     postgres: `
-    SELECT coalesce(p.code,d.code) "hcpCode", coalesce(p.name,d.name) "hcpName", principals, dependants
+    SELECT "hcpCode", "hcpName", MAX("verifiedOn") AS "monthOfYear", SUM("principals") principals, SUM("dependants") dependants
     FROM
-      (SELECT h.code, h.name, count(*) as principals
-      FROM "HealthCareProviders" h
-      JOIN "Enrollees" e
-          ON h.id = e."hcpId"
-      WHERE e."principalId" IS NULL AND e."isVerified"=true 
-      GROUP BY h.code, h.name) AS p
-    FULL OUTER JOIN
-      (SELECT h.code, h.name, count(*) as dependants
-      FROM "HealthCareProviders" h
-      JOIN "Enrollees" e
-          ON h.id = e."hcpId"
-      WHERE e."principalId" IS NOT NULL AND e."isVerified"=true
-      GROUP BY h.code, h.name) AS d
-    ON p.code = d.code
-    ${filter}
+      (SELECT COALESCE(p.code,d.code) "hcpCode", COALESCE(p.name,d.name) "hcpName", COALESCE(p."verifiedOn",d."verifiedOn") "verifiedOn", principals, dependants
+      FROM
+        (SELECT h.code, h.name, DATE_TRUNC('month', "dateVerified") "verifiedOn", count(*) as principals
+        FROM "HealthCareProviders" h
+        JOIN "Enrollees" e
+            ON h.id = e."hcpId"
+        WHERE e."principalId" IS NULL AND e."isVerified"=true
+        GROUP BY h.code, h.name, DATE_TRUNC('month', "dateVerified")) AS p
+      FULL OUTER JOIN
+        (SELECT h.code, h.name, DATE_TRUNC('month', "dateVerified") "verifiedOn", count(*) as dependants
+        FROM "HealthCareProviders" h
+        JOIN "Enrollees" e
+            ON h.id = e."hcpId"
+        WHERE e."principalId" IS NOT NULL AND e."isVerified"=true
+        GROUP BY h.code, h.name, DATE_TRUNC('month', "dateVerified")) AS d
+      ON p.code = d.code AND p."verifiedOn" = d."verifiedOn") sub
+    
+    WHERE DATE_TRUNC('month', "verifiedOn") <= '${date}' AND ${filter}
+    GROUP BY "hcpCode", "hcpName"
     ORDER BY "hcpName" ASC
     LIMIT ${limit}
     OFFSET ${offset}
