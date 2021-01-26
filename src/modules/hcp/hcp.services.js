@@ -1,6 +1,6 @@
 import db from '../../database/models';
 import AppService from '../app/app.service';
-import { getManifest } from '../../database/scripts/hcp.scripts';
+import { getCapitation, getManifest } from '../../database/scripts/hcp.scripts';
 
 export default class HcpService extends AppService {
   constructor({ body, files, query, params }) {
@@ -41,6 +41,18 @@ export default class HcpService extends AppService {
     //   },
     //   ...this.paginate(),
     // });
+  }
+  async fetchCapitation() {
+    const { page, pageSize } = this.query;
+    let count, rows;
+    if (page && pageSize) {
+      count = (await this.executeQuery(getCapitation)).length;
+      rows = await this.executeQuery(getCapitation, this.query);
+    } else {
+      rows = await this.executeQuery(getCapitation, this.query);
+      count = rows.length;
+    }
+    return { count, rows };
   }
   async filterHcp() {
     return this.filterBy(['hcpCode', 'hcpName'], {

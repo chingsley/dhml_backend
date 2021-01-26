@@ -17,5 +17,11 @@ router.get(
   AuthMiddleware.authorize(),
   HcpController.getManifest
 );
+router.get(
+  '/capitation',
+  HcpMiddleware.validateQuery,
+  AuthMiddleware.authorize(),
+  HcpController.getCapitation
+);
 
 export default router;

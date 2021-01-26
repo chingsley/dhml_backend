@@ -1,4 +1,8 @@
-import { MAX_STAFF_COUNT } from '../constants/seeders.constants';
+import { days, months } from '../../utils/timers';
+import {
+  MAX_PRINCIPALS_COUNT,
+  MAX_STAFF_COUNT,
+} from '../constants/seeders.constants';
 import { enrolleeUploads } from './uploads.sample';
 const { designations } = require('./designations.sample');
 
@@ -78,6 +82,10 @@ function getPrincipal(index) {
   const gender = random.arrayElement(['male', 'female']);
   const title = gender === 'female' ? 'Mrs' : 'Mr';
   const designation = isStaff ? random.arrayElement(designations) : null;
+  const isVerified = i < 0.9 * MAX_PRINCIPALS_COUNT;
+  const dateVerified = isVerified
+    ? faker.date.between(months.setPast(2), days.today)
+    : null;
   const employer = isStaff
     ? company.companyName()
     : 'Federal Republic of Nigeria';
@@ -86,7 +94,7 @@ function getPrincipal(index) {
   return {
     id: zeroPadding(j + 230),
     ...getBaseFeatures(),
-    hcpId: getRandomInt(1000, { min: 1 }),
+    hcpId: getRandomInt(100, { min: 1 }),
     scheme: random.arrayElement(['DSSHIP', 'VCSHIP', 'AFRSHIP']),
     surname: name.lastName(),
     rank: isMillitary ? random.arrayElement(ranks) : null,
@@ -101,6 +109,8 @@ function getPrincipal(index) {
     gender: gender,
     maritalStatus: random.arrayElement(['single', 'married']),
     serviceStatus: random.arrayElement(['serving', 'retired']),
+    isVerified,
+    dateVerified,
   };
 }
 
@@ -119,6 +129,8 @@ function getSameSchemeDep(childIndex, { principal }) {
     scheme: principal.scheme,
     dateOfBirth,
     dependantType: `${principal.scheme}-TO-${principal.scheme}`,
+    isVerified: principal.isVerified,
+    dateVerified: principal.dateVerified,
   };
 }
 
@@ -133,6 +145,8 @@ function getVcshipDep(childIndex, { principal }) {
     principalId: principal.id,
     scheme: 'VCSHIP',
     dependantType: `${principal.scheme}-TO-VCSHIP`,
+    isVerified: principal.isVerified,
+    dateVerified: principal.dateVerified,
   };
 }
 
@@ -153,6 +167,7 @@ function getBaseFeatures() {
     lga: address.county(),
     bloodGroup: random.arrayElement(['A+', 'B+', 'O+', 'AB+']),
     significantMedicalHistory: '[diabetes, allergies]',
+    isVerified: true,
     ...enrolleeUploads,
   };
 }
@@ -169,7 +184,7 @@ function getVariableDependantFetutres(principal) {
     gender = random.arrayElement(['male', 'female']);
   }
   const hcpId = random.arrayElement([
-    getRandomInt(1000, { min: 1 }),
+    getRandomInt(100, { min: 1 }),
     principal.hcpId,
   ]);
   return { relationshipToPrincipal: rtp, gender, hcpId };
