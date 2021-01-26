@@ -151,6 +151,9 @@ module.exports = {
           allowNull: false,
           defaultValue: false,
         },
+        dateVerified: {
+          type: Sequelize.DATE,
+        },
         createdAt: {
           allowNull: false,
           type: Sequelize.DATE,
