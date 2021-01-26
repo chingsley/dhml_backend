@@ -155,6 +155,9 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: false,
       },
+      dateVerified: {
+        type: DataTypes.DATE,
+      },
       isPrincipal: {
         type: DataTypes.VIRTUAL,
         get() {
@@ -279,10 +282,3 @@ module.exports = (sequelize, DataTypes) => {
   };
   return Enrollee;
 };
-
-// isPrincipal() {
-//   return this.principalId === null;
-// }
-// isDependant() {
-//   return !this.isPrincipal();
-// }

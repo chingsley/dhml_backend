@@ -13,11 +13,12 @@ export default class HcpMiddleware {
         name: Joi.string().trim(),
         hcpCode: Joi.string().trim(),
         hcpName: Joi.string().trim(),
+        value: Joi.string().trim(),
+        date: Joi.date(),
       });
       await validateSchema(querySchema, req.query);
-      const { hcpCode, hcpName } = req.query;
-      console.log(hcpCode, 'this = ', this);
-      HcpMiddleware.rejectSpecialCharacters([hcpCode, hcpName]);
+      const { hcpCode, hcpName, value } = req.query;
+      HcpMiddleware.rejectSpecialCharacters([hcpCode, hcpName, value]);
       return next();
     } catch (error) {
       Response.handleError('validateQuery', error, req, res, next);
@@ -26,12 +27,13 @@ export default class HcpMiddleware {
 
   static rejectSpecialCharacters(fields) {
     for (let field of fields) {
-      const reg = /[ `!#$%^&*()+=[\]{};':",.<>?~]/;
-      if (field && reg.test(field)) {
+      const reg = /[`!#$%^&*()+=[\]{};':"<>?~]/;
+      const match = field && field.match(reg);
+      if (match) {
         throwError({
           status: 400,
           error: [
-            'invalid search param. Please ensure your search parameter does not include special characters',
+            `invalid search parameter. Character "${match[0]}" is not allowed `,
           ],
         });
       }

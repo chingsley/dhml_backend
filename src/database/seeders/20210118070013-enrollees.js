@@ -1,8 +1,11 @@
+const {
+  MAX_PRINCIPALS_COUNT,
+} = require('../../shared/constants/seeders.constants');
 const getEnrollees = require('../../shared/samples/enrollee.samples');
 // const { downcaseAllFields } = require('../../utils/helpers');
 
 const { principals, dependants } = getEnrollees({
-  numOfPrincipals: 100,
+  numOfPrincipals: MAX_PRINCIPALS_COUNT,
   sameSchemeDepPerPrincipal: 2,
   vcshipDepPerPrincipal: 1,
 });
