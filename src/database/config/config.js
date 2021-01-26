@@ -10,7 +10,7 @@ module.exports = {
     host: process.env.DB_HOST,
     dialect: process.env.DB_DIALECT,
     operatorsAliases: 0,
-    logging: console.log,
+    logging: 0,
   },
   mysql_development: {
     username: process.env.MYSQL_DB_USERNAME,
