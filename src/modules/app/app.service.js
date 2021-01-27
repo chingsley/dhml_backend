@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import db from '../../database/models';
 import { throwError } from '../../shared/helpers';
 import { QueryTypes } from 'sequelize';
+import { enrolleeSearchItems } from '../../shared/attributes/enrollee.attributes';
 
 export default class AppService {
   constructor({ body, files, query }) {
@@ -36,46 +37,6 @@ export default class AppService {
       throwErrorIfNotFound: true,
       errorMsg: `Staff ID: ${staffIdNo} not found`,
     });
-  }
-
-  /**
-   *
-   * @param {array} arrOfFields array of fields to filterBy
-   * @param {object [optional]} map an object that maps the query param to the actual field name in the table
-   * map essentially says (for e.g): 'if you see 'hcpName' in the param, look for 'name' in the hcp table
-   * b/c the field 'name' is what we have in the hcp table, not hcpName.
-   * If no map is specified, it searches the table fields by the keys in the req params,
-   * e.g the param firstName='John', when map is empty will search in the table where 'firstName'
-   * is like 'John'. But the param hcpCode='FCT/0091/S' with map specified as { code: hcpCode } will
-   * search in the table where 'code' is like 'FCT/0091/S'
-   */
-  filterBy(arrOfFields, options = {}) {
-    const { map = {} } = options;
-    const queryParams = this.query;
-    const filterObj = arrOfFields.reduce((obj, key) => {
-      if (queryParams[key]) {
-        const field = map[key] || key;
-        const value = queryParams[key];
-        return { ...obj, [field]: { [Op.iLike]: `%${value}%` } }; // use .toLowercase => ueryParams[key].toLowerCase(), but first you have to convert all value to lower case before saving in the database
-      }
-      return obj;
-    }, {});
-
-    return filterObj;
-  }
-  exactMatch(arrOfFields, options = {}) {
-    const { map = {} } = options;
-    const queryParams = this.query;
-    const filterObj = arrOfFields.reduce((obj, key) => {
-      if (queryParams[key]) {
-        const field = map[key] || key;
-        const value = queryParams[key];
-        return { ...obj, [field]: value };
-      }
-      return obj;
-    }, {});
-
-    return filterObj;
   }
 
   async findOneRecord(options = {}) {
@@ -149,4 +110,103 @@ export default class AppService {
   throwError = (responseObj) => {
     throw new Error(JSON.stringify(responseObj));
   };
+
+  /**
+   *
+   * @param {array} arrOfFields array of fields to filterBy
+   * @param {object [optional]} map an object that maps the query param to the actual field name in the table
+   * map essentially says (for e.g): 'if you see 'hcpName' in the param, look for 'name' in the hcp table
+   * b/c the field 'name' is what we have in the hcp table, not hcpName.
+   * If no map is specified, it searches the table fields by the keys in the req params,
+   * e.g the param firstName='John', when map is empty will search in the table where 'firstName'
+   * is like 'John'. But the param hcpCode='FCT/0091/S' with map specified as { code: hcpCode } will
+   * search in the table where 'code' is like 'FCT/0091/S'
+   */
+  filterBy(arrOfFields, options = {}) {
+    const { map = {} } = options;
+    const queryParams = this.query;
+    const filterObj = arrOfFields.reduce((obj, key) => {
+      if (queryParams[key]) {
+        const field = map[key] || key;
+        const value = queryParams[key];
+        return { ...obj, [field]: { [Op.iLike]: `%${value}%` } }; // use .toLowercase => ueryParams[key].toLowerCase(), but first you have to convert all value to lower case before saving in the database
+      }
+      return obj;
+    }, {});
+
+    return filterObj;
+  }
+  exactMatch(arrOfFields, options = {}) {
+    const { map = {} } = options;
+    const queryParams = this.query;
+    const filterObj = arrOfFields.reduce((obj, key) => {
+      if (queryParams[key]) {
+        const field = map[key] || key;
+        const value = queryParams[key];
+        return { ...obj, [field]: value };
+      }
+      return obj;
+    }, {});
+
+    return filterObj;
+  }
+
+  searchBy = (searchableFields) => {
+    const { field, value } = this.query;
+    if (field && value && searchableFields.includes(field)) {
+      return this.getSearchQuery(field, value);
+    } else if (value && !field) {
+      return {
+        [Op.or]: searchableFields.map((field) => ({
+          [field]: { [Op.iLike]: `%${value.toLowerCase()}%` },
+        })),
+      };
+    } else {
+      return {};
+    }
+  };
+
+  getSearchQuery(field, value) {
+    // if (field === 'code') {
+    //   return {
+    //     [Op.or]: [
+    //       {
+    //         name: { [Op.iLike]: `%${value.toLowerCase()}%` },
+    //       },
+    //       {
+    //         code: { [Op.iLike]: `%${value.toLowerCase()}%` },
+    //       },
+    //     ],
+    //   };
+    // } else
+    if (value === 'all') {
+      return { [field]: { [Op.not]: null } };
+    } else if (value === 'none') {
+      return { [field]: { [Op.is]: null } };
+    } else {
+      return { [field]: { [Op.iLike]: `%${value.toLowerCase()}%` } };
+    }
+  }
+  queryVerifiedEnrollees(hcpId, searchModels) {
+    return db.Enrollee.findAndCountAll({
+      where: {
+        hcpId,
+        isVerified: true,
+        ...(searchModels.includes('Enrollee')
+          ? this.searchBy(enrolleeSearchItems)
+          : {}),
+      },
+      ...this.paginate(),
+      order: [['dateVerified', 'DESC']],
+      include: {
+        model: db.HealthCareProvider,
+        as: 'hcp',
+        where: {
+          ...(searchModels.includes('HealthCareProvider')
+            ? this.searchBy(['code', 'name'])
+            : {}),
+        },
+      },
+    });
+  }
 }

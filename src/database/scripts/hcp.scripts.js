@@ -17,7 +17,7 @@ export const getManifest = (dialect, dbName, reqQuery = {}) => {
     filterByHcpName || filterByHcpCode || generalSearch || fallback;
   const query = {
     postgres: `
-    SELECT id, "hcpCode", "hcpName", MAX("verifiedOn") AS "monthOfYear", SUM("principals") principals, SUM("dependants") dependants
+    SELECT id "hcpId", "hcpCode", "hcpName", MAX("verifiedOn") AS "monthOfYear", SUM("principals") principals, SUM("dependants") dependants
     FROM
       (SELECT COALESCE(p.id,d.id) id, COALESCE(p.code,d.code) "hcpCode", COALESCE(p.name,d.name) "hcpName", COALESCE(p."verifiedOn",d."verifiedOn") "verifiedOn", principals, dependants
       FROM
@@ -64,7 +64,7 @@ export const getCapitation = (dialect, dbName, reqQuery = {}) => {
     filterByHcpName || filterByHcpCode || generalSearch || fallback;
 
   const query1 = `
-  SELECT id, "hcpCode", "hcpName", MAX("dateVerified") "monthOfYear", SUM(lives) lives, SUM(lives)*750 amount
+  SELECT id "hcpId", "hcpCode", "hcpName", MAX("dateVerified") "monthOfYear", SUM(lives) lives, SUM(lives)*750 amount
   FROM
     (SELECT h.id, h.code "hcpCode", h.name "hcpName", DATE_TRUNC('month', "dateVerified") "dateVerified", count(e.id) lives
     FROM "HealthCareProviders" h
