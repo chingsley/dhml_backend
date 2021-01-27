@@ -11,6 +11,15 @@ export default class HcpController {
       Response.handleError('getAllHcp', error, req, res, next);
     }
   }
+  static async getVerifiedHcpEnrollees(req, res, next) {
+    try {
+      const hcpService = new HcpService(req);
+      const data = await hcpService.fetchVerifiedHcpEnrollees();
+      return res.status(200).json({ data });
+    } catch (error) {
+      Response.handleError('getVerifiedHcpEnrollees', error, req, res, next);
+    }
+  }
   static async getManifest(req, res, next) {
     try {
       const hcpService = new HcpService(req);

@@ -1,8 +1,10 @@
 import { days, months } from '../../utils/timers';
+import { ranks } from '../constants/ranks.constants';
 import {
   MAX_PRINCIPALS_COUNT,
   MAX_STAFF_COUNT,
 } from '../constants/seeders.constants';
+import { states } from '../constants/states.constants';
 import { enrolleeUploads } from './uploads.sample';
 const { designations } = require('./designations.sample');
 
@@ -18,28 +20,6 @@ const {
   internet,
 } = faker;
 const { zeroPadding, getRandomInt } = require('../../utils/helpers');
-
-const ranks = [
-  'Lt',
-  'SLt',
-  'Capt',
-  'Lt Cdr',
-  'Cdr',
-  'Cdre',
-  'Adm',
-  'R/Adm',
-  'V/Adm',
-  'OS',
-  'SM',
-  'AB',
-  'SM',
-  'AB',
-  'LS',
-  'PO',
-  'WO',
-  'MWO',
-  'NWO',
-];
 
 export const getEnrollees = (options = {}) => {
   const {
@@ -77,7 +57,7 @@ function getPrincipal(index) {
   const isMillitary = i % 2 === 0;
   const isStaff = !isMillitary;
   const armOfService = isMillitary
-    ? random.arrayElement(['army', 'navy', 'air force'])
+    ? random.arrayElement(['army', 'navy', 'airforce'])
     : null;
   const gender = random.arrayElement(['male', 'female']);
   const title = gender === 'female' ? 'Mrs' : 'Mr';
@@ -162,7 +142,7 @@ function getBaseFeatures() {
     ]),
     identificationNumber: zeroPadding(getRandomInt(18988769902), 9),
     phoneNumber: phone.phoneNumber(),
-    stateOfResidence: address.state(),
+    stateOfResidence: random.arrayElement(states),
     residentialAddress: address.secondaryAddress(),
     lga: address.county(),
     bloodGroup: random.arrayElement(['A+', 'B+', 'O+', 'AB+']),

@@ -6,7 +6,7 @@ import { QueryTypes } from 'sequelize';
 import { zeroPadding, getAvailableIds } from '../../utils/helpers';
 import { getReservedPrincipalIDs } from '../../database/scripts/enrollee.scripts';
 import AppService from '../app/app.service';
-import { enrolleeFilterables } from '../../shared/attributes/enrollee.attributes';
+import { enrolleeSearchItems } from '../../shared/attributes/enrollee.attributes';
 
 export default class EnrolleeService extends AppService {
   constructor({ body, files, query, params }) {
@@ -65,28 +65,15 @@ export default class EnrolleeService extends AppService {
   }
 
   async getAllEnrollees() {
-    return await db.Enrollee.findAndCountAll({
-      where: {
-        ...this.filterBy(enrolleeFilterables),
-        ...this.exactMatch(['isVerified', 'id']),
-      },
-      order: [['createdAt', 'DESC']],
-      ...this.paginate(),
-      include: [
-        {
-          model: db.HealthCareProvider,
-          as: 'hcp',
-          where: {
-            ...this.filterBy(['hcpName', 'hcpCode'], {
-              map: {
-                hcpName: 'name',
-                hcpCode: 'code',
-              },
-            }),
-          },
-        },
-      ],
-    });
+    const { field, value } = this.query;
+    if (!field && value) {
+      let result = await this.queryAllEnrollees(['Enrollee']);
+      if (!result.rows[0]) {
+        result = await this.queryAllEnrollees(['HealthCareProvider']);
+      }
+      return result;
+    }
+    return await this.queryAllEnrollees(['Enrollee', 'HealthCareProvider']);
   }
   getById() {
     return db.Enrollee.findAll({
@@ -229,5 +216,26 @@ export default class EnrolleeService extends AppService {
       });
     }
     return allowed;
+  }
+
+  queryAllEnrollees(searchModels) {
+    return db.Enrollee.findAndCountAll({
+      where: {
+        ...(searchModels.includes('Enrollee')
+          ? this.searchBy(enrolleeSearchItems)
+          : {}),
+      },
+      ...this.paginate(),
+      order: [['dateVerified', 'DESC']],
+      include: {
+        model: db.HealthCareProvider,
+        as: 'hcp',
+        where: {
+          ...(searchModels.includes('HealthCareProvider')
+            ? this.searchBy(['code', 'name'])
+            : {}),
+        },
+      },
+    });
   }
 }
