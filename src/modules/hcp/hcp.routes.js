@@ -23,5 +23,11 @@ router.get(
   AuthMiddleware.authorize(),
   HcpController.getCapitation
 );
+router.get(
+  '/:hcpId/verified_enrollees',
+  // HcpMiddleware.validateQuery,
+  AuthMiddleware.authorize(),
+  HcpController.getVerifiedHcpEnrollees
+);
 
 export default router;

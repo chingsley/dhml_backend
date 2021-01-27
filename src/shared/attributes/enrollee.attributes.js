@@ -65,3 +65,17 @@ export const enrolleeFilterables = [
   'serviceStatus',
   ...contactDetails,
 ];
+
+export const enrolleeSearchItems = [
+  'surname',
+  'firstName',
+  'middleName',
+  'scheme',
+  'staffNumber',
+  'serviceNumber',
+  'rank',
+  'principalId',
+  'armOfService',
+  'stateOfResidence',
+  'serviceStatus',
+];

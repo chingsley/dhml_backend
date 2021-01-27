@@ -20,6 +20,23 @@ export default class HcpService extends AppService {
       ...this.paginate(),
     });
   }
+  async fetchVerifiedHcpEnrollees() {
+    const { hcpId } = this.params;
+    const { field, value } = this.query;
+    if (!field && value) {
+      let result = await this.queryVerifiedEnrollees(hcpId, ['Enrollee']);
+      if (!result.rows[0]) {
+        result = await this.queryVerifiedEnrollees(hcpId, [
+          'HealthCareProvider',
+        ]);
+      }
+      return result;
+    }
+    return await this.queryVerifiedEnrollees(hcpId, [
+      'Enrollee',
+      'HealthCareProvider',
+    ]);
+  }
   async fetchManifest() {
     const { page, pageSize } = this.query;
     let count, rows;
