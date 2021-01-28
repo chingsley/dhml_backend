@@ -226,7 +226,7 @@ export default class EnrolleeService extends AppService {
           : {}),
       },
       ...this.paginate(),
-      order: [['dateVerified', 'DESC']],
+      order: [['createdAt', 'DESC']],
       include: {
         model: db.HealthCareProvider,
         as: 'hcp',
