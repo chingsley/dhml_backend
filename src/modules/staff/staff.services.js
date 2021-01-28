@@ -13,6 +13,16 @@ export default class StaffService extends AppService {
     this.params = params;
   }
 
+  async createNewStaff() {
+    const newStaff = this.body;
+    await this.validateUnique(['staffIdNo', 'staffFileNo', 'email'], {
+      model: db.Staff,
+      reqBody: newStaff,
+      resourceType: 'A staff member',
+    });
+    return await db.Staff.create(newStaff);
+  }
+
   async fetchAllStaff() {
     const { unregisteredOnly } = this.query;
     if (unregisteredOnly && JSON.parse(unregisteredOnly.toLowerCase())) {
