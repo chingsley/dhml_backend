@@ -1,4 +1,5 @@
 import express from 'express';
+import { SUPERADMIN } from '../../shared/constants/roles.constants';
 import AuthMiddleware from '../auth/auth.middleware';
 import HcpController from '../hcp/hcp.controller';
 import HcpMiddleware from './hcp.middleware';
@@ -28,6 +29,12 @@ router.get(
   // HcpMiddleware.validateQuery,
   AuthMiddleware.authorize(),
   HcpController.getVerifiedHcpEnrollees
+);
+router.patch(
+  '/:hcpId/toggle_status',
+  // HcpMiddleware.validateQuery,
+  AuthMiddleware.authorize([SUPERADMIN]),
+  HcpController.toggleHcpStatus
 );
 
 export default router;

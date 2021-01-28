@@ -79,4 +79,21 @@ export default class HcpService extends AppService {
       },
     });
   }
+
+  async toggleStatusOfHcp() {
+    const { hcpId } = this.params;
+    const hcp = await this.findOneRecord({
+      modelName: 'HealthCareProvider',
+      where: { id: hcpId },
+      isRequired: true,
+      errorIfNotFound: `No HCP matches an id of ${hcpId}`,
+    });
+    if (hcp.status === 'active') {
+      await hcp.update({ status: 'suspended' });
+    } else {
+      await hcp.update({ status: 'active' });
+    }
+    await hcp.reload();
+    return hcp;
+  }
 }
