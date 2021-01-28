@@ -6,14 +6,13 @@ module.exports = (sequelize, DataTypes) => {
   const Staff = sequelize.define(
     'Staff',
     {
-      staffFileNo: {
-        type: DataTypes.STRING,
-      },
       staffIdNo: {
         allowNull: false,
         type: DataTypes.STRING,
-        primaryKey: true,
         unique: true,
+      },
+      staffFileNo: {
+        type: DataTypes.STRING,
       },
       email: {
         type: DataTypes.STRING,

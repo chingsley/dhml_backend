@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
       code: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
       },
       name: {
         type: DataTypes.STRING,
@@ -18,6 +19,11 @@ module.exports = (sequelize, DataTypes) => {
       state: {
         type: DataTypes.STRING,
         allowNull: false,
+      },
+      status: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: 'active',
       },
     },
     {}

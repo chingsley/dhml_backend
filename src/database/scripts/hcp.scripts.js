@@ -17,18 +17,18 @@ export const getManifest = (dialect, dbName, reqQuery = {}) => {
     filterByHcpName || filterByHcpCode || generalSearch || fallback;
   const query = {
     postgres: `
-    SELECT id "hcpId", "hcpCode", "hcpName", MAX("verifiedOn") AS "monthOfYear", SUM("principals") principals, SUM("dependants") dependants
+    SELECT id "hcpId", "hcpCode", "hcpName", "hcpStatus", MAX("verifiedOn") AS "monthOfYear", SUM("principals") principals, SUM("dependants") dependants
     FROM
-      (SELECT COALESCE(p.id,d.id) id, COALESCE(p.code,d.code) "hcpCode", COALESCE(p.name,d.name) "hcpName", COALESCE(p."verifiedOn",d."verifiedOn") "verifiedOn", principals, dependants
+      (SELECT COALESCE(p.id,d.id) id, COALESCE(p.code,d.code) "hcpCode", COALESCE(p.name,d.name) "hcpName", COALESCE(p.status,d.status) "hcpStatus", COALESCE(p."verifiedOn",d."verifiedOn") "verifiedOn", principals, dependants
       FROM
-        (SELECT h.id, h.code, h.name, DATE_TRUNC('month', "dateVerified") "verifiedOn", count(*) as principals
+        (SELECT h.id, h.code, h.name, h.status, DATE_TRUNC('month', "dateVerified") "verifiedOn", count(*) as principals
         FROM "HealthCareProviders" h
         JOIN "Enrollees" e
             ON h.id = e."hcpId"
         WHERE e."principalId" IS NULL AND e."isVerified"=true
         GROUP BY h.id, h.code, h.name, DATE_TRUNC('month', "dateVerified")) AS p
       FULL OUTER JOIN
-        (SELECT h.id, h.code, h.name, DATE_TRUNC('month', "dateVerified") "verifiedOn", count(*) as dependants
+        (SELECT h.id, h.code, h.name, h.status, DATE_TRUNC('month', "dateVerified") "verifiedOn", count(*) as dependants
         FROM "HealthCareProviders" h
         JOIN "Enrollees" e
             ON h.id = e."hcpId"
@@ -37,7 +37,7 @@ export const getManifest = (dialect, dbName, reqQuery = {}) => {
       ON p.id = d.id AND p."verifiedOn" = d."verifiedOn") sub
     
     WHERE DATE_TRUNC('month', "verifiedOn") <= '${date}' AND ${filter}
-    GROUP BY id, "hcpCode", "hcpName"
+    GROUP BY id, "hcpCode", "hcpName", "hcpStatus"
     ORDER BY "hcpName" ASC
     LIMIT ${limit}
     OFFSET ${offset}
@@ -64,15 +64,15 @@ export const getCapitation = (dialect, dbName, reqQuery = {}) => {
     filterByHcpName || filterByHcpCode || generalSearch || fallback;
 
   const query1 = `
-  SELECT id "hcpId", "hcpCode", "hcpName", MAX("dateVerified") "monthOfYear", SUM(lives) lives, SUM(lives)*750 amount
+  SELECT id "hcpId", "hcpCode", "hcpName", "hcpStatus", MAX("dateVerified") "monthOfYear", SUM(lives) lives, SUM(lives)*750 amount
   FROM
-    (SELECT h.id, h.code "hcpCode", h.name "hcpName", DATE_TRUNC('month', "dateVerified") "dateVerified", count(e.id) lives
+    (SELECT h.id, h.code "hcpCode", h.name "hcpName",h.status "hcpStatus", DATE_TRUNC('month', "dateVerified") "dateVerified", count(e.id) lives
     FROM "HealthCareProviders" h
     JOIN "Enrollees" e
     ON e."hcpId" = h.id AND e."isVerified"=true
     GROUP BY h.id, h.code, h.name, DATE_TRUNC('month', "dateVerified"))sub
   WHERE DATE_TRUNC('month', "dateVerified") <= '${date}' AND ${filter}
-  GROUP BY id, "hcpCode", "hcpName"
+  GROUP BY id, "hcpCode", "hcpName", "hcpStatus"
   ORDER BY "hcpName" ASC, "monthOfYear" ASC
   LIMIT ${limit}
   OFFSET ${offset}

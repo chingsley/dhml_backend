@@ -11,6 +11,7 @@ module.exports = {
       code: {
         type: Sequelize.STRING,
         allowNull: false,
+        unique: true,
       },
       name: {
         type: Sequelize.STRING,
@@ -21,6 +22,10 @@ module.exports = {
         allowNull: false,
       },
       state: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      status: {
         type: Sequelize.STRING,
         allowNull: false,
       },

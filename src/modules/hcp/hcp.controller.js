@@ -38,4 +38,13 @@ export default class HcpController {
       Response.handleError('getCapitation', error, req, res, next);
     }
   }
+  static async toggleHcpStatus(req, res, next) {
+    try {
+      const hcpService = new HcpService(req);
+      const data = await hcpService.toggleStatusOfHcp();
+      return res.status(200).json({ data });
+    } catch (error) {
+      Response.handleError('toggleHcpStatus', error, req, res, next);
+    }
+  }
 }

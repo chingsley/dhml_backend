@@ -7,7 +7,10 @@ const getSampleHCPs = require('../../shared/samples/hcp.samples');
 module.exports = {
   // eslint-disable-next-line no-unused-vars
   up: (queryInterface, Sequelize) => {
-    return queryInterface.bulkInsert('HealthCareProviders', getSampleHCPs());
+    return queryInterface.bulkInsert(
+      'HealthCareProviders',
+      getSampleHCPs().map((hcp) => ({ ...hcp, status: 'active' }))
+    );
   },
 
   // eslint-disable-next-line no-unused-vars
