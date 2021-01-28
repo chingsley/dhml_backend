@@ -8,6 +8,8 @@ import TestService from '../app/app.test.service';
 import ROLES from '../../../src/shared/constants/roles.constants';
 import getSampleStaffs from '../../../src/shared/samples/staff.samples';
 
+const { log } = console;
+
 const app = supertest(server.server);
 
 const originalImplementation = cloudinary.uploader.upload;
@@ -77,7 +79,7 @@ describe('EnrolleeController', () => {
           .attach('idCard', imageFile)
           .attach('deathCertificate', imageFile)
           .attach('letterOfNok', imageFile);
-        // res.status !== 201 && console.log(res.body);
+        // res.status !== 201 && log(res.body);
         expect(res.status).toBe(201);
         expect(res.body).toHaveProperty('data');
         const { data } = res.body;
@@ -129,6 +131,59 @@ describe('EnrolleeController', () => {
             id: dependant.id,
             isDependant: true,
             scheme: dependant.scheme,
+          })
+        );
+        expect(true).toBe(true);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('can enrol a special principal', async (done) => {
+      try {
+        const { principals } = sampleEnrollees;
+        const principal = principals[1];
+        const res = await app
+          .post('/api/v1/enrollees')
+          .set('authorization', token)
+          .field('enrolmentType', 'special-principal')
+          .field('scheme', principal.scheme)
+          .field('id', 1)
+          .field('surname', principal.surname)
+          .field('firstName', principal.firstName)
+          .field('gender', principal.gender)
+          .field('serviceNumber', 'SN/TEST/001')
+          .field('rank', 'Gen.')
+          .field('dateOfBirth', '2000-01-02')
+          .field('identificationType', principal.identificationType)
+          .field('identificationNumber', principal.identificationNumber)
+          .field('serviceStatus', principal.serviceStatus)
+          .field('phoneNumber', principal.phoneNumber)
+          .field('email', principal.email)
+          .field('residentialAddress', principal.residentialAddress)
+          .field('stateOfResidence', principal.stateOfResidence)
+          .field('lga', principal.lga)
+          .field('bloodGroup', principal.bloodGroup)
+          .field(
+            'significantMedicalHistory',
+            principal.significantMedicalHistory
+          )
+          .field('hcpId', hcp.id)
+          .attach('photograph', imageFile)
+          .attach('birthCertificate', imageFile)
+          .attach('marriageCertificate', imageFile)
+          .attach('idCard', imageFile)
+          .attach('deathCertificate', imageFile)
+          .attach('letterOfNok', imageFile);
+        res.status !== 201 && log(res.body);
+        expect(res.status).toBe(201);
+        expect(res.body).toHaveProperty('data');
+        const { data } = res.body;
+        expect(data).toEqual(
+          expect.objectContaining({
+            id: '00001',
+            isPrincipal: true,
+            scheme: principal.scheme,
           })
         );
         expect(true).toBe(true);

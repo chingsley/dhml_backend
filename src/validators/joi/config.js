@@ -14,7 +14,6 @@ export const validateSchema = async (schema, payload, subject = '') => {
   };
   try {
     const joiFormatted = await schema.validateAsync(payload);
-    // console.log('>>>>>>>. joiFormatted = ', joiFormatted);
     return { joiFormatted };
   } catch (error) {
     if (error.details?.[0].type?.match(/string.pattern.base/i)) {

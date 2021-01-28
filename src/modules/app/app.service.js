@@ -167,18 +167,6 @@ export default class AppService {
   };
 
   getSearchQuery(field, value) {
-    // if (field === 'code') {
-    //   return {
-    //     [Op.or]: [
-    //       {
-    //         name: { [Op.iLike]: `%${value.toLowerCase()}%` },
-    //       },
-    //       {
-    //         code: { [Op.iLike]: `%${value.toLowerCase()}%` },
-    //       },
-    //     ],
-    //   };
-    // } else
     if (value === 'all') {
       return { [field]: { [Op.not]: null } };
     } else if (value === 'none') {
