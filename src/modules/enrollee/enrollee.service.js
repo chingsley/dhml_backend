@@ -6,7 +6,7 @@ import { QueryTypes } from 'sequelize';
 import { zeroPadding, getAvailableIds } from '../../utils/helpers';
 import { getReservedPrincipalIDs } from '../../database/scripts/enrollee.scripts';
 import AppService from '../app/app.service';
-import { enrolleeSearchItems } from '../../shared/attributes/enrollee.attributes';
+import { enrolleeSearchableFields } from '../../shared/attributes/enrollee.attributes';
 
 export default class EnrolleeService extends AppService {
   constructor({ body, files, query, params }) {
@@ -65,15 +65,17 @@ export default class EnrolleeService extends AppService {
   }
 
   async getAllEnrollees() {
-    const { field, value } = this.query;
-    if (!field && value) {
-      let result = await this.queryAllEnrollees(['Enrollee']);
-      if (!result.rows[0]) {
-        result = await this.queryAllEnrollees(['HealthCareProvider']);
-      }
-      return result;
-    }
-    return await this.queryAllEnrollees(['Enrollee', 'HealthCareProvider']);
+    return db.Enrollee.findAndCountAll({
+      where: {
+        ...this.searchEnrolleesBy(enrolleeSearchableFields),
+      },
+      ...this.paginate(),
+      order: [['createdAt', 'DESC']],
+      include: {
+        model: db.HealthCareProvider,
+        as: 'hcp',
+      },
+    });
   }
   getById() {
     return db.Enrollee.findAll({
@@ -216,26 +218,5 @@ export default class EnrolleeService extends AppService {
       });
     }
     return allowed;
-  }
-
-  queryAllEnrollees(searchModels) {
-    return db.Enrollee.findAndCountAll({
-      where: {
-        ...(searchModels.includes('Enrollee')
-          ? this.searchBy(enrolleeSearchItems)
-          : {}),
-      },
-      ...this.paginate(),
-      order: [['createdAt', 'DESC']],
-      include: {
-        model: db.HealthCareProvider,
-        as: 'hcp',
-        where: {
-          ...(searchModels.includes('HealthCareProvider')
-            ? this.searchBy(['code', 'name'])
-            : {}),
-        },
-      },
-    });
   }
 }

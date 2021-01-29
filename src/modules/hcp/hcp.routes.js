@@ -1,5 +1,6 @@
 import express from 'express';
 import { SUPERADMIN } from '../../shared/constants/roles.constants';
+import AppMiddleware from '../app/app.middleware';
 import AuthMiddleware from '../auth/auth.middleware';
 import HcpController from '../hcp/hcp.controller';
 import HcpMiddleware from './hcp.middleware';
@@ -26,15 +27,20 @@ router.get(
 );
 router.get(
   '/:hcpId/verified_enrollees',
-  // HcpMiddleware.validateQuery,
   AuthMiddleware.authorize(),
   HcpController.getVerifiedHcpEnrollees
 );
 router.patch(
   '/:hcpId/toggle_status',
-  // HcpMiddleware.validateQuery,
   AuthMiddleware.authorize([SUPERADMIN]),
+  AppMiddleware.validateIdParams,
   HcpController.toggleHcpStatus
+);
+router.delete(
+  '/:hcpId',
+  AuthMiddleware.authorize([SUPERADMIN]),
+  AppMiddleware.validateIdParams,
+  HcpController.deleteHcp
 );
 
 export default router;

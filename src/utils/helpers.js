@@ -74,3 +74,13 @@ export const getAvailableIds = (pool, taken) => {
 
   return result.main;
 };
+
+export function isBoolean(value) {
+  try {
+    const expected = [true, false];
+    const result = JSON.parse(value);
+    return expected.includes(result);
+  } catch (e) {
+    return false;
+  }
+}

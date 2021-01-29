@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import db from '../../database/models';
 import { throwError } from '../../shared/helpers';
 import { QueryTypes } from 'sequelize';
-import { enrolleeSearchItems } from '../../shared/attributes/enrollee.attributes';
+import { isBoolean } from '../../utils/helpers';
 
 export default class AppService {
   constructor({ body, files, query }) {
@@ -151,50 +151,68 @@ export default class AppService {
     return filterObj;
   }
 
-  searchBy = (searchableFields) => {
-    const { field, value } = this.query;
-    if (field && value && searchableFields.includes(field)) {
-      return this.getSearchQuery(field, value);
-    } else if (value && !field) {
+  searchEnrolleesBy = (searchableFields) => {
+    const { searchField, searchValue, searchItem } = this.query;
+    const allowedFields = searchableFields.map(({ name }) => name);
+    let conditions = {};
+    if (searchField && searchValue && allowedFields.includes(searchField)) {
+      conditions = this.getSearchQuery(searchField, searchValue, {
+        searchableFields,
+      });
+    }
+    if (searchItem) {
+      conditions = {
+        ...conditions,
+        ...{
+          [Op.or]: searchableFields.map((field) => {
+            if (field.type === 'string') {
+              return {
+                [field.name]: { [Op.iLike]: `%${searchItem.toLowerCase()}%` },
+              };
+            } else {
+              return {};
+            }
+          }),
+        },
+      };
+    }
+    const { log } = console;
+    log('searchEnrolleesBy ===> ', conditions);
+    return conditions;
+  };
+
+  searchByEnrolmentType(value) {
+    if (value === 'dependant') {
+      return { principalId: { [Op.not]: null } };
+    } else if (value === 'principal') {
+      return { principalId: { [Op.is]: null } };
+    } else {
+      throwError({
+        status: 400,
+        error:
+          'Invalid value for enrolment type. Allowed values are "dependant" or "principal"',
+      });
+    }
+  }
+
+  getSearchQuery(searchField, searchValue, { searchableFields }) {
+    const field = searchableFields.find(({ name }) => name === searchField);
+    if (searchField === 'enrolmentType') {
+      return this.searchByEnrolmentType(searchValue);
+    } else if (searchValue === 'all') {
+      return { [searchField]: { [Op.not]: null } };
+    } else if (field.type === 'number' && Number(searchValue)) {
+      return { [searchField]: Number(searchValue) };
+    } else if (field.type === 'string') {
       return {
-        [Op.or]: searchableFields.map((field) => ({
-          [field]: { [Op.iLike]: `%${value.toLowerCase()}%` },
-        })),
+        [searchField]: { [Op.iLike]: searchValue.toLowerCase() },
+      };
+    } else if (field.type === 'boolean' && isBoolean(searchValue)) {
+      return {
+        [searchField]: JSON.parse(searchValue),
       };
     } else {
       return {};
     }
-  };
-
-  getSearchQuery(field, value) {
-    if (value === 'all') {
-      return { [field]: { [Op.not]: null } };
-    } else if (value === 'none') {
-      return { [field]: { [Op.is]: null } };
-    } else {
-      return { [field]: { [Op.iLike]: `%${value.toLowerCase()}%` } };
-    }
-  }
-  queryVerifiedEnrollees(hcpId, searchModels) {
-    return db.Enrollee.findAndCountAll({
-      where: {
-        hcpId,
-        isVerified: true,
-        ...(searchModels.includes('Enrollee')
-          ? this.searchBy(enrolleeSearchItems)
-          : {}),
-      },
-      ...this.paginate(),
-      order: [['dateVerified', 'DESC']],
-      include: {
-        model: db.HealthCareProvider,
-        as: 'hcp',
-        where: {
-          ...(searchModels.includes('HealthCareProvider')
-            ? this.searchBy(['code', 'name'])
-            : {}),
-        },
-      },
-    });
   }
 }
