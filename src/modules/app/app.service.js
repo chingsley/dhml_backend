@@ -32,10 +32,12 @@ export default class AppService {
     }
   }
 
-  async validateStaffIdNo(staffIdNo) {
-    return await db.Staff.findByStaffIdNo(staffIdNo, {
-      throwErrorIfNotFound: true,
-      errorMsg: `Staff ID: ${staffIdNo} not found`,
+  async validateStaffId(staffId) {
+    return await this.findOneRecord({
+      modelName: 'Staff',
+      where: { id: staffId },
+      isRequired: true,
+      errorIfNotFound: `Staff ID: ${staffId} not found`,
     });
   }
 
