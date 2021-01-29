@@ -49,14 +49,16 @@ class TestService {
   static async seedUsers(noOfUsers = 1, userRole = 'dept user') {
     const { sampleStaffs } = getSampleStaffs(noOfUsers);
     const { sampleUsers } = getSampleUsers(sampleStaffs);
-    await db.Staff.bulkCreate(sampleStaffs);
+    const staffs = await db.Staff.bulkCreate(sampleStaffs);
     const role = await db.Role.create({ title: userRole });
-    const users = await db.User.bulkCreate(
-      sampleUsers.map((user) => ({
+    const usersSeed = sampleUsers.map((user, index) => {
+      return {
         ...user,
+        staffId: staffs[index].id,
         roleId: role.id,
-      }))
-    );
+      };
+    });
+    const users = await db.User.bulkCreate(usersSeed);
     const password = this.getHash('Testing*123');
     await db.Password.bulkCreate(
       users.map((user) => ({
