@@ -1,3 +1,4 @@
+import { Joi, validateSchema } from '../../validators/joi/config';
 import { Cypher } from '../../utils/Cypher';
 import { isEmptyObject } from '../../utils/helpers';
 import Response from '../../utils/Response';
@@ -6,6 +7,20 @@ const { AES_KEY, IV_KEY } = process.env;
 const cypher = new Cypher(AES_KEY, IV_KEY);
 
 export default class AppMiddleware {
+  static async validateIdParams(req, res, next) {
+    try {
+      const paramsSchema = Joi.object({
+        hcpId: Joi.number().integer().min(1),
+        staffId: Joi.number().integer().min(1),
+        enrolleeId: Joi.string().trim(),
+        userId: Joi.number().integer().min(1),
+      });
+      await validateSchema(paramsSchema, req.params, 'Invalid Id: ');
+      return next();
+    } catch (error) {
+      Response.handleError('validateIdParams', error, req, res, next);
+    }
+  }
   static validateImageUpload(req, res, next) {
     try {
       if (req.files) {

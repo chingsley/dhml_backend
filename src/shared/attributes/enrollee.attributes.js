@@ -66,16 +66,19 @@ export const enrolleeFilterables = [
   ...contactDetails,
 ];
 
-export const enrolleeSearchItems = [
-  'surname',
-  'firstName',
-  'middleName',
-  'scheme',
-  'staffNumber',
-  'serviceNumber',
-  'rank',
-  'principalId',
-  'armOfService',
-  'stateOfResidence',
-  'serviceStatus',
+export const enrolleeSearchableFields = [
+  { name: 'surname', type: 'string' },
+  { name: 'firstName', type: 'string' },
+  { name: 'middleName', type: 'string' },
+  { name: 'scheme', type: 'string' },
+  { name: 'staffNumber', type: 'string' },
+  { name: 'serviceNumber', type: 'string' },
+  { name: 'rank', type: 'string' },
+  { name: 'principalId', type: 'string' },
+  { name: 'armOfService', type: 'string' },
+  { name: 'stateOfResidence', type: 'string' },
+  { name: 'serviceStatus', type: 'string' },
+  { name: 'hcpId', type: 'number' },
+  { name: 'isVerified', type: 'boolean' },
+  { name: 'enrolmentType', type: 'custom' },
 ];

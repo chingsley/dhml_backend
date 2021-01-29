@@ -1,6 +1,7 @@
 import db from '../../database/models';
 import AppService from '../app/app.service';
 import { getCapitation, getManifest } from '../../database/scripts/hcp.scripts';
+import { enrolleeSearchableFields } from '../../shared/attributes/enrollee.attributes';
 
 export default class HcpService extends AppService {
   constructor({ body, files, query, params }) {
@@ -22,20 +23,19 @@ export default class HcpService extends AppService {
   }
   async fetchVerifiedHcpEnrollees() {
     const { hcpId } = this.params;
-    const { field, value } = this.query;
-    if (!field && value) {
-      let result = await this.queryVerifiedEnrollees(hcpId, ['Enrollee']);
-      if (!result.rows[0]) {
-        result = await this.queryVerifiedEnrollees(hcpId, [
-          'HealthCareProvider',
-        ]);
-      }
-      return result;
-    }
-    return await this.queryVerifiedEnrollees(hcpId, [
-      'Enrollee',
-      'HealthCareProvider',
-    ]);
+    return db.Enrollee.findAndCountAll({
+      where: {
+        hcpId,
+        isVerified: true,
+        ...this.searchEnrolleesBy(enrolleeSearchableFields),
+      },
+      ...this.paginate(),
+      order: [['dateVerified', 'DESC']],
+      include: {
+        model: db.HealthCareProvider,
+        as: 'hcp',
+      },
+    });
   }
   async fetchManifest() {
     const { page, pageSize } = this.query;
@@ -95,5 +95,18 @@ export default class HcpService extends AppService {
     }
     await hcp.reload();
     return hcp;
+  }
+  async handleHcpDelete() {
+    // const { hcpId } = this.params;
+    // const hcp = await this.findOneRecord({
+    //   modelName: 'HealthCareProvider',
+    //   where: { id: hcpId },
+    //   isRequired: true,
+    //   errorIfNotFound: `No HCP matches the Id of ${hcpId}`,
+    //   include: { model: db.Enrollee, as: 'enrollees' },
+    // });
+    // // await hcp.destroy();
+    // return hcp;
+    return { message: 'work in progress....' };
   }
 }
