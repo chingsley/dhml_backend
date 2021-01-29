@@ -160,7 +160,7 @@ module.exports = (sequelize, DataTypes) => {
   );
   Staff.associate = function (models) {
     Staff.hasOne(models.User, {
-      foreignKey: 'staffIdNo',
+      foreignKey: 'staffId',
       as: 'userInfo',
     });
   };

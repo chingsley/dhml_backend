@@ -18,10 +18,10 @@ export default class UserService extends AppService {
   async createUser() {
     const t = await sequelize.transaction();
     try {
-      const { staffIdNo, roleId, returnPassword } = this.userData;
-      await this.validateStaffIdNo(staffIdNo);
+      const { staffId, roleId, returnPassword } = this.userData;
+      await this.validateStaffId(staffId);
       await this.validateRoleId(roleId); // define in appService
-      await this.validateUnique(['email', 'staffIdNo'], {
+      await this.validateUnique(['email', 'staffId'], {
         resourceType: 'User',
         model: db.User,
         reqBody: this.userData,
@@ -54,6 +54,7 @@ export default class UserService extends AppService {
   }
 
   fetchAllUsers = () => {
+    // return { testing: true };
     return db.User.findAndCountAll({
       attributes: { exclude: ['password'] },
       where: {

@@ -8,12 +8,12 @@ module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
     'User',
     {
-      staffIdNo: {
-        type: DataTypes.STRING,
+      staffId: {
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: {
           model: 'Staffs',
-          key: 'staffIdNo',
+          key: 'id',
         },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
@@ -66,7 +66,7 @@ module.exports = (sequelize, DataTypes) => {
   );
   User.associate = function (models) {
     User.belongsTo(models.Staff, {
-      foreignKey: 'staffIdNo',
+      foreignKey: 'staffId',
       as: 'staffInfo',
     });
     User.hasOne(models.Password, {
