@@ -47,4 +47,13 @@ export default class HcpController {
       Response.handleError('toggleHcpStatus', error, req, res, next);
     }
   }
+  static async deleteHcp(req, res, next) {
+    try {
+      const hcpService = new HcpService(req);
+      const data = await hcpService.handleHcpDelete();
+      return res.status(200).json({ message: 'HCP has been deleted', data });
+    } catch (error) {
+      Response.handleError('deleteHcp', error, req, res, next);
+    }
+  }
 }
