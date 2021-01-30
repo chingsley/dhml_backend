@@ -16,8 +16,8 @@ export const getLastRegisteredPrincipal = (dialect, dbName) => {
         FROM "Enrollees" e
         WHERE e."principalId" IS NULL
     ) sub
-    WHERE cast("id" as INTEGER) > 230
-    ORDER BY sub."id" DESC
+    WHERE cast("enrolleeIdNo" as INTEGER) > 230
+    ORDER BY sub."enrolleeIdNo" DESC
     LIMIT 1;
     `,
 
@@ -26,8 +26,8 @@ export const getLastRegisteredPrincipal = (dialect, dbName) => {
     FROM  
         (SELECT * FROM ${dbName}.Enrollees  
         WHERE principalId IS NULL) AS sub
-        WHERE CAST(id AS UNSIGNED) > 230
-        ORDER BY sub.id DESC
+        WHERE CAST(enrolleeIdNo AS UNSIGNED) > 230
+        ORDER BY sub.enrolleeIdNo DESC
         LIMIT 1;
     `,
   };
@@ -37,23 +37,23 @@ export const getLastRegisteredPrincipal = (dialect, dbName) => {
 export const getReservedPrincipalIDs = (dialect, dbName) => {
   const query = {
     postgres: `
-    SELECT cast("id" as INTEGER) AS id
+    SELECT cast("enrolleeIdNo" as INTEGER) AS "enrolleeIdNo"
     FROM 
     (
       SELECT *
         FROM "Enrollees" e
         WHERE e."principalId" IS NULL
     ) sub
-    WHERE cast("id" as INTEGER) < 230
-    ORDER BY sub."id" ASC;
+    WHERE cast("enrolleeIdNo" as INTEGER) < 230
+    ORDER BY sub."enrolleeIdNo" ASC;
     `,
     mysql: `
-    SELECT cast(id as UNSIGNED) AS id
+    SELECT cast(enrolleeIdNo as UNSIGNED) AS enrolleeIdNo
     FROM  
         (SELECT * FROM ${dbName}.Enrollees  
         WHERE principalId IS NULL) AS sub
-        WHERE CAST(id AS UNSIGNED) < 231
-        ORDER BY sub.id ASC;
+        WHERE CAST(enrolleeIdNo AS UNSIGNED) < 231
+        ORDER BY sub.enrolleeIdNo ASC;
     `,
   };
   return query[dialect];

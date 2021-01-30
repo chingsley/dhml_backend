@@ -4,6 +4,23 @@ import Response from '../../utils/Response';
 import { Joi, validateSchema } from '../../validators/joi/config';
 
 export default class HcpMiddleware {
+  static async validateStatusUpdate(req, res, next) {
+    try {
+      const schema = Joi.object({
+        status: Joi.string().trim().valid('suspended', 'active').required(),
+        enrolleeIds: Joi.array()
+          .items(Joi.number().integer())
+          .min(1)
+          .unique()
+          .required(),
+      });
+      const { joiFormatted } = await validateSchema(schema, req.body);
+      req.body = joiFormatted;
+      return next();
+    } catch (error) {
+      Response.handleError('validateStatusUpdate', error, req, res, next);
+    }
+  }
   static async validateQuery(req, res, next) {
     try {
       const querySchema = Joi.object({

@@ -12,4 +12,4 @@ const months = {
 
 const t24Hours = new Date(new Date().getTime() + 1000 * 60 * 60 * 24);
 
-module.exports = { days, t24Hours, months };
+module.exports = { moment, days, t24Hours, months };

@@ -31,10 +31,10 @@ router.get(
   HcpController.getVerifiedHcpEnrollees
 );
 router.patch(
-  '/:hcpId/toggle_status',
+  '/status',
   AuthMiddleware.authorize([SUPERADMIN]),
-  AppMiddleware.validateIdParams,
-  HcpController.toggleHcpStatus
+  HcpMiddleware.validateStatusUpdate,
+  HcpController.setHcpStatus
 );
 router.delete(
   '/:hcpId',

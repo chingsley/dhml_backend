@@ -9,7 +9,9 @@ export default class EnrolleeController {
       const enrollee = enrolmentType.match(/principal/i)
         ? await enrolleeService.enrolPrincipal()
         : await enrolleeService.enrolDependant();
-      return res.status(201).json({ data: enrollee });
+      return res
+        .status(201)
+        .json({ message: 'Data successfully saved', data: enrollee });
     } catch (error) {
       Response.handleError('addNewEnrollee', error, req, res, next);
     }
@@ -23,7 +25,7 @@ export default class EnrolleeController {
       Response.handleError('getEnrollees', error, req, res, next);
     }
   }
-  static async getEnrolleeById(req, res, next) {
+  static async getByEnrolleeId(req, res, next) {
     try {
       const enrolleeService = new EnrolleeService(req);
       const data = await enrolleeService.getById();
