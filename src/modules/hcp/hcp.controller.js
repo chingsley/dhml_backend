@@ -2,6 +2,15 @@ import Response from '../../utils/Response';
 import HcpService from './hcp.services';
 
 export default class HcpController {
+  static async addNewHcp(req, res, next) {
+    try {
+      const hcpService = new HcpService(req);
+      const data = await hcpService.createHcp();
+      return res.status(201).json({ data });
+    } catch (error) {
+      Response.handleError('addNewHcp', error, req, res, next);
+    }
+  }
   static async getAllHcp(req, res, next) {
     try {
       const hcpService = new HcpService(req);
