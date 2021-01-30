@@ -2,6 +2,8 @@ import db from '../../database/models';
 import AppService from '../app/app.service';
 import { getCapitation, getManifest } from '../../database/scripts/hcp.scripts';
 import { enrolleeSearchableFields } from '../../shared/attributes/enrollee.attributes';
+import { Op } from 'sequelize';
+import { hcpSearchableFields } from '../../shared/attributes/hcp.attribtes';
 
 export default class HcpService extends AppService {
   constructor({ body, files, query, params }) {
@@ -13,8 +15,10 @@ export default class HcpService extends AppService {
   }
 
   async fetchAllHcp() {
+    // console.log(this.filterHcp());
     return await db.HealthCareProvider.findAndCountAll({
       where: {
+        ...this.searchHcpBy(hcpSearchableFields),
         ...this.filterHcp(),
       },
       order: [['id', 'ASC']],
@@ -71,13 +75,16 @@ export default class HcpService extends AppService {
     }
     return { count, rows };
   }
-  async filterHcp() {
-    return this.filterBy(['hcpCode', 'hcpName'], {
-      map: {
-        hcpCode: 'code',
-        hcpName: 'name',
-      },
-    });
+  filterHcp() {
+    return this.filterBy(
+      ['hcpCode', 'hcpName', 'category', 'state', 'status'],
+      {
+        map: {
+          hcpCode: 'code',
+          hcpName: 'name',
+        },
+      }
+    );
   }
 
   async suspendOrActivate() {
@@ -101,4 +108,33 @@ export default class HcpService extends AppService {
     // return hcp;
     return { message: 'work in progress.....' };
   }
+  searchHcpBy = (searchableFields) => {
+    const { searchField, searchValue, searchItem } = this.query;
+    const allowedFields = searchableFields.map(({ name }) => name);
+    let conditions = {};
+    if (searchField && searchValue && allowedFields.includes(searchField)) {
+      conditions = {
+        [searchField]: { [Op.iLike]: searchValue.toLowerCase() },
+      };
+    }
+    if (searchItem) {
+      conditions = {
+        ...conditions,
+        ...{
+          [Op.or]: searchableFields.map((field) => {
+            if (field.type === 'string') {
+              return {
+                [field.name]: { [Op.iLike]: `%${searchItem.toLowerCase()}%` },
+              };
+            } else {
+              return {};
+            }
+          }),
+        },
+      };
+    }
+    const { log } = console;
+    log('searchEnrolleesBy ===> ', conditions);
+    return conditions;
+  };
 }

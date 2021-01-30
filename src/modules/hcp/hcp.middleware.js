@@ -31,6 +31,11 @@ export default class HcpMiddleware {
         hcpCode: Joi.string().trim(),
         hcpName: Joi.string().trim(),
         value: Joi.string().trim(),
+        searchField: Joi.string().trim(),
+        searchValue: Joi.string().trim(),
+        searchItem: Joi.string().trim(),
+        category: Joi.string().trim(),
+        state: Joi.string().trim(),
         date: Joi.date()
           .format('YYYY-MM-DD')
           .max('now')
