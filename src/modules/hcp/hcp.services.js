@@ -17,7 +17,7 @@ export default class HcpService extends AppService {
       where: {
         ...this.filterHcp(),
       },
-      order: [['createdAt', 'DESC']],
+      order: [['id', 'ASC']],
       ...this.paginate(),
     });
   }
@@ -80,21 +80,13 @@ export default class HcpService extends AppService {
     });
   }
 
-  async toggleStatusOfHcp() {
-    const { hcpId } = this.params;
-    const hcp = await this.findOneRecord({
-      modelName: 'HealthCareProvider',
-      where: { id: hcpId },
-      isRequired: true,
-      errorIfNotFound: `No HCP matches an id of ${hcpId}`,
-    });
-    if (hcp.status === 'active') {
-      await hcp.update({ status: 'suspended' });
-    } else {
-      await hcp.update({ status: 'active' });
-    }
-    await hcp.reload();
-    return hcp;
+  async suspendOrActivate() {
+    const { status, enrolleeIds } = this.body;
+    const result = await db.HealthCareProvider.update(
+      { status },
+      { where: { id: enrolleeIds }, returning: true }
+    );
+    return result[1];
   }
   async handleHcpDelete() {
     // const { hcpId } = this.params;
@@ -107,6 +99,6 @@ export default class HcpService extends AppService {
     // });
     // // await hcp.destroy();
     // return hcp;
-    return { message: 'work in progress....' };
+    return { message: 'work in progress.....' };
   }
 }
