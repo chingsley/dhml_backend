@@ -1,4 +1,4 @@
-import { days, months } from '../../utils/timers';
+import { moment, days, months } from '../../utils/timers';
 import { ranks } from '../constants/ranks.constants';
 import {
   MAX_PRINCIPALS_COUNT,
@@ -35,11 +35,15 @@ export const getEnrollees = (options = {}) => {
     const totalDeps = sameSchemeDepPerPrincipal + vcshipDepPerPrincipal;
     let n = 0;
     while (n < sameSchemeDepPerPrincipal) {
-      dependants.push(getSameSchemeDep(n, { principal }));
+      dependants.push(
+        getSameSchemeDep(n, { principal, principalIntegerId: i + 1 })
+      );
       n += 1;
     }
     while (n < totalDeps) {
-      dependants.push(getVcshipDep(n, { principal }));
+      dependants.push(
+        getVcshipDep(n, { principal, principalIntegerId: i + 1 })
+      );
       n += 1;
     }
   }
@@ -72,7 +76,7 @@ function getPrincipal(index) {
 
   const j = i + 1;
   return {
-    id: zeroPadding(j + 230),
+    enrolleeIdNo: zeroPadding(j + 230),
     ...getBaseFeatures(),
     hcpId: getRandomInt(100, { min: 1 }),
     scheme: random.arrayElement(['DSSHIP', 'VCSHIP', 'AFRSHIP']),
@@ -85,7 +89,7 @@ function getPrincipal(index) {
     armOfService: armOfService,
     department: `${commerce.department()} Unit`,
     employer: employer,
-    dateOfBirth: date.past(150),
+    dateOfBirth: moment(date.past(150)).format('YYYY-MM-DD'),
     gender: gender,
     maritalStatus: random.arrayElement(['single', 'married']),
     serviceStatus: random.arrayElement(['serving', 'retired']),
@@ -94,35 +98,35 @@ function getPrincipal(index) {
   };
 }
 
-function getSameSchemeDep(childIndex, { principal }) {
+function getSameSchemeDep(childIndex, { principal, principalIntegerId }) {
   const variables = getVariableDependantFetutres(principal);
   const { relationshipToPrincipal: rtp } = variables;
   const dateOfBirth = rtp === 'child' ? date.past(30) : date.past(5);
   return {
-    id: `${principal.id}-${childIndex + 1}`,
+    enrolleeIdNo: `${principal.enrolleeIdNo}-${childIndex + 1}`,
     ...getBaseFeatures(),
     ...getVariableDependantFetutres(principal),
     surname: principal.surname,
     dependantClass: 'same-scheme-dependant',
     relationshipToPrincipal: rtp,
-    principalId: principal.id,
+    principalId: principalIntegerId,
     scheme: principal.scheme,
-    dateOfBirth,
+    dateOfBirth: moment(dateOfBirth).format('YYYY-MM-DD'),
     dependantType: `${principal.scheme}-TO-${principal.scheme}`,
     isVerified: principal.isVerified,
     dateVerified: principal.dateVerified,
   };
 }
 
-function getVcshipDep(childIndex, { principal }) {
+function getVcshipDep(childIndex, { principal, principalIntegerId }) {
   return {
-    id: `${principal.id}-${childIndex + 1}`,
+    enrolleeIdNo: `${principal.enrolleeIdNo}-${childIndex + 1}`,
     ...getBaseFeatures(),
     ...getVariableDependantFetutres(principal),
     surname: principal.surname,
     dependantClass: 'other-scheme-dependant',
-    dateOfBirth: date.past(20),
-    principalId: principal.id,
+    dateOfBirth: moment(date.past(20)).format('YYYY-MM-DD'),
+    principalId: principalIntegerId,
     scheme: 'VCSHIP',
     dependantType: `${principal.scheme}-TO-VCSHIP`,
     isVerified: principal.isVerified,

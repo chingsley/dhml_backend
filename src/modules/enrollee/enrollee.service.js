@@ -28,11 +28,11 @@ export default class EnrolleeService extends AppService {
     });
 
     if (enrolleeData.enrolmentType === 'special-principal') {
-      const { id } = enrolleeData;
-      await this.validateSpecialPrincipalId(id);
-      enrolleeData.id = zeroPadding(id);
+      const { enrolleeIdNo } = enrolleeData;
+      await this.validateSpecialPrincipalId(enrolleeIdNo);
+      enrolleeData.enrolleeIdNo = zeroPadding(enrolleeIdNo);
     } else {
-      enrolleeData.id = await db.Enrollee.generateNewPrincipalId();
+      enrolleeData.enrolleeIdNo = await db.Enrollee.generateNewPrincipalIdNo();
     }
     const uploadedImages = files ? await Cloudinary.bulkUpload(files) : {};
     const enrollee = await db.Enrollee.createPrincipal({
@@ -45,13 +45,15 @@ export default class EnrolleeService extends AppService {
   async enrolDependant() {
     const dependantData = this.enrolleeData;
     const files = this.files;
-    const { principalId } = dependantData;
-    const principal = await this.getEnrolleeById(principalId, {
+    await this.ensureValidHcpId(dependantData.hcpId);
+    const { principalId: principalEnrolleeIdNo } = dependantData;
+    const principal = await this.getByEnrolleeIdNo(principalEnrolleeIdNo, {
       throwErrorIfNotFound: true,
     });
+    dependantData.principalId = principal.id;
     this.validateDependantScheme(principal.scheme, dependantData.scheme);
     principal.checkDependantLimit(dependantData);
-    dependantData.id = principal.generateNewDependantId();
+    dependantData.enrolleeIdNo = principal.generateNewDependantIdNo();
     const uploadedImages = files ? await Cloudinary.bulkUpload(files) : {};
     const data = await db.Enrollee.createDependant(
       {
@@ -101,9 +103,6 @@ export default class EnrolleeService extends AppService {
   }
 
   async updateEnrolleeData() {
-    // const { enrolleeId: id } = this.params;
-    // const options = { throwErrorIfNotFound: true };
-    // const enrollee = await this.getEnrolleeById(id, options);
     const fls = this.files;
     const enrollee = await this.findWithReqParams();
     const { dependants, ...rest } = this.body;
@@ -124,9 +123,6 @@ export default class EnrolleeService extends AppService {
   }
 
   async toggleEnrolleeVerification() {
-    // const { enrolleeId: id } = this.params;
-    // const options = { throwErrorIfNotFound: true };
-    // const enrollee = await this.getEnrolleeById(id, options);
     const enrollee = await this.findWithReqParams();
     await enrollee.update({ isVerified: !enrollee.isVerified });
     if (enrollee.principalId === null) {
@@ -140,9 +136,6 @@ export default class EnrolleeService extends AppService {
   }
 
   async destroyEnrollee() {
-    // const { enrolleeId: id } = this.params;
-    // const options = { throwErrorIfNotFound: true };
-    // const enrollee = await this.getEnrolleeById(id, options);
     const enrollee = await this.findWithReqParams();
     await enrollee.destroy();
     return enrollee;
@@ -151,15 +144,15 @@ export default class EnrolleeService extends AppService {
   async findWithReqParams() {
     const { enrolleeId: id } = this.params;
     const options = { throwErrorIfNotFound: true };
-    return await this.getEnrolleeById(id, options);
+    return await this.getByEnrolleeIdNo(id, options);
   }
 
-  async getEnrolleeById(id, { throwErrorIfNotFound }) {
+  async getByEnrolleeIdNo(enrolleeIdNo, { throwErrorIfNotFound }) {
     const enrollee = await db.Enrollee.findOneWhere(
-      { id },
+      { enrolleeIdNo },
       {
         throwErrorIfNotFound,
-        errorMsg: `Invalid Enrollee ID. No record found for ID ${id}`,
+        errorMsg: `Invalid Enrollee ID number. No record found for EnrolleeIdNo.: ${enrolleeIdNo}`,
         errorCode: 'E001',
         include: [
           { model: db.Enrollee, as: 'dependants' },
@@ -174,8 +167,8 @@ export default class EnrolleeService extends AppService {
     return enrollee;
   }
 
-  async validateSpecialPrincipalId(id) {
-    if (Number(id) < 1 || Number(id) > 230) {
+  async validateSpecialPrincipalId(enrolleeIdNo) {
+    if (Number(enrolleeIdNo) < 1 || Number(enrolleeIdNo) > 230) {
       const errorMsg =
         'Invalid Special Enrolment ID, allowed values must be in the range 1 - 230';
       throwError({
@@ -190,16 +183,18 @@ export default class EnrolleeService extends AppService {
         type: QueryTypes.SELECT,
       }
     );
-    // the Number(id) in next line is not necessary b/c the
+    // the Number(enrolleeIdNo) in next line is not necessary b/c the
     // query(check the script file) already casts the id to integer
-    const usedIDs = specialPrincipalIds.map(({ id }) => Number(id));
-    if (usedIDs.includes(Number(id))) {
+    const usedIDs = specialPrincipalIds.map(({ enrolleeIdNo }) =>
+      Number(enrolleeIdNo)
+    );
+    if (usedIDs.includes(Number(enrolleeIdNo))) {
       const pool = Array.from(Array(231).keys()).slice(1);
       const availableIds = getAvailableIds(pool, usedIDs);
       throwError({
         status: 400,
         error: [
-          `The Enrolment ID: ${id} has been taken, please choose from the available list: ${availableIds.join(
+          `The Enrolment ID: ${enrolleeIdNo} has been taken, please choose from the available list: ${availableIds.join(
             ','
           )}`,
         ],

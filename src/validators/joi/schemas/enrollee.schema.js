@@ -5,7 +5,7 @@ export const newEnrolleeSchema = Joi.object({
     .trim()
     .valid('principal', 'special-principal', 'dependant')
     .required(),
-  id: Joi.when('enrolmentType', {
+  enrolleeIdNo: Joi.when('enrolmentType', {
     is: 'special-principal',
     then: Joi.string().trim().required(),
     otherwise: Joi.forbidden(),
