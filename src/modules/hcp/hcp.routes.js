@@ -34,8 +34,7 @@ router.patch(
   '/status',
   AuthMiddleware.authorize([SUPERADMIN]),
   HcpMiddleware.validateStatusUpdate,
-  AppMiddleware.validateIdParams,
-  HcpController.toggleHcpStatus
+  HcpController.setHcpStatus
 );
 router.delete(
   '/:hcpId',

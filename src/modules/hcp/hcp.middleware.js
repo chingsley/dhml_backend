@@ -7,18 +7,16 @@ export default class HcpMiddleware {
   static async validateStatusUpdate(req, res, next) {
     try {
       const schema = Joi.object({
-        status: Joi.string().trim().valid('suspended', 'activated').required(),
+        status: Joi.string().trim().valid('suspended', 'active').required(),
         enrolleeIds: Joi.array()
-          .items(Joi.string().trim())
+          .items(Joi.number().integer())
           .min(1)
           .unique()
           .required(),
       });
       const { joiFormatted } = await validateSchema(schema, req.body);
       req.body = joiFormatted;
-      // return res.send('testing...');
-      return res.status(200).json(req.body);
-      // return next();
+      return next();
     } catch (error) {
       Response.handleError('validateStatusUpdate', error, req, res, next);
     }
