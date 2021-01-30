@@ -8,14 +8,13 @@ module.exports = (sequelize, DataTypes) => {
   const Enrollee = sequelize.define(
     'Enrollee',
     {
-      id: {
+      enrolleeIdNo: {
         allowNull: false,
         unique: true,
-        primaryKey: true,
         type: DataTypes.STRING,
       },
       principalId: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         references: {
           model: 'Principals',
           key: 'id',
@@ -218,7 +217,7 @@ module.exports = (sequelize, DataTypes) => {
     });
     return enrollee;
   };
-  Enrollee.generateNewPrincipalId = async function () {
+  Enrollee.generateNewPrincipalIdNo = async function () {
     const { dialect, database } = sequelize.options;
     const [lastRegisteredPrincipal] = await sequelize.query(
       getLastRegisteredPrincipal(dialect, database),
@@ -229,18 +228,22 @@ module.exports = (sequelize, DataTypes) => {
     if (!lastRegisteredPrincipal) {
       return zeroPadding(231);
     } else {
-      return zeroPadding(Number(lastRegisteredPrincipal.id) + 1);
+      return zeroPadding(Number(lastRegisteredPrincipal.enrolleeIdNo) + 1);
     }
   };
 
-  Enrollee.prototype.generateNewDependantId = function () {
+  Enrollee.prototype.generateNewDependantIdNo = function () {
     const [lastDependant] = this.dependants.sort(
-      (d1, d2) => Number(d2.id.split('-')[1]) - Number(d1.id.split('-')[1])
+      (d1, d2) =>
+        Number(d2.enrolleeIdNo.split('-')[1]) -
+        Number(d1.enrolleeIdNo.split('-')[1])
     );
     if (!lastDependant) {
-      return `${this.id}-1`;
+      return `${this.enrolleeIdNo}-1`;
     } else {
-      return `${this.id}-${Number(lastDependant.id.split('-')[1]) + 1}`;
+      return `${this.enrolleeIdNo}-${
+        Number(lastDependant.enrolleeIdNo.split('-')[1]) + 1
+      }`;
     }
   };
   Enrollee.prototype.checkDependantLimit = function (newDependant) {

@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import supertest from 'supertest';
 import moment from 'moment';
+import { Op } from 'sequelize';
 
 import getSampleStaffs from '../../../src/shared/samples/staff.samples';
 import db from '../../../src/database/models';
@@ -9,6 +10,8 @@ import { TEST_PASSWORD } from '../../../src/shared/constants/passwords.constants
 import server from '../../../src/server';
 import { Cypher } from '../../../src/utils/Cypher';
 import getSampleHCPs from '../../../src/shared/samples/hcp.samples';
+import getEnrollees from '../../../src/shared/samples/enrollee.samples';
+import NanoId from '../../../src/utils/NanoId';
 
 const { AES_KEY, IV_KEY, BCRYPT_SALT } = process.env;
 export const tomorrow = moment().add(1, 'days').format('YYYY-MM-DD');
@@ -19,12 +22,10 @@ const app = supertest(server.server);
 const cypher = new Cypher(AES_KEY, IV_KEY);
 
 class TestService {
-  constructor({ sampleStaff, sampleStaffs, sampleUser, sampleUsers }) {
-    this.sampleStaff = sampleStaff;
-    this.sampleStaffs = sampleStaffs;
-    this.sampleUser = sampleUser;
-    this.sampleUsers = sampleUsers;
+  static getSampleEnrollees(options) {
+    return getEnrollees(options);
   }
+
   static async resetDB(modelsArr) {
     if (modelsArr) {
       if (modelsArr && !Array.isArray(modelsArr)) {
@@ -44,6 +45,10 @@ class TestService {
       await db.Role.destroy({ where: {}, truncate: { cascade: true } });
       await dbHcp.destroy({ where: {}, truncate: { cascade: true } });
     }
+  }
+
+  static async seedStaffs(staffs) {
+    return db.Staff.bulkCreate(staffs);
   }
 
   static async seedUsers(noOfUsers = 1, userRole = 'dept user') {
@@ -68,15 +73,17 @@ class TestService {
     );
     return { users };
   }
-  static async getToken(staff, roleTitle) {
-    const { sampleUsers } = getSampleUsers([staff]);
-    await db.Staff.upsert(staff);
+  static async getToken(sampleStaff, roleTitle) {
+    const { sampleUsers } = getSampleUsers([sampleStaff]);
+    const [staff] = await db.Staff.upsert(sampleStaff, { returning: true });
+    // console.log(staff);
+
     let role = await db.Role.findOne({ where: { title: roleTitle } });
     if (!role) {
       role = await db.Role.create({ title: roleTitle });
     }
     const [user] = await db.User.upsert(
-      { ...sampleUsers[0], roleId: role.id },
+      { ...sampleUsers[0], roleId: role.id, staffId: staff.id },
       { returning: true }
     );
 
@@ -95,12 +102,98 @@ class TestService {
     return { user: data.user, token: data.token };
   }
 
-  static seedHCPs(count) {
+  static seedHCPs({ count }) {
     return db.HealthCareProvider.bulkCreate(getSampleHCPs(count));
   }
 
   static getHash(sampleValue = 'Testing*123') {
     return bcrypt.hashSync(sampleValue, Number(BCRYPT_SALT));
+  }
+
+  static fetchEnrolleeByIdNo(enrolleeIdNo) {
+    return db.Enrollee.findOne({ where: { enrolleeIdNo } });
+  }
+
+  static async findAfrshipPrincipal({ hcpId }) {
+    const serviceNumber = await TestService.getUniqueValue();
+    const afrshipPrincipal = await TestService.getRegisteredPrincipal({
+      scheme: 'AFRSHIP',
+      withValues: {
+        serviceNumber,
+        staffNumber: undefined,
+        hcpId,
+      },
+    });
+    return afrshipPrincipal;
+  }
+  static async findRegStaff(staffIdNo, staffFileNo) {
+    let staff = await db.Staff.findOne({ where: { staffIdNo, staffFileNo } });
+    if (!staff) {
+      const { sampleStaffs } = getSampleStaffs(1);
+      staff = await db.Staff.create({
+        ...sampleStaffs[0],
+        staffIdNo,
+        staffFileNo,
+      });
+    }
+    return staff;
+  }
+  static async findDsshipPrincipal({ hcpId }) {
+    const staffNumber = await this.getUniqueValue();
+    const staffFileNo = await this.getUniqueValue();
+    const staff = await this.findRegStaff(staffNumber, staffFileNo);
+    const afrshipPrincipal = await TestService.getRegisteredPrincipal({
+      scheme: 'DSSHIP',
+      withValues: {
+        staffNumber: staff.staffIdNo,
+        serviceNumber: undefined,
+        hcpId,
+      },
+    });
+    return afrshipPrincipal;
+  }
+
+  static async getRegisteredPrincipal({ scheme, withValues }) {
+    let principal = await db.Enrollee.findOne({
+      where: {
+        scheme: { [Op.iLike]: scheme.toLowerCase() },
+        principalId: { [Op.is]: null },
+      },
+    });
+    if (!principal) {
+      const { principals } = this.getSampleEnrollees({ numberOfPrincipals: 1 });
+      const enrolleeIdNo = await db.Enrollee.generateNewPrincipalIdNo();
+      principal = await db.Enrollee.create({
+        ...principals[0],
+        enrolleeIdNo,
+        scheme,
+        ...withValues,
+      });
+    }
+    return principal;
+  }
+
+  static async getUniqueValue() {
+    return await NanoId.getValue({
+      length: 7,
+      model: db.Enrollee,
+      fields: ['serviceNumber', 'staffNumber'],
+      checkDuplicates: true,
+    });
+  }
+
+  static removeUnwantedFields(sampleDependant) {
+    const notAllowed = [
+      'enrolleeIdNo',
+      'isVerified',
+      'dateVerified',
+      'dependantClass',
+      'dependantType',
+    ];
+    return Object.entries(sampleDependant).reduce((dependant, [key, value]) => {
+      if (!notAllowed.includes(key)) dependant[key] = value;
+      return dependant;
+    }, {});
   }
 }
 

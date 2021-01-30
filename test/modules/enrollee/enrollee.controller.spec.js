@@ -1,34 +1,71 @@
-import supertest from 'supertest';
 import { v2 as cloudinary } from 'cloudinary';
 import faker from 'faker';
 
-import server from '../../../src/server';
 import getEnrollees from '../../../src/shared/samples/enrollee.samples';
 import TestService from '../app/app.test.service';
 import ROLES from '../../../src/shared/constants/roles.constants';
 import getSampleStaffs from '../../../src/shared/samples/staff.samples';
+import EnrolleeTest from './enrollee.test.service';
+import Staff from '../staff/staff.test.services';
+import { zeroPadding } from '../../../src/utils/helpers';
 
 const { log } = console;
 
-const app = supertest(server.server);
-
 const originalImplementation = cloudinary.uploader.upload;
-const imageFile = `${process.cwd()}/src/shared/samples/docs/img.sample.jpg`;
 const SAMPLE_IMG_URL = faker.image.imageUrl();
 
 describe('EnrolleeController', () => {
   describe('addNewEnrollee', () => {
-    let sampleEnrollees, token, hcp;
+    let sampleEnrollees,
+      token,
+      hcp,
+      afrshipPrincipal,
+      dsshipPrincipal,
+      vcshipPrincipal,
+      specialPrincipal;
     beforeAll(async () => {
       await TestService.resetDB();
       const HCPs = await TestService.seedHCPs(1);
       hcp = HCPs[0];
 
       sampleEnrollees = getEnrollees({
-        numOfPrincipals: 2,
+        numOfPrincipals: 4,
         sameSchemeDepPerPrincipal: 1,
         vcshipDepPerPrincipal: 1,
       });
+      const principals = sampleEnrollees.principals.map((principal) => ({
+        ...Object.entries(principal).reduce((principal, [key, value]) => {
+          if (value === null) {
+            principal[key] = undefined;
+          } else {
+            principal[key] = value;
+          }
+          return principal;
+        }, {}),
+        enrolmentType: 'principal',
+        enrolleeIdNo: undefined,
+        isVerified: undefined,
+        dateVerified: undefined,
+        hcpId: hcp.id,
+      }));
+      afrshipPrincipal = {
+        ...principals[0],
+        scheme: 'AFRSHIP',
+      };
+      dsshipPrincipal = {
+        ...principals[1],
+        scheme: 'DSSHIP',
+      };
+      vcshipPrincipal = { ...principals[2], scheme: 'VCSHIP' };
+      specialPrincipal = {
+        ...principals[3],
+        enrolmentType: 'special-principal',
+        staffNumber: undefined,
+        rank: 'General',
+        armOfService: 'army',
+      };
+      specialPrincipal.serviceNumber =
+        specialPrincipal.serviceNumber || 'SN/001/SP';
 
       cloudinary.uploader.upload = jest
         .fn()
@@ -44,50 +81,21 @@ describe('EnrolleeController', () => {
       cloudinary.uploader.upload = originalImplementation;
     });
 
-    it('can enrol a principal', async (done) => {
+    it('can enrol an afrship principal', async (done) => {
       try {
-        const { principals } = sampleEnrollees;
-        const principal = principals[0];
-        const res = await app
-          .post('/api/v1/enrollees')
-          .set('authorization', token)
-          .field('enrolmentType', 'principal')
-          .field('scheme', principal.scheme)
-          .field('surname', principal.surname)
-          .field('firstName', principal.firstName)
-          .field('gender', principal.gender)
-          .field('serviceNumber', principal.serviceNumber)
-          .field('rank', principal.rank)
-          .field('dateOfBirth', '2000-01-02')
-          .field('identificationType', principal.identificationType)
-          .field('identificationNumber', principal.identificationNumber)
-          .field('serviceStatus', principal.serviceStatus)
-          .field('phoneNumber', principal.phoneNumber)
-          .field('email', principal.email)
-          .field('residentialAddress', principal.residentialAddress)
-          .field('stateOfResidence', principal.stateOfResidence)
-          .field('lga', principal.lga)
-          .field('bloodGroup', principal.bloodGroup)
-          .field(
-            'significantMedicalHistory',
-            principal.significantMedicalHistory
-          )
-          .field('hcpId', hcp.id)
-          .attach('photograph', imageFile)
-          .attach('birthCertificate', imageFile)
-          .attach('marriageCertificate', imageFile)
-          .attach('idCard', imageFile)
-          .attach('deathCertificate', imageFile)
-          .attach('letterOfNok', imageFile);
-        // res.status !== 201 && log(res.body);
+        const res = await EnrolleeTest.enrol(afrshipPrincipal, token, {
+          withUploads: true,
+        });
+
+        res.status !== 201 && log(res.body);
         expect(res.status).toBe(201);
         expect(res.body).toHaveProperty('data');
         const { data } = res.body;
         expect(data).toEqual(
           expect.objectContaining({
-            id: '00231',
+            enrolleeIdNo: zeroPadding(231),
             isPrincipal: true,
-            scheme: principal.scheme,
+            scheme: afrshipPrincipal.scheme,
           })
         );
         done();
@@ -96,44 +104,41 @@ describe('EnrolleeController', () => {
       }
     });
 
-    it('can enrol a dependant', async (done) => {
+    it('can enrol a dsship principal', async (done) => {
       try {
-        const { principals, dependants } = sampleEnrollees;
-        const principal = principals[0];
-        const dependant = dependants[0];
-        const res = await app
-          .post('/api/v1/enrollees')
-          .set('authorization', token)
-          .field('hcpId', hcp.id)
-          .field('enrolmentType', 'dependant')
-          .field('principalId', principal.id)
-          .field('scheme', dependant.scheme)
-          .field('surname', dependant.surname)
-          .field('firstName', dependant.firstName)
-          .field('gender', dependant.gender)
-          .field('dateOfBirth', '2000-01-02')
-          .field('phoneNumber', dependant.phoneNumber)
-          .field('email', dependant.email)
-          .field('residentialAddress', principal.residentialAddress)
-          .field('stateOfResidence', dependant.stateOfResidence)
-          .field('lga', dependant.lga)
-          .field('bloodGroup', dependant.bloodGroup)
-          .field('relationshipToPrincipal', dependant.relationshipToPrincipal)
-          .field(
-            'significantMedicalHistory',
-            dependant.significantMedicalHistory
-          );
+        const staff = await Staff.seedOne();
+        const res = await EnrolleeTest.enrol(
+          { ...dsshipPrincipal, staffNumber: staff.staffIdNo },
+          token
+        );
+        res.status !== 201 && log(res.body);
         expect(res.status).toBe(201);
         expect(res.body).toHaveProperty('data');
         const { data } = res.body;
         expect(data).toEqual(
           expect.objectContaining({
-            id: dependant.id,
-            isDependant: true,
-            scheme: dependant.scheme,
+            isPrincipal: true,
+            scheme: dsshipPrincipal.scheme,
           })
         );
-        expect(true).toBe(true);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('can enrol a vcship principal', async (done) => {
+      try {
+        const res = await EnrolleeTest.enrol(vcshipPrincipal, token);
+        res.status !== 201 && log(res.body);
+        expect(res.status).toBe(201);
+        expect(res.body).toHaveProperty('data');
+        const { data } = res.body;
+        expect(data).toEqual(
+          expect.objectContaining({
+            isPrincipal: true,
+            scheme: vcshipPrincipal.scheme,
+          })
+        );
         done();
       } catch (e) {
         done(e);
@@ -141,52 +146,152 @@ describe('EnrolleeController', () => {
     });
     it('can enrol a special principal', async (done) => {
       try {
-        const { principals } = sampleEnrollees;
-        const principal = principals[1];
-        const res = await app
-          .post('/api/v1/enrollees')
-          .set('authorization', token)
-          .field('enrolmentType', 'special-principal')
-          .field('scheme', principal.scheme)
-          .field('id', 1)
-          .field('surname', principal.surname)
-          .field('firstName', principal.firstName)
-          .field('gender', principal.gender)
-          .field('serviceNumber', 'SN/TEST/001')
-          .field('rank', 'Gen.')
-          .field('dateOfBirth', '2000-01-02')
-          .field('identificationType', principal.identificationType)
-          .field('identificationNumber', principal.identificationNumber)
-          .field('serviceStatus', principal.serviceStatus)
-          .field('phoneNumber', principal.phoneNumber)
-          .field('email', principal.email)
-          .field('residentialAddress', principal.residentialAddress)
-          .field('stateOfResidence', principal.stateOfResidence)
-          .field('lga', principal.lga)
-          .field('bloodGroup', principal.bloodGroup)
-          .field(
-            'significantMedicalHistory',
-            principal.significantMedicalHistory
-          )
-          .field('hcpId', hcp.id)
-          .attach('photograph', imageFile)
-          .attach('birthCertificate', imageFile)
-          .attach('marriageCertificate', imageFile)
-          .attach('idCard', imageFile)
-          .attach('deathCertificate', imageFile)
-          .attach('letterOfNok', imageFile);
-        res.status !== 201 && log(res.body);
-        expect(res.status).toBe(201);
-        expect(res.body).toHaveProperty('data');
-        const { data } = res.body;
-        expect(data).toEqual(
-          expect.objectContaining({
-            id: '00001',
-            isPrincipal: true,
-            scheme: principal.scheme,
-          })
-        );
-        expect(true).toBe(true);
+        const enrolleeIdNo = '1';
+        const serviceNumbers = ['A/001/SP', 'A/002/SP'];
+        for (let i = 0; i < 2; i++) {
+          const res = await EnrolleeTest.enrol(
+            {
+              ...specialPrincipal,
+              enrolleeIdNo,
+              serviceNumber: serviceNumbers[i],
+            },
+            token
+          );
+          if (i < 1) {
+            res.status !== 201 && log(res.body);
+            expect(res.status).toBe(201);
+            expect(res.body).toHaveProperty('data');
+            const { data } = res.body;
+            expect(data).toEqual(
+              expect.objectContaining({
+                enrolleeIdNo: zeroPadding(enrolleeIdNo),
+                isPrincipal: true,
+                scheme: specialPrincipal.scheme,
+              })
+            );
+          } else {
+            res.status !== 400 && log(res.body);
+            expect(res.status).toBe(400);
+            expect(res.body).toHaveProperty('errors');
+          }
+        }
+
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+
+    it('can enrol afrship dependants', async (done) => {
+      try {
+        const { dependants } = sampleEnrollees;
+        const principal = await TestService.findAfrshipPrincipal({
+          hcpId: hcp.id,
+        });
+        const dependant = TestService.removeUnwantedFields(dependants[0]);
+        for (let i = 0; i < 6; i++) {
+          const res = await EnrolleeTest.enrol(
+            {
+              ...dependant,
+              enrolmentType: 'dependant',
+              relationshipToPrincipal: 'child',
+              principalId: principal.enrolleeIdNo,
+              scheme: principal.scheme,
+              hcpId: hcp.id,
+            },
+            token
+          );
+          if (i < 5) {
+            res.status !== 201 && log(res.body);
+            expect(res.status).toBe(201);
+            const { data } = res.body;
+            const { enrolleeIdNo } = data;
+            const expected = `${principal.enrolleeIdNo}-${i + 1}`;
+            expect(enrolleeIdNo).toEqual(expected);
+          } else {
+            res.status !== 400 && log(res.body);
+            const { errors } = res.body;
+            const { firstName, surname, scheme } = principal;
+            const expectedError = `The principal, ${firstName} ${surname}, has reached the limit(5) of allowed dependants under ${scheme.toUpperCase()}`;
+            expect(errors[0]).toEqual(expectedError);
+          }
+        }
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+
+    it('can enrol dsship dependants', async (done) => {
+      try {
+        const { dependants } = sampleEnrollees;
+        const principal = await TestService.findDsshipPrincipal({
+          hcpId: hcp.id,
+        });
+        const dependant = TestService.removeUnwantedFields(dependants[0]);
+        for (let i = 0; i < 6; i++) {
+          const res = await EnrolleeTest.enrol(
+            {
+              ...dependant,
+              enrolmentType: 'dependant',
+              relationshipToPrincipal: 'child',
+              principalId: principal.enrolleeIdNo,
+              scheme: principal.scheme,
+              hcpId: hcp.id,
+            },
+            token
+          );
+          if (i < 5) {
+            res.status !== 201 && log(res.body);
+            expect(res.status).toBe(201);
+            const { data } = res.body;
+            const { enrolleeIdNo } = data;
+            const expected = `${principal.enrolleeIdNo}-${i + 1}`;
+            expect(enrolleeIdNo).toEqual(expected);
+          } else {
+            res.status !== 400 && log(res.body);
+            const { errors } = res.body;
+            const { firstName, surname, scheme } = principal;
+            const expectedError = `The principal, ${firstName} ${surname}, has reached the limit(5) of allowed dependants under ${scheme.toUpperCase()}`;
+            expect(errors[0]).toEqual(expectedError);
+          }
+        }
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('can enrol vcship dependants of more than 5 in number', async (done) => {
+      try {
+        const { dependants } = sampleEnrollees;
+        const serviceNumber = await TestService.getUniqueValue();
+        const principal = await TestService.getRegisteredPrincipal({
+          scheme: 'vcship',
+          withValues: {
+            hcpId: hcp.id,
+            serviceNumber,
+          },
+        });
+        const dependant = TestService.removeUnwantedFields(dependants[0]);
+        for (let i = 0; i < 6; i++) {
+          const res = await EnrolleeTest.enrol(
+            {
+              ...dependant,
+              enrolmentType: 'dependant',
+              relationshipToPrincipal: 'child',
+              principalId: principal.enrolleeIdNo,
+              scheme: principal.scheme,
+              hcpId: hcp.id,
+            },
+            token
+          );
+          res.status !== 201 && log(res.body);
+          expect(res.status).toBe(201);
+          const { data } = res.body;
+          const { enrolleeIdNo } = data;
+          const expected = `${principal.enrolleeIdNo}-${i + 1}`;
+          expect(enrolleeIdNo).toEqual(expected);
+        }
         done();
       } catch (e) {
         done(e);

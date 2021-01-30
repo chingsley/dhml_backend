@@ -6,12 +6,17 @@ module.exports = {
       {
         id: {
           allowNull: false,
-          unique: true,
+          autoIncrement: true,
           primaryKey: true,
+          type: Sequelize.INTEGER,
+        },
+        enrolleeIdNo: {
+          allowNull: false,
+          unique: true,
           type: Sequelize.STRING,
         },
         principalId: {
-          type: Sequelize.STRING,
+          type: Sequelize.INTEGER,
           references: {
             model: 'Enrollees',
             key: 'id',
