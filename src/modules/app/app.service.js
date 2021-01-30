@@ -131,7 +131,7 @@ export default class AppService {
       if (queryParams[key]) {
         const field = map[key] || key;
         const value = queryParams[key];
-        return { ...obj, [field]: { [Op.iLike]: `%${value}%` } }; // use .toLowercase => ueryParams[key].toLowerCase(), but first you have to convert all value to lower case before saving in the database
+        return { ...obj, [field]: { [Op.iLike]: `%${value}%` } };
       }
       return obj;
     }, {});
