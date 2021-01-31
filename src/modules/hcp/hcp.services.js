@@ -106,7 +106,7 @@ export default class HcpService extends AppService {
   }
   async handleHcpDelete() {
     const hcp = await this.findByParmas();
-    if (hcp.enrollees) {
+    if (hcp.enrollees.lenght > 0) {
       throwError({
         status: 400,
         error: 'cannot delete hcp with enrolleess',

@@ -11,6 +11,8 @@ export const validateSchema = async (schema, payload, subject = '') => {
     password: `password must be a minimum of 8 characters long, must contain a lowercase, an uppercase, a number and a special character`,
     newPassword: `New password must be a minimum of 8 characters long, must contain a lowercase, an uppercase, a number and a special character`,
     dateOfBirth: 'date of birth cannot be in the future',
+    accountNumber:
+      'Invalid account number. Account number cannot contain letters',
   };
   try {
     const joiFormatted = await schema.validateAsync(payload);
@@ -41,4 +43,7 @@ export function numberValidate(withRequiredFields) {
   return withRequiredFields
     ? Joi.number().integer().required()
     : Joi.number().integer();
+}
+export function dateValidate(withRequiredFields) {
+  return withRequiredFields ? Joi.date().required() : Joi.date();
 }
