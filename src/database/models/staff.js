@@ -29,6 +29,9 @@ module.exports = (sequelize, DataTypes) => {
       gender: {
         type: DataTypes.STRING,
       },
+      photograph: {
+        type: DataTypes.STRING,
+      },
       permanentHomeAddress: {
         type: DataTypes.TEXT,
       },
@@ -96,6 +99,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
       },
       salaryPerAnnum: {
+        type: DataTypes.STRING,
+      },
+      accountNumber: {
         type: DataTypes.STRING,
       },
       bank: {

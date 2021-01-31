@@ -2,6 +2,7 @@ import { QueryTypes } from 'sequelize';
 import db from '../../database/models';
 import { getUnregisteredStaffs } from '../../database/scripts/staff.scripts';
 import { queryAttributes } from '../../shared/attributes/staff.attributes';
+import Cloudinary from '../../utils/Cloudinary';
 import AppService from '../app/app.service';
 
 export default class StaffService extends AppService {
@@ -15,12 +16,17 @@ export default class StaffService extends AppService {
 
   async createNewStaff() {
     const newStaff = this.body;
-    await this.validateUnique(['staffIdNo', 'staffFileNo', 'email'], {
-      model: db.Staff,
-      reqBody: newStaff,
-      resourceType: 'A staff member',
-    });
-    return await db.Staff.create(newStaff);
+    await this.validateUnique(
+      ['staffIdNo', 'staffFileNo', 'email', 'accountNumber'],
+      {
+        model: db.Staff,
+        reqBody: newStaff,
+        resourceType: 'A staff member',
+      }
+    );
+    const files = this.files;
+    const uploadedImages = files ? await Cloudinary.bulkUpload(files) : {};
+    return await db.Staff.create({ ...newStaff, ...uploadedImages });
   }
 
   async fetchAllStaff() {
