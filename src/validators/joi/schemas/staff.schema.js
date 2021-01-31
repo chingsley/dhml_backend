@@ -1,4 +1,4 @@
-import { Joi } from '../config';
+import { Joi, stringValidate } from '../config';
 
 export const staffQuerySchema = Joi.object({
   unregisteredOnly: Joi.string().trim().valid('true', 'false'),
@@ -16,12 +16,6 @@ export const staffQuerySchema = Joi.object({
   location: Joi.string().trim(),
   pfa: Joi.string().trim(),
 });
-
-function stringValidate(withRequiredFields) {
-  return withRequiredFields
-    ? Joi.string().trim().required()
-    : Joi.string().trim();
-}
 
 export const getStaffSchema = ({ withRequiredFields = true }) => {
   return Joi.object({

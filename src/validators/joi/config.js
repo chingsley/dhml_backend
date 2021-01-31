@@ -31,8 +31,14 @@ export const validateSchema = async (schema, payload, subject = '') => {
   }
 };
 
-// function throwError(errorObj) {
-//   throw new Error(JSON.stringify(errorObj));
-// }
+export function stringValidate(withRequiredFields) {
+  return withRequiredFields
+    ? Joi.string().trim().required()
+    : Joi.string().trim();
+}
 
-export default { Joi, validateSchema };
+export function numberValidate(withRequiredFields) {
+  return withRequiredFields
+    ? Joi.number().integer().required()
+    : Joi.number().integer();
+}

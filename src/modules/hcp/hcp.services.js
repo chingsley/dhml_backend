@@ -14,8 +14,16 @@ export default class HcpService extends AppService {
     this.params = params;
   }
 
+  async createHcp() {
+    await this.validateUnique(['code', 'email'], {
+      model: db.HealthCareProvider,
+      reqBody: this.body,
+      resourceType: 'HCP',
+    });
+    return await db.HealthCareProvider.create(this.body);
+  }
+
   async fetchAllHcp() {
-    // console.log(this.filterHcp());
     return await db.HealthCareProvider.findAndCountAll({
       where: {
         ...this.searchHcpBy(hcpSearchableFields),
