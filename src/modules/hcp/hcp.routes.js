@@ -7,6 +7,12 @@ import HcpMiddleware from './hcp.middleware';
 
 const router = express.Router();
 
+router.post(
+  '/',
+  AuthMiddleware.authorize([SUPERADMIN]),
+  HcpMiddleware.validateNewHcp,
+  HcpController.addNewHcp
+);
 router.get(
   '/',
   HcpMiddleware.validateQuery,

@@ -25,6 +25,35 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: 'active',
       },
+      address: {
+        type: DataTypes.STRING,
+      },
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      phoneNumber: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      alternativePhoneNumber: {
+        type: DataTypes.STRING,
+      },
+      bank: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      bankAddress: {
+        type: DataTypes.STRING,
+      },
+      accountNumber: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      accountType: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
     },
     {}
   );

@@ -2,8 +2,19 @@
 import { throwError } from '../../shared/helpers';
 import Response from '../../utils/Response';
 import { Joi, validateSchema } from '../../validators/joi/config';
+import { getHcpSchema } from '../../validators/joi/schemas/hcp.schema';
 
 export default class HcpMiddleware {
+  static async validateNewHcp(req, res, next) {
+    try {
+      const hcpSchema = getHcpSchema({ withRequiredFields: true });
+      const { joiFormatted } = await validateSchema(hcpSchema, req.body);
+      req.body = joiFormatted;
+      return next();
+    } catch (error) {
+      Response.handleError('validateNewHcp', error, req, res, next);
+    }
+  }
   static async validateStatusUpdate(req, res, next) {
     try {
       const schema = Joi.object({

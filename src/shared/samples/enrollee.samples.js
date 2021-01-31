@@ -4,7 +4,7 @@ import {
   MAX_PRINCIPALS_COUNT,
   MAX_STAFF_COUNT,
 } from '../constants/seeders.constants';
-import { states } from '../constants/states.constants';
+import { states } from '../constants/lists.constants';
 import { enrolleeUploads } from './uploads.sample';
 const { designations } = require('./designations.sample');
 

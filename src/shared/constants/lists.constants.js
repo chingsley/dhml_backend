@@ -36,3 +36,14 @@ export const states = [
   'Yobe',
   'Zamfara',
 ];
+
+export const banks = [
+  'GTB',
+  'Access Bank',
+  'First Bank',
+  'UBA',
+  'Ecobank',
+  'Zenith bank',
+  'First Monument bank',
+  'Fidelity bank',
+];
