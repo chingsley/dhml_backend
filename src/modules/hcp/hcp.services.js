@@ -4,6 +4,7 @@ import { getCapitation, getManifest } from '../../database/scripts/hcp.scripts';
 import { enrolleeSearchableFields } from '../../shared/attributes/enrollee.attributes';
 import { Op } from 'sequelize';
 import { hcpSearchableFields } from '../../shared/attributes/hcp.attribtes';
+import { throwError } from '../../shared/helpers';
 
 export default class HcpService extends AppService {
   constructor({ body, files, query, params }) {
@@ -104,17 +105,15 @@ export default class HcpService extends AppService {
     return result[1];
   }
   async handleHcpDelete() {
-    // const { hcpId } = this.params;
-    // const hcp = await this.findOneRecord({
-    //   modelName: 'HealthCareProvider',
-    //   where: { id: hcpId },
-    //   isRequired: true,
-    //   errorIfNotFound: `No HCP matches the Id of ${hcpId}`,
-    //   include: { model: db.Enrollee, as: 'enrollees' },
-    // });
-    // // await hcp.destroy();
-    // return hcp;
-    return { message: 'work in progress.....' };
+    const hcp = await this.findByParmas();
+    if (hcp.enrollees) {
+      throwError({
+        status: 400,
+        error: 'cannot delete hcp with enrolleess',
+      });
+    }
+    await hcp.destroy();
+    return hcp;
   }
   searchHcpBy = (searchableFields) => {
     const { searchField, searchValue, searchItem } = this.query;
@@ -145,4 +144,16 @@ export default class HcpService extends AppService {
     log('searchEnrolleesBy ===> ', conditions);
     return conditions;
   };
+
+  async findByParmas() {
+    const { hcpId } = this.params;
+    const hcp = await this.findOneRecord({
+      modelName: 'HealthCareProvider',
+      where: { id: hcpId },
+      isRequired: true,
+      errorIfNotFound: `No HCP matches the Id of ${hcpId}`,
+      include: { model: db.Enrollee, as: 'enrollees' },
+    });
+    return hcp;
+  }
 }
