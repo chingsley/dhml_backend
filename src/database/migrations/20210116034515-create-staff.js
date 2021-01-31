@@ -33,6 +33,9 @@ module.exports = {
         gender: {
           type: Sequelize.STRING,
         },
+        photograph: {
+          type: Sequelize.STRING,
+        },
         permanentHomeAddress: {
           type: Sequelize.TEXT,
         },
@@ -100,6 +103,9 @@ module.exports = {
           type: Sequelize.DATE,
         },
         salaryPerAnnum: {
+          type: Sequelize.STRING,
+        },
+        accountNumber: {
           type: Sequelize.STRING,
         },
         bank: {
