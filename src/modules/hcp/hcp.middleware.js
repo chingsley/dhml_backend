@@ -47,6 +47,7 @@ export default class HcpMiddleware {
         searchItem: Joi.string().trim(),
         category: Joi.string().trim(),
         state: Joi.string().trim(),
+        download: Joi.string().trim().valid('true', 'false'),
         date: Joi.date()
           .format('YYYY-MM-DD')
           .max('now')

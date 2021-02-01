@@ -233,6 +233,7 @@ export default class AppService {
         value: this.hashPassword(defaultPass),
       });
     }
+    return defaultPass;
   }
   sendPassword(email, password) {
     return NodeMailer.sendMail({
