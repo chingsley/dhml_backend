@@ -1,6 +1,10 @@
 import db from '../../database/models';
 import AppService from '../app/app.service';
-import { getCapitation, getManifest } from '../../database/scripts/hcp.scripts';
+import {
+  getCapitation,
+  getCapitationTotals,
+  getManifest,
+} from '../../database/scripts/hcp.scripts';
 import { enrolleeSearchableFields } from '../../shared/attributes/enrollee.attributes';
 import { Op } from 'sequelize';
 import { hcpSearchableFields } from '../../shared/attributes/hcp.attribtes';
@@ -51,16 +55,16 @@ export default class HcpService extends AppService {
     });
   }
   async fetchManifest() {
-    const { page, pageSize } = this.query;
-    let count, rows;
-    if (page && pageSize) {
-      count = (await this.executeQuery(getManifest)).length;
-      rows = await this.executeQuery(getManifest, this.query);
-    } else {
-      rows = await this.executeQuery(getManifest, this.query);
-      count = rows.length;
-    }
-    return { count, rows };
+    const nonPaginatedRows = await this.executeQuery(getManifest, {
+      ...this.query,
+      pageSize: undefined,
+      page: undefined,
+    });
+    const count = nonPaginatedRows.length;
+    const total = this.summarizeManifest(nonPaginatedRows);
+    const rows = await this.executeQuery(getManifest, this.query);
+
+    return { count, rows, total };
     // return await db.HealthCareProvider.findAndCountAll({
     //   where: { ...this.filterHcp() },
     //   include: {
@@ -73,17 +77,17 @@ export default class HcpService extends AppService {
     // });
   }
   async fetchCapitation() {
-    const { page, pageSize } = this.query;
-    let count, rows;
-    if (page && pageSize) {
-      count = (await this.executeQuery(getCapitation)).length;
-      rows = await this.executeQuery(getCapitation, this.query);
-    } else {
-      rows = await this.executeQuery(getCapitation, this.query);
-      count = rows.length;
-    }
-    return { count, rows };
+    const nonPaginatedRows = await this.executeQuery(getCapitation, {
+      ...this.query,
+      pageSize: undefined,
+      page: undefined,
+    });
+    const count = nonPaginatedRows.length;
+    const rows = await this.executeQuery(getCapitation, this.query);
+    const [total] = await this.executeQuery(getCapitationTotals, this.query);
+    return { count, rows, total };
   }
+
   filterHcp() {
     return this.filterBy(
       ['hcpCode', 'hcpName', 'category', 'state', 'status'],
@@ -155,5 +159,17 @@ export default class HcpService extends AppService {
       include: { model: db.Enrollee, as: 'enrollees' },
     });
     return hcp;
+  }
+  summarizeManifest(rows) {
+    return rows.reduce(
+      (total, record) => {
+        const { principals, dependants } = record;
+        total.principals += Number(principals ?? 0);
+        total.dependants += Number(dependants ?? 0);
+        total.lives += Number(principals ?? 0) + Number(dependants ?? 0);
+        return total;
+      },
+      { lives: 0, principals: 0, dependants: 0 }
+    );
   }
 }
