@@ -34,6 +34,7 @@ router.get(
 router.get(
   '/:hcpId/verified_enrollees',
   AuthMiddleware.authorize(),
+  HcpMiddleware.validateQuery,
   HcpController.getVerifiedHcpEnrollees
 );
 router.patch(

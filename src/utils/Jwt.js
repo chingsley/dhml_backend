@@ -20,7 +20,7 @@ class Jwt {
     } catch (err) {
       throwError({
         status: 401,
-        error: ACCESS_DENIED,
+        error: [ACCESS_DENIED],
         errorCode: AUTH002,
       });
     }
