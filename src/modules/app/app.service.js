@@ -4,6 +4,8 @@ import db from '../../database/models';
 import { throwError } from '../../shared/helpers';
 import { QueryTypes } from 'sequelize';
 import { isBoolean } from '../../utils/helpers';
+import NodeMailer from '../../utils/NodeMailer';
+import { passwordMsgTemplate } from '../../utils/templates/forPassword';
 
 export default class AppService {
   constructor({ body, files, query }) {
@@ -216,5 +218,28 @@ export default class AppService {
     } else {
       return {};
     }
+  }
+
+  async createDefaultPassword(userId, trnx) {
+    const defaultPass = await this.generateDefaultPwd();
+    if (trnx) {
+      await db.Password.create(
+        { userId, value: this.hashPassword(defaultPass) },
+        trnx
+      );
+    } else {
+      await db.Password.create({
+        userId,
+        value: this.hashPassword(defaultPass),
+      });
+    }
+  }
+  sendPassword(email, password) {
+    return NodeMailer.sendMail({
+      subject: 'INTEGRATED HEALTH MANAGEMENT SYSTEM',
+      emails: email,
+      html: passwordMsgTemplate(password),
+      notificationType: 'password',
+    });
   }
 }

@@ -73,33 +73,53 @@ class TestService {
     );
     return { users };
   }
+
   static async getToken(sampleStaff, roleTitle) {
     const { sampleUsers } = getSampleUsers([sampleStaff]);
     const [staff] = await db.Staff.upsert(sampleStaff, { returning: true });
-    // console.log(staff);
+    const role = await this.createRole(roleTitle);
+    const user = await this.createUser({
+      ...sampleUsers[0],
+      roleId: role.id,
+      staffId: staff.id,
+    });
+    await this.createPassword(user.id, TEST_PASSWORD);
+    const res = await this.loginUser(user.email, TEST_PASSWORD);
+    const { data } = res.body;
+    return { user: data.user, token: data.token };
+  }
 
+  static async createRole(roleTitle) {
     let role = await db.Role.findOne({ where: { title: roleTitle } });
     if (!role) {
       role = await db.Role.create({ title: roleTitle });
     }
-    const [user] = await db.User.upsert(
-      { ...sampleUsers[0], roleId: role.id, staffId: staff.id },
-      { returning: true }
-    );
+    return role;
+  }
 
-    await db.Password.upsert({
-      userId: user.id,
-      value: this.getHash(TEST_PASSWORD),
-    });
+  static async createUser(user) {
+    const [result] = await db.User.upsert(user, { returning: true });
+    return result;
+  }
 
-    const res = await app.post('/api/v1/auth/login').send(
+  static loginUser(email, password) {
+    return app.post('/api/v1/auth/login').send(
       cypher.formatRequest({
-        email: user.email,
-        password: TEST_PASSWORD,
+        email,
+        password,
       })
     );
-    const { data } = res.body;
-    return { user: data.user, token: data.token };
+  }
+
+  static async createPassword(userId, value) {
+    const [hashed] = await db.Password.upsert(
+      {
+        userId,
+        value: this.getHash(value),
+      },
+      { returning: true }
+    );
+    return hashed;
   }
 
   static seedHCPs({ count }) {
