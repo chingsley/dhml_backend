@@ -38,22 +38,39 @@ export default class HcpService extends AppService {
       ...this.paginate(),
     });
   }
+
   async fetchVerifiedHcpEnrollees() {
-    const { hcpId } = this.params;
-    return db.Enrollee.findAndCountAll({
-      where: {
-        hcpId,
-        isVerified: true,
-        ...this.searchEnrolleesBy(enrolleeSearchableFields),
-      },
-      ...this.paginate(),
-      order: [['dateVerified', 'DESC']],
-      include: {
-        model: db.HealthCareProvider,
-        as: 'hcp',
-      },
-    });
+    const { download } = this.query;
+    if (JSON.parse(download)) {
+      return await this.downloadEnrollees();
+    } else {
+      const { hcpId } = this.params;
+      return db.Enrollee.findAndCountAll({
+        where: {
+          hcpId,
+          isVerified: true,
+          ...this.searchEnrolleesBy(enrolleeSearchableFields),
+        },
+        ...this.paginate(),
+        order: [['dateVerified', 'DESC']],
+        include: {
+          model: db.HealthCareProvider,
+          as: 'hcp',
+        },
+      });
+    }
   }
+
+  async downloadEnrollees() {
+    const { hcpId } = this.params;
+    const Enrollees = await db.Enrollee.findAndCountAll({
+      where: { hcpId, principalId: null },
+      include: { model: db.Enrollee, as: 'dependants' },
+      ...this.paginate(),
+    });
+    return Enrollees;
+  }
+
   async fetchManifest() {
     const nonPaginatedRows = await this.executeQuery(getManifest, {
       ...this.query,
@@ -63,19 +80,9 @@ export default class HcpService extends AppService {
     const count = nonPaginatedRows.length;
     const total = this.summarizeManifest(nonPaginatedRows);
     const rows = await this.executeQuery(getManifest, this.query);
-
     return { count, rows, total };
-    // return await db.HealthCareProvider.findAndCountAll({
-    //   where: { ...this.filterHcp() },
-    //   include: {
-    //     model: db.Enrollee,
-    //     as: 'enrollees',
-    //     where: { principalId: null },
-    //     include: { model: db.Enrollee, as: 'dependants' },
-    //   },
-    //   ...this.paginate(),
-    // });
   }
+
   async fetchCapitation() {
     const nonPaginatedRows = await this.executeQuery(getCapitation, {
       ...this.query,
@@ -108,6 +115,7 @@ export default class HcpService extends AppService {
     );
     return result[1];
   }
+
   async handleHcpDelete() {
     const hcp = await this.findByParmas();
     if (hcp.enrollees.lenght > 0) {
@@ -119,6 +127,7 @@ export default class HcpService extends AppService {
     await hcp.destroy();
     return hcp;
   }
+
   searchHcpBy = (searchableFields) => {
     const { searchField, searchValue, searchItem } = this.query;
     const allowedFields = searchableFields.map(({ name }) => name);
@@ -160,6 +169,7 @@ export default class HcpService extends AppService {
     });
     return hcp;
   }
+
   summarizeManifest(rows) {
     return rows.reduce(
       (total, record) => {

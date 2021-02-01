@@ -8,7 +8,11 @@ import {
 export default class EnrolleeMiddleware {
   static async validateNewEnrollee(req, res, next) {
     try {
-      await validateSchema(newEnrolleeSchema, { ...req.body, ...req.files });
+      const { joiFormatted } = await validateSchema(newEnrolleeSchema, {
+        ...req.body,
+        // ...req.files,
+      });
+      req.body = joiFormatted;
       return next();
     } catch (error) {
       Response.handleError('validateNewEnrollee', error, req, res, next);
