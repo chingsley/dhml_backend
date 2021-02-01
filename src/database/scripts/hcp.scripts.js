@@ -50,18 +50,7 @@ export const getManifest = (dialect, dbName, reqQuery = {}) => {
 
 // eslint-disable-next-line no-unused-vars
 export const getCapitation = (dialect, dbName, reqQuery = {}) => {
-  const { limit, offset } = getPaginationParameters(reqQuery);
-  const { value, hcpCode, hcpName, date = days.today } = reqQuery;
-  const fallback = '"hcpCode" IS NOT NULL';
-  const generalSearch =
-    value &&
-    `LOWER("hcpCode") LIKE '%${value.toLowerCase()}%' OR LOWER("hcpName") LIKE '%${value.toLowerCase()}%'`;
-  const filterByHcpCode =
-    hcpCode && `LOWER("hcpCode") LIKE '%${hcpCode.toLowerCase()}%'`;
-  const filterByHcpName =
-    hcpName && `LOWER("hcpName") LIKE '%${hcpName.toLowerCase()}%'`;
-  const filter =
-    filterByHcpName || filterByHcpCode || generalSearch || fallback;
+  const { limit, offset, date, filter } = getCapitationFilters(reqQuery);
 
   const query1 = `
   SELECT id "hcpId", "hcpCode", "hcpName", "hcpStatus", MAX("dateVerified") "monthOfYear", SUM(lives) lives, SUM(lives)*750 amount
@@ -84,9 +73,44 @@ export const getCapitation = (dialect, dbName, reqQuery = {}) => {
   return query[dialect];
 };
 
+export const getCapitationTotals = (dialect, dbName, reqQuery = {}) => {
+  const { date, filter } = getCapitationFilters(reqQuery);
+  const query1 = `
+  SELECT SUM(lives) lives, SUM(lives)*750 amount
+  FROM
+      (SELECT h.id, h.code "hcpCode", h.name "hcpName",h.status "hcpStatus", DATE_TRUNC('month', "dateVerified") "dateVerified", count(e.id) lives
+      FROM "HealthCareProviders" h
+      JOIN "Enrollees" e
+      ON e."hcpId" = h.id AND e."isVerified"=true
+      GROUP BY h.id, h.code, h.name, DATE_TRUNC('month', "dateVerified"))sub
+  WHERE DATE_TRUNC('month', "dateVerified") <='${date}' AND ${filter}
+  `;
+
+  const query2 = '';
+
+  const query = { postgres: query1, mysql: query2 };
+  return query[dialect];
+};
+
 function getPaginationParameters(reqQuery = {}) {
   const { page, pageSize } = reqQuery;
   const limit = Number(pageSize) || null;
   const offset = Number(page * pageSize) || 0;
   return { limit, offset };
+}
+
+function getCapitationFilters(reqQuery) {
+  const { limit, offset } = getPaginationParameters(reqQuery);
+  const { value, hcpCode, hcpName, date = days.today } = reqQuery;
+  const fallback = '"hcpCode" IS NOT NULL';
+  const generalSearch =
+    value &&
+    `LOWER("hcpCode") LIKE '%${value.toLowerCase()}%' OR LOWER("hcpName") LIKE '%${value.toLowerCase()}%'`;
+  const filterByHcpCode =
+    hcpCode && `LOWER("hcpCode") LIKE '%${hcpCode.toLowerCase()}%'`;
+  const filterByHcpName =
+    hcpName && `LOWER("hcpName") LIKE '%${hcpName.toLowerCase()}%'`;
+  const filter =
+    filterByHcpName || filterByHcpCode || generalSearch || fallback;
+  return { limit, offset, date, filter };
 }
