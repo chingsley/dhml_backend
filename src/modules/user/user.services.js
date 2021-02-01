@@ -1,7 +1,6 @@
 import db from '../../database/models';
 import NanoId from '../../utils/NanoId';
-import NodeMailer from '../../utils/NodeMailer';
-import { passwordMsgTemplate } from '../../utils/templates/forPassword';
+
 import AppService from '../app/app.service';
 
 const { sequelize } = db;
@@ -27,22 +26,12 @@ export default class UserService extends AppService {
         reqBody: this.userData,
       });
       const user = await db.User.create(this.userData, { transaction: t });
-      const defaultPass = await this.generateDefaultPwd();
-      await db.Password.create(
-        { value: this.hashPassword(defaultPass), userId: user.id },
-        { transaction: t }
-      );
+      const defaultPass = await this.createDefaultPassword(user.id, {
+        transaction: t,
+      });
       const result = user.dataValues;
-      if (returnPassword) {
-        result.defaultPassword = defaultPass;
-      } else {
-        await NodeMailer.sendMail({
-          subject: 'INTEGRATED HEALTH MANAGEMENT SYSTEM',
-          emails: user.email,
-          html: passwordMsgTemplate(defaultPass),
-          notificationType: 'password',
-        });
-      }
+      result.defaultPassword = returnPassword && defaultPass;
+      await this.sendPassword(user.email, defaultPass);
       await t.commit();
       return result;
     } catch (error) {
@@ -54,7 +43,6 @@ export default class UserService extends AppService {
   }
 
   fetchAllUsers = () => {
-    // return { testing: true };
     return db.User.findAndCountAll({
       attributes: { exclude: ['password'] },
       where: {

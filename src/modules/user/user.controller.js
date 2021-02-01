@@ -6,7 +6,11 @@ export default class UserController {
     try {
       const userService = new UserService(req);
       const user = await userService.createUser();
-      return res.status(201).json({ message: 'successful', data: user });
+      return res.status(201).json({
+        message:
+          'registration complete. A default password has been sent to the user',
+        data: user,
+      });
     } catch (error) {
       Response.handleError('registerUser', error, req, res, next);
     }

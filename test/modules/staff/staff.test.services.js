@@ -12,20 +12,16 @@ export const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
 
 // const app = supertest(server.server);
 
-class Staff {
-  constructor(sampleStaffs) {
-    this.sampleStaffs = sampleStaffs;
-  }
-
-  static async seedOne(staff = this.sampleStaffs[0]) {
+class TestStaff {
+  static async seedOne(staff = this.getSamples(1)[0]) {
     const [result] = await db.Staff.upsert(staff, { returning: true });
     return result;
   }
 
-  static get sampleStaffs() {
-    const { sampleStaffs } = getSampleStaffs(5);
+  static getSamples(count = 1) {
+    const { sampleStaffs } = getSampleStaffs(count);
     return sampleStaffs;
   }
 }
 
-export default Staff;
+export default TestStaff;

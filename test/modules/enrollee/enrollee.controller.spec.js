@@ -6,7 +6,7 @@ import TestService from '../app/app.test.service';
 import ROLES from '../../../src/shared/constants/roles.constants';
 import getSampleStaffs from '../../../src/shared/samples/staff.samples';
 import EnrolleeTest from './enrollee.test.service';
-import Staff from '../staff/staff.test.services';
+import TestStaff from '../staff/staff.test.services';
 import { zeroPadding } from '../../../src/utils/helpers';
 
 const { log } = console;
@@ -106,7 +106,7 @@ describe('EnrolleeController', () => {
 
     it('can enrol a dsship principal', async (done) => {
       try {
-        const staff = await Staff.seedOne();
+        const staff = await TestStaff.seedOne();
         const res = await EnrolleeTest.enrol(
           { ...dsshipPrincipal, staffNumber: staff.staffIdNo },
           token

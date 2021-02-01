@@ -36,7 +36,8 @@
     "coverage": "npm run db:reset:test && cross-env DB_ENV=test jest --detectOpenHandles --verbose --coverage --forceExit",
     "test:authController": "jest test/modules/auth/auth.controller.spec.js --detectOpenHandles --verbose --watch",
     "------------------------": "-----------------------------",
-    "test:enrolleeController": "jest test/modules/enrollee/enrollee.controller.spec.js --detectOpenHandles --verbose --watch"
+    "test:enrolleeController": "jest test/modules/enrollee/enrollee.controller.spec.js --detectOpenHandles --verbose --watch",
+    "test:userController": "jest test/modules/user/user.controller.spec.js --detectOpenHandles --verbose --watch"
   },
   "dependencies": {
     "@babel/cli": "^7.8.4",

@@ -10,9 +10,17 @@ module.exports = {
       },
       userId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
         references: {
           model: 'Users',
+          key: 'id',
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      },
+      hcpId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'HealthCareProviders',
           key: 'id',
         },
         onDelete: 'CASCADE',
