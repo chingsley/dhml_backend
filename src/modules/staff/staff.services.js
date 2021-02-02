@@ -29,6 +29,27 @@ export default class StaffService extends AppService {
     return await db.Staff.create({ ...newStaff, ...uploadedImages });
   }
 
+  async updateStaffInfo() {
+    const staffId = Number(this.params.staffId);
+    const changes = this.body;
+    await this.validateUnique(
+      ['staffIdNo', 'staffFileNo', 'email', 'accountNumber'],
+      {
+        model: db.Staff,
+        reqBody: changes,
+        resourceType: 'A staff member',
+        resourceId: staffId,
+      }
+    );
+    const files = this.files;
+    const uploadedImages = files ? await Cloudinary.bulkUpload(files) : {};
+    const results = await db.Staff.update(
+      { ...changes, ...uploadedImages },
+      { where: { id: staffId }, returning: true }
+    );
+    return results[1][0];
+  }
+
   async fetchAllStaff() {
     const { unregisteredOnly } = this.query;
     if (unregisteredOnly && JSON.parse(unregisteredOnly.toLowerCase())) {

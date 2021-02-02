@@ -12,6 +12,15 @@ export default class StaffController {
       Response.handleError('addNewStaff', error, req, res, next);
     }
   }
+  static async updateStaff(req, res, next) {
+    try {
+      const staffService = new StaffService(req);
+      const data = await staffService.updateStaffInfo();
+      return res.status(201).json({ data });
+    } catch (error) {
+      Response.handleError('updateStaff', error, req, res, next);
+    }
+  }
   static async getAllStaff(req, res, next) {
     try {
       const staffService = new StaffService(req);
