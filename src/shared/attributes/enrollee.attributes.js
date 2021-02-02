@@ -74,7 +74,7 @@ export const enrolleeSearchableFields = [
   { name: 'staffNumber', type: 'string' },
   { name: 'serviceNumber', type: 'string' },
   { name: 'rank', type: 'string' },
-  { name: 'principalId', type: 'string' },
+  { name: 'principalId', type: 'number' },
   { name: 'armOfService', type: 'string' },
   { name: 'stateOfResidence', type: 'string' },
   { name: 'serviceStatus', type: 'string' },
