@@ -5,6 +5,7 @@ export const staffQuerySchema = Joi.object({
   unregisteredOnly: Joi.string().trim().valid('true', 'false'),
   pageSize: Joi.number().integer().min(1),
   page: Joi.number().integer().min(0),
+  id: Joi.number().integer().min(1),
   staffFileNo: Joi.string().trim(),
   staffIdNo: Joi.string().trim(),
   surname: Joi.string().trim(),
