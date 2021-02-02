@@ -33,7 +33,7 @@ router.get(
 );
 router.get(
   '/:hcpId/verified_enrollees',
-  AuthMiddleware.authorize(),
+  // AuthMiddleware.authorize(),
   HcpMiddleware.validateQuery,
   HcpController.getVerifiedHcpEnrollees
 );

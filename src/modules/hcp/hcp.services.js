@@ -65,8 +65,26 @@ export default class HcpService extends AppService {
     const { hcpId } = this.params;
     const Enrollees = await db.Enrollee.findAndCountAll({
       where: { hcpId, principalId: null },
-      include: { model: db.Enrollee, as: 'dependants' },
-      ...this.paginate(),
+      attributes: [
+        'serviceNumber',
+        'staffNumber',
+        ['enrolleeIdNo', 'idNumber'],
+        ['surname', 'Family Name'],
+        ['firstName', 'Other Name'],
+        ['dateOfBirth', 'Date Of Birth'],
+        ['gender', 'sex'],
+      ],
+      include: {
+        model: db.Enrollee,
+        as: 'dependants',
+        attributes: [
+          ['relationshipToPrincipal', 'Member'],
+          ['surname', 'Family Name'],
+          ['firstName', 'Other Name'],
+          ['dateOfBirth', 'Date Of Birth'],
+          ['gender', 'Sex'],
+        ],
+      },
     });
     return Enrollees;
   }

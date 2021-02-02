@@ -53,6 +53,7 @@ export default class EnrolleeService extends AppService {
     dependantData.principalId = principal.id;
     this.validateDependantScheme(principal.scheme, dependantData.scheme);
     principal.checkDependantLimit(dependantData);
+    principal.checkSpouseLimit(dependantData);
     dependantData.enrolleeIdNo = principal.generateNewDependantIdNo();
     const uploadedImages = files ? await Cloudinary.bulkUpload(files) : {};
     const data = await db.Enrollee.createDependant(
