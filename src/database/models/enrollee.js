@@ -263,6 +263,20 @@ module.exports = (sequelize, DataTypes) => {
       }
     }
   };
+  Enrollee.prototype.checkSpouseLimit = function (newDependant) {
+    if (newDependant.relationshipToPrincipal === 'spouse') {
+      const spouse = this.dependants.find(
+        (depndt) => depndt.relationshipToPrincipal === 'spouse'
+      );
+      if (spouse) {
+        const errorMsg = `The principal, ${this.firstName} ${this.surname}, already has a spouse registered by the name ${spouse.surname} ${spouse.firstName}. Only one spouse can be enrolled as dependant`;
+        throwError({
+          status: 400,
+          error: [errorMsg],
+        });
+      }
+    }
+  };
   Enrollee.findOneWhere = async function (condition, options) {
     const {
       throwErrorIfNotFound = false,

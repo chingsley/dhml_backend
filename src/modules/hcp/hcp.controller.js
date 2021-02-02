@@ -1,4 +1,6 @@
+import moment from 'moment';
 import Response from '../../utils/Response';
+import downloadFile from '../../utils/sendDownloads';
 import HcpService from './hcp.services';
 
 export default class HcpController {
@@ -24,6 +26,15 @@ export default class HcpController {
     try {
       const hcpService = new HcpService(req);
       const data = await hcpService.fetchVerifiedHcpEnrollees();
+      const { download } = req.query;
+      if (JSON.parse(download)) {
+        // console.log(data.rows.json());
+        return await downloadFile(
+          res,
+          data.rows,
+          `manifest_${moment(new Date()).format('YYYY_MM_DD_HH_MM')}.xlsx`
+        );
+      }
       return res.status(200).json({ data });
     } catch (error) {
       Response.handleError('getVerifiedHcpEnrollees', error, req, res, next);
