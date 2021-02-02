@@ -10,6 +10,8 @@ import { Op } from 'sequelize';
 import { hcpSearchableFields } from '../../shared/attributes/hcp.attribtes';
 import { throwError } from '../../shared/helpers';
 
+const { sequelize } = db;
+
 export default class HcpService extends AppService {
   constructor({ body, files, query, params }) {
     super({ body, files, query, params });
@@ -20,12 +22,45 @@ export default class HcpService extends AppService {
   }
 
   async createHcp() {
+    const t = await sequelize.transaction();
+    try {
+      const { returnPassword } = this.body;
+      const trnx = { transaction: t };
+      await this.validateUnique(['code', 'email'], {
+        model: db.HealthCareProvider,
+        reqBody: this.body,
+        resourceType: 'HCP',
+      });
+      const hcp = await db.HealthCareProvider.create(this.body, trnx);
+      const defaultPass = await this.createDefaultPassword(
+        { hcpId: hcp.id },
+        trnx
+      );
+      const result = hcp.dataValues;
+      result.defaultPassword = returnPassword && defaultPass;
+      await this.sendPassword(hcp.email, defaultPass);
+      await t.commit();
+      return result;
+    } catch (error) {
+      await t.rollback();
+      throw error;
+    }
+  }
+
+  async updateHcpInfo() {
+    const hcpId = Number(this.params.hcpId);
     await this.validateUnique(['code', 'email'], {
       model: db.HealthCareProvider,
       reqBody: this.body,
       resourceType: 'HCP',
+      resourceId: hcpId,
     });
-    return await db.HealthCareProvider.create(this.body);
+    // return await db.HealthCareProvider.create(this.body);
+    const results = await db.HealthCareProvider.update(this.body, {
+      where: { id: hcpId },
+      returning: true,
+    });
+    return results[1][0];
   }
 
   async fetchAllHcp() {
