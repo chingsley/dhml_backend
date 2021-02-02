@@ -14,5 +14,6 @@ export const getHcpSchema = ({ withRequiredFields = true }) => {
     bankAddress: Joi.string().trim(),
     accountNumber: numberValidate(withRequiredFields),
     accountType: stringValidate(withRequiredFields),
+    returnPassword: Joi.bool().valid(true, false),
   });
 };

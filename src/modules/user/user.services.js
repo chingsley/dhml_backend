@@ -1,5 +1,4 @@
 import db from '../../database/models';
-import NanoId from '../../utils/NanoId';
 
 import AppService from '../app/app.service';
 
@@ -26,9 +25,12 @@ export default class UserService extends AppService {
         reqBody: this.userData,
       });
       const user = await db.User.create(this.userData, { transaction: t });
-      const defaultPass = await this.createDefaultPassword(user.id, {
-        transaction: t,
-      });
+      const defaultPass = await this.createDefaultPassword(
+        { userId: user.id },
+        {
+          transaction: t,
+        }
+      );
       const result = user.dataValues;
       result.defaultPassword = returnPassword && defaultPass;
       await this.sendPassword(user.email, defaultPass);
@@ -64,12 +66,6 @@ export default class UserService extends AppService {
       ],
     });
   };
-
-  async generateDefaultPwd() {
-    const pool =
-      '123456789ABCDEFGHJKLMNQRSTUVWXYZabcdefghijkmnoqrstuvwxyz*$#@!^_-+&';
-    return await NanoId.getValue({ length: 8, pool });
-  }
 
   async validateRoleId(roleId) {
     const errorMsg = `Role with id: ${roleId} does not exist`;

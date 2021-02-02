@@ -33,7 +33,7 @@ router.get(
 );
 router.get(
   '/:hcpId/verified_enrollees',
-  // AuthMiddleware.authorize(),
+  AuthMiddleware.authorize(),
   HcpMiddleware.validateQuery,
   HcpController.getVerifiedHcpEnrollees
 );
@@ -42,6 +42,13 @@ router.patch(
   AuthMiddleware.authorize([SUPERADMIN]),
   HcpMiddleware.validateStatusUpdate,
   HcpController.setHcpStatus
+);
+router.patch(
+  '/:hcpId',
+  AuthMiddleware.authorize([SUPERADMIN]),
+  AppMiddleware.validateIdParams,
+  HcpMiddleware.validateHcpUpdate,
+  HcpController.updateHcp
 );
 router.delete(
   '/:hcpId',
