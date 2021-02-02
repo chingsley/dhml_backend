@@ -45,6 +45,7 @@ export default class HcpMiddleware {
   static async validateQuery(req, res, next) {
     try {
       const querySchema = Joi.object({
+        id: Joi.number().integer().min(1),
         page: Joi.number().integer().min(0),
         pageSize: Joi.number().integer().min(1),
         code: Joi.string().trim(),

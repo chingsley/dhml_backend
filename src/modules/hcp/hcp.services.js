@@ -68,6 +68,7 @@ export default class HcpService extends AppService {
       where: {
         ...this.searchHcpBy(hcpSearchableFields),
         ...this.filterHcp(),
+        ...this.exactMatch(['id']),
       },
       order: [['id', 'ASC']],
       ...this.paginate(),
