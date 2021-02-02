@@ -15,8 +15,8 @@ router.post(
 );
 router.get(
   '/',
-  HcpMiddleware.validateQuery,
   AuthMiddleware.authorize(),
+  HcpMiddleware.validateQuery,
   HcpController.getAllHcp
 );
 router.get(

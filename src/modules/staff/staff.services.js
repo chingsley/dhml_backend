@@ -64,7 +64,7 @@ export default class StaffService extends AppService {
       return await db.Staff.findAndCountAll({
         where: {
           ...this.filterBy(queryAttributes),
-          ...this.exactMatch(['staffIdNo']),
+          ...this.exactMatch(['id', 'staffIdNo']),
         },
         order: [['createdAt', 'DESC']],
         ...this.paginate(),
