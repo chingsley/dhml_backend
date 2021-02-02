@@ -9,6 +9,7 @@ import { enrolleeSearchableFields } from '../../shared/attributes/enrollee.attri
 import { Op } from 'sequelize';
 import { hcpSearchableFields } from '../../shared/attributes/hcp.attribtes';
 import { throwError } from '../../shared/helpers';
+import { HCP } from '../../shared/constants/roles.constants';
 
 const { sequelize } = db;
 
@@ -31,7 +32,11 @@ export default class HcpService extends AppService {
         reqBody: this.body,
         resourceType: 'HCP',
       });
-      const hcp = await db.HealthCareProvider.create(this.body, trnx);
+      const hcpRole = await db.Role.findOne({ where: { title: HCP } });
+      const hcp = await db.HealthCareProvider.create(
+        { ...this.body, roleId: hcpRole.id },
+        trnx
+      );
       const defaultPass = await this.createDefaultPassword(
         { hcpId: hcp.id },
         trnx
@@ -68,6 +73,7 @@ export default class HcpService extends AppService {
       where: {
         ...this.searchHcpBy(hcpSearchableFields),
         ...this.filterHcp(),
+        ...this.exactMatch(['id']),
       },
       order: [['id', 'ASC']],
       ...this.paginate(),
@@ -76,7 +82,7 @@ export default class HcpService extends AppService {
 
   async fetchVerifiedHcpEnrollees() {
     const { download } = this.query;
-    if (JSON.parse(download)) {
+    if (download && JSON.parse(download)) {
       return await this.downloadEnrollees();
     } else {
       const { hcpId } = this.params;

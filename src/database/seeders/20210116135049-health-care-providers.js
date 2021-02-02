@@ -1,15 +1,15 @@
 'use strict';
 const getSampleHCPs = require('../../shared/samples/hcp.samples');
-// const { downcaseAllFields } = require('../../utils/helpers');
-// const hcps = getSampleHCPs();
-// const HCPsInLowerCase = downcaseAllFields(hcps);
+const ROLES = require('../../shared/constants/roles.constants');
+
+const roleId = Object.keys(ROLES).indexOf('HCP') + 1;
 
 module.exports = {
   // eslint-disable-next-line no-unused-vars
   up: (queryInterface, Sequelize) => {
     return queryInterface.bulkInsert(
       'HealthCareProviders',
-      getSampleHCPs().map((hcp) => ({ ...hcp, status: 'active' }))
+      getSampleHCPs().map((hcp) => ({ ...hcp, status: 'active', roleId }))
     );
   },
 

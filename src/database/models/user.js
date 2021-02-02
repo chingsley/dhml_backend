@@ -1,8 +1,8 @@
 'use strict';
 
 const { throwError } = require('../../shared/helpers');
-const { isExpired } = require('../../utils/helpers');
-const { t24Hours } = require('../../utils/timers');
+// const { isExpired } = require('../../utils/helpers');
+// const { t24Hours } = require('../../utils/timers');
 
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
@@ -42,25 +42,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: true,
       },
-      hasChangedDefaultPassword: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
-      },
-      defaultPasswordExpiry: {
-        allowNull: false,
-        type: DataTypes.DATE,
-        defaultValue: t24Hours,
-      },
-      hasExpiredDefaultPassword: {
-        type: DataTypes.VIRTUAL,
-        get() {
-          return (
-            !this.hasChangedDefaultPassword &&
-            isExpired(this.defaultPasswordExpiry)
-          );
-        },
-      },
     },
     {}
   );
@@ -80,13 +61,15 @@ module.exports = (sequelize, DataTypes) => {
   };
   User.findOneWhere = async function (condition, options) {
     const {
+      include = [],
       throwErrorIfNotFound = true,
       errorMsg = 'No User matches the specified condition',
-      include = [],
+      errorCode,
+      status = 400,
     } = options;
     const found = await User.findOne({ where: condition, include });
     if (!found && throwErrorIfNotFound) {
-      throwError({ status: 400, error: [errorMsg] });
+      throwError({ status, error: [errorMsg], errorCode });
     }
     return found;
   };

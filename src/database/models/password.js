@@ -1,5 +1,7 @@
 'use strict';
 
+const { t24Hours } = require('../../utils/timers');
+
 module.exports = (sequelize, DataTypes) => {
   const Password = sequelize.define(
     'Password',
@@ -26,6 +28,16 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: false,
       },
+      isDefaultValue: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      },
+      expiryDate: {
+        allowNull: false,
+        type: DataTypes.DATE,
+        defaultValue: t24Hours,
+      },
     },
     {}
   );
@@ -33,6 +45,10 @@ module.exports = (sequelize, DataTypes) => {
     Password.belongsTo(models.User, {
       foreignKey: 'userId',
       as: 'user',
+    });
+    Password.belongsTo(models.HealthCareProvider, {
+      foreignKey: 'hcpId',
+      as: 'hcp',
     });
   };
 
