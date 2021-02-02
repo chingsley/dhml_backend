@@ -141,7 +141,7 @@ const generate_csv = (data, documentName, columnName) =>
     const wb = new xl.Workbook();
     const options = {
       sheetFormat: {
-        defaultColWidth: 35,
+        defaultColWidth: 20,
       },
     };
     let ws = wb.addWorksheet('Manifest', options);

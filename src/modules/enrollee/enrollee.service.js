@@ -111,7 +111,7 @@ export default class EnrolleeService extends AppService {
       await this.updateDependants(dependants);
     }
     const uploadedImages = fls ? await Cloudinary.bulkUpload(fls) : {};
-    await enrollee.update({ ...rest, uploadedImages });
+    await enrollee.update({ ...rest, ...uploadedImages });
     await enrollee.reload();
     return enrollee;
   }
@@ -144,8 +144,16 @@ export default class EnrolleeService extends AppService {
 
   async findWithReqParams() {
     const { enrolleeId: id } = this.params;
-    const options = { throwErrorIfNotFound: true };
-    return await this.getByEnrolleeIdNo(id, options);
+    return await this.findOneRecord({
+      modelName: 'Enrollee',
+      where: { id },
+      include: [
+        { model: db.Enrollee, as: 'dependants' },
+        { model: db.HealthCareProvider, as: 'hcp' },
+      ],
+      isRequired: true,
+      errorIfNotFound: `Invalid Enrollee id. No record found for id.: ${id}`,
+    });
   }
 
   async getByEnrolleeIdNo(enrolleeIdNo, { throwErrorIfNotFound }) {
