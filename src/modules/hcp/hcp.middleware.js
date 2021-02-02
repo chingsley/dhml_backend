@@ -15,6 +15,16 @@ export default class HcpMiddleware {
       Response.handleError('validateNewHcp', error, req, res, next);
     }
   }
+  static async validateHcpUpdate(req, res, next) {
+    try {
+      const hcpSchema = getHcpSchema({ withRequiredFields: false });
+      const { joiFormatted } = await validateSchema(hcpSchema, req.body);
+      req.body = joiFormatted;
+      return next();
+    } catch (error) {
+      Response.handleError('validateHcpUpdate', error, req, res, next);
+    }
+  }
   static async validateStatusUpdate(req, res, next) {
     try {
       const schema = Joi.object({

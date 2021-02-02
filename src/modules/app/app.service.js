@@ -6,6 +6,7 @@ import { QueryTypes } from 'sequelize';
 import { isBoolean } from '../../utils/helpers';
 import NodeMailer from '../../utils/NodeMailer';
 import { passwordMsgTemplate } from '../../utils/templates/forPassword';
+import NanoId from '../../utils/NanoId';
 
 export default class AppService {
   constructor({ body, files, query }) {
@@ -220,21 +221,28 @@ export default class AppService {
     }
   }
 
-  async createDefaultPassword(userId, trnx) {
+  async createDefaultPassword(idObj, trnx) {
     const defaultPass = await this.generateDefaultPwd();
     if (trnx) {
       await db.Password.create(
-        { userId, value: this.hashPassword(defaultPass) },
+        { ...idObj, value: this.hashPassword(defaultPass) },
         trnx
       );
     } else {
       await db.Password.create({
-        userId,
+        ...idObj,
         value: this.hashPassword(defaultPass),
       });
     }
     return defaultPass;
   }
+
+  async generateDefaultPwd() {
+    const pool =
+      '123456789ABCDEFGHJKLMNQRSTUVWXYZabcdefghijkmnoqrstuvwxyz*$#@!^_-+&';
+    return await NanoId.getValue({ length: 8, pool });
+  }
+
   sendPassword(email, password) {
     return NodeMailer.sendMail({
       subject: 'INTEGRATED HEALTH MANAGEMENT SYSTEM',

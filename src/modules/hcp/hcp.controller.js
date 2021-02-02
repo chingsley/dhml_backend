@@ -13,6 +13,15 @@ export default class HcpController {
       Response.handleError('addNewHcp', error, req, res, next);
     }
   }
+  static async updateHcp(req, res, next) {
+    try {
+      const hcpService = new HcpService(req);
+      const data = await hcpService.updateHcpInfo();
+      return res.status(201).json({ data });
+    } catch (error) {
+      Response.handleError('updateHcp', error, req, res, next);
+    }
+  }
   static async getAllHcp(req, res, next) {
     try {
       const hcpService = new HcpService(req);
