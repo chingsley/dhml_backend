@@ -36,7 +36,7 @@ export default class HcpController {
       const hcpService = new HcpService(req);
       const data = await hcpService.fetchVerifiedHcpEnrollees();
       const { download } = req.query;
-      if (JSON.parse(download)) {
+      if (download && JSON.parse(download)) {
         // console.log(data.rows.json());
         return await downloadFile(
           res,

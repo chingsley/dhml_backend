@@ -77,7 +77,7 @@ export default class HcpService extends AppService {
 
   async fetchVerifiedHcpEnrollees() {
     const { download } = this.query;
-    if (JSON.parse(download)) {
+    if (download && JSON.parse(download)) {
       return await this.downloadEnrollees();
     } else {
       const { hcpId } = this.params;
