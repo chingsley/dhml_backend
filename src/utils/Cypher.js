@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 
-export class Cypher {
+class Cypher {
   constructor(aesKey, ivKey) {
     this.aesKey = aesKey;
     this.ivKey = ivKey;
@@ -42,3 +42,5 @@ export class Cypher {
     return { data: this.encrypt(JSON.stringify(reqBody)) };
   }
 }
+
+export default Cypher;

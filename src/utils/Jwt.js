@@ -5,13 +5,10 @@ import { ACCESS_DENIED, AUTH002 } from '../shared/constants/errors.constants';
 import { throwError } from '../shared/helpers';
 
 class Jwt {
-  static generateToken(user) {
-    const payload = {
-      subject: user.id,
-      timestamp: moment().format('YYYYMMDDHHmmss'),
-    };
+  static generateToken(payload) {
+    const timestamp = moment().format('YYYYMMDDHHmmss');
     const options = { expiresIn: '1d' };
-    return jwt.sign(payload, JWT_SECRET, options);
+    return jwt.sign({ ...payload, timestamp }, JWT_SECRET, options);
   }
 
   static decode(token) {

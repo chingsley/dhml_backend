@@ -21,10 +21,11 @@ describe('authController', () => {
       const {
         users: [user],
       } = await TestService.seedUsers(1);
-      res = await app.post('/api/v1/auth/login').send({
-        email: user.email,
-        password: 'Testing*123',
-      });
+      // res = await app.post('/api/v1/auth/login').send({
+      //   email: user.email,
+      //   password: 'Testing*123',
+      // });
+      res = await TestService.loginUser(user.email, 'Testing*123');
     });
 
     it('logs in a user with valid email and password', async (done) => {

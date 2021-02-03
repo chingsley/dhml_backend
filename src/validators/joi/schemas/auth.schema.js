@@ -1,8 +1,18 @@
 import { Joi } from '../config';
 
 export const loginSchema = Joi.object({
-  email: Joi.string().trim().required(),
   password: Joi.string().trim().required(),
+  loginType: Joi.string().trim().valid('user', 'hcp').required(),
+  email: Joi.when('loginType', {
+    is: 'user',
+    then: Joi.string().trim().required(),
+    otherwise: Joi.string().trim(),
+  }),
+  username: Joi.when('loginType', {
+    is: 'hcp',
+    then: Joi.string().trim().required(),
+    otherwise: Joi.string().trim(),
+  }),
 });
 
 export const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^_&*])(?=.{8,})/;

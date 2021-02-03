@@ -12,9 +12,14 @@ router.post(
   AuthController.loginUser
 );
 
+/**
+ * the first argument of authorize() is an array
+ * of allowed roles; if this argument is falsy (e.g null)
+ * then any role is allowed access
+ */
 router.post(
   '/password/change',
-  AuthMiddleware.authorizeUserWithValidToken,
+  AuthMiddleware.authorize(null, { rejectDefaultPassword: false }),
   AppMiddleware.decryptRequestBody,
   AuthMiddleware.validatepasswordChangeDetails,
   AuthController.changePassword

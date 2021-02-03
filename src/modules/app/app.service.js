@@ -51,6 +51,8 @@ export default class AppService {
       include = [],
       isRequired = true,
       errorIfNotFound,
+      errorCode,
+      status,
     } = options;
     const record = await db[modelName].findOne({
       where,
@@ -58,8 +60,11 @@ export default class AppService {
     });
     if (!record && isRequired) {
       throwError({
-        status: 400,
-        errorMsg: errorIfNotFound || `Missing record for ${modelName}`,
+        status: status || 400,
+        error: errorIfNotFound
+          ? [errorIfNotFound]
+          : [`Missing record for ${modelName}`],
+        errorCode,
       });
     }
     return record;

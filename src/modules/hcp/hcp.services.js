@@ -9,6 +9,7 @@ import { enrolleeSearchableFields } from '../../shared/attributes/enrollee.attri
 import { Op } from 'sequelize';
 import { hcpSearchableFields } from '../../shared/attributes/hcp.attribtes';
 import { throwError } from '../../shared/helpers';
+import { HCP } from '../../shared/constants/roles.constants';
 
 const { sequelize } = db;
 
@@ -31,7 +32,11 @@ export default class HcpService extends AppService {
         reqBody: this.body,
         resourceType: 'HCP',
       });
-      const hcp = await db.HealthCareProvider.create(this.body, trnx);
+      const hcpRole = await db.Role.findOne({ where: { title: HCP } });
+      const hcp = await db.HealthCareProvider.create(
+        { ...this.body, roleId: hcpRole.id },
+        trnx
+      );
       const defaultPass = await this.createDefaultPassword(
         { hcpId: hcp.id },
         trnx

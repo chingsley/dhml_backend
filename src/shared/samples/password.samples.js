@@ -9,6 +9,7 @@ const getSamplePasswords = (samplePassword, count = MAX_USER_COUNT) => {
     samplePasswords.push({
       userId: i + 1,
       value: sampleValue,
+      isDefaultValue: false,
     });
   }
   return samplePasswords;
