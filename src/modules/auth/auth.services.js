@@ -12,6 +12,7 @@ import { isExpired } from '../../utils/helpers';
 import Jwt from '../../utils/Jwt';
 import { t24Hours } from '../../utils/timers';
 import AppService from '../app/app.service';
+import { throwError } from '../../shared/helpers';
 
 const { JWT_SECTET } = process.env;
 
@@ -78,7 +79,43 @@ export default class AuthService extends AppService {
     return { ...hcp.dataValues, password: undefined };
   };
 
-  findUserByEmail = function (email) {
+  resendDefaultPassword = async function () {
+    const t = await db.sequelize.transaction();
+    try {
+      const { authType, email, returnPassword } = this.body;
+      const record = await this.findByEmail(email, authType);
+      this.validateMustHaveDefaultPassword(record);
+      let defaultPass, data, message;
+      const password = record.password;
+      const trnx = { transaction: t };
+      defaultPass = await this.generateDefaultPwd();
+      await password.update({ value: this.hashPassword(defaultPass) }, trnx);
+      if (returnPassword) {
+        data = { password: defaultPass };
+        message = 'Successful';
+      } else {
+        await this.sendPassword(record.email, defaultPass);
+        message = 'The new password has been sent to the user';
+      }
+      await t.commit();
+      return { message, data };
+    } catch (error) {
+      await t.rollback();
+      throw error;
+    }
+  };
+
+  findByEmail = function (email, recordType) {
+    const errorIfNotFound = `No ${recordType} found for the email ${email}`;
+    if (recordType === 'user') {
+      return this.findUserByEmail(email, errorIfNotFound);
+    }
+    if (recordType === 'hcp') {
+      return this.findHcpByEmailOrCode(email, errorIfNotFound);
+    }
+  };
+
+  findUserByEmail = function (email, errorIfNotFound = INVALID_CREDENTIAL) {
     return this.findOneRecord({
       modelName: 'User',
       where: { email: { [Op.iLike]: `${email}` } },
@@ -87,13 +124,16 @@ export default class AuthService extends AppService {
         { model: db.Role, attributes: ['title'], as: 'role' },
       ],
       isRequired: true,
-      errorIfNotFound: INVALID_CREDENTIAL,
+      errorIfNotFound,
       status: 401,
       errorCode: LGN001,
     });
   };
 
-  findHcpByEmailOrCode = function (username) {
+  findHcpByEmailOrCode = function (
+    username,
+    errorIfNotFound = INVALID_CREDENTIAL
+  ) {
     return this.findOneRecord({
       modelName: 'HealthCareProvider',
       where: {
@@ -107,7 +147,7 @@ export default class AuthService extends AppService {
         { model: db.Role, attributes: ['title'], as: 'role' },
       ],
       isRequired: true,
-      errorIfNotFound: INVALID_CREDENTIAL,
+      errorIfNotFound,
       status: 401,
       errorCode: LGN001,
     });
@@ -127,6 +167,17 @@ export default class AuthService extends AppService {
       });
     }
   };
+
+  validateMustHaveDefaultPassword(record) {
+    if (record && !record.password.isDefaultValue) {
+      throwError({
+        status: 401,
+        error: [
+          'User has already changed their default password. They can change or reset your old password',
+        ],
+      });
+    }
+  }
 
   rejectExpiredDefaultPass(password) {
     const pwd = password;

@@ -13,6 +13,7 @@ module.exports = {
       },
       userId: {
         type: Sequelize.INTEGER,
+        unique: true,
         references: {
           model: 'Users',
           key: 'id',
@@ -22,6 +23,7 @@ module.exports = {
       },
       hcpId: {
         type: Sequelize.INTEGER,
+        unique: true,
         references: {
           model: 'HealthCareProviders',
           key: 'id',

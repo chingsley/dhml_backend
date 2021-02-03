@@ -13,15 +13,12 @@ import { isExpired } from '../../utils/helpers';
 import Jwt from '../../utils/Jwt';
 import Response from '../../utils/Response';
 import { validateSchema } from '../../validators/joi/config';
-import {
-  loginSchema,
-  passwordChangeSchema,
-} from '../../validators/joi/schemas/auth.schema';
+import authSchema from '../../validators/joi/schemas/auth.schema';
 
 export default class AuthMiddleware {
   static async validateLoginDetails(req, res, next) {
     try {
-      const { joiFormatted } = await validateSchema(loginSchema, req.body);
+      const { joiFormatted } = await validateSchema(authSchema.login, req.body);
       req.body = joiFormatted;
       return next();
     } catch (error) {
@@ -32,7 +29,7 @@ export default class AuthMiddleware {
   static async validatepasswordChangeDetails(req, res, next) {
     try {
       const { joiFormatted } = await validateSchema(
-        passwordChangeSchema,
+        authSchema.passwordChange,
         req.body
       );
       req.body = joiFormatted;
@@ -72,13 +69,26 @@ export default class AuthMiddleware {
         if (rejectDefaultPassword) this.rejectDefaultPassword(password);
         if (rejectExpiredPassword) this.rejectExpiredPassword(password);
         this.authorizeUser(role, allowedRoles);
-        req.user = user;
-        req.hcp = hcp;
+        req.user = user || hcp;
+        req.userType = user ? 'user' : 'hcp';
         return next();
       } catch (error) {
         return Response.handleError('authorize', error, req, res, next);
       }
     };
+  }
+
+  static async validateAuthData(req, res, next) {
+    try {
+      const { joiFormatted } = await validateSchema(
+        authSchema.resendDefaultPass,
+        req.body
+      );
+      req.body = joiFormatted;
+      return next();
+    } catch (error) {
+      return Response.handleError('validateAuthData', error, req, res, next);
+    }
   }
 
   static findUserById(userId) {
