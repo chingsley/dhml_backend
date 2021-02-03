@@ -22,17 +22,25 @@ export default class AuthController {
     try {
       const authService = new AuthService(req);
       let data;
-      if (req.user) {
+      if (req.userType === 'user') {
         data = await authService.changeUserPassword(req.user);
       } else {
-        // console.log(req.hcpId);
-        data = await authService.changeHcpPassword(req.hcp);
+        data = await authService.changeHcpPassword(req.user);
       }
       return res
         .status(200)
         .json({ message: 'Password changed was successful', data });
     } catch (error) {
-      Response.handleError('loginUser', error, req, res, next);
+      Response.handleError('changePassword', error, req, res, next);
+    }
+  }
+  static async resendDefaultPass(req, res, next) {
+    try {
+      const authService = new AuthService(req);
+      const data = await authService.resendDefaultPassword();
+      return res.status(200).json(data);
+    } catch (error) {
+      Response.handleError('resendDefaultPass', error, req, res, next);
     }
   }
 }

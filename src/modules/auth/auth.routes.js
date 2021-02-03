@@ -2,6 +2,7 @@ import express from 'express';
 import AppMiddleware from '../app/app.middleware';
 import AuthController from './auth.controller';
 import AuthMiddleware from './auth.middleware';
+import { ADMIN, SUPERADMIN } from '../../shared/constants/roles.constants';
 
 const router = express.Router();
 
@@ -23,6 +24,13 @@ router.post(
   AppMiddleware.decryptRequestBody,
   AuthMiddleware.validatepasswordChangeDetails,
   AuthController.changePassword
+);
+
+router.post(
+  '/resend_default_password',
+  AuthMiddleware.authorize([SUPERADMIN, ADMIN]),
+  AuthMiddleware.validateAuthData,
+  AuthController.resendDefaultPass
 );
 
 export default router;
