@@ -141,8 +141,7 @@
   },
   "husky": {
     "hooks": {
-      "lint": "npm run lint",
-      "pre-commit": "npm run coverage"
+      "lint": "npm run lint"
     }
   },
   "directories": {
