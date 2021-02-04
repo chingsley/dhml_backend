@@ -8,10 +8,11 @@ import db from '../../../src/database/models';
 import getSampleUsers from '../../../src/shared/samples/user.samples';
 import { TEST_PASSWORD } from '../../../src/shared/constants/passwords.constants';
 import server from '../../../src/server';
-import { Cypher } from '../../../src/utils/Cypher';
+import Cypher from '../../../src/utils/Cypher';
 import getSampleHCPs from '../../../src/shared/samples/hcp.samples';
 import getEnrollees from '../../../src/shared/samples/enrollee.samples';
 import NanoId from '../../../src/utils/NanoId';
+import { HCP } from '../../../src/shared/constants/roles.constants';
 
 const { AES_KEY, IV_KEY, BCRYPT_SALT } = process.env;
 export const tomorrow = moment().add(1, 'days').format('YYYY-MM-DD');
@@ -107,6 +108,7 @@ class TestService {
       cypher.formatRequest({
         email,
         password,
+        loginType: 'user',
       })
     );
   }
@@ -116,14 +118,24 @@ class TestService {
       {
         userId,
         value: this.getHash(value),
+        isDefaultValue: false,
       },
       { returning: true }
     );
     return hashed;
   }
 
-  static seedHCPs({ count }) {
-    return db.HealthCareProvider.bulkCreate(getSampleHCPs(count));
+  static async seedHCPs({ count }) {
+    let hcpRole = await db.Role.findOne({ where: { title: HCP } });
+    if (!hcpRole) {
+      hcpRole = await db.Role.create({ title: HCP });
+    }
+    return db.HealthCareProvider.bulkCreate(
+      getSampleHCPs(count).map((hcp) => ({
+        ...hcp,
+        roleId: hcpRole.id,
+      }))
+    );
   }
 
   static getHash(sampleValue = 'Testing*123') {
@@ -214,6 +226,13 @@ class TestService {
       if (!notAllowed.includes(key)) dependant[key] = value;
       return dependant;
     }, {});
+  }
+
+  static getPasswordByUserId(userId) {
+    return db.Password.findOne({ where: { userId } });
+  }
+  static getPasswordByHcpId(hcpId) {
+    return db.Password.findOne({ where: { hcpId } });
   }
 }
 

@@ -1,5 +1,5 @@
 import { Joi, validateSchema } from '../../validators/joi/config';
-import { Cypher } from '../../utils/Cypher';
+import Cypher from '../../utils/Cypher';
 import { isEmptyObject } from '../../utils/helpers';
 import Response from '../../utils/Response';
 

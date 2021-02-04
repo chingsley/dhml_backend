@@ -6,20 +6,19 @@ import {
   ACCESS_DENIED,
   AUTH001,
   NO_DEFAULT_PASSWORD_USER,
+  NO_EXPIRED_PASSWORD,
 } from '../../shared/constants/errors.constants';
 import { throwError } from '../../shared/helpers';
+import { isExpired } from '../../utils/helpers';
 import Jwt from '../../utils/Jwt';
 import Response from '../../utils/Response';
 import { validateSchema } from '../../validators/joi/config';
-import {
-  loginSchema,
-  passwordChangeSchema,
-} from '../../validators/joi/schemas/auth.schema';
+import authSchema from '../../validators/joi/schemas/auth.schema';
 
 export default class AuthMiddleware {
   static async validateLoginDetails(req, res, next) {
     try {
-      const { joiFormatted } = await validateSchema(loginSchema, req.body);
+      const { joiFormatted } = await validateSchema(authSchema.login, req.body);
       req.body = joiFormatted;
       return next();
     } catch (error) {
@@ -30,23 +29,14 @@ export default class AuthMiddleware {
   static async validatepasswordChangeDetails(req, res, next) {
     try {
       const { joiFormatted } = await validateSchema(
-        passwordChangeSchema,
+        authSchema.passwordChange,
         req.body
       );
       req.body = joiFormatted;
       return next();
     } catch (error) {
-      Response.handleError('validateLoginDetails', error, req, res, next);
-    }
-  }
-
-  static authorizeUserWithValidToken(req, res, next) {
-    try {
-      this.verifyToken(req.headers);
-      return next();
-    } catch (error) {
-      return Response.handleError(
-        'authorizeUserWithValidToken',
+      Response.handleError(
+        'validatepasswordChangeDetails',
         error,
         req,
         res,
@@ -64,29 +54,23 @@ export default class AuthMiddleware {
    * e.g AuthMiddleware.authorize() then anyone
    * with a valid token can acccess the endpoint
    */
-  static authorize(allowedRoles) {
+  static authorize(allowedRoles, options = {}) {
     return async (req, res, next) => {
       try {
-        const { userId } = this.verifyToken(req.headers);
-        const user = await db.User.findOneWhere(
-          { id: userId },
-          {
-            include: { model: db.Role, as: 'role' },
-            throwErrorIfNotFound: true,
-            errorMsg: ACCOUNT_NOT_FOUND_ERROR,
-            errorCode: AUTH003,
-          }
-        );
-        this.rejectDefaultPasswordUser(user);
-        const { role: userRole } = user;
-        if (!allowedRoles) return next();
-        if (!allowedRoles.includes(userRole.title)) {
-          throwError({
-            status: 401,
-            error: ACCESS_DENIED,
-            errorCode: AUTH004,
-          });
-        }
+        const {
+          rejectDefaultPassword = true,
+          rejectExpiredPassword = false,
+        } = options;
+        const { userId, hcpId } = this.verifyToken(req.headers);
+        let user, hcp;
+        if (userId) user = await this.findUserById(userId);
+        if (hcpId) hcp = await this.findHcpById(hcpId);
+        const { password, role } = user ? user : hcp;
+        if (rejectDefaultPassword) this.rejectDefaultPassword(password);
+        if (rejectExpiredPassword) this.rejectExpiredPassword(password);
+        this.authorizeUser(role, allowedRoles);
+        req.user = user || hcp;
+        req.userType = user ? 'user' : 'hcp';
         return next();
       } catch (error) {
         return Response.handleError('authorize', error, req, res, next);
@@ -94,25 +78,94 @@ export default class AuthMiddleware {
     };
   }
 
+  static async validateAuthData(req, res, next) {
+    try {
+      const { joiFormatted } = await validateSchema(
+        authSchema.resendDefaultPass,
+        req.body
+      );
+      req.body = joiFormatted;
+      return next();
+    } catch (error) {
+      return Response.handleError('validateAuthData', error, req, res, next);
+    }
+  }
+
+  static findUserById(userId) {
+    return db.User.findOneWhere(
+      { id: userId },
+      {
+        include: [
+          { model: db.Role, as: 'role' },
+          { model: db.Password, as: 'password' },
+        ],
+        throwErrorIfNotFound: true,
+        errorMsg: ACCOUNT_NOT_FOUND_ERROR,
+        errorCode: AUTH003,
+      }
+    );
+  }
+
+  static findHcpById(hcpId) {
+    return db.HealthCareProvider.findOneWhere(
+      { id: hcpId },
+      {
+        include: [
+          { model: db.Role, as: 'role' },
+          { model: db.Password, as: 'password' },
+        ],
+        throwErrorIfNotFound: true,
+        errorMsg: ACCOUNT_NOT_FOUND_ERROR,
+        errorCode: AUTH003,
+        status: 401,
+      }
+    );
+  }
+
   static verifyToken = (reqHeaders) => {
     const token = reqHeaders.authorization;
     if (!token) {
       throwError({
         status: 401,
-        error: ACCESS_DENIED,
+        error: [ACCESS_DENIED],
         errorCode: AUTH001,
       });
     }
-    const { subject: userId } = Jwt.decode(token);
-    return { userId };
+    const { userId, hcpId } = Jwt.decode(token);
+    return { userId, hcpId };
   };
 
-  static rejectDefaultPasswordUser = (user) => {
-    if (!user.hasChangedDefaultPassword) {
+  static rejectDefaultPassword = (password) => {
+    if (password.isDefaultValue) {
       throwError({
         status: 401,
-        error: NO_DEFAULT_PASSWORD_USER,
+        error: [NO_DEFAULT_PASSWORD_USER],
       });
     }
   };
+  static rejectExpiredPassword = (password) => {
+    if (isExpired(password.expiryDate)) {
+      throwError({
+        status: 401,
+        error: [NO_EXPIRED_PASSWORD],
+      });
+    }
+  };
+
+  static authorizeUser(userRole, allowedRoles) {
+    //if there is no list of allowed roles, then any role is allowed
+    // and all users are authorized
+    if (!allowedRoles) return true;
+
+    // if there is a list of allowed roles and userRole is
+    // not in that list then user is not authorized
+    if (!allowedRoles.includes(userRole.title)) {
+      throwError({
+        status: 401,
+        error: [ACCESS_DENIED],
+        errorCode: AUTH004,
+      });
+    }
+    return true;
+  }
 }

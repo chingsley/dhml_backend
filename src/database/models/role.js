@@ -19,6 +19,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'roleId',
       as: 'users',
     });
+    Role.hasMany(models.HealthCareProvider, {
+      foreignKey: 'roleId',
+      as: 'hcps',
+    });
   };
   Role.findOneWhere = async function (condition, options) {
     const [[field, value]] = Object.entries(condition);

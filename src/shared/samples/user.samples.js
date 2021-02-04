@@ -11,7 +11,6 @@ const getSampleUsers = (staffs) => {
     email: internet.email(staff.firstName),
     username: internet.userName(staff.firstName),
     roleId: getRandomInt(rolesCount + 1, { min: 1 }),
-    hasChangedDefaultPassword: true,
   }));
   return { sampleUsers };
 };

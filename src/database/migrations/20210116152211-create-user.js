@@ -1,7 +1,5 @@
 'use strict';
 
-const { t24Hours } = require('../../utils/timers');
-
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable('Users', {
@@ -44,16 +42,6 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         allowNull: false,
         defaultValue: true,
-      },
-      hasChangedDefaultPassword: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
-      },
-      defaultPasswordExpiry: {
-        allowNull: false,
-        type: Sequelize.DATE,
-        defaultValue: t24Hours,
       },
       createdAt: {
         allowNull: false,
