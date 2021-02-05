@@ -5,9 +5,9 @@ export default class AuthController {
   static async loginUser(req, res, next) {
     try {
       const authService = new AuthService(req);
-      const { loginType } = req.body;
+      const { userType } = req.body;
       let data;
-      if (loginType === 'user') {
+      if (userType === 'user') {
         data = await authService.handleUserLogin();
       } else {
         data = await authService.handleHcpLogin();

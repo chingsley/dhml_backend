@@ -82,8 +82,8 @@ export default class AuthService extends AppService {
   resendDefaultPassword = async function () {
     const t = await db.sequelize.transaction();
     try {
-      const { authType, email, returnPassword } = this.body;
-      const record = await this.findByEmail(email, authType);
+      const { userType, email, returnPassword } = this.body;
+      const record = await this.findByEmail(email, userType);
       this.validateMustHaveDefaultPassword(record);
       let defaultPass, data, message;
       const password = record.password;
