@@ -1,9 +1,8 @@
 require('dotenv').config();
-
+const { log } = require('./utils/logger');
 const db = require('./database/models');
 import server from './server';
 
-const { log } = console;
 const PORT = process.env.PORT || 3000;
 const dbconnection = db.sequelize;
 
@@ -11,11 +10,13 @@ dbconnection
   .authenticate()
   .then(async () => {
     log('connection to database successful');
-    server.server.listen(PORT, () => {
-      const { log } = console;
-      log(`*** server running on port ${PORT} ***`);
+    server.server.listen(PORT, function () {
+      const { address, port } = this.address();
+      const url = `http://${address === '::' ? 'localhost' : address}:${port}`;
+      log('server started on: ', url);
     });
   })
   .catch((e) => {
-    throw e.message;
+    log(e);
+    // throw e.message;
   });

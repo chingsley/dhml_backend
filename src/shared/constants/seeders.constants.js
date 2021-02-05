@@ -1,0 +1,5 @@
+module.exports = {
+  MAX_STAFF_COUNT: 500,
+  MAX_USER_COUNT: 250,
+  MAX_PRINCIPALS_COUNT: 2000,
+};

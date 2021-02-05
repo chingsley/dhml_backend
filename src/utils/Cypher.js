@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 
-export class Cypher {
+class Cypher {
   constructor(aesKey, ivKey) {
     this.aesKey = aesKey;
     this.ivKey = ivKey;
@@ -37,4 +37,10 @@ export class Cypher {
     const decryptedData = Buffer.concat([decrypted, decipher.final()]);
     return decryptedData.toString();
   }
+
+  formatRequest(reqBody) {
+    return { data: this.encrypt(JSON.stringify(reqBody)) };
+  }
 }
+
+export default Cypher;

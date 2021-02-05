@@ -1,16 +1,19 @@
 import express from 'express';
 
-import rolesRoutes from './rolesRoutes';
-import usersRoutes from './usersRoutes';
-import authRoutes from './authRoutes';
-// import usersRoutes from '../../user/user.routes';
-// import rolesRoutes from '../../role/role.routes';
-// import authRoutes from '../../auth/auth.routes';
+import enrollmentRoutes from '../../modules/enrollee/enrollee.routes';
+import usersRoutes from '../../modules/user/user.routes';
+import authRoutes from '../../modules/auth/auth.routes';
+import rolesRoutes from '../../modules/role/role.routes';
+import staffRoutes from '../../modules/staff/staff.routes';
+import hcpRoutes from '../../modules/hcp/hcp.routes';
 
 const router = express.Router();
 
-router.use('/roles', rolesRoutes);
 router.use('/users', usersRoutes);
 router.use('/auth', authRoutes);
+router.use('/enrollees', enrollmentRoutes);
+router.use('/roles', rolesRoutes);
+router.use('/staffs', staffRoutes);
+router.use('/hcp', hcpRoutes);
 
 export default router;
