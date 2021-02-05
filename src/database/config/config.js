@@ -39,6 +39,21 @@ module.exports = {
     operatorsAliases: 0,
     logging: 0,
   },
+  // staging: {
+  //   ...(process.env.DATABASE_URL
+  //     ? {
+  //         use_env_variable: 'DATABASE_URL',
+  //       }
+  //     : {
+  //         username: process.env.STAGING_DB_USERNAME,
+  //         password: process.env.STAGING_DB_PASSWORD,
+  //         database: process.env.STAGING_DB_NAME,
+  //         host: process.env.STAGING_DB_HOST,
+  //         dialect: process.env.STAGING_DB_DIALECT,
+  //         operatorsAliases: 0,
+  //         logging: 0,
+  //       }),
+  // },
   production: {
     username: process.env.PRODUCTION_DB_USERNAME,
     password: process.env.PRODUCTION_DB_PASSWORD,

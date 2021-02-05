@@ -2,13 +2,13 @@ import { Joi } from '../config';
 
 export const login = Joi.object({
   password: Joi.string().trim().required(),
-  loginType: Joi.string().trim().valid('user', 'hcp').required(),
-  email: Joi.when('loginType', {
+  userType: Joi.string().trim().valid('user', 'hcp').required(),
+  email: Joi.when('userType', {
     is: 'user',
     then: Joi.string().trim().required(),
     otherwise: Joi.string().trim(),
   }),
-  username: Joi.when('loginType', {
+  username: Joi.when('userType', {
     is: 'hcp',
     then: Joi.string().trim().required(),
     otherwise: Joi.string().trim(),
@@ -23,7 +23,7 @@ export const passwordChange = Joi.object({
 
 const resendDefaultPass = Joi.object({
   email: Joi.string().trim().required(),
-  authType: Joi.string().trim().required().valid('user', 'hcp'),
+  userType: Joi.string().trim().required().valid('user', 'hcp'),
   returnPassword: Joi.bool().valid(true, false),
 });
 

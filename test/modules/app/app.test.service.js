@@ -108,7 +108,7 @@ class TestService {
       cypher.formatRequest({
         email,
         password,
-        loginType: 'user',
+        userType: 'user',
       })
     );
   }

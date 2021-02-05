@@ -17,5 +17,6 @@ dbconnection
     });
   })
   .catch((e) => {
-    throw e.message;
+    log(e);
+    // throw e.message;
   });
