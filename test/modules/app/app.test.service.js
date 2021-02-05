@@ -234,6 +234,27 @@ class TestService {
   static getPasswordByHcpId(hcpId) {
     return db.Password.findOne({ where: { hcpId } });
   }
+
+  static removeNullValues(arrOfEnrollees) {
+    return arrOfEnrollees.map((enrollee) => ({
+      ...Object.entries(enrollee).reduce((enrollee, [key, value]) => {
+        if (value === null) {
+          enrollee[key] = undefined;
+        } else {
+          enrollee[key] = value;
+        }
+        return enrollee;
+      }, {}),
+
+      enrolleeIdNo: undefined,
+      isVerified: undefined,
+      dateVerified: undefined,
+    }));
+  }
+
+  static seedEnrollees(enrollees) {
+    return db.Enrollee.bulkCreate(enrollees);
+  }
 }
 
 export default TestService;

@@ -15,6 +15,14 @@ const originalImplementation = cloudinary.uploader.upload;
 const SAMPLE_IMG_URL = faker.image.imageUrl();
 
 describe('EnrolleeController', () => {
+  beforeAll(() => {
+    cloudinary.uploader.upload = jest
+      .fn()
+      .mockReturnValue({ url: SAMPLE_IMG_URL });
+  });
+  afterAll(() => {
+    cloudinary.uploader.upload = originalImplementation;
+  });
   describe('addNewEnrollee', () => {
     let sampleEnrollees,
       token,
@@ -33,52 +41,43 @@ describe('EnrolleeController', () => {
         sameSchemeDepPerPrincipal: 1,
         vcshipDepPerPrincipal: 1,
       });
-      const principals = sampleEnrollees.principals.map((principal) => ({
-        ...Object.entries(principal).reduce((principal, [key, value]) => {
-          if (value === null) {
-            principal[key] = undefined;
-          } else {
-            principal[key] = value;
-          }
-          return principal;
-        }, {}),
-        enrolmentType: 'principal',
-        enrolleeIdNo: undefined,
-        isVerified: undefined,
-        dateVerified: undefined,
-        hcpId: hcp.id,
-      }));
+      const principals = TestService.removeNullValues(
+        sampleEnrollees.principals
+      );
       afrshipPrincipal = {
         ...principals[0],
         scheme: 'AFRSHIP',
+        enrolmentType: 'principal',
+        hcpId: hcp.id,
       };
       dsshipPrincipal = {
         ...principals[1],
         scheme: 'DSSHIP',
+        enrolmentType: 'principal',
+        hcpId: hcp.id,
       };
-      vcshipPrincipal = { ...principals[2], scheme: 'VCSHIP' };
+      vcshipPrincipal = {
+        ...principals[2],
+        scheme: 'VCSHIP',
+        enrolmentType: 'principal',
+        hcpId: hcp.id,
+      };
       specialPrincipal = {
         ...principals[3],
         enrolmentType: 'special-principal',
         staffNumber: undefined,
         rank: 'General',
         armOfService: 'army',
+        hcpId: hcp.id,
       };
       specialPrincipal.serviceNumber =
         specialPrincipal.serviceNumber || 'SN/001/SP';
-
-      cloudinary.uploader.upload = jest
-        .fn()
-        .mockReturnValue({ url: SAMPLE_IMG_URL });
       const { sampleStaffs } = getSampleStaffs(1);
       const data = await TestService.getToken(
         sampleStaffs[0],
         ROLES.ENROLMENT_OFFICER
       );
       token = data.token;
-    });
-    afterAll(() => {
-      cloudinary.uploader.upload = originalImplementation;
     });
 
     it('can enrol an afrship principal', async (done) => {

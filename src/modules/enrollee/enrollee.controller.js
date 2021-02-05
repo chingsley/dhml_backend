@@ -39,9 +39,9 @@ export default class EnrolleeController {
     try {
       const enrolleeService = new EnrolleeService(req);
       const data = await enrolleeService.updateEnrolleeData();
-      return res.status(201).json({ message: 'Operation sucessful', data });
+      return res.status(200).json({ message: 'Operation sucessful', data });
     } catch (error) {
-      Response.handleError('getEnrollees', error, req, res, next);
+      Response.handleError('updateEnrollee', error, req, res, next);
     }
   }
   static async verifyEnrollee(req, res, next) {

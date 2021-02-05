@@ -105,9 +105,14 @@ export default class EnrolleeService extends AppService {
 
   async updateEnrolleeData() {
     const fls = this.files;
-    const enrollee = await this.findWithReqParams();
     const { dependants, ...rest } = this.body;
-    if (dependants.length > 0) {
+    await this.validateUnique(['staffNumber', 'email', 'serviceNumber'], {
+      model: db.Enrollee,
+      reqBody: rest,
+      resourceType: 'An Enrollee',
+    });
+    const enrollee = await this.findWithReqParams();
+    if (dependants?.length > 0) {
       await this.updateDependants(dependants);
     }
     const uploadedImages = fls ? await Cloudinary.bulkUpload(fls) : {};

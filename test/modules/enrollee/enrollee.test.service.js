@@ -53,6 +53,17 @@ class EnrolleeTest extends TestService {
     }
     return res;
   }
+
+  static async update(enrolleeId, changes, token) {
+    // console.log(enrollee.id);
+    // const enrolleeId = enrollee.id;
+    // const payload = enrollee;
+    const res = await app
+      .patch(`/api/v1/enrollees/${enrolleeId}`)
+      .set('authorization', token)
+      .send(changes);
+    return res;
+  }
 }
 
 export default EnrolleeTest;
