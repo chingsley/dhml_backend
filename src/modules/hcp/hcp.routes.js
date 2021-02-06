@@ -33,9 +33,14 @@ router.get(
 );
 router.get(
   '/:hcpId/verified_enrollees',
-  // AuthMiddleware.authorize(), // please put authorize() back
+  AuthMiddleware.authorize(),
   HcpMiddleware.validateQuery,
   HcpController.getVerifiedHcpEnrollees
+);
+router.get(
+  '/:hcpId/download_manifest',
+  AuthMiddleware.authorizeManifestDownload,
+  HcpController.downloadHcpManifest
 );
 router.patch(
   '/status',
