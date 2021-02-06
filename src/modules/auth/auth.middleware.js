@@ -78,6 +78,27 @@ export default class AuthMiddleware {
     };
   }
 
+  static authorizeManifestDownload(req, res, next) {
+    try {
+      const { token } = req.query;
+      if (!token) {
+        return res
+          .status(401)
+          .json({ errors: ['please supply token in the request query'] });
+      }
+      Jwt.decode(token);
+      return next();
+    } catch (error) {
+      return Response.handleError(
+        'authorizeManifestDownload',
+        error,
+        req,
+        res,
+        next
+      );
+    }
+  }
+
   static async validateAuthData(req, res, next) {
     try {
       const { joiFormatted } = await validateSchema(

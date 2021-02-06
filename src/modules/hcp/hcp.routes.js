@@ -37,6 +37,11 @@ router.get(
   HcpMiddleware.validateQuery,
   HcpController.getVerifiedHcpEnrollees
 );
+router.get(
+  '/:hcpId/download_manifest',
+  AuthMiddleware.authorizeManifestDownload,
+  HcpController.downloadHcpManifest
+);
 router.patch(
   '/status',
   AuthMiddleware.authorize([SUPERADMIN]),

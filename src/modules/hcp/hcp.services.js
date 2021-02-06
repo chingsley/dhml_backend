@@ -81,31 +81,26 @@ export default class HcpService extends AppService {
   }
 
   async fetchVerifiedHcpEnrollees() {
-    const { download } = this.query;
-    if (download && JSON.parse(download)) {
-      return await this.downloadEnrollees();
-    } else {
-      const { hcpId } = this.params;
-      return db.Enrollee.findAndCountAll({
-        where: {
-          hcpId,
-          isVerified: true,
-          ...this.searchEnrolleesBy(enrolleeSearchableFields),
-        },
-        ...this.paginate(),
-        order: [['dateVerified', 'DESC']],
-        include: {
-          model: db.HealthCareProvider,
-          as: 'hcp',
-        },
-      });
-    }
+    return db.Enrollee.findAndCountAll({
+      where: {
+        hcpId: this.params.hcpId,
+        isVerified: true,
+        ...this.searchEnrolleesBy(enrolleeSearchableFields),
+      },
+      ...this.paginate(),
+      order: [['dateVerified', 'DESC']],
+      include: {
+        model: db.HealthCareProvider,
+        as: 'hcp',
+      },
+    });
   }
 
   async downloadEnrollees() {
     const { hcpId } = this.params;
-    const Enrollees = await db.Enrollee.findAndCountAll({
-      where: { hcpId, principalId: null },
+    const enrollees = await db.Enrollee.findAndCountAll({
+      where: { hcpId, principalId: null, isVerified: true },
+      order: [['dateVerified', 'DESC']],
       attributes: [
         'serviceNumber',
         'staffNumber',
@@ -118,6 +113,8 @@ export default class HcpService extends AppService {
       include: {
         model: db.Enrollee,
         as: 'dependants',
+        where: { isVerified: true },
+        required: false,
         attributes: [
           ['relationshipToPrincipal', 'Member'],
           ['surname', 'Family Name'],
@@ -127,7 +124,7 @@ export default class HcpService extends AppService {
         ],
       },
     });
-    return Enrollees;
+    return enrollees;
   }
 
   async fetchManifest() {
