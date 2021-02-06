@@ -35,18 +35,23 @@ export default class HcpController {
     try {
       const hcpService = new HcpService(req);
       const data = await hcpService.fetchVerifiedHcpEnrollees();
-      const { download } = req.query;
-      if (download && JSON.parse(download)) {
-        // console.log(data.rows.json());
-        return await downloadFile(
-          res,
-          data.rows,
-          `manifest_${moment(new Date()).format('YYYY_MM_DD_HH_MM')}.xlsx`
-        );
-      }
       return res.status(200).json({ data });
     } catch (error) {
       Response.handleError('getVerifiedHcpEnrollees', error, req, res, next);
+    }
+  }
+
+  static async downloadHcpManifest(req, res, next) {
+    try {
+      const hcpService = new HcpService(req);
+      const data = await hcpService.downloadEnrollees();
+      return await downloadFile(
+        res,
+        data.rows,
+        `manifest_${moment(new Date()).format('YYYY_MM_DD_HH_MM')}.xlsx`
+      );
+    } catch (error) {
+      Response.handleError('downloadHcpManifest', error, req, res, next);
     }
   }
   static async getManifest(req, res, next) {
