@@ -119,6 +119,7 @@ export default class AuthMiddleware {
         include: [
           { model: db.Role, as: 'role' },
           { model: db.Password, as: 'password' },
+          { model: db.Staff, as: 'staffInfo' },
         ],
         throwErrorIfNotFound: true,
         errorMsg: ACCOUNT_NOT_FOUND_ERROR,

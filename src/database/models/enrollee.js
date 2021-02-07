@@ -157,6 +157,11 @@ module.exports = (sequelize, DataTypes) => {
       dateVerified: {
         type: DataTypes.DATE,
       },
+      isActive: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      },
       isPrincipal: {
         type: DataTypes.VIRTUAL,
         get() {
