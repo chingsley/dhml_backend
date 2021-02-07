@@ -7,7 +7,7 @@ import getSampleStaffs from '../../../../src/shared/samples/staff.samples';
 import EnrolleeTest from '../enrollee.test.service';
 
 const originalImplementation = cloudinary.uploader.upload;
-const { log } = console;
+// const { log } = console;
 
 describe('EnrolleeController', () => {
   describe('updateEnrollee', () => {
@@ -79,9 +79,7 @@ describe('EnrolleeController', () => {
         const p2 = principal2;
         const changes = { serviceNumber: p2.serviceNumber };
         const res = await EnrolleeTest.update(p1.id, changes, token);
-        log(res.body);
         expect(res.status).toBe(400);
-        // expect(true).toBe(true);
         done();
       } catch (e) {
         done(e);

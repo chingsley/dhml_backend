@@ -151,7 +151,6 @@ function getBaseFeatures() {
     lga: address.county(),
     bloodGroup: random.arrayElement(['A+', 'B+', 'O+', 'AB+']),
     significantMedicalHistory: '[diabetes, allergies]',
-    isVerified: true,
     ...enrolleeUploads,
   };
 }

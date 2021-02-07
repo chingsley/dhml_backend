@@ -1,7 +1,10 @@
 import { QueryTypes } from 'sequelize';
 import db from '../../database/models';
 import { getUnregisteredStaffs } from '../../database/scripts/staff.scripts';
-import { queryAttributes } from '../../shared/attributes/staff.attributes';
+import {
+  queryAttributes,
+  staffSearchableFields,
+} from '../../shared/attributes/staff.attributes';
 import Cloudinary from '../../utils/Cloudinary';
 import AppService from '../app/app.service';
 
@@ -63,6 +66,7 @@ export default class StaffService extends AppService {
     } else {
       return await db.Staff.findAndCountAll({
         where: {
+          ...this.searchRecordsBy(staffSearchableFields),
           ...this.filterBy(queryAttributes),
           ...this.exactMatch(['id', 'staffIdNo']),
         },

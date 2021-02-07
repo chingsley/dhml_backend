@@ -1,3 +1,5 @@
+import { Joi } from '../validators/joi/config';
+
 export const setMinutes = (x) => new Date(Date.now() + Number(x) * 60 * 1000);
 
 export const isEmptyObject = (obj) =>
@@ -83,4 +85,10 @@ export function isBoolean(value) {
   } catch (e) {
     return false;
   }
+}
+
+export function isValidDate(date) {
+  const dateSchema = Joi.date().format('YYYY-MM-DD').required();
+  const result = dateSchema.validate(`${date}`);
+  return !result.error;
 }
