@@ -1,5 +1,6 @@
 import supertest from 'supertest';
 import moment from 'moment';
+import { Op } from 'sequelize';
 import db from '../../../src/database/models';
 
 import server from '../../../src/server';
@@ -56,9 +57,6 @@ class EnrolleeTest extends TestService {
   }
 
   static async update(enrolleeId, changes, token) {
-    // console.log(enrollee.id);
-    // const enrolleeId = enrollee.id;
-    // const payload = enrollee;
     const res = await app
       .patch(`/api/v1/enrollees/${enrolleeId}`)
       .set('authorization', token)
@@ -66,14 +64,38 @@ class EnrolleeTest extends TestService {
     return res;
   }
 
+  static async verifyPrincipal(principalId, token) {
+    const res = await app
+      .patch(`/api/v1/enrollees/${principalId}/verify`)
+      .set('authorization', token);
+    return res;
+  }
+  static async unverifyPrincipal(principalId, token) {
+    return await app
+      .patch(`/api/v1/enrollees/${principalId}/unverify`)
+      .set('authorization', token);
+  }
+
   static async addDependantsToPrincipal(dependants, principal) {
-    return await db.Enrollee.create(
+    return await db.Enrollee.bulkCreate(
       dependants.map((dependant) => ({
         ...dependant,
         principalId: principal.id,
         scheme: principal.scheme,
+        hcpId: principal.hcpId,
       }))
     );
+  }
+
+  static async getEnrolleesByIdArray(idArr) {
+    return db.Enrollee.findAll({ where: { id: { [Op.in]: idArr } } });
+  }
+
+  static findById(id) {
+    return db.Enrollee.findOne({
+      where: { id },
+      include: { model: db.Enrollee, as: 'dependants' },
+    });
   }
 }
 

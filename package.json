@@ -37,7 +37,7 @@
     "test:authController": "jest test/modules/auth/auth.controller.spec.js --detectOpenHandles --verbose --watch",
     "------------------------": "-----------------------------",
     "test:enrolleeController": "jest test/modules/enrollee/enrollee.controller.spec.js --detectOpenHandles --verbose --watch",
-    "test:enrolleeController:edit": "jest test/modules/enrollee/enrollee.controllers/updateEnrollee.spec.js --detectOpenHandles --verbose --watch",
+    "test:one": "jest test/modules/enrollee/enrollee.controllers/updateEnrollee.spec.js --detectOpenHandles --verbose --watch",
     "test:userController": "jest test/modules/user/user.controller.spec.js --detectOpenHandles --verbose --watch"
   },
   "dependencies": {
