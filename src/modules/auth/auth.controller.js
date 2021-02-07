@@ -51,7 +51,7 @@ export default class AuthController {
         ? { ...user.dataValues, password: undefined }
         : { ...hcp.dataValues };
       data.userType = req.userType;
-      return res.status(200).json(data);
+      return res.status(200).json({ data });
     } catch (error) {
       Response.handleError('resendDefaultPass', error, req, res, next);
     }
