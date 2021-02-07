@@ -7,6 +7,7 @@ import {
   SUPERADMIN,
   VERIFIER,
 } from '../../shared/constants/roles.constants';
+import AppMiddleware from '../app/app.middleware';
 import AuthMiddleware from '../auth/auth.middleware';
 import EnrolleeController from './enrollee.controller';
 import EnrolleeMiddleware from './enrollee.middleware';
@@ -34,22 +35,32 @@ router.get(
 router.get(
   '/:enrolleeId',
   AuthMiddleware.authorize([SUPERADMIN, ADMIN, ENROLMENT_OFFICER, VERIFIER]),
+  AppMiddleware.validateIdParams,
   EnrolleeController.getByEnrolleeId
 );
 router.patch(
   '/:enrolleeId',
   AuthMiddleware.authorize([SUPERADMIN, ADMIN, VERIFIER]),
+  AppMiddleware.validateIdParams,
   EnrolleeMiddleware.validateEnrolleeUpdate,
   EnrolleeController.updateEnrollee
 );
 router.patch(
-  '/:enrolleeId/toggle_verify',
+  '/:enrolleeId/verify',
   AuthMiddleware.authorize([SUPERADMIN, ADMIN, VERIFIER]),
+  AppMiddleware.validateIdParams,
   EnrolleeController.verifyEnrollee
+);
+router.patch(
+  '/:enrolleeId/unverify',
+  AuthMiddleware.authorize([SUPERADMIN, ADMIN, VERIFIER]),
+  AppMiddleware.validateIdParams,
+  EnrolleeController.unverifyEnrollee
 );
 router.delete(
   '/:enrolleeId',
   AuthMiddleware.authorize([SUPERADMIN]),
+  AppMiddleware.validateIdParams,
   EnrolleeController.deleteEnrollee
 );
 

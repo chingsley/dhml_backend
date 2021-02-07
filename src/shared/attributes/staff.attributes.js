@@ -11,3 +11,25 @@ export const queryAttributes = [
   'location',
   'pfa',
 ];
+
+export const staffSearchableFields = [
+  { name: 'surname', type: 'string' },
+  { name: 'firstName', type: 'string' },
+  { name: 'middleName', type: 'string' },
+  { name: 'phoneNumber', type: 'string' },
+  { name: 'email', type: 'string' },
+  { name: 'gender', type: 'string' },
+  { name: 'maritalStatus', type: 'string' },
+  { name: 'staffIdNo', type: 'string' },
+  { name: 'stateOfOrigin', type: 'string' },
+  { name: 'homeTown', type: 'string' },
+  { name: 'deployment', type: 'string' },
+  { name: 'hcpId', type: 'number' },
+  { name: 'isVerified', type: 'boolean' },
+  { name: 'dateOfBirth', type: 'date' },
+  { name: 'dateOfConfirmation', type: 'date' },
+  { name: 'designation', type: 'string' },
+  { name: 'departmentOrUnit', type: 'string' },
+  { name: 'location', type: 'string' },
+  { name: 'bank', type: 'string' },
+];

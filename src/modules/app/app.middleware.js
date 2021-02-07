@@ -2,6 +2,8 @@ import { Joi, validateSchema } from '../../validators/joi/config';
 import Cypher from '../../utils/Cypher';
 import { isEmptyObject } from '../../utils/helpers';
 import Response from '../../utils/Response';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const { AES_KEY, IV_KEY } = process.env;
 const cypher = new Cypher(AES_KEY, IV_KEY);
@@ -52,7 +54,7 @@ export default class AppMiddleware {
       }
       return next();
     } catch (error) {
-      return Response('validateImageUpload', error, req, res, next);
+      return Response.handleError('validateImageUpload', error, req, res, next);
     }
   }
 
@@ -66,7 +68,7 @@ export default class AppMiddleware {
       req.body = JSON.parse(decryptedBody);
       return next();
     } catch (error) {
-      return Response('decryptRequestBody', error, req, res, next);
+      return Response.handleError('decryptRequestBody', error, req, res, next);
     }
   };
 }

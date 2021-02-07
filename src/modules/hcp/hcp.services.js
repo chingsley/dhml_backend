@@ -85,7 +85,7 @@ export default class HcpService extends AppService {
       where: {
         hcpId: this.params.hcpId,
         isVerified: true,
-        ...this.searchEnrolleesBy(enrolleeSearchableFields),
+        ...this.searchRecordsBy(enrolleeSearchableFields),
       },
       ...this.paginate(),
       order: [['dateVerified', 'DESC']],
@@ -210,7 +210,7 @@ export default class HcpService extends AppService {
       };
     }
     const { log } = console;
-    log('searchEnrolleesBy ===> ', conditions);
+    log('searchRecordsBy ===> ', conditions);
     return conditions;
   };
 
