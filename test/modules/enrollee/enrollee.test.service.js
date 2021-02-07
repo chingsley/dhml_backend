@@ -1,5 +1,6 @@
 import supertest from 'supertest';
 import moment from 'moment';
+import db from '../../../src/database/models';
 
 import server from '../../../src/server';
 import TestService from '../app/app.test.service';
@@ -63,6 +64,16 @@ class EnrolleeTest extends TestService {
       .set('authorization', token)
       .send(changes);
     return res;
+  }
+
+  static async addDependantsToPrincipal(dependants, principal) {
+    return await db.Enrollee.create(
+      dependants.map((dependant) => ({
+        ...dependant,
+        principalId: principal.id,
+        scheme: principal.scheme,
+      }))
+    );
   }
 }
 
