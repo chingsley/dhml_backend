@@ -81,4 +81,5 @@ export const enrolleeSearchableFields = [
   { name: 'hcpId', type: 'number' },
   { name: 'isVerified', type: 'boolean' },
   { name: 'enrolmentType', type: 'custom' },
+  { name: 'gender', type: 'string' },
 ];

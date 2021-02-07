@@ -68,19 +68,24 @@ export default class EnrolleeService extends AppService {
   }
 
   async getAllEnrollees() {
-    return db.Enrollee.findAndCountAll({
+    const { isVerified } = this.query;
+    const orderBy = isVerified
+      ? [['dateVerified', 'DESC']]
+      : [['createdAt', 'DESC']];
+    return await db.Enrollee.findAndCountAll({
       where: {
-        ...this.searchEnrolleesBy(enrolleeSearchableFields),
+        ...this.searchRecordsBy(enrolleeSearchableFields),
         ...this.exactMatch(['isVerified']),
       },
       ...this.paginate(),
-      order: [['createdAt', 'DESC']],
+      order: orderBy,
       include: {
         model: db.HealthCareProvider,
         as: 'hcp',
       },
     });
   }
+
   getById() {
     return db.Enrollee.findAll({
       where: {
@@ -128,13 +133,26 @@ export default class EnrolleeService extends AppService {
     await Promise.all(promiseArr);
   }
 
-  async toggleEnrolleeVerification() {
+  async verifyEnrollee() {
     const enrollee = await this.findWithReqParams();
-    await enrollee.update({ isVerified: !enrollee.isVerified });
+    await enrollee.update({ isVerified: true, dateVerified: new Date() });
     if (enrollee.principalId === null) {
       const dependantIds = enrollee.dependants.map((depndt) => depndt.id);
       await db.Enrollee.update(
-        { isVerified: !enrollee.isVerified },
+        { isVerified: true, dateVerified: new Date() },
+        { where: { id: { [Op.in]: dependantIds } } }
+      );
+    }
+    return enrollee;
+  }
+
+  async unverifyEnrollee() {
+    const enrollee = await this.findWithReqParams();
+    await enrollee.update({ isVerified: false, dateVerified: null });
+    if (enrollee.principalId === null) {
+      const dependantIds = enrollee.dependants.map((depndt) => depndt.id);
+      await db.Enrollee.update(
+        { isVerified: false, dateVerified: null },
         { where: { id: { [Op.in]: dependantIds } } }
       );
     }

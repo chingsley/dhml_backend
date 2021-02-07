@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import db from '../../database/models';
 import { throwError } from '../../shared/helpers';
 import { QueryTypes } from 'sequelize';
-import { isBoolean } from '../../utils/helpers';
+import { isBoolean, isValidDate } from '../../utils/helpers';
 import NodeMailer from '../../utils/NodeMailer';
 import { passwordMsgTemplate } from '../../utils/templates/forPassword';
 import NanoId from '../../utils/NanoId';
@@ -161,7 +161,7 @@ export default class AppService {
     return filterObj;
   }
 
-  searchEnrolleesBy = (searchableFields) => {
+  searchRecordsBy = (searchableFields) => {
     const { searchField, searchValue, searchItem } = this.query;
     const allowedFields = searchableFields.map(({ name }) => name);
     let conditions = {};
@@ -187,7 +187,7 @@ export default class AppService {
       };
     }
     const { log } = console;
-    log('searchEnrolleesBy ===> ', conditions);
+    log('searchRecordsBy ===> ', conditions);
     return conditions;
   };
 
@@ -220,6 +220,15 @@ export default class AppService {
     } else if (field.type === 'boolean' && isBoolean(searchValue)) {
       return {
         [searchField]: JSON.parse(searchValue),
+      };
+    } else if (field.type === 'date' && isValidDate(searchValue)) {
+      const fromDate = new Date(searchValue);
+      const fromDateCopy = new Date(searchValue);
+      const toDate = new Date(fromDateCopy.setDate(fromDateCopy.getDate() + 1));
+      return {
+        [searchField]: {
+          [Op.between]: [fromDate, toDate],
+        },
       };
     } else {
       return {};

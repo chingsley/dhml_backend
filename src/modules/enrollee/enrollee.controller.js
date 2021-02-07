@@ -47,7 +47,16 @@ export default class EnrolleeController {
   static async verifyEnrollee(req, res, next) {
     try {
       const enrolleeService = new EnrolleeService(req);
-      const data = await enrolleeService.toggleEnrolleeVerification();
+      const data = await enrolleeService.verifyEnrollee();
+      return res.status(200).json({ message: 'Operation successful', data });
+    } catch (error) {
+      Response.handleError('verifyEnrollee', error, req, res, next);
+    }
+  }
+  static async unverifyEnrollee(req, res, next) {
+    try {
+      const enrolleeService = new EnrolleeService(req);
+      const data = await enrolleeService.unverifyEnrollee();
       return res.status(200).json({ message: 'Operation successful', data });
     } catch (error) {
       Response.handleError('verifyEnrollee', error, req, res, next);
