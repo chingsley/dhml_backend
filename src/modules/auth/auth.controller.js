@@ -43,4 +43,17 @@ export default class AuthController {
       Response.handleError('resendDefaultPass', error, req, res, next);
     }
   }
+  static async getUserProfile(req, res, next) {
+    try {
+      // const authService = new AuthService(req);
+      const { user, hcp } = req;
+      const data = user
+        ? { ...user.dataValues, password: undefined }
+        : { ...hcp.dataValues };
+      data.userType = req.userType;
+      return res.status(200).json(data);
+    } catch (error) {
+      Response.handleError('resendDefaultPass', error, req, res, next);
+    }
+  }
 }

@@ -122,6 +122,7 @@ export default class AuthService extends AppService {
       include: [
         { model: db.Password, as: 'password' },
         { model: db.Role, attributes: ['title'], as: 'role' },
+        { model: db.Staff, as: 'staffInfo' },
       ],
       isRequired: true,
       errorIfNotFound,
