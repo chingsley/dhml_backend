@@ -70,9 +70,16 @@ class EnrolleeTest extends TestService {
       .set('authorization', token);
     return res;
   }
+
   static async unverifyPrincipal(principalId, token) {
     return await app
       .patch(`/api/v1/enrollees/${principalId}/unverify`)
+      .set('authorization', token);
+  }
+
+  static async deleteEnrollee(enrolleeId, token) {
+    return await app
+      .delete(`/api/v1/enrollees/${enrolleeId}`)
       .set('authorization', token);
   }
 
@@ -85,6 +92,9 @@ class EnrolleeTest extends TestService {
         hcpId: principal.hcpId,
       }))
     );
+  }
+  static getPrincipalDependants(principalId) {
+    return db.Enrollee.findAll({ where: { principalId } });
   }
 
   static async getEnrolleesByIdArray(idArr) {
