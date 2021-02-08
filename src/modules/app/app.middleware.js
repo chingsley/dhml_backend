@@ -17,7 +17,12 @@ export default class AppMiddleware {
         enrolleeId: Joi.number().integer().min(1),
         userId: Joi.number().integer().min(1),
       });
-      await validateSchema(paramsSchema, req.params, 'Invalid Id: ');
+      const { joiFormatted } = await validateSchema(
+        paramsSchema,
+        req.params,
+        'Invalid Id: '
+      );
+      req.params = joiFormatted;
       return next();
     } catch (error) {
       Response.handleError('validateIdParams', error, req, res, next);
