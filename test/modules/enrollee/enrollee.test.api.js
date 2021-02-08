@@ -86,6 +86,11 @@ class EnrolleeApi extends TestService {
       .get(`/api/v1/enrollees?${query}`)
       .set('authorization', token);
   }
+  static getById(enrolleeId, token) {
+    return app
+      .get(`/api/v1/enrollees/${enrolleeId}`)
+      .set('authorization', token);
+  }
 }
 
 export default EnrolleeApi;
