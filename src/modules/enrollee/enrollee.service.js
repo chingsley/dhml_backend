@@ -117,12 +117,21 @@ export default class EnrolleeService extends AppService {
       resourceType: 'An Enrollee',
     });
     const enrollee = await this.findWithReqParams();
+    let dependantIds = [];
     if (dependants?.length > 0) {
+      dependantIds = dependants.map((d) => d.id);
       await this.updateDependants(dependants);
     }
     const uploadedImages = fls ? await Cloudinary.bulkUpload(fls) : {};
     await enrollee.update({ ...rest, ...uploadedImages });
-    await enrollee.reload();
+    await enrollee.reload({
+      include: {
+        model: db.Enrollee,
+        as: 'dependants',
+        where: { id: { [Op.in]: dependantIds } },
+        required: false,
+      },
+    });
     return enrollee;
   }
 
