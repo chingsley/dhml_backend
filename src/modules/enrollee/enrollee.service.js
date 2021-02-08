@@ -115,6 +115,7 @@ export default class EnrolleeService extends AppService {
       model: db.Enrollee,
       reqBody: rest,
       resourceType: 'An Enrollee',
+      resourceId: this.params.enrolleId,
     });
     const enrollee = await this.findWithReqParams();
     let dependantIds = [];
