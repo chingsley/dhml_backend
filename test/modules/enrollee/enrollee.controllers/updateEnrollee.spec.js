@@ -1,89 +1,81 @@
-import { v2 as cloudinary } from 'cloudinary';
+/* eslint-disable jest/expect-expect */
 
 import getEnrollees from '../../../../src/shared/samples/enrollee.samples';
 import TestService from '../../app/app.test.service';
 import ROLES from '../../../../src/shared/constants/roles.constants';
 import getSampleStaffs from '../../../../src/shared/samples/staff.samples';
-import EnrolleeTest from '../enrollee.test.service';
+import EnrolleeApi from '../enrollee.test.api';
+import EnrolleeController from '../../../../src/modules/enrollee/enrollee.controller';
 
-const originalImplementation = cloudinary.uploader.upload;
 // const { log } = console;
 
 describe('EnrolleeController', () => {
-  describe('updateEnrollee', () => {
-    let sampleEnrollees, token, hcp, samplePrncpl1, samplePrncpl2;
-    let principal1, principal2;
-
+  describe('getEnrolleeById', () => {
+    let sampleEnrollees, token, HCPs, seededPrincipals, seededDependants, res;
     beforeAll(async () => {
       await TestService.resetDB();
-      const HCPs = await TestService.seedHCPs(1);
-      hcp = HCPs[0];
-
+      HCPs = await TestService.seedHCPs(4);
+      const { sampleStaffs } = getSampleStaffs(1);
       sampleEnrollees = getEnrollees({
-        numOfPrincipals: 2,
+        numOfPrincipals: 1,
         sameSchemeDepPerPrincipal: 1,
         vcshipDepPerPrincipal: 1,
       });
-      const principals = TestService.removeNullValues(
-        sampleEnrollees.principals
-      );
-      samplePrncpl1 = {
-        ...principals[0],
-        scheme: 'AFRSHIP',
-        hcpId: hcp.id,
-        staffNumber: null,
-        serviceNumber: 'NN/0002',
-        enrolleeIdNo: '000231',
-      };
-      samplePrncpl2 = {
-        ...principals[1],
-        scheme: 'AFRSHIP',
-        hcpId: hcp.id,
-        staffNumber: null,
-        serviceNumber: 'NN/0003',
-        enrolleeIdNo: '000232',
-      };
-      const [p1, p2] = await TestService.seedEnrollees([
-        samplePrncpl1,
-        samplePrncpl2,
+      const principals = sampleEnrollees.principals;
+      seededPrincipals = await TestService.seedEnrollees([
+        {
+          ...principals[0],
+          scheme: 'AFRSHIP',
+          enrolmentType: 'principal',
+          hcpId: HCPs[0].id,
+          isVerified: true,
+        },
       ]);
-      principal1 = p1;
-      principal2 = p2;
-      const { sampleStaffs } = getSampleStaffs(1);
+
+      const deps = sampleEnrollees.dependants.map((d) => {
+        for (let p of seededPrincipals) {
+          const regexPrincipalEnrolleeIdNo = new RegExp(`${p.enrolleeIdNo}-`);
+          if (d.enrolleeIdNo.match(regexPrincipalEnrolleeIdNo)) {
+            return {
+              ...d,
+              principalId: p.id,
+              hcpId: p.hcpId,
+            };
+          }
+        }
+      });
+      seededDependants = await TestService.seedEnrollees(deps);
+
       const data = await TestService.getToken(
         sampleStaffs[0],
-        ROLES.SUPERADMIN
+        ROLES.ENROLMENT_OFFICER
       );
       token = data.token;
-    });
-    afterAll(() => {
-      cloudinary.uploader.upload = originalImplementation;
+      res = await EnrolleeApi.getById(seededPrincipals[0].id, token);
     });
 
-    it('it successfully updates the enrollee with the new changes', async (done) => {
+    it('returns status 200 on successful GET request', async (done) => {
       try {
-        const p1 = principal1;
-        const changes = { firstName: 'New FirstName' };
-        const res = await EnrolleeTest.update(p1.id, changes, token);
-        const { data } = res.body;
-        expect(res.status).toBe(200);
-        expect(data.firstName).toBe(changes.firstName);
+        expect(res.status).toEqual(200);
+        expect(res.body).toHaveProperty('data');
         done();
       } catch (e) {
         done(e);
       }
     });
-    it('it detects unique violation during update', async (done) => {
+    it('can get a dependant enrollee by id', async (done) => {
       try {
-        const p1 = principal1;
-        const p2 = principal2;
-        const changes = { serviceNumber: p2.serviceNumber };
-        const res = await EnrolleeTest.update(p1.id, changes, token);
-        expect(res.status).toBe(400);
+        const res = await EnrolleeApi.getById(seededDependants[0].id, token);
+        expect(res.status).toEqual(200);
+        expect(res.body).toHaveProperty('data');
         done();
       } catch (e) {
         done(e);
       }
     });
+    it(
+      'it catches errors thrown in the try block',
+      TestService.testCatchBlock(EnrolleeController.getByEnrolleeId)
+    );
   });
 });

@@ -12,4 +12,6 @@ const months = {
 
 const t24Hours = new Date(new Date().getTime() + 1000 * 60 * 60 * 24);
 
-module.exports = { moment, days, t24Hours, months };
+const dateOnly = (dateTime) => moment(dateTime).format('YYYY-MM-DD');
+
+module.exports = { moment, days, t24Hours, months, dateOnly };

@@ -255,6 +255,19 @@ class TestService {
   static seedEnrollees(enrollees) {
     return db.Enrollee.bulkCreate(enrollees);
   }
+
+  static testCatchBlock = (method) => async (done) => {
+    try {
+      const req = undefined;
+      const res = { body: {} };
+      const next = jest.fn();
+      await method(req, res, next);
+      expect(next).toHaveBeenCalled();
+      done();
+    } catch (e) {
+      done(e);
+    }
+  };
 }
 
 export default TestService;

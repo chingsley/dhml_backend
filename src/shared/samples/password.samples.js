@@ -4,8 +4,8 @@ const BCRYPT_SALT = Number(process.env.BCRYPT_SALT);
 
 const getSampleUserPasswords = (samplePassword, count = MAX_USER_COUNT) => {
   const samplePasswords = [];
+  const sampleValue = bcrypt.hashSync(samplePassword, BCRYPT_SALT);
   for (let i = 0; i < count; i++) {
-    const sampleValue = bcrypt.hashSync(samplePassword, BCRYPT_SALT);
     samplePasswords.push({
       userId: i + 1,
       value: sampleValue,
@@ -16,8 +16,8 @@ const getSampleUserPasswords = (samplePassword, count = MAX_USER_COUNT) => {
 };
 const getSampleHcpPasswords = (samplePassword, count = 250) => {
   const samplePasswords = [];
+  const sampleValue = bcrypt.hashSync(samplePassword, BCRYPT_SALT);
   for (let i = 0; i < count; i++) {
-    const sampleValue = bcrypt.hashSync(samplePassword, BCRYPT_SALT);
     samplePasswords.push({
       hcpId: i + 1,
       value: sampleValue,
