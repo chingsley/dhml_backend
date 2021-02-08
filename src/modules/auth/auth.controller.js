@@ -1,3 +1,5 @@
+/* eslint-disable indent */
+import Jwt from '../../utils/Jwt';
 import Response from '../../utils/Response';
 import AuthService from './auth.services';
 
@@ -45,12 +47,15 @@ export default class AuthController {
   }
   static async getUserProfile(req, res, next) {
     try {
-      // const authService = new AuthService(req);
-      const { user, hcp } = req;
-      const data = user
-        ? { ...user.dataValues, password: undefined }
-        : { ...hcp.dataValues };
-      data.userType = req.userType;
+      const { user, userType } = req;
+      const tokenPayload =
+        userType === 'user' ? { userId: user.id } : { hcpId: user.id };
+      const data = {
+        ...user.dataValues,
+        password: undefined,
+        token: Jwt.generateToken(tokenPayload),
+        userType,
+      };
       return res.status(200).json({ data });
     } catch (error) {
       Response.handleError('resendDefaultPass', error, req, res, next);
