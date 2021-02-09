@@ -1,10 +1,7 @@
-import supertest from 'supertest';
 const sgMail = require('@sendgrid/mail');
 
-import server from '../../../src/server';
 import TestService from '../app/app.test.service';
-
-const app = supertest(server.server);
+import AuthApi from './auth.test.api';
 
 describe('authController', () => {
   let originalSendGridImplemenation = sgMail.send;
@@ -21,11 +18,11 @@ describe('authController', () => {
       const {
         users: [user],
       } = await TestService.seedUsers(1);
-      // res = await app.post('/api/v1/auth/login').send({
-      //   email: user.email,
-      //   password: 'Testing*123',
-      // });
-      res = await TestService.loginUser(user.email, 'Testing*123');
+      res = await AuthApi.login({
+        email: user.email,
+        password: 'Testing*123',
+        userType: 'user',
+      });
     });
 
     it('logs in a user with valid email and password', async (done) => {

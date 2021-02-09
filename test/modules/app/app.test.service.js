@@ -231,6 +231,7 @@ class TestService {
   static getPasswordByUserId(userId) {
     return db.Password.findOne({ where: { userId } });
   }
+
   static getPasswordByHcpId(hcpId) {
     return db.Password.findOne({ where: { hcpId } });
   }

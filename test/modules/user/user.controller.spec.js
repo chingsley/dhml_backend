@@ -56,8 +56,6 @@ describe('UserController', () => {
     });
     it('ensures the user has password with "isDefaultValue" set to true', async (done) => {
       try {
-        // const { data } = res.body;
-        // const userPassword = await TestService.getPasswordByUserId(data.userId);
         expect(userPassword.isDefaultValue).toBe(true);
         done();
       } catch (e) {
@@ -66,8 +64,6 @@ describe('UserController', () => {
     });
     it('sets the default password to expire in 24 hours', async (done) => {
       try {
-        // const { data } = res.body;
-        // const { defaultPasswordExpiry: date2 } = data;
         const date2 = userPassword.expiryDate;
         const timestamp = new Date(date2) - new Date();
         const hours = timestamp / (60 * 60 * 1000);
