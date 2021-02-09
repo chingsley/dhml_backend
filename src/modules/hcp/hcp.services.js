@@ -60,7 +60,6 @@ export default class HcpService extends AppService {
       resourceType: 'HCP',
       resourceId: hcpId,
     });
-    // return await db.HealthCareProvider.create(this.body);
     const results = await db.HealthCareProvider.update(this.body, {
       where: { id: hcpId },
       returning: true,

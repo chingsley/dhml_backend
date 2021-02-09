@@ -10,7 +10,7 @@ export const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
 
 const app = supertest(server.server);
 
-class hcpApi extends TestService {
+class HcpApi extends TestService {
   static async register(enrolee, token) {
     const payload = enrolee;
     const res = await app
@@ -53,4 +53,4 @@ class hcpApi extends TestService {
   }
 }
 
-export default hcpApi;
+export default HcpApi;

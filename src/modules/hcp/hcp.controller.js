@@ -17,7 +17,9 @@ export default class HcpController {
     try {
       const hcpService = new HcpService(req);
       const data = await hcpService.updateHcpInfo();
-      return res.status(201).json({ data });
+      return res
+        .status(200)
+        .json({ message: 'record updated successfully', data });
     } catch (error) {
       Response.handleError('updateHcp', error, req, res, next);
     }
