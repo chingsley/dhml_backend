@@ -46,7 +46,7 @@ router.patch(
   '/status',
   AuthMiddleware.authorize([SUPERADMIN]),
   HcpMiddleware.validateStatusUpdate,
-  HcpController.setHcpStatus
+  HcpController.changeHcpStatus
 );
 router.patch(
   '/:hcpId',

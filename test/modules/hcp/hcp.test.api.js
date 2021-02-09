@@ -28,17 +28,12 @@ class HcpApi extends TestService {
     return res;
   }
 
-  static async verify(principalId, token) {
+  static async changeStatus(payload, token) {
     const res = await app
-      .patch(`/api/v1/hcp/${principalId}/verify`)
-      .set('authorization', token);
+      .patch('/api/v1/hcp/status')
+      .set('authorization', token)
+      .send(payload);
     return res;
-  }
-
-  static async unverify(principalId, token) {
-    return await app
-      .patch(`/api/v1/hcp/${principalId}/unverify`)
-      .set('authorization', token);
   }
 
   static async delete(hcpId, token) {

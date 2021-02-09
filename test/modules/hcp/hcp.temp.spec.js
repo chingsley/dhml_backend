@@ -20,63 +20,51 @@ describe('HcpTemp', () => {
     nodemailer.createTransport = nodemailerOriginalImplementation;
     NanoId.getValue = originalNanoIdGetValue;
   });
-  describe('updateHcp', () => {
-    let token, res, hcp1, hcp2;
-    const changes = { email: 'newmail@gmail.com' };
+  describe('changeStatus', () => {
+    let token, HCPs, hcpIds;
     beforeAll(async () => {
       await TestService.resetDB();
-      const HCPs = await TestService.seedHCPs(2);
-      hcp1 = HCPs[0];
-      hcp2 = HCPs[1];
+      HCPs = await TestService.seedHCPs(2);
+      hcpIds = HCPs.map(({ dataValues: { id } }) => id);
+
       const { sampleStaffs: stff } = getSampleStaffs(1);
       const data = await TestService.getToken(stff[0], ROLES.SUPERADMIN);
       token = data.token;
-      res = await HcpApi.update(hcp1.id, changes, token);
     });
-    it('returns a success message with status 200', async (done) => {
+    it('ensures the HCPs have inital status "active"', async (done) => {
       try {
+        const allActive = HCPs.every((hcp) => hcp.status === 'active');
+        expect(allActive).toBe(true);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('can change status of multiple HCPs to suspended', async (done) => {
+      try {
+        const STATUS = 'suspended';
+        const payload = { status: STATUS, hcpIds };
+        const res = await HcpApi.changeStatus(payload, token);
+        const updatedHcps = await _HcpService.findByIdArr(hcpIds);
         expect(res.status).toBe(200);
-        expect(res.body).toHaveProperty('message');
+        for (let { status } of updatedHcps) {
+          expect(status).toEqual(STATUS);
+        }
         done();
       } catch (e) {
         done(e);
       }
     });
-    it('returns the updated record in the response data', async (done) => {
+    it('can change status of multiple HCPs to active', async (done) => {
       try {
-        const { data } = res.body;
-        expect(data.email).toEqual(changes.email);
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-    it('saves the new changes in the database', async (done) => {
-      try {
-        const updatedHcp = await _HcpService.findById(hcp1.id);
-        expect(updatedHcp.email).toEqual(changes.email);
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-    it('allows same record update with same unique value', async (done) => {
-      try {
-        const changes = { email: hcp1.email };
-        const res = await HcpApi.update(hcp1.id, changes, token);
+        const STATUS = 'active';
+        const payload = { status: STATUS, hcpIds };
+        const res = await HcpApi.changeStatus(payload, token);
+        const updatedHcps = await _HcpService.findByIdArr(hcpIds);
         expect(res.status).toBe(200);
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-    it('detects duplicate violation during update', async (done) => {
-      try {
-        const changes = { email: hcp2.email };
-        const res = await HcpApi.update(hcp1.id, changes, token);
-        const { errors } = res.body;
-        expect(res.status).toBe(400);
-        expect(errors[0]).toMatch(/already exists/i);
+        for (let { status } of updatedHcps) {
+          expect(status).toEqual(STATUS);
+        }
         done();
       } catch (e) {
         done(e);

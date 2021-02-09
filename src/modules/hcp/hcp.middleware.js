@@ -29,7 +29,7 @@ export default class HcpMiddleware {
     try {
       const schema = Joi.object({
         status: Joi.string().trim().valid('suspended', 'active').required(),
-        enrolleeIds: Joi.array()
+        hcpIds: Joi.array()
           .items(Joi.number().integer())
           .min(1)
           .unique()

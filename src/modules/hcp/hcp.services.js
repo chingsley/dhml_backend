@@ -163,10 +163,10 @@ export default class HcpService extends AppService {
   }
 
   async suspendOrActivate() {
-    const { status, enrolleeIds } = this.body;
+    const { status, hcpIds } = this.body;
     const result = await db.HealthCareProvider.update(
       { status },
-      { where: { id: enrolleeIds }, returning: true }
+      { where: { id: hcpIds }, returning: true }
     );
     return result[1];
   }

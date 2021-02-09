@@ -172,4 +172,59 @@ describe('HcpController', () => {
       TestService.testCatchBlock(HcpController.updateHcp)
     );
   });
+  describe('changeStatus', () => {
+    let token, HCPs, hcpIds;
+    beforeAll(async () => {
+      await TestService.resetDB();
+      HCPs = await TestService.seedHCPs(2);
+      hcpIds = HCPs.map(({ dataValues: { id } }) => id);
+
+      const { sampleStaffs: stff } = getSampleStaffs(1);
+      const data = await TestService.getToken(stff[0], ROLES.SUPERADMIN);
+      token = data.token;
+    });
+    it('ensures the HCPs have inital status "active"', async (done) => {
+      try {
+        const allActive = HCPs.every((hcp) => hcp.status === 'active');
+        expect(allActive).toBe(true);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('can change status of multiple HCPs to suspended', async (done) => {
+      try {
+        const STATUS = 'suspended';
+        const payload = { status: STATUS, hcpIds };
+        const res = await HcpApi.changeStatus(payload, token);
+        const updatedHcps = await _HcpService.findByIdArr(hcpIds);
+        expect(res.status).toBe(200);
+        for (let { status } of updatedHcps) {
+          expect(status).toEqual(STATUS);
+        }
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('can change status of multiple HCPs to active', async (done) => {
+      try {
+        const STATUS = 'active';
+        const payload = { status: STATUS, hcpIds };
+        const res = await HcpApi.changeStatus(payload, token);
+        const updatedHcps = await _HcpService.findByIdArr(hcpIds);
+        expect(res.status).toBe(200);
+        for (let { status } of updatedHcps) {
+          expect(status).toEqual(STATUS);
+        }
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it(
+      'it catches errors thrown in the try block',
+      TestService.testCatchBlock(HcpController.changeHcpStatus)
+    );
+  });
 });
