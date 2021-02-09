@@ -50,6 +50,7 @@ export default class HcpMiddleware {
         pageSize: Joi.number().integer().min(1),
         code: Joi.string().trim(),
         name: Joi.string().trim(),
+        email: Joi.string().trim(),
         hcpCode: Joi.string().trim(),
         hcpName: Joi.string().trim(),
         value: Joi.string().trim(),

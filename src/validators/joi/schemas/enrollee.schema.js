@@ -102,3 +102,13 @@ export const patchEnrolleeSchema = Joi.object({
   letterOfNok: Joi.any(),
   dependants: Joi.array().items(Joi.object()),
 });
+
+export const enrolleeQuerySchema = Joi.object({
+  id: Joi.number().integer().min(1),
+  page: Joi.number().integer().min(0),
+  pageSize: Joi.number().integer().min(1),
+  searchField: Joi.string().trim(),
+  searchValue: Joi.string().trim(),
+  searchItem: Joi.string().trim(),
+  isVerified: Joi.string().trim().valid('true', 'false'),
+});

@@ -6,7 +6,6 @@ import {
   getManifest,
 } from '../../database/scripts/hcp.scripts';
 import { enrolleeSearchableFields } from '../../shared/attributes/enrollee.attributes';
-import { Op } from 'sequelize';
 import { hcpSearchableFields } from '../../shared/attributes/hcp.attribtes';
 import { throwError } from '../../shared/helpers';
 import { HCP } from '../../shared/constants/roles.constants';
@@ -70,9 +69,9 @@ export default class HcpService extends AppService {
   async fetchAllHcp() {
     return await db.HealthCareProvider.findAndCountAll({
       where: {
-        ...this.searchHcpBy(hcpSearchableFields),
+        ...this.searchRecordsBy(hcpSearchableFields),
         ...this.filterHcp(),
-        ...this.exactMatch(['id']),
+        ...this.exactMatch(['id', 'code', 'email']),
       },
       order: [['id', 'ASC']],
       ...this.paginate(),
@@ -182,36 +181,6 @@ export default class HcpService extends AppService {
     await hcp.destroy();
     return hcp;
   }
-
-  searchHcpBy = (searchableFields) => {
-    const { searchField, searchValue, searchItem } = this.query;
-    const allowedFields = searchableFields.map(({ name }) => name);
-    let conditions = {};
-    if (searchField && searchValue && allowedFields.includes(searchField)) {
-      conditions = {
-        [searchField]: { [Op.iLike]: searchValue.toLowerCase() },
-      };
-    }
-    if (searchItem) {
-      conditions = {
-        ...conditions,
-        ...{
-          [Op.or]: searchableFields.map((field) => {
-            if (field.type === 'string') {
-              return {
-                [field.name]: { [Op.iLike]: `%${searchItem.toLowerCase()}%` },
-              };
-            } else {
-              return {};
-            }
-          }),
-        },
-      };
-    }
-    const { log } = console;
-    log('searchRecordsBy ===> ', conditions);
-    return conditions;
-  };
 
   async findByParmas() {
     const { hcpId } = this.params;
