@@ -36,8 +36,8 @@ router.post(
 router.get(
   '/profile',
   AuthMiddleware.authorize(null, {
-    rejectDefaultPassword: true,
-    rejectExpiredPassword: true,
+    rejectDefaultPassword: false,
+    rejectExpiredPassword: false,
   }),
   AuthController.getUserProfile
 );

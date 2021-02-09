@@ -1,11 +1,11 @@
 /* eslint-disable jest/expect-expect */
 
-import getEnrollees from '../../../../src/shared/samples/enrollee.samples';
-import TestService from '../../app/app.test.service';
-import ROLES from '../../../../src/shared/constants/roles.constants';
-import getSampleStaffs from '../../../../src/shared/samples/staff.samples';
-import EnrolleeApi from '../enrollee.test.api';
-import EnrolleeController from '../../../../src/modules/enrollee/enrollee.controller';
+import getEnrollees from '../../../src/shared/samples/enrollee.samples';
+import TestService from '../app/app.test.service';
+import ROLES from '../../../src/shared/constants/roles.constants';
+import getSampleStaffs from '../../../src/shared/samples/staff.samples';
+import EnrolleeApi from './enrollee.test.api';
+import EnrolleeController from '../../../src/modules/enrollee/enrollee.controller';
 
 // const { log } = console;
 

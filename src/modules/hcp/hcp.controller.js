@@ -8,7 +8,7 @@ export default class HcpController {
     try {
       const hcpService = new HcpService(req);
       const data = await hcpService.createHcp();
-      return res.status(201).json({ data });
+      return res.status(201).json({ message: 'registration successful', data });
     } catch (error) {
       Response.handleError('addNewHcp', error, req, res, next);
     }

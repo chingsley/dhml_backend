@@ -863,7 +863,7 @@ describe('EnrolleeController', () => {
     beforeAll(async () => {
       await TestService.resetDB();
       HCPs = await TestService.seedHCPs(4);
-      const { sampleStaffs } = getSampleStaffs(1);
+
       sampleEnrollees = getEnrollees({
         numOfPrincipals: 1,
         sameSchemeDepPerPrincipal: 1,
@@ -893,7 +893,7 @@ describe('EnrolleeController', () => {
         }
       });
       seededDependants = await TestService.seedEnrollees(deps);
-
+      const { sampleStaffs } = getSampleStaffs(1);
       const data = await TestService.getToken(
         sampleStaffs[0],
         ROLES.ENROLMENT_OFFICER
