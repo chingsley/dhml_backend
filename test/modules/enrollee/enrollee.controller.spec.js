@@ -444,7 +444,6 @@ describe('EnrolleeController', () => {
         sampleEnrollees.dependants,
         principal
       );
-      // console.log(result);
       const { sampleStaffs } = getSampleStaffs(1);
       const data = await TestService.getToken(
         sampleStaffs[0],

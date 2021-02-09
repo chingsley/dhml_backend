@@ -29,6 +29,10 @@ class _HcpService extends TestService {
       hcpList.map((hcp) => ({ ...hcp, roleId: hcpRole.id }))
     );
   }
+
+  static async countActive() {
+    return this.HCP.count({ where: { status: 'active' } });
+  }
 }
 
 export default _HcpService;

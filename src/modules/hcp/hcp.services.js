@@ -1,9 +1,11 @@
 import db from '../../database/models';
 import AppService from '../app/app.service';
 import {
-  getCapitation,
+  // getCapitationWithoutZeroStats,
+  getCapitationWithZeroStats,
   getCapitationTotals,
-  getManifest,
+  // getManifestWihoutZeroStats,
+  getManifestWithZeroStats,
 } from '../../database/scripts/hcp.scripts';
 import { enrolleeSearchableFields } from '../../shared/attributes/enrollee.attributes';
 import { hcpSearchableFields } from '../../shared/attributes/hcp.attribtes';
@@ -126,25 +128,31 @@ export default class HcpService extends AppService {
   }
 
   async fetchManifest() {
-    const nonPaginatedRows = await this.executeQuery(getManifest, {
+    const nonPaginatedRows = await this.executeQuery(getManifestWithZeroStats, {
       ...this.query,
       pageSize: undefined,
       page: undefined,
     });
     const count = nonPaginatedRows.length;
     const total = this.summarizeManifest(nonPaginatedRows);
-    const rows = await this.executeQuery(getManifest, this.query);
+    const rows = await this.executeQuery(getManifestWithZeroStats, this.query);
     return { count, rows, total };
   }
 
   async fetchCapitation() {
-    const nonPaginatedRows = await this.executeQuery(getCapitation, {
-      ...this.query,
-      pageSize: undefined,
-      page: undefined,
-    });
+    const nonPaginatedRows = await this.executeQuery(
+      getCapitationWithZeroStats,
+      {
+        ...this.query,
+        pageSize: undefined,
+        page: undefined,
+      }
+    );
     const count = nonPaginatedRows.length;
-    const rows = await this.executeQuery(getCapitation, this.query);
+    const rows = await this.executeQuery(
+      getCapitationWithZeroStats,
+      this.query
+    );
     const [total] = await this.executeQuery(getCapitationTotals, this.query);
     return { count, rows, total };
   }

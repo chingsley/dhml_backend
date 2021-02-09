@@ -43,7 +43,9 @@ export const newEnrolleeSchema = Joi.object({
   employer: Joi.string().trim(),
   dateOfBirth: Joi.date().format('YYYY-MM-DD').max('now'),
   gender: Joi.string().trim().valid('male', 'female'),
-  maritalStatus: Joi.string().trim().valid('single', 'married'),
+  maritalStatus: Joi.string()
+    .trim()
+    .valid('single', 'married', 'widow', 'widower'),
   identificationType: Joi.string().trim(),
   identificationNumber: Joi.string().trim(),
   serviceStatus: Joi.string().trim().valid('serving', 'retired'),
@@ -81,7 +83,9 @@ export const patchEnrolleeSchema = Joi.object({
   employer: Joi.string().trim(),
   dateOfBirth: Joi.date().format('YYYY-MM-DD').max('now'),
   gender: Joi.string().trim().valid('male', 'female'),
-  maritalStatus: Joi.string().trim().valid('single', 'married'),
+  maritalStatus: Joi.string()
+    .trim()
+    .valid('single', 'married', 'widow', 'widower'),
   identificationType: Joi.string().trim(),
   identificationNumber: Joi.string().trim(),
   serviceStatus: Joi.string().trim().valid('serving', 'retired'),

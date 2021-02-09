@@ -43,8 +43,19 @@ class HcpApi extends TestService {
   static async getAll(query, token) {
     return await app.get(`/api/v1/hcp?${query}`).set('authorization', token);
   }
+
   static getById(hcpId, token) {
     return app.get(`/api/v1/hcp/${hcpId}`).set('authorization', token);
+  }
+
+  static getManifest(query, token) {
+    return app.get(`/api/v1/hcp/manifest?${query}`).set('authorization', token);
+  }
+
+  static getCapitation(query, token) {
+    return app
+      .get(`/api/v1/hcp/capitation?${query}`)
+      .set('authorization', token);
   }
 }
 
