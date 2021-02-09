@@ -5,6 +5,7 @@ import getSampleStaffs from '../../../src/shared/samples/staff.samples';
 import HcpApi from './hcp.test.api';
 import NanoId from '../../../src/utils/NanoId';
 import _HcpService from './hcp.test.service';
+import getEnrollees from '../../../src/shared/samples/enrollee.samples';
 
 describe('HcpTemp', () => {
   const nodemailerOriginalImplementation = nodemailer.createTransport;
@@ -20,51 +21,51 @@ describe('HcpTemp', () => {
     nodemailer.createTransport = nodemailerOriginalImplementation;
     NanoId.getValue = originalNanoIdGetValue;
   });
-  describe('changeStatus', () => {
-    let token, HCPs, hcpIds;
+  describe('deleteHcp', () => {
+    let token, hcp1, hcp2, res;
     beforeAll(async () => {
       await TestService.resetDB();
-      HCPs = await TestService.seedHCPs(2);
-      hcpIds = HCPs.map(({ dataValues: { id } }) => id);
+      [hcp1, hcp2] = await TestService.seedHCPs(2);
+      const { principals } = getEnrollees({ numOfPrincipals: 1 });
+      await TestService.seedEnrollees([
+        {
+          ...principals[0],
+          scheme: 'AFRSHIP',
+          enrolmentType: 'principal',
+          hcpId: hcp2.id,
+          isVerified: true,
+        },
+      ]);
 
       const { sampleStaffs: stff } = getSampleStaffs(1);
       const data = await TestService.getToken(stff[0], ROLES.SUPERADMIN);
       token = data.token;
+      res = await HcpApi.delete(hcp1.id, token);
     });
-    it('ensures the HCPs have inital status "active"', async (done) => {
+    it('returns status 200 and a success message', async (done) => {
       try {
-        const allActive = HCPs.every((hcp) => hcp.status === 'active');
-        expect(allActive).toBe(true);
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty('message', 'HCP has been deleted');
         done();
       } catch (e) {
         done(e);
       }
     });
-    it('can change status of multiple HCPs to suspended', async (done) => {
+    it('removes the record from the database', async (done) => {
       try {
-        const STATUS = 'suspended';
-        const payload = { status: STATUS, hcpIds };
-        const res = await HcpApi.changeStatus(payload, token);
-        const updatedHcps = await _HcpService.findByIdArr(hcpIds);
-        expect(res.status).toBe(200);
-        for (let { status } of updatedHcps) {
-          expect(status).toEqual(STATUS);
-        }
+        const hcp = await _HcpService.findById(hcp1.id);
+        expect(hcp).toBe(null);
         done();
       } catch (e) {
         done(e);
       }
     });
-    it('can change status of multiple HCPs to active', async (done) => {
+    it('rejects attempt to delete an HCP that has enrolleess', async (done) => {
       try {
-        const STATUS = 'active';
-        const payload = { status: STATUS, hcpIds };
-        const res = await HcpApi.changeStatus(payload, token);
-        const updatedHcps = await _HcpService.findByIdArr(hcpIds);
-        expect(res.status).toBe(200);
-        for (let { status } of updatedHcps) {
-          expect(status).toEqual(STATUS);
-        }
+        const res = await HcpApi.delete(hcp2.id, token);
+        const { errors } = res.body;
+        const expectedError = 'cannot delete hcp with enrolleess';
+        expect(errors[0]).toEqual(expectedError);
         done();
       } catch (e) {
         done(e);
