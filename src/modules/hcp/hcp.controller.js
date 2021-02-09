@@ -74,13 +74,15 @@ export default class HcpController {
       Response.handleError('getCapitation', error, req, res, next);
     }
   }
-  static async setHcpStatus(req, res, next) {
+  static async changeHcpStatus(req, res, next) {
     try {
       const hcpService = new HcpService(req);
       const data = await hcpService.suspendOrActivate();
-      return res.status(200).json({ data });
+      return res
+        .status(200)
+        .json({ message: 'status successfully update', data });
     } catch (error) {
-      Response.handleError('setHcpStatus', error, req, res, next);
+      Response.handleError('changeHcpStatus', error, req, res, next);
     }
   }
   static async deleteHcp(req, res, next) {
