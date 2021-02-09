@@ -4,12 +4,13 @@ import getSampleHCPs from '../../../src/shared/samples/hcp.samples';
 import ROLES from '../../../src/shared/constants/roles.constants';
 import nodemailer from 'nodemailer';
 import getSampleStaffs from '../../../src/shared/samples/staff.samples';
-import hcpApi from './hcp.test.api';
+import HcpApi from './hcp.test.api';
 import AuthApi from '../auth/auth.test.api';
 import NanoId from '../../../src/utils/NanoId';
 import HcpController from '../../../src/modules/hcp/hcp.controller';
+import _HcpService from './hcp.test.service';
 
-describe('UserController', () => {
+describe('HcpController', () => {
   let hcpSample;
   const nodemailerOriginalImplementation = nodemailer.createTransport;
   const originalNanoIdGetValue = NanoId.getValue;
@@ -37,7 +38,7 @@ describe('UserController', () => {
       const { sampleStaffs: stff } = getSampleStaffs(1);
       const data = await TestService.getToken(stff[0], ROLES.SUPERADMIN);
       token = data.token;
-      res = await hcpApi.register(hcpSample, token);
+      res = await HcpApi.register(hcpSample, token);
       const { data: registeredHcp } = res.body;
       hcpPassword = await TestService.getPasswordByHcpId(registeredHcp.id);
     });
@@ -102,6 +103,73 @@ describe('UserController', () => {
     it(
       'it catches errors thrown in the try block',
       TestService.testCatchBlock(HcpController.addNewHcp)
+    );
+  });
+  describe('updateHcp', () => {
+    let token, res, hcp1, hcp2;
+    const changes = { email: 'newmail@gmail.com' };
+    beforeAll(async () => {
+      await TestService.resetDB();
+      const HCPs = await TestService.seedHCPs(2);
+      hcp1 = HCPs[0];
+      hcp2 = HCPs[1];
+      const { sampleStaffs: stff } = getSampleStaffs(1);
+      const data = await TestService.getToken(stff[0], ROLES.SUPERADMIN);
+      token = data.token;
+      res = await HcpApi.update(hcp1.id, changes, token);
+    });
+    it('returns a success message with status 200', async (done) => {
+      try {
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty('message');
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns the updated record in the response data', async (done) => {
+      try {
+        const { data } = res.body;
+        expect(data.email).toEqual(changes.email);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('saves the new changes in the database', async (done) => {
+      try {
+        const updatedHcp = await _HcpService.findById(hcp1.id);
+        expect(updatedHcp.email).toEqual(changes.email);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('allows same record update with same unique value', async (done) => {
+      try {
+        const changes = { email: hcp1.email };
+        const res = await HcpApi.update(hcp1.id, changes, token);
+        expect(res.status).toBe(200);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('detects duplicate violation during update', async (done) => {
+      try {
+        const changes = { email: hcp2.email };
+        const res = await HcpApi.update(hcp1.id, changes, token);
+        const { errors } = res.body;
+        expect(res.status).toBe(400);
+        expect(errors[0]).toMatch(/already exists/i);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it(
+      'it catches errors thrown in the try block',
+      TestService.testCatchBlock(HcpController.updateHcp)
     );
   });
 });
