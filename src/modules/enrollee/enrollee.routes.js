@@ -30,6 +30,7 @@ router.get(
     HOD_VHS,
     VERIFIER,
   ]),
+  EnrolleeMiddleware.validateQuery,
   EnrolleeController.getEnrollees
 );
 router.get(

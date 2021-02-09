@@ -70,9 +70,17 @@ export default class AppService {
     return record;
   }
 
+  /**
+   * NOTE: In the if() block here, I could use if(page && pageSize)
+   * but that leads to a bug, because if page is '0' in req.query,
+   * and if a middleware (like joi) converts the string '0' to the
+   * number 0 (as in Number('0')), then the 'if' condition will fail,
+   * becase the number 0 is falsy. That is why I used !== undefined so
+   * as to be more specific and avoid such bug.
+   */
   paginate() {
     const { page, pageSize } = this.query;
-    if (page && pageSize) {
+    if (page !== undefined && pageSize !== undefined) {
       return {
         offset: Number(page * pageSize) || 0,
         limit: Number(pageSize) || null,

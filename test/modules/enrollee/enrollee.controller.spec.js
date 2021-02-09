@@ -748,7 +748,7 @@ describe('EnrolleeController', () => {
         ROLES.ENROLMENT_OFFICER
       );
       token = data.token;
-      res = await EnrolleeApi.getAll(null, token);
+      res = await EnrolleeApi.getAll('', token);
     });
 
     it('returns total count of all the enrollees in the db', async (done) => {
