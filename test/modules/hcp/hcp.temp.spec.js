@@ -6,6 +6,10 @@ import HcpApi from './hcp.test.api';
 import NanoId from '../../../src/utils/NanoId';
 import getSampleHCPs from '../../../src/shared/samples/hcp.samples';
 import _HcpService from './hcp.test.service';
+import getEnrollees from '../../../src/shared/samples/enrollee.samples';
+import TestStaff from '../staff/staff.test.services';
+import { MAX_STAFF_COUNT } from '../../../src/shared/constants/seeders.constants';
+import { dateOnly, months } from '../../../src/utils/timers';
 
 describe('HcpTemp', () => {
   const nodemailerOriginalImplementation = nodemailer.createTransport;
@@ -21,118 +25,167 @@ describe('HcpTemp', () => {
     nodemailer.createTransport = nodemailerOriginalImplementation;
     NanoId.getValue = originalNanoIdGetValue;
   });
-  describe('getAllHcp', () => {
-    let token, seededHCPs;
-    const COUNT_HCP = 20;
+  describe('getManifest/getCapitation', () => {
+    let token, seededHCPs, res1, res2;
+    const NUM_ACTIVE_HCP = 15;
+    const NUM_SUSPENDED_HCP = 5;
+    const TOTAL_COUNT_HCP = NUM_ACTIVE_HCP + NUM_SUSPENDED_HCP;
+    const LIVES_PER_HCP = 5;
+    const PER_UNIT_CHARGE = 750;
+
     beforeAll(async () => {
       await TestService.resetDB();
-      const hcps = getSampleHCPs();
-      seededHCPs = await _HcpService.bulkInsert([
-        ...hcps.slice(0, 10),
-        ...hcps.slice(hcps.length - 10).map((hcp) => ({
+      const allHCPs = getSampleHCPs();
+      const primaryHCPs = allHCPs
+        .filter((h) => h.category.match(/primary/i))
+        .slice(0, Math.floor(TOTAL_COUNT_HCP / 2));
+      const primaryHcpNoEnrollee = allHCPs
+        .filter((h) => h.category.match(/primary/i))
+        .slice(
+          Math.floor(TOTAL_COUNT_HCP / 2),
+          Math.floor(TOTAL_COUNT_HCP / 2) + 1
+        );
+      const secondaryActiveHCPs = allHCPs
+        .filter((h) => h.category.match(/secondary/i))
+        .slice(0, Math.ceil(TOTAL_COUNT_HCP / 2));
+      const secondarySuspendedHCPs = secondaryActiveHCPs
+        .splice(0, NUM_SUSPENDED_HCP)
+        .map((hcp) => ({
           ...hcp,
           status: 'suspended',
-        })),
+        }));
+      seededHCPs = await _HcpService.bulkInsert([
+        ...primaryHCPs,
+        ...secondaryActiveHCPs,
+        ...secondarySuspendedHCPs,
+        ...primaryHcpNoEnrollee,
       ]);
-      const { sampleStaffs: stff } = getSampleStaffs(1);
+      const { sampleStaffs: stff } = getSampleStaffs(MAX_STAFF_COUNT);
+      const seededStaffs = await TestStaff.seedBulk(stff);
+      const { principals, dependants } = getEnrollees({
+        numOfPrincipals: TOTAL_COUNT_HCP,
+        sameSchemeDepPerPrincipal: 3,
+        vcshipDepPerPrincipal: 1,
+      });
+      const seededPrincipals = await TestService.seedEnrollees(
+        principals.map((p, i) => {
+          return {
+            ...p,
+            hcpId: seededHCPs[i].id,
+            staffNumber: p.staffNumber ? seededStaffs[i].staffIdNo : null,
+          };
+        })
+      );
+      const dependantsWithPrincipalId = dependants.reduce((acc, dep, i) => {
+        const hcpId = seededHCPs[i % TOTAL_COUNT_HCP].id;
+        for (let { enrolleeIdNo, id } of seededPrincipals) {
+          if (dep.enrolleeIdNo.match(new RegExp(`${enrolleeIdNo}-`))) {
+            acc.push({ ...dep, principalId: id, hcpId });
+          }
+        }
+        return acc;
+      }, []);
+      await TestService.seedEnrollees(dependantsWithPrincipalId);
       const data = await TestService.getToken(stff[0], ROLES.SUPERADMIN);
       token = data.token;
+      res1 = await HcpApi.getManifest('', token);
+      res2 = await HcpApi.getCapitation('', token);
     });
     it('returns status 200 and the total record in the db', async (done) => {
       try {
-        const res = await HcpApi.getAll('', token);
-        const { data } = res.body;
-        expect(res.status).toBe(200);
-        expect(data.count).toEqual(COUNT_HCP);
+        expect(res1.status).toBe(200);
         done();
       } catch (e) {
         done(e);
       }
     });
-    it('can paginate the response data', async (done) => {
+    it('returns manifest for all active hcp in the system', async (done) => {
       try {
-        const PAGE_SIZE = 3;
-        const query = `pageSize=${PAGE_SIZE}&page=0`;
-        const res = await HcpApi.getAll(query, token);
-        const { data } = res.body;
-        expect(res.status).toBe(200);
-        expect(data.count).toEqual(COUNT_HCP);
-        expect(data.rows).toHaveLength(PAGE_SIZE);
+        const { data } = res1.body;
+        const totalActiveHcp = await _HcpService.countActive();
+        expect(data.count).toEqual(totalActiveHcp);
+        expect(data.rows).toHaveLength(totalActiveHcp);
+        expect(true).toBe(true);
         done();
       } catch (e) {
         done(e);
       }
     });
-    it('can filter the record by hcp status', async (done) => {
+    it('returns the sum of lives in the manifest', async (done) => {
       try {
-        const STATUS = 'suspended';
-        const query = `searchField=status&searchValue=${STATUS}`;
-        const res = await HcpApi.getAll(query, token);
+        const {
+          data: {
+            total: { lives, principals, dependants },
+          },
+        } = res1.body;
+        expect(lives).toEqual(LIVES_PER_HCP * NUM_ACTIVE_HCP);
+        expect(principals + dependants).toEqual(LIVES_PER_HCP * NUM_ACTIVE_HCP);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('can filter the result by date', async (done) => {
+      try {
+        const res = await HcpApi.getManifest(
+          `date=${months.setPast(1)}`,
+          token
+        );
         const { data } = res.body;
-        for (let { status } of data.rows) {
-          expect(status).toBe(STATUS);
+        for (let hcp of data.rows) {
+          expect(dateOnly(hcp.monthOfYear).slice(0, 7)).toBe(
+            months.setPast(1).slice(0, 7)
+          );
         }
         done();
       } catch (e) {
         done(e);
       }
     });
-    it('can filter the record by category', async (done) => {
+
+    it('computes the capitation for all active HCPs', async (done) => {
       try {
-        const CATEGORY = 'secondary';
-        const query = `searchField=category&searchValue=${CATEGORY}`;
-        const res = await HcpApi.getAll(query, token);
-        const { data } = res.body;
-        for (let { category } of data.rows) {
-          expect(category.toLowerCase()).toBe(CATEGORY);
+        const {
+          data: { total: manifestTotal },
+        } = res1.body;
+        const {
+          data: { total: capitationTotal },
+        } = res2.body;
+        expect(`${capitationTotal.lives}`).toBe(`${manifestTotal.lives}`);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+
+    it('computes the total amount to be paid for each hcp', async (done) => {
+      try {
+        const { data } = res2.body;
+        for (let hcp of data.rows) {
+          expect(`${Number(hcp.lives) * PER_UNIT_CHARGE}`).toEqual(
+            `${hcp.amount}`
+          );
         }
         done();
       } catch (e) {
         done(e);
       }
     });
-    it('can filter the record by state', async (done) => {
+
+    it('ensures the total amount coputed from manifest matches the total in capitation', async (done) => {
       try {
-        const STATE = seededHCPs[0].state;
-        const query = `searchField=state&searchValue=${STATE}`;
-        const res = await HcpApi.getAll(query, token);
-        const { data } = res.body;
-        for (let { state } of data.rows) {
-          expect(state).toMatch(new RegExp(STATE, 'i'));
-        }
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-    it('can search the record by any vaue', async (done) => {
-      try {
-        const SEARCH_ITEM = seededHCPs[0].email;
-        const query = `searchItem=${SEARCH_ITEM}`;
-        const res = await HcpApi.getAll(query, token);
-        const { data } = res.body;
-        for (let { email } of data.rows) {
-          expect(email).toMatch(new RegExp(SEARCH_ITEM, 'i'));
-        }
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-    it('can match the record by id, code, name to return specific hcp', async (done) => {
-      try {
-        const queries = {
-          id: seededHCPs[0].id,
-          code: seededHCPs[1].code,
-          email: seededHCPs[2].email,
-        };
-        for (let [key, value] of Object.entries(queries)) {
-          const query = `${key}=${value}`;
-          const res = await HcpApi.getAll(query, token);
-          const { rows, count } = res.body.data;
-          expect(count).toEqual(1);
-          expect(rows[0][key]).toEqual(value);
-        }
+        const { data: manifestData } = res1.body;
+        const totalAmtFromManifest = manifestData.rows.reduce((acc, hcp) => {
+          acc +=
+            (Number(hcp.principals) + Number(hcp.dependants)) * PER_UNIT_CHARGE;
+          return acc;
+        }, 0);
+        const {
+          data: {
+            total: { amount: capitationTotalAmnt },
+          },
+        } = res2.body;
+        expect(`${totalAmtFromManifest}`).toBe(`${capitationTotalAmnt}`);
         done();
       } catch (e) {
         done(e);

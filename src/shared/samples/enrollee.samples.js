@@ -21,7 +21,7 @@ const {
 } = faker;
 const { zeroPadding, getRandomInt } = require('../../utils/helpers');
 
-export const getEnrollees = (options = {}) => {
+const getEnrollees = (options = {}) => {
   const {
     numOfPrincipals = 1,
     sameSchemeDepPerPrincipal = 0,
