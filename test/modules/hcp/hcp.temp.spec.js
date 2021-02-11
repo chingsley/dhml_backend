@@ -25,7 +25,7 @@ describe('HcpTemp', () => {
     NanoId.getValue = originalNanoIdGetValue;
   });
   describe('getManifest/getCapitation', () => {
-    let token, seededHCPs, res1, res2;
+    let token, seededHCPs, res1, res2, res4;
     const NUM_ACTIVE_HCP = 15;
     const NUM_SUSPENDED_HCP = 5;
     const TOTAL_COUNT_HCP = NUM_ACTIVE_HCP + NUM_SUSPENDED_HCP;
@@ -89,85 +89,12 @@ describe('HcpTemp', () => {
       token = data.token;
       res1 = await HcpApi.getManifest('', token);
       res2 = await HcpApi.getCapitation('', token);
+      res4 = await HcpApi.downloadHcpManifest(seededHCPs[0].id, token);
     });
-    it('returns status 200 and the total record in the db', async (done) => {
+    it('downloads hcp manifest', async (done) => {
       try {
-        expect(res1.status).toBe(200);
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-    it('returns manifest for all active hcp in the system', async (done) => {
-      try {
-        const { data } = res1.body;
-        const totalActiveHcp = await _HcpService.countActive();
-        expect(data.count).toEqual(totalActiveHcp);
-        expect(data.rows).toHaveLength(totalActiveHcp);
+        console.log(res4.body, res4.status);
         expect(true).toBe(true);
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-    it('returns the sum of lives in the manifest', async (done) => {
-      try {
-        const {
-          data: {
-            total: { lives, principals, dependants },
-          },
-        } = res1.body;
-        expect(lives).toEqual(LIVES_PER_HCP * NUM_ACTIVE_HCP);
-        expect(principals + dependants).toEqual(LIVES_PER_HCP * NUM_ACTIVE_HCP);
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-
-    it('computes the capitation for all active HCPs', async (done) => {
-      try {
-        const {
-          data: { total: manifestTotal },
-        } = res1.body;
-        const {
-          data: { total: capitationTotal },
-        } = res2.body;
-        expect(`${capitationTotal.lives}`).toBe(`${manifestTotal.lives}`);
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-
-    it('computes the total amount to be paid for each hcp', async (done) => {
-      try {
-        const { data } = res2.body;
-        for (let hcp of data.rows) {
-          expect(`${Number(hcp.lives) * PER_UNIT_CHARGE}`).toEqual(
-            `${hcp.amount}`
-          );
-        }
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-
-    it('ensures the total amount coputed from manifest matches the total in capitation', async (done) => {
-      try {
-        const { data: manifestData } = res1.body;
-        const totalAmtFromManifest = manifestData.rows.reduce((acc, hcp) => {
-          acc +=
-            (Number(hcp.principals) + Number(hcp.dependants)) * PER_UNIT_CHARGE;
-          return acc;
-        }, 0);
-        const {
-          data: {
-            total: { amount: capitationTotalAmnt },
-          },
-        } = res2.body;
-        expect(`${totalAmtFromManifest}`).toBe(`${capitationTotalAmnt}`);
         done();
       } catch (e) {
         done(e);

@@ -63,6 +63,10 @@ class HcpApi extends TestService {
       .get(`/api/v1/hcp/download_capitation?${query}`)
       .set('authorization', token);
   }
+
+  static downloadHcpManifest(hcpId, token) {
+    return app.get(`/api/v1/hcp/${hcpId}/download_manifest?token=${token}`);
+  }
 }
 
 export default HcpApi;

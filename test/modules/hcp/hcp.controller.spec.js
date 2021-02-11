@@ -408,8 +408,8 @@ describe('HcpController', () => {
       TestService.testCatchBlock(HcpController.getAllHcp)
     );
   });
-  describe('getManifest/getCapitation', () => {
-    let token, seededHCPs, primaryHcpNoEnrollee, res1, res2, res3;
+  describe('manifest/capitation', () => {
+    let token, seededHCPs, primaryHcpNoEnrollee, res1, res2, res3, res4;
     const NUM_ACTIVE_HCP = 15;
     const NUM_SUSPENDED_HCP = 5;
     const TOTAL_COUNT_HCP = NUM_ACTIVE_HCP + NUM_SUSPENDED_HCP;
@@ -474,6 +474,7 @@ describe('HcpController', () => {
       res1 = await HcpApi.getManifest('', token);
       res2 = await HcpApi.getCapitation('', token);
       res3 = await HcpApi.downloadCapitationSummary('', token);
+      res4 = await HcpApi.downloadHcpManifest(seededHCPs[0].id, token);
     });
 
     it('returns status 200 and the total record in the db', async (done) => {
@@ -491,7 +492,6 @@ describe('HcpController', () => {
         const totalActiveHcp = await _HcpService.countActive();
         expect(data.count).toEqual(totalActiveHcp);
         expect(data.rows).toHaveLength(totalActiveHcp);
-        expect(true).toBe(true);
         done();
       } catch (e) {
         done(e);
@@ -650,7 +650,14 @@ describe('HcpController', () => {
         done(e);
       }
     });
-
+    it('returns status 200 on successful download of manifest', async (done) => {
+      try {
+        expect(res4.status).toBe(200);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
     it(
       'it catches errors thrown in the try block of getManifest',
       TestService.testCatchBlock(HcpController.getManifest)
@@ -662,6 +669,10 @@ describe('HcpController', () => {
     it(
       'it catches errors thrown in the try block of downloadCapitationSummary',
       TestService.testCatchBlock(HcpController.downloadCapitationSummary)
+    );
+    it(
+      'it catches errors thrown in the try block of downloadHcpManifest',
+      TestService.testCatchBlock(HcpController.downloadHcpManifest)
     );
   });
 });
