@@ -6,6 +6,7 @@ import {
   getCapitationTotals,
   // getManifestWihoutZeroStats,
   getManifestWithZeroStats,
+  getCapitationWithoutZeroStats,
 } from '../../database/scripts/hcp.scripts';
 import { enrolleeSearchableFields } from '../../shared/attributes/enrollee.attributes';
 import { hcpSearchableFields } from '../../shared/attributes/hcp.attribtes';
@@ -157,6 +158,24 @@ export default class HcpService extends AppService {
     return { count, rows, total };
   }
 
+  async fetchCapitationSummary() {
+    const nonPaginatedRows = await this.executeQuery(
+      getCapitationWithoutZeroStats,
+      {
+        ...this.query,
+        pageSize: undefined,
+        page: undefined,
+      }
+    );
+    const count = nonPaginatedRows.length;
+    const rows = await this.executeQuery(
+      getCapitationWithoutZeroStats,
+      this.query
+    );
+    const [total] = await this.executeQuery(getCapitationTotals, this.query);
+    return { count, rows: this.groupCapitationByState(rows), total };
+  }
+
   filterHcp() {
     return this.filterBy(
       ['hcpCode', 'hcpName', 'category', 'state', 'status'],
@@ -213,5 +232,16 @@ export default class HcpService extends AppService {
       },
       { lives: 0, principals: 0, dependants: 0 }
     );
+  }
+
+  groupCapitationByState(rows) {
+    return rows.reduce((acc, record) => {
+      if (acc[record.hcpState]) {
+        acc[record.hcpState].push(record);
+      } else {
+        acc[record.hcpState] = [record];
+      }
+      return acc;
+    }, {});
   }
 }

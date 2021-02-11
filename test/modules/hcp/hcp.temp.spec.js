@@ -125,23 +125,6 @@ describe('HcpTemp', () => {
         done(e);
       }
     });
-    it('can filter the result by date', async (done) => {
-      try {
-        const res = await HcpApi.getManifest(
-          `date=${months.setPast(1)}`,
-          token
-        );
-        const { data } = res.body;
-        for (let hcp of data.rows) {
-          expect(dateOnly(hcp.monthOfYear).slice(0, 7)).toBe(
-            months.setPast(1).slice(0, 7)
-          );
-        }
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
 
     it('computes the capitation for all active HCPs', async (done) => {
       try {

@@ -104,16 +104,16 @@ export const getCapitationWithoutZeroStats = (
   const { limit, offset, date, filter } = getCapitationFilters(reqQuery);
 
   const query1 = `
-  SELECT id "hcpId", "hcpCode", "hcpName", "hcpStatus", MAX("dateVerified") "monthOfYear", SUM(lives) lives, SUM(lives)*750 amount
+  SELECT id "hcpId", "hcpCode", "hcpName", "hcpState", "hcpStatus", MAX("dateVerified") "monthOfYear", SUM(lives) lives, SUM(lives)*750 amount
   FROM
-    (SELECT h.id, h.code "hcpCode", h.name "hcpName",h.status "hcpStatus", DATE_TRUNC('month', "dateVerified") "dateVerified", count(e.id) lives
+    (SELECT h.id, h.code "hcpCode", h.name "hcpName",h.status "hcpStatus", h.state "hcpState", COALESCE(DATE_TRUNC('month', "dateVerified"), '${date}') "dateVerified", count(e.id) lives
     FROM "HealthCareProviders" h
     JOIN "Enrollees" e
-    ON e."hcpId" = h.id AND e."isVerified"=true AND e."isActive"=true
+    ON e."hcpId" = h.id AND e."isVerified"=true AND e."isActive"=true AND h.status='active'
     GROUP BY h.id, h.code, h.name, DATE_TRUNC('month', "dateVerified"))sub
   WHERE DATE_TRUNC('month', "dateVerified") <= '${date}' AND ${filter}
-  GROUP BY id, "hcpCode", "hcpName", "hcpStatus"
-  ORDER BY "hcpName" ASC, "monthOfYear" ASC
+  GROUP BY id, "hcpCode", "hcpName", "hcpState", "hcpStatus"
+  ORDER BY "hcpState" ASC
   LIMIT ${limit}
   OFFSET ${offset}
   `;
