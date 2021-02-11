@@ -8,7 +8,7 @@ import TestService from '../app/app.test.service';
 import ROLES from '../../../src/shared/constants/roles.constants';
 import getSampleStaffs from '../../../src/shared/samples/staff.samples';
 import EnrolleeTest from './enrollee.test.service';
-import TestStaff from '../staff/staff.test.services';
+import _StaffService from '../staff/staff.test.services';
 import { zeroPadding } from '../../../src/utils/helpers';
 import EnrolleeApi from './enrollee.test.api';
 import EnrolleeController from '../../../src/modules/enrollee/enrollee.controller';
@@ -109,7 +109,7 @@ describe('EnrolleeController', () => {
     });
     it('can enrol a dsship principal', async (done) => {
       try {
-        const staff = await TestStaff.seedOne();
+        const staff = await _StaffService.seedOne();
         const res = await EnrolleeTest.enrol(
           { ...dsshipPrincipal, staffNumber: staff.staffIdNo },
           token

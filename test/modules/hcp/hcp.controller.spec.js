@@ -10,7 +10,7 @@ import NanoId from '../../../src/utils/NanoId';
 import HcpController from '../../../src/modules/hcp/hcp.controller';
 import _HcpService from './hcp.test.service';
 import getEnrollees from '../../../src/shared/samples/enrollee.samples';
-import TestStaff from '../staff/staff.test.services';
+import _StaffService from '../staff/staff.test.services';
 import { MAX_STAFF_COUNT } from '../../../src/shared/constants/seeders.constants';
 // import { dateOnly, months } from '../../../src/utils/timers';
 
@@ -444,7 +444,7 @@ describe('HcpController', () => {
         ...primaryHcpNoEnrollee,
       ]);
       const { sampleStaffs: stff } = getSampleStaffs(MAX_STAFF_COUNT);
-      const seededStaffs = await TestStaff.seedBulk(stff);
+      const seededStaffs = await _StaffService.seedBulk(stff);
       const { principals, dependants } = getEnrollees({
         numOfPrincipals: TOTAL_COUNT_HCP,
         sameSchemeDepPerPrincipal: 3,
