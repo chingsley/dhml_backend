@@ -6,7 +6,7 @@ export const tomorrow = moment().add(1, 'days').format('YYYY-MM-DD');
 export const today = moment().format('YYYY-MM-DD');
 export const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
 
-class TestStaff {
+class _StaffService {
   static async seedOne(staff = this.getSamples(1)[0]) {
     const [result] = await db.Staff.upsert(staff, { returning: true });
     return result;
@@ -20,6 +20,10 @@ class TestStaff {
   static seedBulk(staffs) {
     return db.Staff.bulkCreate(staffs);
   }
+
+  static findOneWhere(condition) {
+    return db.Staff.findOne({ where: condition });
+  }
 }
 
-export default TestStaff;
+export default _StaffService;

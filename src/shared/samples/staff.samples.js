@@ -54,10 +54,10 @@ function getSampleStaffs(count = MAX_STAFF_COUNT) {
       phoneNumber: phone.phoneNumber(),
       firstAppointment: random.words(),
       dateOfFirstAppointment: date.past(),
-      gradeLevelOnFirstAppointment: getRandomInt(5),
+      gradeLevelOnFirstAppointment: `${getRandomInt(5)}`,
       presentAppointment: name.jobTitle(),
       dateOfPresentAppointment: date.past(),
-      presentGradeLevel: getRandomInt(15),
+      presentGradeLevel: `${getRandomInt(15)}`,
       designation: random.arrayElement(designations),
       departmentOrUnit: `${commerce.department()} Unit`,
       deployment: address.state(),
@@ -87,6 +87,7 @@ function getSampleStaffs(count = MAX_STAFF_COUNT) {
       relationshipWithNok: random.arrayElement(relations),
       addressOfNok: getAddress(),
       phoneNumberOfNok: phone.phoneNumber(),
+      accountNumber: `${getRandomInt(9999999999, { min: 1000000000 })}`,
     };
 
     staff.email = internet.email(staff.firstName);
