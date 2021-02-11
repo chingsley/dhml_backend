@@ -12,7 +12,7 @@ import _HcpService from './hcp.test.service';
 import getEnrollees from '../../../src/shared/samples/enrollee.samples';
 import TestStaff from '../staff/staff.test.services';
 import { MAX_STAFF_COUNT } from '../../../src/shared/constants/seeders.constants';
-import { dateOnly, months } from '../../../src/utils/timers';
+// import { dateOnly, months } from '../../../src/utils/timers';
 
 describe('HcpController', () => {
   let hcpSample;
@@ -406,7 +406,7 @@ describe('HcpController', () => {
     );
   });
   describe('getManifest/getCapitation', () => {
-    let token, seededHCPs, res1, res2;
+    let token, seededHCPs, primaryHcpNoEnrollee, res1, res2;
     const NUM_ACTIVE_HCP = 15;
     const NUM_SUSPENDED_HCP = 5;
     const TOTAL_COUNT_HCP = NUM_ACTIVE_HCP + NUM_SUSPENDED_HCP;
@@ -419,7 +419,7 @@ describe('HcpController', () => {
       const primaryHCPs = allHCPs
         .filter((h) => h.category.match(/primary/i))
         .slice(0, Math.floor(TOTAL_COUNT_HCP / 2));
-      const primaryHcpNoEnrollee = allHCPs
+      primaryHcpNoEnrollee = allHCPs
         .filter((h) => h.category.match(/primary/i))
         .slice(
           Math.floor(TOTAL_COUNT_HCP / 2),
@@ -471,6 +471,7 @@ describe('HcpController', () => {
       res1 = await HcpApi.getManifest('', token);
       res2 = await HcpApi.getCapitation('', token);
     });
+
     it('returns status 200 and the total record in the db', async (done) => {
       try {
         expect(res1.status).toBe(200);
@@ -479,6 +480,7 @@ describe('HcpController', () => {
         done(e);
       }
     });
+
     it('returns manifest for all active hcp in the system', async (done) => {
       try {
         const { data } = res1.body;
@@ -491,6 +493,7 @@ describe('HcpController', () => {
         done(e);
       }
     });
+
     it('returns the sum of lives in the manifest', async (done) => {
       try {
         const {
@@ -505,23 +508,24 @@ describe('HcpController', () => {
         done(e);
       }
     });
-    it('can filter the result by date', async (done) => {
-      try {
-        const res = await HcpApi.getManifest(
-          `date=${months.setPast(1)}`,
-          token
-        );
-        const { data } = res.body;
-        for (let hcp of data.rows) {
-          expect(dateOnly(hcp.monthOfYear).slice(0, 7)).toBe(
-            months.setPast(1).slice(0, 7)
-          );
-        }
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
+
+    // it('can filter the manifest by date to return previous manifests on a monthly basis', async (done) => {
+    //   try {
+    //     const res = await HcpApi.getManifest(
+    //       `date=${months.setPast(1)}`,
+    //       token
+    //     );
+    //     const { data } = res.body;
+    //     for (let hcp of data.rows) {
+    //       expect(dateOnly(hcp.monthOfYear).slice(0, 7)).toBe(
+    //         months.setPast(1).slice(0, 7)
+    //       );
+    //     }
+    //     done();
+    //   } catch (e) {
+    //     done(e);
+    //   }
+    // });
 
     it('computes the capitation for all active HCPs', async (done) => {
       try {
@@ -571,6 +575,63 @@ describe('HcpController', () => {
         done(e);
       }
     });
+
+    // it('can filter the capitation by date to return previous capitation on a monthly basis', async (done) => {
+    //   try {
+    //     const res = await HcpApi.getCapitation(
+    //       `date=${months.setPast(1)}`,
+    //       token
+    //     );
+    //     const { data } = res.body;
+    //     for (let hcp of data.rows) {
+    //       expect(dateOnly(hcp.monthOfYear).slice(0, 7)).toBe(
+    //         months.setPast(1).slice(0, 7)
+    //       );
+    //     }
+    //     done();
+    //   } catch (e) {
+    //     done(e);
+    //   }
+    // });
+
+    it('can returns zero manifest for HCPs that do not have enrollees', async (done) => {
+      try {
+        const searchItem = primaryHcpNoEnrollee[0].code;
+        const res = await HcpApi.getManifest(`searchItem=${searchItem}`, token);
+        const { data } = res.body;
+        for (let hcp of data.rows) {
+          expect(hcp.hcpCode).toEqual(searchItem);
+          expect(hcp.lives).toEqual('0');
+          expect(hcp.principals).toEqual('0');
+          expect(hcp.dependants).toEqual('0');
+        }
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+
+    it('can returns zero capitation for HCPs that do not have enrollees', async (done) => {
+      try {
+        const searchItem = primaryHcpNoEnrollee[0].code;
+        const res = await HcpApi.getCapitation(
+          `searchItem=${searchItem}`,
+          token
+        );
+        const { data } = res.body;
+        expect(data.total.lives).toBe(null);
+        expect(data.total.amount).toBe(null);
+        for (let hcp of data.rows) {
+          expect(hcp.hcpCode).toEqual(searchItem);
+          expect(hcp.lives).toEqual('0');
+          expect(hcp.amount).toEqual('0');
+        }
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+
     it(
       'it catches errors thrown in the try block of getManifest',
       TestService.testCatchBlock(HcpController.getManifest)

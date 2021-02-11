@@ -39,8 +39,13 @@ router.get(
 );
 router.get(
   '/:hcpId/download_manifest',
-  AuthMiddleware.authorizeManifestDownload,
+  AuthMiddleware.authorizeDownload,
   HcpController.downloadHcpManifest
+);
+router.get(
+  '/:hcpId/download_capitation',
+  AuthMiddleware.authorize(),
+  HcpController.downloadCapitationSummary
 );
 router.patch(
   '/status',

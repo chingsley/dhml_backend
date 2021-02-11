@@ -56,6 +56,16 @@ export default class HcpController {
       Response.handleError('downloadHcpManifest', error, req, res, next);
     }
   }
+
+  static async downloadCapitationSummary(req, res, next) {
+    try {
+      const hcpService = new HcpService(req);
+      const data = await hcpService.fetchCapitationSummary();
+      return res.status(200).json({ data });
+    } catch (error) {
+      Response.handleError('downloadCapitationSummary', error, req, res, next);
+    }
+  }
   static async getManifest(req, res, next) {
     try {
       const hcpService = new HcpService(req);
