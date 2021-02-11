@@ -9,7 +9,6 @@ import _HcpService from './hcp.test.service';
 import getEnrollees from '../../../src/shared/samples/enrollee.samples';
 import TestStaff from '../staff/staff.test.services';
 import { MAX_STAFF_COUNT } from '../../../src/shared/constants/seeders.constants';
-import { dateOnly, months } from '../../../src/utils/timers';
 
 describe('HcpTemp', () => {
   const nodemailerOriginalImplementation = nodemailer.createTransport;

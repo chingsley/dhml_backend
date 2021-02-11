@@ -57,6 +57,12 @@ class HcpApi extends TestService {
       .get(`/api/v1/hcp/capitation?${query}`)
       .set('authorization', token);
   }
+
+  static downloadCapitationSummary(query, token) {
+    return app
+      .get(`/api/v1/hcp/download_capitation?${query}`)
+      .set('authorization', token);
+  }
 }
 
 export default HcpApi;

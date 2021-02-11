@@ -32,6 +32,11 @@ router.get(
   HcpController.getCapitation
 );
 router.get(
+  '/download_capitation',
+  AuthMiddleware.authorize(),
+  HcpController.downloadCapitationSummary
+);
+router.get(
   '/:hcpId/verified_enrollees',
   AuthMiddleware.authorize(),
   HcpMiddleware.validateQuery,
@@ -41,11 +46,6 @@ router.get(
   '/:hcpId/download_manifest',
   AuthMiddleware.authorizeDownload,
   HcpController.downloadHcpManifest
-);
-router.get(
-  '/:hcpId/download_capitation',
-  AuthMiddleware.authorize(),
-  HcpController.downloadCapitationSummary
 );
 router.patch(
   '/status',

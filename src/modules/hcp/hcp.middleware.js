@@ -68,8 +68,8 @@ export default class HcpMiddleware {
           ),
       });
       await validateSchema(querySchema, req.query);
-      const { hcpCode, hcpName, value } = req.query;
-      HcpMiddleware.rejectSpecialCharacters([hcpCode, hcpName, value]);
+      const { hcpCode, hcpName, searchItem } = req.query;
+      HcpMiddleware.rejectSpecialCharacters([hcpCode, hcpName, searchItem]);
       return next();
     } catch (error) {
       Response.handleError('validateQuery', error, req, res, next);

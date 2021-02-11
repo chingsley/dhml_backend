@@ -14,6 +14,8 @@ import TestStaff from '../staff/staff.test.services';
 import { MAX_STAFF_COUNT } from '../../../src/shared/constants/seeders.constants';
 // import { dateOnly, months } from '../../../src/utils/timers';
 
+const { log } = console;
+
 describe('HcpController', () => {
   let hcpSample;
   const nodemailerOriginalImplementation = nodemailer.createTransport;
@@ -161,6 +163,7 @@ describe('HcpController', () => {
         const changes = { email: hcp2.email };
         const res = await HcpApi.update(hcp1.id, changes, token);
         const { errors } = res.body;
+        res.status !== 400 && log(res.body);
         expect(res.status).toBe(400);
         expect(errors[0]).toMatch(/already exists/i);
         done();
@@ -406,7 +409,7 @@ describe('HcpController', () => {
     );
   });
   describe('getManifest/getCapitation', () => {
-    let token, seededHCPs, primaryHcpNoEnrollee, res1, res2;
+    let token, seededHCPs, primaryHcpNoEnrollee, res1, res2, res3;
     const NUM_ACTIVE_HCP = 15;
     const NUM_SUSPENDED_HCP = 5;
     const TOTAL_COUNT_HCP = NUM_ACTIVE_HCP + NUM_SUSPENDED_HCP;
@@ -470,6 +473,7 @@ describe('HcpController', () => {
       token = data.token;
       res1 = await HcpApi.getManifest('', token);
       res2 = await HcpApi.getCapitation('', token);
+      res3 = await HcpApi.downloadCapitationSummary('', token);
     });
 
     it('returns status 200 and the total record in the db', async (done) => {
@@ -632,6 +636,21 @@ describe('HcpController', () => {
       }
     });
 
+    it('can get the captitation summary', async (done) => {
+      try {
+        const { data } = res3.body;
+        const { count, total } = data;
+        expect(count).toEqual(NUM_ACTIVE_HCP);
+        expect(Number(total.lives)).toEqual(
+          Number(NUM_ACTIVE_HCP * LIVES_PER_HCP)
+        );
+        expect(total.amount).toEqual(res2.body.data.total.amount);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+
     it(
       'it catches errors thrown in the try block of getManifest',
       TestService.testCatchBlock(HcpController.getManifest)
@@ -639,6 +658,10 @@ describe('HcpController', () => {
     it(
       'it catches errors thrown in the try block of getCapitation',
       TestService.testCatchBlock(HcpController.getCapitation)
+    );
+    it(
+      'it catches errors thrown in the try block of downloadCapitationSummary',
+      TestService.testCatchBlock(HcpController.downloadCapitationSummary)
     );
   });
 });
