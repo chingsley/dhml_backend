@@ -473,7 +473,7 @@ describe('HcpController', () => {
       token = data.token;
       res1 = await HcpApi.getManifest('', token);
       res2 = await HcpApi.getCapitation('', token);
-      res3 = await HcpApi.downloadCapitationSummary('', token);
+      res3 = await HcpApi.printCapitationSummary('', token);
       res4 = await HcpApi.downloadHcpManifest(seededHCPs[0].id, token);
     });
 
@@ -667,8 +667,8 @@ describe('HcpController', () => {
       TestService.testCatchBlock(HcpController.getCapitation)
     );
     it(
-      'it catches errors thrown in the try block of downloadCapitationSummary',
-      TestService.testCatchBlock(HcpController.downloadCapitationSummary)
+      'it catches errors thrown in the try block of printCapitationSummary',
+      TestService.testCatchBlock(HcpController.printCapitationSummary)
     );
     it(
       'it catches errors thrown in the try block of downloadHcpManifest',

@@ -32,9 +32,9 @@ router.get(
   HcpController.getCapitation
 );
 router.get(
-  '/download_capitation',
+  '/print_capitation',
   AuthMiddleware.authorize(),
-  HcpController.downloadCapitationSummary
+  HcpController.printCapitationSummary
 );
 router.get(
   '/:hcpId/verified_enrollees',

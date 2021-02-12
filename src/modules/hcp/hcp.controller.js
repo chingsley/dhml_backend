@@ -57,13 +57,13 @@ export default class HcpController {
     }
   }
 
-  static async downloadCapitationSummary(req, res, next) {
+  static async printCapitationSummary(req, res, next) {
     try {
       const hcpService = new HcpService(req);
       const data = await hcpService.fetchCapitationSummary();
       return res.status(200).json({ data });
     } catch (error) {
-      Response.handleError('downloadCapitationSummary', error, req, res, next);
+      Response.handleError('printCapitationSummary', error, req, res, next);
     }
   }
   static async getManifest(req, res, next) {

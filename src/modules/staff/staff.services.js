@@ -19,14 +19,8 @@ export default class StaffService extends AppService {
 
   async createNewStaff() {
     const newStaff = this.body;
-    await this.validateUnique(
-      ['staffIdNo', 'staffFileNo', 'email', 'accountNumber'],
-      {
-        model: db.Staff,
-        reqBody: newStaff,
-        resourceType: 'A staff member',
-      }
-    );
+    const { staffId: id } = this.params;
+    await this.validateStaffUniqueFields(id, newStaff);
     const files = this.files;
     const uploadedImages = files ? await Cloudinary.bulkUpload(files) : {};
     return await db.Staff.create({ ...newStaff, ...uploadedImages });
@@ -35,15 +29,8 @@ export default class StaffService extends AppService {
   async updateStaffInfo() {
     const staffId = Number(this.params.staffId);
     const changes = this.body;
-    await this.validateUnique(
-      ['staffIdNo', 'staffFileNo', 'email', 'accountNumber'],
-      {
-        model: db.Staff,
-        reqBody: changes,
-        resourceType: 'A staff member',
-        resourceId: staffId,
-      }
-    );
+    const { staffId: id } = this.params;
+    await this.validateStaffUniqueFields(id, changes);
     const files = this.files;
     const uploadedImages = files ? await Cloudinary.bulkUpload(files) : {};
     const results = await db.Staff.update(
@@ -51,6 +38,18 @@ export default class StaffService extends AppService {
       { where: { id: staffId }, returning: true }
     );
     return results[1][0];
+  }
+
+  async validateStaffUniqueFields(staffId, reqBody) {
+    return await this.validateUnique(
+      ['staffIdNo', 'staffFileNo', 'email', 'accountNumber'],
+      {
+        model: db.Staff,
+        reqBody: reqBody,
+        resourceType: 'A staff member',
+        resourceId: staffId,
+      }
+    );
   }
 
   async fetchAllStaff() {
