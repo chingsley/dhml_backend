@@ -1,12 +1,14 @@
 import db from '../../database/models';
 import AppService from '../app/app.service';
 import {
-  getCapitation,
+  // getCapitationWithoutZeroStats,
+  getCapitationWithZeroStats,
   getCapitationTotals,
-  getManifest,
+  // getManifestWihoutZeroStats,
+  getManifestWithZeroStats,
+  getCapitationWithoutZeroStats,
 } from '../../database/scripts/hcp.scripts';
 import { enrolleeSearchableFields } from '../../shared/attributes/enrollee.attributes';
-import { Op } from 'sequelize';
 import { hcpSearchableFields } from '../../shared/attributes/hcp.attribtes';
 import { throwError } from '../../shared/helpers';
 import { HCP } from '../../shared/constants/roles.constants';
@@ -60,7 +62,6 @@ export default class HcpService extends AppService {
       resourceType: 'HCP',
       resourceId: hcpId,
     });
-    // return await db.HealthCareProvider.create(this.body);
     const results = await db.HealthCareProvider.update(this.body, {
       where: { id: hcpId },
       returning: true,
@@ -71,9 +72,9 @@ export default class HcpService extends AppService {
   async fetchAllHcp() {
     return await db.HealthCareProvider.findAndCountAll({
       where: {
-        ...this.searchHcpBy(hcpSearchableFields),
+        ...this.searchRecordsBy(hcpSearchableFields),
         ...this.filterHcp(),
-        ...this.exactMatch(['id']),
+        ...this.exactMatch(['id', 'code', 'email']),
       },
       order: [['id', 'ASC']],
       ...this.paginate(),
@@ -128,27 +129,51 @@ export default class HcpService extends AppService {
   }
 
   async fetchManifest() {
-    const nonPaginatedRows = await this.executeQuery(getManifest, {
+    const nonPaginatedRows = await this.executeQuery(getManifestWithZeroStats, {
       ...this.query,
       pageSize: undefined,
       page: undefined,
     });
     const count = nonPaginatedRows.length;
     const total = this.summarizeManifest(nonPaginatedRows);
-    const rows = await this.executeQuery(getManifest, this.query);
+    const rows = await this.executeQuery(getManifestWithZeroStats, this.query);
     return { count, rows, total };
   }
 
   async fetchCapitation() {
-    const nonPaginatedRows = await this.executeQuery(getCapitation, {
-      ...this.query,
-      pageSize: undefined,
-      page: undefined,
-    });
+    const nonPaginatedRows = await this.executeQuery(
+      getCapitationWithZeroStats,
+      {
+        ...this.query,
+        pageSize: undefined,
+        page: undefined,
+      }
+    );
     const count = nonPaginatedRows.length;
-    const rows = await this.executeQuery(getCapitation, this.query);
+    const rows = await this.executeQuery(
+      getCapitationWithZeroStats,
+      this.query
+    );
     const [total] = await this.executeQuery(getCapitationTotals, this.query);
     return { count, rows, total };
+  }
+
+  async fetchCapitationSummary() {
+    const nonPaginatedRows = await this.executeQuery(
+      getCapitationWithoutZeroStats,
+      {
+        ...this.query,
+        pageSize: undefined,
+        page: undefined,
+      }
+    );
+    const count = nonPaginatedRows.length;
+    const rows = await this.executeQuery(
+      getCapitationWithoutZeroStats,
+      this.query
+    );
+    const [total] = await this.executeQuery(getCapitationTotals, this.query);
+    return { count, rows: this.groupCapitationByState(rows), total };
   }
 
   filterHcp() {
@@ -164,55 +189,25 @@ export default class HcpService extends AppService {
   }
 
   async suspendOrActivate() {
-    const { status, enrolleeIds } = this.body;
+    const { status, hcpIds } = this.body;
     const result = await db.HealthCareProvider.update(
       { status },
-      { where: { id: enrolleeIds }, returning: true }
+      { where: { id: hcpIds }, returning: true }
     );
     return result[1];
   }
 
   async handleHcpDelete() {
     const hcp = await this.findByParmas();
-    if (hcp.enrollees.lenght > 0) {
+    if (hcp.enrollees.length > 0) {
       throwError({
         status: 400,
-        error: 'cannot delete hcp with enrolleess',
+        error: ['cannot delete hcp with enrolleess'],
       });
     }
     await hcp.destroy();
     return hcp;
   }
-
-  searchHcpBy = (searchableFields) => {
-    const { searchField, searchValue, searchItem } = this.query;
-    const allowedFields = searchableFields.map(({ name }) => name);
-    let conditions = {};
-    if (searchField && searchValue && allowedFields.includes(searchField)) {
-      conditions = {
-        [searchField]: { [Op.iLike]: searchValue.toLowerCase() },
-      };
-    }
-    if (searchItem) {
-      conditions = {
-        ...conditions,
-        ...{
-          [Op.or]: searchableFields.map((field) => {
-            if (field.type === 'string') {
-              return {
-                [field.name]: { [Op.iLike]: `%${searchItem.toLowerCase()}%` },
-              };
-            } else {
-              return {};
-            }
-          }),
-        },
-      };
-    }
-    const { log } = console;
-    log('searchRecordsBy ===> ', conditions);
-    return conditions;
-  };
 
   async findByParmas() {
     const { hcpId } = this.params;
@@ -237,5 +232,16 @@ export default class HcpService extends AppService {
       },
       { lives: 0, principals: 0, dependants: 0 }
     );
+  }
+
+  groupCapitationByState(rows) {
+    return rows.reduce((acc, record) => {
+      if (acc[record.hcpState]) {
+        acc[record.hcpState].push(record);
+      } else {
+        acc[record.hcpState] = [record];
+      }
+      return acc;
+    }, {});
   }
 }

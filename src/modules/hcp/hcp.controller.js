@@ -17,7 +17,9 @@ export default class HcpController {
     try {
       const hcpService = new HcpService(req);
       const data = await hcpService.updateHcpInfo();
-      return res.status(201).json({ data });
+      return res
+        .status(200)
+        .json({ message: 'record updated successfully', data });
     } catch (error) {
       Response.handleError('updateHcp', error, req, res, next);
     }
@@ -54,6 +56,16 @@ export default class HcpController {
       Response.handleError('downloadHcpManifest', error, req, res, next);
     }
   }
+
+  static async printCapitationSummary(req, res, next) {
+    try {
+      const hcpService = new HcpService(req);
+      const data = await hcpService.fetchCapitationSummary();
+      return res.status(200).json({ data });
+    } catch (error) {
+      Response.handleError('printCapitationSummary', error, req, res, next);
+    }
+  }
   static async getManifest(req, res, next) {
     try {
       const hcpService = new HcpService(req);
@@ -72,13 +84,15 @@ export default class HcpController {
       Response.handleError('getCapitation', error, req, res, next);
     }
   }
-  static async setHcpStatus(req, res, next) {
+  static async changeHcpStatus(req, res, next) {
     try {
       const hcpService = new HcpService(req);
       const data = await hcpService.suspendOrActivate();
-      return res.status(200).json({ data });
+      return res
+        .status(200)
+        .json({ message: 'status successfully update', data });
     } catch (error) {
-      Response.handleError('setHcpStatus', error, req, res, next);
+      Response.handleError('changeHcpStatus', error, req, res, next);
     }
   }
   static async deleteHcp(req, res, next) {

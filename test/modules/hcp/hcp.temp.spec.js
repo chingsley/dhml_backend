@@ -1,14 +1,16 @@
 import TestService from '../app/app.test.service';
-import getSampleHCPs from '../../../src/shared/samples/hcp.samples';
 import ROLES from '../../../src/shared/constants/roles.constants';
 import nodemailer from 'nodemailer';
 import getSampleStaffs from '../../../src/shared/samples/staff.samples';
-import hcpApi from './hcp.test.api';
-import AuthApi from '../auth/auth.test.api';
+import HcpApi from './hcp.test.api';
 import NanoId from '../../../src/utils/NanoId';
+import getSampleHCPs from '../../../src/shared/samples/hcp.samples';
+import _HcpService from './hcp.test.service';
+import getEnrollees from '../../../src/shared/samples/enrollee.samples';
+import _StaffService from '../staff/staff.test.services';
+import { MAX_STAFF_COUNT } from '../../../src/shared/constants/seeders.constants';
 
-describe('UserController', () => {
-  let hcpSample;
+describe('HcpTemp', () => {
   const nodemailerOriginalImplementation = nodemailer.createTransport;
   const originalNanoIdGetValue = NanoId.getValue;
   const SAMPLE_PASSWORD = 'Testing*123';
@@ -22,76 +24,77 @@ describe('UserController', () => {
     nodemailer.createTransport = nodemailerOriginalImplementation;
     NanoId.getValue = originalNanoIdGetValue;
   });
-  describe('addNewHcp', () => {
-    let token, res, hcpPassword;
+  describe('getManifest/getCapitation', () => {
+    let token, seededHCPs, res1, res2, res4;
+    const NUM_ACTIVE_HCP = 15;
+    const NUM_SUSPENDED_HCP = 5;
+    const TOTAL_COUNT_HCP = NUM_ACTIVE_HCP + NUM_SUSPENDED_HCP;
+    const LIVES_PER_HCP = 5;
+    const PER_UNIT_CHARGE = 750;
+
     beforeAll(async () => {
       await TestService.resetDB();
-      const sampleHCPs = getSampleHCPs(1);
-      await TestService.createRole(ROLES.HCP);
-      hcpSample = {
-        ...sampleHCPs[0],
-        // roleId: role.id,
-      };
-      const { sampleStaffs: stff } = getSampleStaffs(1);
+      const allHCPs = getSampleHCPs();
+      const primaryHCPs = allHCPs
+        .filter((h) => h.category.match(/primary/i))
+        .slice(0, Math.floor(TOTAL_COUNT_HCP / 2));
+      const primaryHcpNoEnrollee = allHCPs
+        .filter((h) => h.category.match(/primary/i))
+        .slice(
+          Math.floor(TOTAL_COUNT_HCP / 2),
+          Math.floor(TOTAL_COUNT_HCP / 2) + 1
+        );
+      const secondaryActiveHCPs = allHCPs
+        .filter((h) => h.category.match(/secondary/i))
+        .slice(0, Math.ceil(TOTAL_COUNT_HCP / 2));
+      const secondarySuspendedHCPs = secondaryActiveHCPs
+        .splice(0, NUM_SUSPENDED_HCP)
+        .map((hcp) => ({
+          ...hcp,
+          status: 'suspended',
+        }));
+      seededHCPs = await _HcpService.bulkInsert([
+        ...primaryHCPs,
+        ...secondaryActiveHCPs,
+        ...secondarySuspendedHCPs,
+        ...primaryHcpNoEnrollee,
+      ]);
+      const { sampleStaffs: stff } = getSampleStaffs(MAX_STAFF_COUNT);
+      const seededStaffs = await _StaffService.seedBulk(stff);
+      const { principals, dependants } = getEnrollees({
+        numOfPrincipals: TOTAL_COUNT_HCP,
+        sameSchemeDepPerPrincipal: 3,
+        vcshipDepPerPrincipal: 1,
+      });
+      const seededPrincipals = await TestService.seedEnrollees(
+        principals.map((p, i) => {
+          return {
+            ...p,
+            hcpId: seededHCPs[i].id,
+            staffNumber: p.staffNumber ? seededStaffs[i].staffIdNo : null,
+          };
+        })
+      );
+      const dependantsWithPrincipalId = dependants.reduce((acc, dep, i) => {
+        const hcpId = seededHCPs[i % TOTAL_COUNT_HCP].id;
+        for (let { enrolleeIdNo, id } of seededPrincipals) {
+          if (dep.enrolleeIdNo.match(new RegExp(`${enrolleeIdNo}-`))) {
+            acc.push({ ...dep, principalId: id, hcpId });
+          }
+        }
+        return acc;
+      }, []);
+      await TestService.seedEnrollees(dependantsWithPrincipalId);
       const data = await TestService.getToken(stff[0], ROLES.SUPERADMIN);
       token = data.token;
-      res = await hcpApi.register(hcpSample, token);
-      const { data: registeredHcp } = res.body;
-      hcpPassword = await TestService.getPasswordByHcpId(registeredHcp.id);
+      res1 = await HcpApi.getManifest('', token);
+      res2 = await HcpApi.getCapitation('', token);
+      res4 = await HcpApi.downloadHcpManifest(seededHCPs[0].id, token);
     });
-    it('returns status 201 with success message on successful registration', async (done) => {
+    it('downloads hcp manifest', async (done) => {
       try {
-        expect(res.status).toBe(201);
-        expect(res.body).toHaveProperty('message');
-        expect(res.body).toHaveProperty('data');
+        console.log(res4.body, res4.status);
         expect(true).toBe(true);
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-    it('sets the hcp"s statu to "active" by default', async (done) => {
-      try {
-        const { data } = res.body;
-        expect(data.status).toBe('active');
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-    it('ensures the hcp has password with "isDefaultValue" set to true', async (done) => {
-      try {
-        expect(hcpPassword.isDefaultValue).toBe(true);
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-    it('sets the default password to expire in 24 hours', async (done) => {
-      try {
-        const date2 = hcpPassword.expiryDate;
-        const timestamp = new Date(date2) - new Date();
-        const hours = timestamp / (60 * 60 * 1000);
-        expect(hours).toBeCloseTo(24);
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-    it('ensures the hcp can login with the new password', async (done) => {
-      try {
-        const { code } = hcpSample;
-        const res = await AuthApi.login({
-          username: code,
-          password: SAMPLE_PASSWORD,
-          userType: 'hcp',
-        });
-        const { data } = res.body;
-        expect(res.status).toBe(200);
-        expect(res.body).toHaveProperty('message', 'login successful');
-        expect(data).toHaveProperty('hcp');
-        expect(data).toHaveProperty('token');
-        expect(data.hcp.code).toEqual(code);
         done();
       } catch (e) {
         done(e);

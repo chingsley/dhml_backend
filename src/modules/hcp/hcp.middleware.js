@@ -29,7 +29,7 @@ export default class HcpMiddleware {
     try {
       const schema = Joi.object({
         status: Joi.string().trim().valid('suspended', 'active').required(),
-        enrolleeIds: Joi.array()
+        hcpIds: Joi.array()
           .items(Joi.number().integer())
           .min(1)
           .unique()
@@ -50,15 +50,14 @@ export default class HcpMiddleware {
         pageSize: Joi.number().integer().min(1),
         code: Joi.string().trim(),
         name: Joi.string().trim(),
+        email: Joi.string().trim(),
         hcpCode: Joi.string().trim(),
         hcpName: Joi.string().trim(),
-        value: Joi.string().trim(),
         searchField: Joi.string().trim(),
         searchValue: Joi.string().trim(),
         searchItem: Joi.string().trim(),
         category: Joi.string().trim(),
         state: Joi.string().trim(),
-        // download: Joi.string().trim().valid('true', 'false'),
         date: Joi.date()
           .format('YYYY-MM-DD')
           .max('now')
@@ -69,8 +68,8 @@ export default class HcpMiddleware {
           ),
       });
       await validateSchema(querySchema, req.query);
-      const { hcpCode, hcpName, value } = req.query;
-      HcpMiddleware.rejectSpecialCharacters([hcpCode, hcpName, value]);
+      const { hcpCode, hcpName, searchItem } = req.query;
+      HcpMiddleware.rejectSpecialCharacters([hcpCode, hcpName, searchItem]);
       return next();
     } catch (error) {
       Response.handleError('validateQuery', error, req, res, next);

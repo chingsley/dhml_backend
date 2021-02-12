@@ -10,7 +10,7 @@ export const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
 
 const app = supertest(server.server);
 
-class hcpApi extends TestService {
+class HcpApi extends TestService {
   static async register(enrolee, token) {
     const payload = enrolee;
     const res = await app
@@ -28,17 +28,12 @@ class hcpApi extends TestService {
     return res;
   }
 
-  static async verify(principalId, token) {
+  static async changeStatus(payload, token) {
     const res = await app
-      .patch(`/api/v1/hcp/${principalId}/verify`)
-      .set('authorization', token);
+      .patch('/api/v1/hcp/status')
+      .set('authorization', token)
+      .send(payload);
     return res;
-  }
-
-  static async unverify(principalId, token) {
-    return await app
-      .patch(`/api/v1/hcp/${principalId}/unverify`)
-      .set('authorization', token);
   }
 
   static async delete(hcpId, token) {
@@ -48,9 +43,30 @@ class hcpApi extends TestService {
   static async getAll(query, token) {
     return await app.get(`/api/v1/hcp?${query}`).set('authorization', token);
   }
+
   static getById(hcpId, token) {
     return app.get(`/api/v1/hcp/${hcpId}`).set('authorization', token);
   }
+
+  static getManifest(query, token) {
+    return app.get(`/api/v1/hcp/manifest?${query}`).set('authorization', token);
+  }
+
+  static getCapitation(query, token) {
+    return app
+      .get(`/api/v1/hcp/capitation?${query}`)
+      .set('authorization', token);
+  }
+
+  static printCapitationSummary(query, token) {
+    return app
+      .get(`/api/v1/hcp/print_capitation?${query}`)
+      .set('authorization', token);
+  }
+
+  static downloadHcpManifest(hcpId, token) {
+    return app.get(`/api/v1/hcp/${hcpId}/download_manifest?token=${token}`);
+  }
 }
 
-export default hcpApi;
+export default HcpApi;

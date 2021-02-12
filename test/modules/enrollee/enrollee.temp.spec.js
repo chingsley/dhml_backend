@@ -9,7 +9,7 @@ import EnrolleeController from '../../../src/modules/enrollee/enrollee.controlle
 
 // const { log } = console;
 
-describe('EnrolleeController', () => {
+describe('EnrolleeTemp', () => {
   describe('getEnrolleeById', () => {
     let sampleEnrollees, token, HCPs, seededPrincipals, seededDependants, res;
     beforeAll(async () => {

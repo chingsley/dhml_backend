@@ -43,7 +43,9 @@ export const newEnrolleeSchema = Joi.object({
   employer: Joi.string().trim(),
   dateOfBirth: Joi.date().format('YYYY-MM-DD').max('now'),
   gender: Joi.string().trim().valid('male', 'female'),
-  maritalStatus: Joi.string().trim().valid('single', 'married'),
+  maritalStatus: Joi.string()
+    .trim()
+    .valid('single', 'married', 'widow', 'widower'),
   identificationType: Joi.string().trim(),
   identificationNumber: Joi.string().trim(),
   serviceStatus: Joi.string().trim().valid('serving', 'retired'),
@@ -81,7 +83,9 @@ export const patchEnrolleeSchema = Joi.object({
   employer: Joi.string().trim(),
   dateOfBirth: Joi.date().format('YYYY-MM-DD').max('now'),
   gender: Joi.string().trim().valid('male', 'female'),
-  maritalStatus: Joi.string().trim().valid('single', 'married'),
+  maritalStatus: Joi.string()
+    .trim()
+    .valid('single', 'married', 'widow', 'widower'),
   identificationType: Joi.string().trim(),
   identificationNumber: Joi.string().trim(),
   serviceStatus: Joi.string().trim().valid('serving', 'retired'),
@@ -101,4 +105,14 @@ export const patchEnrolleeSchema = Joi.object({
   deathCertificate: Joi.any(),
   letterOfNok: Joi.any(),
   dependants: Joi.array().items(Joi.object()),
+});
+
+export const enrolleeQuerySchema = Joi.object({
+  id: Joi.number().integer().min(1),
+  page: Joi.number().integer().min(0),
+  pageSize: Joi.number().integer().min(1),
+  searchField: Joi.string().trim(),
+  searchValue: Joi.string().trim(),
+  searchItem: Joi.string().trim(),
+  isVerified: Joi.string().trim().valid('true', 'false'),
 });

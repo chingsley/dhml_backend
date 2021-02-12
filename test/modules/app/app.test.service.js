@@ -125,7 +125,7 @@ class TestService {
     return hashed;
   }
 
-  static async seedHCPs({ count }) {
+  static async seedHCPs(count) {
     let hcpRole = await db.Role.findOne({ where: { title: HCP } });
     if (!hcpRole) {
       hcpRole = await db.Role.create({ title: HCP });

@@ -20,7 +20,7 @@ export default class EnrolleeController {
     try {
       const enrolleeService = new EnrolleeService(req);
       const data = await enrolleeService.getAllEnrollees();
-      return res.status(201).json({ data });
+      return res.status(200).json({ data });
     } catch (error) {
       Response.handleError('getEnrollees', error, req, res, next);
     }

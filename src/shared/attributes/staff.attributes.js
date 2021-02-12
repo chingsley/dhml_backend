@@ -25,7 +25,6 @@ export const staffSearchableFields = [
   { name: 'homeTown', type: 'string' },
   { name: 'deployment', type: 'string' },
   { name: 'hcpId', type: 'number' },
-  { name: 'isVerified', type: 'boolean' },
   { name: 'dateOfBirth', type: 'date' },
   { name: 'dateOfConfirmation', type: 'date' },
   { name: 'designation', type: 'string' },
