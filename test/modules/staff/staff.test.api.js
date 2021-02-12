@@ -20,17 +20,17 @@ class StaffApi extends TestService {
     return res;
   }
 
-  static async update(hcpId, changes, token) {
+  static async update(staffId, changes, token) {
     const res = await app
-      .patch(`/api/v1/staffs/${hcpId}`)
+      .patch(`/api/v1/staffs/${staffId}`)
       .set('authorization', token)
       .send(changes);
     return res;
   }
 
-  static async delete(hcpId, token) {
+  static async delete(staffId, token) {
     return await app
-      .delete(`/api/v1/staffs/${hcpId}`)
+      .delete(`/api/v1/staffs/${staffId}`)
       .set('authorization', token);
   }
 

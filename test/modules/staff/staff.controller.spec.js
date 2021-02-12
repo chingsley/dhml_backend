@@ -21,11 +21,11 @@ describe('StaffController', () => {
     let token, res, newStaff, thirdStaff;
     beforeAll(async () => {
       await TestService.resetDB();
-      const { sampleStaffs: stff } = getSampleStaffs(3);
-      const data = await TestService.getToken(stff[0], ROLES.SUPERADMIN);
+      const { sampleStaffs: stffs } = getSampleStaffs(3);
+      const data = await TestService.getToken(stffs[0], ROLES.SUPERADMIN);
       token = data.token;
-      newStaff = stff[1];
-      thirdStaff = stff[2];
+      newStaff = stffs[1];
+      thirdStaff = stffs[2];
       res = await StaffApi.register(newStaff, token);
     });
 
@@ -92,6 +92,85 @@ describe('StaffController', () => {
     it(
       'it catches errors thrown in the try block ',
       TestService.testCatchBlock(StaffController.addNewStaff)
+    );
+  });
+  describe('updateStaff', () => {
+    let token, res, stff1, stff2;
+    const changes = {
+      email: 'newmail@gmail.com',
+      surname: 'anyinwa',
+      firstName: 'mua',
+    };
+    beforeAll(async () => {
+      await TestService.resetDB();
+      const { sampleStaffs: stffs } = getSampleStaffs(3);
+      [stff1, stff2] = await _StaffService.seedBulk(stffs.slice(1, 3));
+      const data = await TestService.getToken(stffs[0], ROLES.SUPERADMIN);
+      token = data.token;
+      res = await StaffApi.update(stff1.id, changes, token);
+    });
+    it('successfully updates staff data', async (done) => {
+      try {
+        const { data } = res.body;
+        expect(res.status).toBe(200);
+        expect(data).toEqual(
+          expect.objectContaining({
+            email: changes.email,
+            surname: changes.surname,
+            firstName: changes.firstName,
+          })
+        );
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('saves the update in the database', async (done) => {
+      try {
+        const updatedStff1 = await _StaffService.findOneWhere({ id: stff1.id });
+        expect(updatedStff1).toEqual(
+          expect.objectContaining({
+            email: changes.email,
+            surname: changes.surname,
+            firstName: changes.firstName,
+          })
+        );
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('allows same record update of unique fields with same value', async (done) => {
+      try {
+        const changes = {
+          email: stff1.email,
+          accountNumber: stff1.accountNumber,
+        };
+        const res = await StaffApi.update(stff1.id, changes, token);
+        expect(res.status).toBe(200);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('detects unique violation during update', async (done) => {
+      try {
+        const uniqueFields = ['email', 'accountNumber'];
+        for (let field of uniqueFields) {
+          const changes = { [field]: stff2[field] };
+          const res = await StaffApi.update(stff1.id, changes, token);
+          const { errors } = res.body;
+          expect(res.status).toBe(400);
+          expect(errors[0]).toMatch(/already exists/i);
+        }
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it(
+      'it catches errors thrown in the try block ',
+      TestService.testCatchBlock(StaffController.updateStaff)
     );
   });
 });

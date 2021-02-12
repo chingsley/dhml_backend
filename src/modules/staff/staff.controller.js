@@ -18,7 +18,7 @@ export default class StaffController {
     try {
       const staffService = new StaffService(req);
       const data = await staffService.updateStaffInfo();
-      return res.status(201).json({ data });
+      return res.status(200).json({ message: 'Update was successful', data });
     } catch (error) {
       Response.handleError('updateStaff', error, req, res, next);
     }
