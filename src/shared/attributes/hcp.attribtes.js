@@ -5,4 +5,5 @@ export const hcpSearchableFields = [
   { name: 'category', type: 'string' },
   { name: 'state', type: 'string' },
   { name: 'status', type: 'string' },
+  { name: 'bank', type: 'string' },
 ];
