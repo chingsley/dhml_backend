@@ -6,6 +6,8 @@ import ROLES from '../../../src/shared/constants/roles.constants';
 import nodemailer from 'nodemailer';
 import StaffApi from './staff.test.api';
 import StaffController from '../../../src/modules/staff/staff.controller';
+import { staffSearchableFields } from '../../../src/shared/attributes/staff.attributes';
+import { moment } from '../../../src/utils/timers';
 
 describe('StaffController', () => {
   const nodemailerOriginalImplementation = nodemailer.createTransport;
@@ -171,6 +173,80 @@ describe('StaffController', () => {
     it(
       'it catches errors thrown in the try block ',
       TestService.testCatchBlock(StaffController.updateStaff)
+    );
+  });
+  describe('getAllStaffs', () => {
+    let token, seededStaffs;
+    beforeAll(async () => {
+      await TestService.resetDB();
+      const { sampleStaffs: stffs } = getSampleStaffs(20);
+      seededStaffs = await _StaffService.seedBulk(stffs);
+      const data = await TestService.getToken(stffs[0], ROLES.SUPERADMIN);
+      token = data.token;
+    });
+    it('returns all the records in teh db', async (done) => {
+      try {
+        const res = await StaffApi.getAll('', token);
+        const { data } = res.body;
+        expect(res.status).toBe(200);
+        expect(data.count).toEqual(seededStaffs.length);
+        expect(data.rows).toHaveLength(seededStaffs.length);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('can paginate the record', async (done) => {
+      try {
+        const page = 0;
+        const pageSize = 3;
+        const res = await StaffApi.getAll(
+          `pageSize=${pageSize}&page=${page}`,
+          token
+        );
+        const { data } = res.body;
+        expect(data.count).toEqual(seededStaffs.length);
+        expect(data.rows).toHaveLength(pageSize);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('can filter the record by several fields', async (done) => {
+      try {
+        const subject = seededStaffs[0];
+        for (let field of staffSearchableFields) {
+          let searchValue = subject[field.name];
+          const searchFiled = field.name;
+          if (field.type === 'date') {
+            searchValue = moment(searchValue).format('YYYY-MM-DD');
+          }
+          const res = await StaffApi.getAll(
+            `searchField=${searchFiled}&searchValue=${searchValue}`,
+            token
+          );
+          const {
+            data: { rows },
+          } = res.body;
+          for (let staff of rows) {
+            if (field.type === 'date') {
+              expect(moment(staff[searchFiled]).format('YYYY-MM-DD')).toBe(
+                searchValue
+              );
+            } else {
+              expect(staff[searchFiled]).toBe(searchValue);
+            }
+          }
+          expect(true).toBe(true);
+        }
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it(
+      'it catches errors thrown in the try block ',
+      TestService.testCatchBlock(StaffController.getAllStaff)
     );
   });
 });
