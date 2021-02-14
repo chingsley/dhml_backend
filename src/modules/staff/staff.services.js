@@ -67,7 +67,7 @@ export default class StaffService extends AppService {
         where: {
           ...this.searchRecordsBy(staffSearchableFields),
           ...this.filterBy(queryAttributes),
-          ...this.exactMatch(['id', 'staffIdNo']),
+          ...this.exactMatch(['id', 'staffIdNo', 'email']),
         },
         order: [['createdAt', 'DESC']],
         ...this.paginate(),
