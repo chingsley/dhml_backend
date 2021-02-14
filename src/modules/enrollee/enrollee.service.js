@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import db from '../../database/models';
 import { Op } from 'sequelize';
 import { throwError } from '../../shared/helpers';
@@ -70,8 +71,14 @@ export default class EnrolleeService extends AppService {
   async getAllEnrollees() {
     const { isVerified } = this.query;
     const orderBy = isVerified
-      ? [['dateVerified', 'DESC']]
-      : [['createdAt', 'DESC']];
+      ? [
+          ['dateVerified', 'DESC'],
+          ['id', 'ASC'],
+        ]
+      : [
+          ['createdAt', 'DESC'],
+          ['id', 'ASC'],
+        ];
     return await db.Enrollee.findAndCountAll({
       where: {
         ...this.searchRecordsBy(enrolleeSearchableFields),
