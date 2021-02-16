@@ -70,6 +70,7 @@ export const enrolleeSearchableFields = [
   { name: 'surname', type: 'string' },
   { name: 'firstName', type: 'string' },
   { name: 'middleName', type: 'string' },
+  { name: 'email', type: 'string' },
   { name: 'scheme', type: 'string' },
   { name: 'staffNumber', type: 'string' },
   { name: 'serviceNumber', type: 'string' },
@@ -81,4 +82,5 @@ export const enrolleeSearchableFields = [
   { name: 'hcpId', type: 'number' },
   { name: 'isVerified', type: 'boolean' },
   { name: 'enrolmentType', type: 'custom' },
+  { name: 'gender', type: 'string' },
 ];

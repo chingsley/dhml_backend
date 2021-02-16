@@ -1,5 +1,5 @@
 import TestService from '../app/app.test.service';
-import TestStaff from '../staff/staff.test.services';
+import _StaffService from '../staff/staff.test.services';
 import faker from 'faker';
 import getSampleStaffs from '../../../src/shared/samples/staff.samples';
 import ROLES from '../../../src/shared/constants/roles.constants';
@@ -21,7 +21,7 @@ describe('UserController', () => {
     beforeAll(async () => {
       await TestService.resetDB();
       const { sampleStaffs: stff } = getSampleStaffs(2);
-      const seededStaff = await TestStaff.seedOne(stff[1]);
+      const seededStaff = await _StaffService.seedOne(stff[1]);
       const role = await TestService.createRole(ROLES.DEPT_USER);
       const user = {
         staffId: seededStaff.id,
@@ -56,8 +56,6 @@ describe('UserController', () => {
     });
     it('ensures the user has password with "isDefaultValue" set to true', async (done) => {
       try {
-        // const { data } = res.body;
-        // const userPassword = await TestService.getPasswordByUserId(data.userId);
         expect(userPassword.isDefaultValue).toBe(true);
         done();
       } catch (e) {
@@ -66,8 +64,6 @@ describe('UserController', () => {
     });
     it('sets the default password to expire in 24 hours', async (done) => {
       try {
-        // const { data } = res.body;
-        // const { defaultPasswordExpiry: date2 } = data;
         const date2 = userPassword.expiryDate;
         const timestamp = new Date(date2) - new Date();
         const hours = timestamp / (60 * 60 * 1000);

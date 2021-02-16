@@ -1,6 +1,7 @@
 import Response from '../../utils/Response';
 import { validateSchema } from '../../validators/joi/config';
 import {
+  enrolleeQuerySchema,
   newEnrolleeSchema,
   patchEnrolleeSchema,
 } from '../../validators/joi/schemas/enrollee.schema';
@@ -43,6 +44,18 @@ export default class EnrolleeMiddleware {
           ],
         })
       );
+    }
+  }
+  static async validateQuery(req, res, next) {
+    try {
+      const { joiFormatted } = await validateSchema(
+        enrolleeQuerySchema,
+        req.query
+      );
+      req.query = joiFormatted;
+      return next();
+    } catch (error) {
+      Response.handleError('validateQuery', error, req, res, next);
     }
   }
 }

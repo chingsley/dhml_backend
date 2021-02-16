@@ -1,6 +1,11 @@
-const { getSamplePasswords } = require('../../shared/samples/password.samples');
+const {
+  getSampleUserPasswords,
+  getSampleHcpPasswords,
+} = require('../../shared/samples/password.samples');
 
-const samplePasswords = getSamplePasswords('Testing*123');
+const sampleUserPasswords = getSampleUserPasswords('Testing*123');
+const sampleHcpPasswords = getSampleHcpPasswords('Testing*123');
+const samplePasswords = [...sampleUserPasswords, ...sampleHcpPasswords];
 
 module.exports = {
   // eslint-disable-next-line no-unused-vars

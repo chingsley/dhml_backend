@@ -16,7 +16,7 @@ router.post(
 /**
  * the first argument of authorize() is an array
  * of allowed roles; if this argument is falsy (e.g null)
- * then any role is allowed access
+ * then any role is allowed access provided the token is valid
  */
 router.post(
   '/password/change',
@@ -31,6 +31,15 @@ router.post(
   AuthMiddleware.authorize([SUPERADMIN, ADMIN]),
   AuthMiddleware.validateAuthData,
   AuthController.resendDefaultPass
+);
+
+router.get(
+  '/profile',
+  AuthMiddleware.authorize(null, {
+    rejectDefaultPassword: false,
+    rejectExpiredPassword: false,
+  }),
+  AuthController.getUserProfile
 );
 
 export default router;

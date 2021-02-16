@@ -21,7 +21,7 @@ const {
 } = faker;
 const { zeroPadding, getRandomInt } = require('../../utils/helpers');
 
-export const getEnrollees = (options = {}) => {
+const getEnrollees = (options = {}) => {
   const {
     numOfPrincipals = 1,
     sameSchemeDepPerPrincipal = 0,
@@ -151,7 +151,6 @@ function getBaseFeatures() {
     lga: address.county(),
     bloodGroup: random.arrayElement(['A+', 'B+', 'O+', 'AB+']),
     significantMedicalHistory: '[diabetes, allergies]',
-    isVerified: true,
     ...enrolleeUploads,
   };
 }

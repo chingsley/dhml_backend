@@ -78,7 +78,7 @@ export default class AuthMiddleware {
     };
   }
 
-  static authorizeManifestDownload(req, res, next) {
+  static authorizeDownload(req, res, next) {
     try {
       const { token } = req.query;
       if (!token) {
@@ -89,13 +89,7 @@ export default class AuthMiddleware {
       Jwt.decode(token);
       return next();
     } catch (error) {
-      return Response.handleError(
-        'authorizeManifestDownload',
-        error,
-        req,
-        res,
-        next
-      );
+      return Response.handleError('authorizeDownload', error, req, res, next);
     }
   }
 
@@ -119,6 +113,7 @@ export default class AuthMiddleware {
         include: [
           { model: db.Role, as: 'role' },
           { model: db.Password, as: 'password' },
+          { model: db.Staff, as: 'staffInfo' },
         ],
         throwErrorIfNotFound: true,
         errorMsg: ACCOUNT_NOT_FOUND_ERROR,

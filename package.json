@@ -37,8 +37,10 @@
     "test:authController": "jest test/modules/auth/auth.controller.spec.js --detectOpenHandles --verbose --watch",
     "------------------------": "-----------------------------",
     "test:enrolleeController": "jest test/modules/enrollee/enrollee.controller.spec.js --detectOpenHandles --verbose --watch",
-    "test:enrolleeController:edit": "jest test/modules/enrollee/enrollee.controllers/updateEnrollee.spec.js --detectOpenHandles --verbose --watch",
-    "test:userController": "jest test/modules/user/user.controller.spec.js --detectOpenHandles --verbose --watch"
+    "test:userController": "jest test/modules/user/user.controller.spec.js --detectOpenHandles --verbose --watch",
+    "test:hcpController": "jest test/modules/hcp/hcp.controller.spec.js --detectOpenHandles --verbose --watch",
+    "test:staffController": "jest test/modules/staff/staff.controller.spec.js --detectOpenHandles --verbose --watch",
+    "temp": "jest test/modules/hcp/hcp.temp.spec.js --detectOpenHandles --verbose --watch"
   },
   "dependencies": {
     "@babel/cli": "^7.8.4",

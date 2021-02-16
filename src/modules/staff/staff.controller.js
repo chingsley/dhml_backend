@@ -6,7 +6,9 @@ export default class StaffController {
     try {
       const staffService = new StaffService(req);
       const data = await staffService.createNewStaff();
-      return res.status(201).json({ data });
+      return res
+        .status(201)
+        .json({ message: 'Successfully added new staff', data });
     } catch (error) {
       // console.log(error);
       Response.handleError('addNewStaff', error, req, res, next);
@@ -16,7 +18,7 @@ export default class StaffController {
     try {
       const staffService = new StaffService(req);
       const data = await staffService.updateStaffInfo();
-      return res.status(201).json({ data });
+      return res.status(200).json({ message: 'Update was successful', data });
     } catch (error) {
       Response.handleError('updateStaff', error, req, res, next);
     }

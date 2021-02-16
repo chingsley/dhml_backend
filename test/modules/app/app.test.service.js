@@ -125,7 +125,7 @@ class TestService {
     return hashed;
   }
 
-  static async seedHCPs({ count }) {
+  static async seedHCPs(count) {
     let hcpRole = await db.Role.findOne({ where: { title: HCP } });
     if (!hcpRole) {
       hcpRole = await db.Role.create({ title: HCP });
@@ -231,6 +231,7 @@ class TestService {
   static getPasswordByUserId(userId) {
     return db.Password.findOne({ where: { userId } });
   }
+
   static getPasswordByHcpId(hcpId) {
     return db.Password.findOne({ where: { hcpId } });
   }
@@ -255,6 +256,19 @@ class TestService {
   static seedEnrollees(enrollees) {
     return db.Enrollee.bulkCreate(enrollees);
   }
+
+  static testCatchBlock = (method) => async (done) => {
+    try {
+      const req = undefined;
+      const res = { body: {} };
+      const next = jest.fn();
+      await method(req, res, next);
+      expect(next).toHaveBeenCalled();
+      done();
+    } catch (e) {
+      done(e);
+    }
+  };
 }
 
 export default TestService;
