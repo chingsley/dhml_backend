@@ -615,7 +615,7 @@ describe('HcpController', () => {
       }
     });
 
-    it('can returns zero capitation for HCPs that do not have enrollees', async (done) => {
+    it('can returns empty rows for HCPs that do not have enrollees', async (done) => {
       try {
         const searchItem = primaryHcpNoEnrollee[0].code;
         const res = await HcpApi.getCapitation(
@@ -625,11 +625,7 @@ describe('HcpController', () => {
         const { data } = res.body;
         expect(data.total.lives).toBe(null);
         expect(data.total.amount).toBe(null);
-        for (let hcp of data.rows) {
-          expect(hcp.hcpCode).toEqual(searchItem);
-          expect(hcp.lives).toEqual('0');
-          expect(hcp.amount).toEqual('0');
-        }
+        expect(data.rows).toHaveLength(0);
         done();
       } catch (e) {
         done(e);
