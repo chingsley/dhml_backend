@@ -1,10 +1,7 @@
 import db from '../../database/models';
 import AppService from '../app/app.service';
 import {
-  // getCapitationWithoutZeroStats,
-  getCapitationWithZeroStats,
   getCapitationTotals,
-  // getManifestWihoutZeroStats,
   getManifestWithZeroStats,
   getCapitationWithoutZeroStats,
 } from '../../database/scripts/hcp.scripts';
@@ -142,7 +139,7 @@ export default class HcpService extends AppService {
 
   async fetchCapitation() {
     const nonPaginatedRows = await this.executeQuery(
-      getCapitationWithZeroStats,
+      getCapitationWithoutZeroStats,
       {
         ...this.query,
         pageSize: undefined,
@@ -151,7 +148,7 @@ export default class HcpService extends AppService {
     );
     const count = nonPaginatedRows.length;
     const rows = await this.executeQuery(
-      getCapitationWithZeroStats,
+      getCapitationWithoutZeroStats,
       this.query
     );
     const [total] = await this.executeQuery(getCapitationTotals, this.query);
