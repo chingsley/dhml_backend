@@ -36,5 +36,6 @@ module.exports = (sequelize, DataTypes) => {
     }
     return found;
   };
+
   return Role;
 };

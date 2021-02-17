@@ -10,7 +10,15 @@ router.post(
   '/',
   AuthMiddleware.authorize([SUPERADMIN, ADMIN]),
   UserMiddleware.validateNewUser,
+  AuthMiddleware.authorizeRoleAssignment([SUPERADMIN]),
   UserController.registerUser
+);
+router.patch(
+  '/:userId',
+  AuthMiddleware.authorize([SUPERADMIN, ADMIN]),
+  UserMiddleware.validateUserUpdate,
+  AuthMiddleware.authorizeRoleAssignment([SUPERADMIN]),
+  UserController.updateUser
 );
 router.get(
   '/',

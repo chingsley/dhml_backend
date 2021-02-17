@@ -1,3 +1,5 @@
+/* eslint-disable jest/expect-expect */
+/* eslint-disable no-undef */
 import TestService from '../app/app.test.service';
 import _StaffService from '../staff/staff.test.services';
 import faker from 'faker';
@@ -5,6 +7,9 @@ import getSampleStaffs from '../../../src/shared/samples/staff.samples';
 import ROLES from '../../../src/shared/constants/roles.constants';
 import nodemailer from 'nodemailer';
 import TestUser from './user.test.services';
+import UserApi from './user.test.api';
+import _RoleService from '../role/roles.test.service';
+import UserController from '../../../src/modules/user/user.controller';
 
 describe('UserController', () => {
   const nodemailerOriginalImplementation = nodemailer.createTransport;
@@ -31,7 +36,7 @@ describe('UserController', () => {
       };
       const data = await TestService.getToken(stff[0], ROLES.SUPERADMIN);
       token = data.token;
-      res = await TestUser.register(user, token);
+      res = await UserApi.register(user, token);
       const { data: registeredUser } = res.body;
       userPassword = await TestService.getPasswordByUserId(registeredUser.id);
     });
@@ -73,5 +78,115 @@ describe('UserController', () => {
         done(e);
       }
     });
+    it(
+      'it catches errors thrown in the try block ',
+      TestService.testCatchBlock(UserController.registerUser)
+    );
+  });
+  describe('updateUser', () => {
+    let token, res, user1, user2, changes;
+    beforeAll(async () => {
+      await TestService.resetDB();
+      await _RoleService.seedAllRoles();
+      const { sampleStaffs: stffs } = getSampleStaffs(3);
+      const seededStaffs = await _StaffService.seedBulk(stffs.slice(1));
+      const role = await TestService.createRole(ROLES.BASIC);
+      const sampleUsers = seededStaffs.map((stff) => ({
+        staffId: stff.id,
+        email: stff.email,
+        username: faker.internet.userName(stff.firstName),
+        roleId: role.id,
+      }));
+      [user1, user2] = await TestUser.seedBulk(sampleUsers);
+      const data = await TestService.getToken(stffs[0], ROLES.ADMIN);
+      token = data.token;
+      changes = { email: 'newmail45454@gmail.com', staffId: user1.staffId };
+      res = await UserApi.edit(user1.id, changes, token);
+    });
+    it('returns status 200 on successful update', async (done) => {
+      try {
+        expect(res.status).toBe(200);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns the update user record', async (done) => {
+      try {
+        const { data } = res.body;
+        expect(data).toEqual(
+          expect.objectContaining({
+            email: changes.email,
+          })
+        );
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('allows same record update with same unique value', async (done) => {
+      try {
+        const { data } = res.body;
+        expect(data).toEqual(
+          expect.objectContaining({
+            staffId: user1.staffId,
+          })
+        );
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('detects unique violation during update', async (done) => {
+      try {
+        const changes = [{ email: user2.email }, { staffId: user2.staffId }];
+        for (let change of changes) {
+          const res = await UserApi.edit(user1.id, change, token);
+          const { errors } = res.body;
+          expect(errors[0]).toMatch(/already exists/i);
+        }
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('prevents non-superadmin user from changing user role during update', async (done) => {
+      try {
+        const hodAdminRole = await _RoleService.findByTitle(ROLES.HOD_ADMIN);
+        const changes = { roleId: hodAdminRole.id };
+        const res = await UserApi.edit(user1.id, changes, token);
+        const expectedError =
+          'You are only authorized to assign the "basic" role';
+        const { errors } = res.body;
+        expect(errors[0]).toEqual(expectedError);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('allows superadmin users to change user roles', async (done) => {
+      try {
+        const { sampleStaffs } = getSampleStaffs(1);
+        const { token } = await TestService.getToken(
+          sampleStaffs[0],
+          ROLES.SUPERADMIN
+        );
+        const hodAdminRole = await _RoleService.findByTitle(ROLES.HOD_ADMIN);
+        const changes = { roleId: hodAdminRole.id };
+        const res = await UserApi.edit(user1.id, changes, token);
+        const {
+          data: { role },
+        } = res.body;
+        expect(res.status).toBe(200);
+        expect(role.title).toBe(ROLES.HOD_ADMIN);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it(
+      'it catches errors thrown in the try block ',
+      TestService.testCatchBlock(UserController.updateUser)
+    );
   });
 });
