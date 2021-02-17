@@ -99,8 +99,16 @@ class TestService {
   }
 
   static async createUser(user) {
-    const [result] = await db.User.upsert(user, { returning: true });
-    return result;
+    let seededUser = await db.User.findOne({
+      where: { staffId: user.staffId },
+    });
+    if (!seededUser) {
+      seededUser = await db.User.create(user);
+    } else {
+      await seededUser.update(user);
+      seededUser.reload({ include: { model: db.Role, as: 'role' } });
+    }
+    return seededUser;
   }
 
   static loginUser(email, password) {
@@ -114,14 +122,19 @@ class TestService {
   }
 
   static async createPassword(userId, value) {
-    const [hashed] = await db.Password.upsert(
-      {
-        userId,
-        value: this.getHash(value),
-        isDefaultValue: false,
-      },
-      { returning: true }
-    );
+    let hashed = await db.Password.findOne({ where: { userId } });
+    if (!hashed) {
+      hashed = await db.Password.create(
+        {
+          userId,
+          value: this.getHash(value),
+          isDefaultValue: false,
+        }
+        // { returning: true }
+      );
+    }
+    // const
+
     return hashed;
   }
 

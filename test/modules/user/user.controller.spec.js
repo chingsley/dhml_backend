@@ -189,4 +189,39 @@ describe('UserController', () => {
       TestService.testCatchBlock(UserController.updateUser)
     );
   });
+  describe('getAllUsers', () => {
+    let token, res, seededUsers;
+    beforeAll(async () => {
+      await TestService.resetDB();
+      await _RoleService.seedAllRoles();
+      const { sampleStaffs: stffs } = getSampleStaffs(10);
+      const seededStaffs = await _StaffService.seedBulk(stffs);
+      const role = await TestService.createRole(ROLES.BASIC);
+      const sampleUsers = seededStaffs.map((stff) => ({
+        staffId: stff.id,
+        email: stff.email,
+        username: faker.internet.userName(stff.firstName),
+        roleId: role.id,
+      }));
+      seededUsers = await TestUser.seedBulk(sampleUsers);
+      const data = await TestService.getToken(stffs[0], ROLES.SUPERADMIN);
+      token = data.token;
+      res = await UserApi.getAll(token);
+    });
+    it('returns status 200 on successful update', async (done) => {
+      try {
+        const { data } = res.body;
+        expect(res.status).toBe(200);
+        expect(data.count).toEqual(seededUsers.length);
+        expect(data.rows).toHaveLength(seededUsers.length);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it(
+      'it catches errors thrown in the try block ',
+      TestService.testCatchBlock(UserController.getAllUsers)
+    );
+  });
 });
