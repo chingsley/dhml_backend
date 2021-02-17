@@ -5,18 +5,19 @@ import server from '../../../src/server';
 const app = supertest(server.server);
 
 class UserApi {
-  static async register(user, token) {
-    return await app
-      .post('/api/v1/users')
-      .set('authorization', token)
-      .send(user);
+  static register(user, token) {
+    return app.post('/api/v1/users').set('authorization', token).send(user);
   }
 
-  static async edit(userId, changes, token) {
-    return await app
+  static edit(userId, changes, token) {
+    return app
       .patch(`/api/v1/users/${userId}`)
       .set('authorization', token)
       .send(changes);
+  }
+
+  static getAll(token) {
+    return app.get('/api/v1/users').set('authorization', token);
   }
 }
 
