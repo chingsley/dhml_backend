@@ -8,6 +8,7 @@ import {
   NO_DEFAULT_PASSWORD_USER,
   NO_EXPIRED_PASSWORD,
 } from '../../shared/constants/errors.constants';
+import { BASIC } from '../../shared/constants/roles.constants';
 import { throwError } from '../../shared/helpers';
 import { isExpired } from '../../utils/helpers';
 import Jwt from '../../utils/Jwt';
@@ -78,6 +79,33 @@ export default class AuthMiddleware {
     };
   }
 
+  static authorizeRoleAssignment = (allowedRoles) => async (req, res, next) => {
+    try {
+      const { role: operatorRole } = req.user;
+      const { roleId } = req.body;
+      if (!roleId) {
+        return next();
+      }
+      const selectedRole = await this.findRoleById(roleId);
+      const canChangeRole = allowedRoles.includes(operatorRole.title);
+      const selectedRoleIsNotBasic = selectedRole.title !== BASIC;
+      if (!canChangeRole && selectedRoleIsNotBasic) {
+        throwError({
+          status: 401,
+          error: ['You are only authorized to assign the "basic" role'],
+        });
+      }
+      return next();
+    } catch (error) {
+      return Response.handleError(
+        'authorizeRoleAssignment',
+        error,
+        req,
+        res,
+        next
+      );
+    }
+  };
   static authorizeDownload(req, res, next) {
     try {
       const { token } = req.query;
@@ -134,6 +162,15 @@ export default class AuthMiddleware {
         errorMsg: ACCOUNT_NOT_FOUND_ERROR,
         errorCode: AUTH003,
         status: 401,
+      }
+    );
+  }
+
+  static findRoleById(roleId) {
+    return db.Role.findOneWhere(
+      { id: roleId },
+      {
+        throwErrorIfNotFound: true,
       }
     );
   }

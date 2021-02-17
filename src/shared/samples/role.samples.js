@@ -1,29 +1,11 @@
-const {
-  SUPERADMIN,
-  ADMIN,
-  DEPT_USER,
-  VERIFIER,
-  ENROLMENT_OFFICER,
-  HCP,
-  HOD_MEDICAL,
-  HOD_VHS,
-  HOD_ADMIN,
-  HOD_STORES,
-  HOD_ACCOUNT,
-} = require('../constants/roles.constants');
+const roles = require('../constants/roles.constants');
+const allRoles = Object.values(roles);
+const userRoles = allRoles.filter((role) => role !== 'hcp');
+const hcpRole = allRoles.find((role) => role === 'hcp');
 
-const sampleRoles = [
-  SUPERADMIN,
-  ADMIN,
-  DEPT_USER,
-  VERIFIER,
-  ENROLMENT_OFFICER,
-  HCP,
-  HOD_MEDICAL,
-  HOD_VHS,
-  HOD_ADMIN,
-  HOD_STORES,
-  HOD_ACCOUNT,
-].map((title) => ({ title }));
+/**
+ * Ensuring that 'hcp' role is the last role
+ */
+const sampleRoles = [...userRoles, hcpRole].map((value) => ({ title: value }));
 
 module.exports = sampleRoles;

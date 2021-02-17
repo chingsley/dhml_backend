@@ -16,6 +16,19 @@ export default class UserController {
     }
   }
 
+  static async updateUser(req, res, next) {
+    try {
+      const userService = new UserService(req);
+      const user = await userService.editUserInfo();
+      return res.status(200).json({
+        message: 'update successful',
+        data: user,
+      });
+    } catch (error) {
+      Response.handleError('updateUser', error, req, res, next);
+    }
+  }
+
   static async getAllUsers(req, res, next) {
     try {
       const userService = new UserService(req);
