@@ -512,24 +512,25 @@ describe('HcpController', () => {
         done(e);
       }
     });
-
-    // it('can filter the manifest by date to return previous manifests on a monthly basis', async (done) => {
-    //   try {
-    //     const res = await HcpApi.getManifest(
-    //       `date=${months.setPast(1)}`,
-    //       token
-    //     );
-    //     const { data } = res.body;
-    //     for (let hcp of data.rows) {
-    //       expect(dateOnly(hcp.monthOfYear).slice(0, 7)).toBe(
-    //         months.setPast(1).slice(0, 7)
-    //       );
-    //     }
-    //     done();
-    //   } catch (e) {
-    //     done(e);
-    //   }
-    // });
+    {
+      // it('can filter the manifest by date to return previous manifests on a monthly basis', async (done) => {
+      //   try {
+      //     const res = await HcpApi.getManifest(
+      //       `date=${months.setPast(1)}`,
+      //       token
+      //     );
+      //     const { data } = res.body;
+      //     for (let hcp of data.rows) {
+      //       expect(dateOnly(hcp.monthOfYear).slice(0, 7)).toBe(
+      //         months.setPast(1).slice(0, 7)
+      //       );
+      //     }
+      //     done();
+      //   } catch (e) {
+      //     done(e);
+      //   }
+      // });
+    }
 
     it('computes the capitation for all active HCPs', async (done) => {
       try {
@@ -580,23 +581,25 @@ describe('HcpController', () => {
       }
     });
 
-    // it('can filter the capitation by date to return previous capitation on a monthly basis', async (done) => {
-    //   try {
-    //     const res = await HcpApi.getCapitation(
-    //       `date=${months.setPast(1)}`,
-    //       token
-    //     );
-    //     const { data } = res.body;
-    //     for (let hcp of data.rows) {
-    //       expect(dateOnly(hcp.monthOfYear).slice(0, 7)).toBe(
-    //         months.setPast(1).slice(0, 7)
-    //       );
-    //     }
-    //     done();
-    //   } catch (e) {
-    //     done(e);
-    //   }
-    // });
+    {
+      // it('can filter the capitation by date to return previous capitation on a monthly basis', async (done) => {
+      //   try {
+      //     const res = await HcpApi.getCapitation(
+      //       `date=${months.setPast(1)}`,
+      //       token
+      //     );
+      //     const { data } = res.body;
+      //     for (let hcp of data.rows) {
+      //       expect(dateOnly(hcp.monthOfYear).slice(0, 7)).toBe(
+      //         months.setPast(1).slice(0, 7)
+      //       );
+      //     }
+      //     done();
+      //   } catch (e) {
+      //     done(e);
+      //   }
+      // });
+    }
 
     it('can returns zero manifest for HCPs that do not have enrollees', async (done) => {
       try {
@@ -669,6 +672,134 @@ describe('HcpController', () => {
     it(
       'it catches errors thrown in the try block of downloadHcpManifest',
       TestService.testCatchBlock(HcpController.downloadHcpManifest)
+    );
+  });
+  describe('getVerifiedHcpEnrollees', () => {
+    let sampleEnrollees, HCPs, seededPrincipals, res, sampleStaffs;
+    beforeAll(async () => {
+      await TestService.resetDB();
+      HCPs = await TestService.seedHCPs(4);
+      sampleStaffs = getSampleStaffs(2).sampleStaffs;
+
+      const dsshipStaff = await TestService.seedStaffs([sampleStaffs[1]]);
+      sampleEnrollees = getEnrollees({
+        numOfPrincipals: 4,
+        sameSchemeDepPerPrincipal: 1,
+        vcshipDepPerPrincipal: 1,
+      });
+      const principals = sampleEnrollees.principals;
+      seededPrincipals = await TestService.seedEnrollees([
+        {
+          ...principals[0],
+          scheme: 'AFRSHIP',
+          enrolmentType: 'principal',
+          hcpId: HCPs[0].id,
+          isVerified: true,
+        },
+        {
+          ...principals[1],
+          scheme: 'DSSHIP',
+          enrolmentType: 'principal',
+          hcpId: HCPs[1].id,
+          isVerified: true,
+          staffNumber: dsshipStaff.staffIdNo,
+        },
+        {
+          ...principals[2],
+          scheme: 'VCSHIP',
+          enrolmentType: 'principal',
+          hcpId: HCPs[2].id,
+          isVerified: true,
+        },
+        {
+          ...principals[3],
+          scheme: 'AFRSHIP',
+          enrolmentType: 'special-principal',
+          hcpId: HCPs[3].id,
+          isVerified: true,
+          staffNumber: undefined,
+          rank: 'General',
+          armOfService: 'army',
+          serviceNumber: principals[3].serviceNumber || 'SN/001/SP',
+        },
+      ]);
+
+      const deps = sampleEnrollees.dependants.map((d, i) => {
+        for (let p of seededPrincipals) {
+          const regexPrincipalEnrolleeIdNo = new RegExp(`${p.enrolleeIdNo}-`);
+          if (d.enrolleeIdNo.match(regexPrincipalEnrolleeIdNo)) {
+            // console.log('d.isVerified = ', d.isVerified);
+            return {
+              ...d,
+              principalId: p.id,
+              hcpId: p.hcpId,
+              isVerified: i % 2 === 0 ? true : false,
+            };
+          }
+        }
+      });
+      await TestService.seedEnrollees(deps);
+    });
+
+    it('allows a superadmin to get all verififed enrollees for any hcp', async (done) => {
+      try {
+        const { token } = await TestService.getToken(
+          sampleStaffs[0],
+          ROLES.ENROLMENT_OFFICER
+        );
+        for (let hcp of HCPs) {
+          res = await HcpApi.getVerifiedHcpEnrollees({ hcpId: hcp.id, token });
+          expect(res.status).toEqual(200);
+          const { data } = res.body;
+          for (let enrollee of data.rows) {
+            expect(enrollee.isVerified).toBe(true);
+          }
+        }
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('ensures hcp users can view thier own verified enrollees', async (done) => {
+      try {
+        const { token } = await TestService.getHcpToken(HCPs[0]);
+        res = await HcpApi.getVerifiedHcpEnrollees({
+          hcpId: HCPs[0].id,
+          token,
+        });
+        expect(res.status).toEqual(200);
+        const { data } = res.body;
+        for (let enrollee of data.rows) {
+          expect(enrollee.hcpId).toBe(HCPs[0].id);
+          expect(enrollee.isVerified).toBe(true);
+        }
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('ensures hcp users cannot view enrollees in another hcp', async (done) => {
+      try {
+        const hcp0 = HCPs[0];
+        const hcp1 = HCPs[1];
+        const { token } = await TestService.getHcpToken(hcp0);
+        res = await HcpApi.getVerifiedHcpEnrollees({
+          hcpId: hcp1.id,
+          token,
+        });
+        const { errors } = res.body;
+        const expectedError =
+          'Access denied. As an HCP user, you can only view your own enrollees';
+        expect(res.status).toBe(401);
+        expect(errors[0]).toBe(expectedError);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it(
+      'it catches errors thrown in the try block of getManifest',
+      TestService.testCatchBlock(HcpController.getVerifiedHcpEnrollees)
     );
   });
 });

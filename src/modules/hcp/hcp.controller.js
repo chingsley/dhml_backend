@@ -35,8 +35,17 @@ export default class HcpController {
   }
   static async getVerifiedHcpEnrollees(req, res, next) {
     try {
+      const { user, userType } = req;
+      const { hcpId } = req.params;
+      if (userType === 'hcp' && `${user.id}` !== `${hcpId}`) {
+        return res.status(401).json({
+          errors: [
+            'Access denied. As an HCP user, you can only view your own enrollees',
+          ],
+        });
+      }
       const hcpService = new HcpService(req);
-      const data = await hcpService.fetchVerifiedHcpEnrollees();
+      const data = await hcpService.fetchVerifiedHcpEnrollees(hcpId);
       return res.status(200).json({ data });
     } catch (error) {
       Response.handleError('getVerifiedHcpEnrollees', error, req, res, next);

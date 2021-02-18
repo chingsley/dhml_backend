@@ -9,6 +9,7 @@ import {
   NO_EXPIRED_PASSWORD,
 } from '../../shared/constants/errors.constants';
 import { BASIC } from '../../shared/constants/roles.constants';
+import { HEADERS, QUERY } from '../../shared/constants/strings.constants';
 import { throwError } from '../../shared/helpers';
 import { isExpired } from '../../utils/helpers';
 import Jwt from '../../utils/Jwt';
@@ -61,8 +62,10 @@ export default class AuthMiddleware {
         const {
           rejectDefaultPassword = true,
           rejectExpiredPassword = false,
+          tokenLocation = HEADERS,
         } = options;
-        const { userId, hcpId } = this.verifyToken(req.headers);
+        const token = this.getTokenFromRequest(req, tokenLocation);
+        const { userId, hcpId } = this.verifyToken(token);
         let user, hcp;
         if (userId) user = await this.findUserById(userId);
         if (hcpId) hcp = await this.findHcpById(hcpId);
@@ -77,6 +80,32 @@ export default class AuthMiddleware {
         return Response.handleError('authorize', error, req, res, next);
       }
     };
+  }
+
+  static getTokenFromRequest(req, tokenLocation) {
+    let token;
+    const validTokenLocations = [HEADERS, QUERY];
+    if (tokenLocation === HEADERS) {
+      token = req.headers.authorization;
+    } else if (tokenLocation === QUERY) {
+      token = req.query.token;
+    } else {
+      throw new Error(
+        `option "tokenLocation" for the "authorize" middleware must be one of ${validTokenLocations.join(
+          ', '
+        )}`
+      );
+    }
+    if (!token) {
+      throwError({
+        status: 401,
+        error: [
+          `Access denied. Missing authorization token in request ${tokenLocation}`,
+        ],
+        errorCode: AUTH001,
+      });
+    }
+    return token;
   }
 
   static authorizeRoleAssignment = (allowedRoles) => async (req, res, next) => {
@@ -106,20 +135,6 @@ export default class AuthMiddleware {
       );
     }
   };
-  static authorizeDownload(req, res, next) {
-    try {
-      const { token } = req.query;
-      if (!token) {
-        return res
-          .status(401)
-          .json({ errors: ['please supply token in the request query'] });
-      }
-      Jwt.decode(token);
-      return next();
-    } catch (error) {
-      return Response.handleError('authorizeDownload', error, req, res, next);
-    }
-  }
 
   static async validateAuthData(req, res, next) {
     try {
@@ -175,15 +190,7 @@ export default class AuthMiddleware {
     );
   }
 
-  static verifyToken = (reqHeaders) => {
-    const token = reqHeaders.authorization;
-    if (!token) {
-      throwError({
-        status: 401,
-        error: [ACCESS_DENIED],
-        errorCode: AUTH001,
-      });
-    }
+  static verifyToken = (token) => {
     const { userId, hcpId } = Jwt.decode(token);
     return { userId, hcpId };
   };
