@@ -17,4 +17,14 @@ export default class RoleService extends AppService {
       ...this.paginate(),
     });
   }
+
+  findAllWhere(condition) {
+    return db.Role.findAndCountAll({
+      where: {
+        ...condition,
+        ...this.filterBy(['title'], { modelName: 'Role' }),
+      },
+      ...this.paginate(),
+    });
+  }
 }

@@ -8,7 +8,7 @@ import ROLES from '../../../src/shared/constants/roles.constants';
 import nodemailer from 'nodemailer';
 import _UserService from './user.test.services';
 import UserApi from './user.test.api';
-import _RoleService from '../role/roles.test.service';
+import _RoleService from '../role/role.test.service';
 import UserController from '../../../src/modules/user/user.controller';
 
 describe('UserController', () => {
