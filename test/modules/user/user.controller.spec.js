@@ -6,7 +6,7 @@ import faker from 'faker';
 import getSampleStaffs from '../../../src/shared/samples/staff.samples';
 import ROLES from '../../../src/shared/constants/roles.constants';
 import nodemailer from 'nodemailer';
-import TestUser from './user.test.services';
+import _UserService from './user.test.services';
 import UserApi from './user.test.api';
 import _RoleService from '../role/roles.test.service';
 import UserController from '../../../src/modules/user/user.controller';
@@ -83,6 +83,41 @@ describe('UserController', () => {
       TestService.testCatchBlock(UserController.registerUser)
     );
   });
+  describe('getAllUsers', () => {
+    let token, res, seededUsers;
+    beforeAll(async () => {
+      await TestService.resetDB();
+      await _RoleService.seedAllRoles();
+      const { sampleStaffs: stffs } = getSampleStaffs(10);
+      const seededStaffs = await _StaffService.seedBulk(stffs);
+      const role = await TestService.createRole(ROLES.BASIC);
+      const sampleUsers = seededStaffs.map((stff) => ({
+        staffId: stff.id,
+        email: stff.email,
+        username: faker.internet.userName(stff.firstName),
+        roleId: role.id,
+      }));
+      seededUsers = await _UserService.seedBulk(sampleUsers);
+      const data = await TestService.getToken(stffs[0], ROLES.SUPERADMIN);
+      token = data.token;
+      res = await UserApi.getAll(token);
+    });
+    it('returns status 200 on successful update', async (done) => {
+      try {
+        const { data } = res.body;
+        expect(res.status).toBe(200);
+        expect(data.count).toEqual(seededUsers.length);
+        expect(data.rows).toHaveLength(seededUsers.length);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it(
+      'it catches errors thrown in the try block ',
+      TestService.testCatchBlock(UserController.getAllUsers)
+    );
+  });
   describe('updateUser', () => {
     let token, res, user1, user2, changes;
     beforeAll(async () => {
@@ -97,7 +132,7 @@ describe('UserController', () => {
         username: faker.internet.userName(stff.firstName),
         roleId: role.id,
       }));
-      [user1, user2] = await TestUser.seedBulk(sampleUsers);
+      [user1, user2] = await _UserService.seedBulk(sampleUsers);
       const data = await TestService.getToken(stffs[0], ROLES.ADMIN);
       token = data.token;
       changes = { email: 'newmail45454@gmail.com', staffId: user1.staffId };
@@ -189,31 +224,64 @@ describe('UserController', () => {
       TestService.testCatchBlock(UserController.updateUser)
     );
   });
-  describe('getAllUsers', () => {
-    let token, res, seededUsers;
+  describe('deleteUser', () => {
+    let token, res, user1, stffs;
     beforeAll(async () => {
       await TestService.resetDB();
       await _RoleService.seedAllRoles();
-      const { sampleStaffs: stffs } = getSampleStaffs(10);
-      const seededStaffs = await _StaffService.seedBulk(stffs);
+      const { sampleStaffs } = getSampleStaffs(2);
+      stffs = sampleStaffs;
+      const seededStaff = await _StaffService.seedOne(stffs[1]);
       const role = await TestService.createRole(ROLES.BASIC);
-      const sampleUsers = seededStaffs.map((stff) => ({
-        staffId: stff.id,
-        email: stff.email,
-        username: faker.internet.userName(stff.firstName),
+      const sampleUser = {
+        staffId: seededStaff.id,
+        email: seededStaff.email,
+        username: faker.internet.userName(seededStaff.firstName),
         roleId: role.id,
-      }));
-      seededUsers = await TestUser.seedBulk(sampleUsers);
-      const data = await TestService.getToken(stffs[0], ROLES.SUPERADMIN);
+      };
+      user1 = await _UserService.seedOne(sampleUser);
+      const data = await TestService.getToken(stffs[0], ROLES.ADMIN);
       token = data.token;
-      res = await UserApi.getAll(token);
+      res = await UserApi.delete(user1.id, token);
     });
     it('returns status 200 on successful update', async (done) => {
       try {
-        const { data } = res.body;
+        const { message } = res.body;
         expect(res.status).toBe(200);
-        expect(data.count).toEqual(seededUsers.length);
-        expect(data.rows).toHaveLength(seededUsers.length);
+        expect(message).toBe('user deleted');
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('deletes the record from the Users table', async (done) => {
+      try {
+        const user = await _UserService.findOneWhere({ id: user1.id });
+        expect(user).toBe(null);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns a "not found" error for an attempt to reuse the deleted userId', async (done) => {
+      try {
+        const changes = { email: 'notfound@gmail.com' };
+        const res = await UserApi.edit(user1.id, changes, token);
+        const { errors } = res.body;
+        expect(errors[0]).toMatch(/invalid userId/i);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('ensures only admin and superadmin can access the delete endpoint', async (done) => {
+      try {
+        const { token } = await TestService.getToken(stffs[0], ROLES.VERIFIER);
+        const res = await UserApi.delete(user1.id, token);
+        const { errors, errorCode } = res.body;
+        expect(res.status).toBe(401);
+        expect(errorCode).toEqual('AUTH004');
+        expect(errors[0]).toMatch(/Access denied/i);
         done();
       } catch (e) {
         done(e);
@@ -221,7 +289,7 @@ describe('UserController', () => {
     });
     it(
       'it catches errors thrown in the try block ',
-      TestService.testCatchBlock(UserController.getAllUsers)
+      TestService.testCatchBlock(UserController.deleteUser)
     );
   });
 });

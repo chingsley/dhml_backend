@@ -40,25 +40,6 @@ export default class UserService extends AppService {
     }
   }
 
-  async editUserInfo() {
-    const { userId } = this.params;
-    await this.checkUniqueViolations(userId);
-    const user = await this.findUserById(userId);
-    await user.update(this.body);
-    await user.reload({ include: { model: db.Role, as: 'role' } });
-    return user;
-  }
-
-  async findUserById(userId) {
-    return await this.findOneRecord({
-      modelName: 'User',
-      where: { id: userId },
-      include: [{ model: db.Role, as: 'role' }],
-      isRequired: true,
-      errorIfNotFound: `Invalid userId. No user found for id.: ${userId}`,
-    });
-  }
-
   fetchAllUsers = () => {
     return db.User.findAndCountAll({
       attributes: { exclude: ['password'] },
@@ -81,6 +62,32 @@ export default class UserService extends AppService {
       ],
     });
   };
+
+  async editUserInfo() {
+    const { userId } = this.params;
+    await this.checkUniqueViolations(userId);
+    const user = await this.findUserById(userId);
+    await user.update(this.body);
+    await user.reload({ include: { model: db.Role, as: 'role' } });
+    return user;
+  }
+
+  async handleUserDelete() {
+    const { userId } = this.params;
+    const user = await this.findUserById(userId);
+    await user.destroy();
+    return user;
+  }
+
+  async findUserById(userId) {
+    return await this.findOneRecord({
+      modelName: 'User',
+      where: { id: userId },
+      include: [{ model: db.Role, as: 'role' }],
+      isRequired: true,
+      errorIfNotFound: `Invalid userId. No user found for id.: ${userId}`,
+    });
+  }
 
   async validateRoleId(roleId) {
     const errorMsg = `Role with id: ${roleId} does not exist`;

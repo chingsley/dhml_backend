@@ -13,6 +13,11 @@ router.post(
   AuthMiddleware.authorizeRoleAssignment([SUPERADMIN]),
   UserController.registerUser
 );
+router.get(
+  '/',
+  AuthMiddleware.authorize([SUPERADMIN, ADMIN]),
+  UserController.getAllUsers
+);
 router.patch(
   '/:userId',
   AuthMiddleware.authorize([SUPERADMIN, ADMIN]),
@@ -20,10 +25,11 @@ router.patch(
   AuthMiddleware.authorizeRoleAssignment([SUPERADMIN]),
   UserController.updateUser
 );
-router.get(
-  '/',
+router.delete(
+  '/:userId',
   AuthMiddleware.authorize([SUPERADMIN, ADMIN]),
-  UserController.getAllUsers
+  AuthMiddleware.authorizeRoleAssignment([SUPERADMIN]),
+  UserController.deleteUser
 );
 
 export default router;

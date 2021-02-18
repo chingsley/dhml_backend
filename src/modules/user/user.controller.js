@@ -16,6 +16,19 @@ export default class UserController {
     }
   }
 
+  static async getAllUsers(req, res, next) {
+    try {
+      const userService = new UserService(req);
+      const data = await userService.fetchAllUsers();
+      return res.status(200).json({
+        message: 'successful',
+        data,
+      });
+    } catch (error) {
+      Response.handleError('getAllUsers', error, req, res, next);
+    }
+  }
+
   static async updateUser(req, res, next) {
     try {
       const userService = new UserService(req);
@@ -29,16 +42,16 @@ export default class UserController {
     }
   }
 
-  static async getAllUsers(req, res, next) {
+  static async deleteUser(req, res, next) {
     try {
       const userService = new UserService(req);
-      const data = await userService.fetchAllUsers();
+      const user = await userService.handleUserDelete();
       return res.status(200).json({
-        message: 'successful',
-        data,
+        message: 'user deleted',
+        data: user,
       });
     } catch (error) {
-      Response.handleError('getAllUsers', error, req, res, next);
+      Response.handleError('deleteUser', error, req, res, next);
     }
   }
 }
