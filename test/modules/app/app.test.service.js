@@ -9,6 +9,7 @@ import getSampleUsers from '../../../src/shared/samples/user.samples';
 import { TEST_PASSWORD } from '../../../src/shared/constants/passwords.constants';
 import server from '../../../src/server';
 import Cypher from '../../../src/utils/Cypher';
+import Password from '../../../src/utils/Password';
 import getSampleHCPs from '../../../src/shared/samples/hcp.samples';
 import getEnrollees from '../../../src/shared/samples/enrollee.samples';
 import NanoId from '../../../src/utils/NanoId';
@@ -75,6 +76,21 @@ class TestService {
     return { users };
   }
 
+  static async getHcpToken(seededHcp) {
+    await db.Password.upsert({
+      hcpId: seededHcp.id,
+      value: Password.hash(TEST_PASSWORD),
+      isDefaultValue: false,
+    });
+    const res = await this.login({
+      username: seededHcp.code,
+      password: TEST_PASSWORD,
+      userType: 'hcp',
+    });
+    const { data } = res.body;
+    return { hcp: data.hcp, token: data.token };
+  }
+
   static async getToken(sampleStaff, roleTitle) {
     const { sampleUsers } = getSampleUsers([sampleStaff]);
     const [staff] = await db.Staff.upsert(sampleStaff, { returning: true });
@@ -85,7 +101,11 @@ class TestService {
       staffId: staff.id,
     });
     await this.createPassword(user.id, TEST_PASSWORD);
-    const res = await this.loginUser(user.email, TEST_PASSWORD);
+    const res = await this.login({
+      email: user.email,
+      password: TEST_PASSWORD,
+      userType: 'user',
+    });
     const { data } = res.body;
     return { user: data.user, token: data.token };
   }
@@ -111,12 +131,13 @@ class TestService {
     return seededUser;
   }
 
-  static loginUser(email, password) {
+  static login({ email, username, userType, password }) {
     return app.post('/api/v1/auth/login').send(
       cypher.formatRequest({
         email,
         password,
-        userType: 'user',
+        username,
+        userType,
       })
     );
   }

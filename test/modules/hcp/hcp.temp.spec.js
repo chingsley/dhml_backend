@@ -24,77 +24,124 @@ describe('HcpTemp', () => {
     nodemailer.createTransport = nodemailerOriginalImplementation;
     NanoId.getValue = originalNanoIdGetValue;
   });
-  describe('getManifest/getCapitation', () => {
-    let token, seededHCPs, res1, res2, res4;
-    const NUM_ACTIVE_HCP = 15;
-    const NUM_SUSPENDED_HCP = 5;
-    const TOTAL_COUNT_HCP = NUM_ACTIVE_HCP + NUM_SUSPENDED_HCP;
-    const LIVES_PER_HCP = 5;
-    const PER_UNIT_CHARGE = 750;
-
+  describe('getVerifiedHcpEnrollees', () => {
+    let sampleEnrollees, HCPs, seededPrincipals, res, sampleStaffs;
     beforeAll(async () => {
       await TestService.resetDB();
-      const allHCPs = getSampleHCPs();
-      const primaryHCPs = allHCPs
-        .filter((h) => h.category.match(/primary/i))
-        .slice(0, Math.floor(TOTAL_COUNT_HCP / 2));
-      const primaryHcpNoEnrollee = allHCPs
-        .filter((h) => h.category.match(/primary/i))
-        .slice(
-          Math.floor(TOTAL_COUNT_HCP / 2),
-          Math.floor(TOTAL_COUNT_HCP / 2) + 1
-        );
-      const secondaryActiveHCPs = allHCPs
-        .filter((h) => h.category.match(/secondary/i))
-        .slice(0, Math.ceil(TOTAL_COUNT_HCP / 2));
-      const secondarySuspendedHCPs = secondaryActiveHCPs
-        .splice(0, NUM_SUSPENDED_HCP)
-        .map((hcp) => ({
-          ...hcp,
-          status: 'suspended',
-        }));
-      seededHCPs = await _HcpService.bulkInsert([
-        ...primaryHCPs,
-        ...secondaryActiveHCPs,
-        ...secondarySuspendedHCPs,
-        ...primaryHcpNoEnrollee,
-      ]);
-      const { sampleStaffs: stff } = getSampleStaffs(MAX_STAFF_COUNT);
-      const seededStaffs = await _StaffService.seedBulk(stff);
-      const { principals, dependants } = getEnrollees({
-        numOfPrincipals: TOTAL_COUNT_HCP,
-        sameSchemeDepPerPrincipal: 3,
+      HCPs = await TestService.seedHCPs(4);
+      sampleStaffs = getSampleStaffs(2).sampleStaffs;
+
+      const dsshipStaff = await TestService.seedStaffs([sampleStaffs[1]]);
+      sampleEnrollees = getEnrollees({
+        numOfPrincipals: 4,
+        sameSchemeDepPerPrincipal: 1,
         vcshipDepPerPrincipal: 1,
       });
-      const seededPrincipals = await TestService.seedEnrollees(
-        principals.map((p, i) => {
-          return {
-            ...p,
-            hcpId: seededHCPs[i].id,
-            staffNumber: p.staffNumber ? seededStaffs[i].staffIdNo : null,
-          };
-        })
-      );
-      const dependantsWithPrincipalId = dependants.reduce((acc, dep, i) => {
-        const hcpId = seededHCPs[i % TOTAL_COUNT_HCP].id;
-        for (let { enrolleeIdNo, id } of seededPrincipals) {
-          if (dep.enrolleeIdNo.match(new RegExp(`${enrolleeIdNo}-`))) {
-            acc.push({ ...dep, principalId: id, hcpId });
+      const principals = sampleEnrollees.principals;
+      seededPrincipals = await TestService.seedEnrollees([
+        {
+          ...principals[0],
+          scheme: 'AFRSHIP',
+          enrolmentType: 'principal',
+          hcpId: HCPs[0].id,
+          isVerified: true,
+        },
+        {
+          ...principals[1],
+          scheme: 'DSSHIP',
+          enrolmentType: 'principal',
+          hcpId: HCPs[1].id,
+          isVerified: true,
+          staffNumber: dsshipStaff.staffIdNo,
+        },
+        {
+          ...principals[2],
+          scheme: 'VCSHIP',
+          enrolmentType: 'principal',
+          hcpId: HCPs[2].id,
+          isVerified: true,
+        },
+        {
+          ...principals[3],
+          scheme: 'AFRSHIP',
+          enrolmentType: 'special-principal',
+          hcpId: HCPs[3].id,
+          isVerified: true,
+          staffNumber: undefined,
+          rank: 'General',
+          armOfService: 'army',
+          serviceNumber: principals[3].serviceNumber || 'SN/001/SP',
+        },
+      ]);
+
+      const deps = sampleEnrollees.dependants.map((d, i) => {
+        for (let p of seededPrincipals) {
+          const regexPrincipalEnrolleeIdNo = new RegExp(`${p.enrolleeIdNo}-`);
+          if (d.enrolleeIdNo.match(regexPrincipalEnrolleeIdNo)) {
+            // console.log('d.isVerified = ', d.isVerified);
+            return {
+              ...d,
+              principalId: p.id,
+              hcpId: p.hcpId,
+              isVerified: i % 2 === 0 ? true : false,
+            };
           }
         }
-        return acc;
-      }, []);
-      await TestService.seedEnrollees(dependantsWithPrincipalId);
-      const data = await TestService.getToken(stff[0], ROLES.SUPERADMIN);
-      token = data.token;
-      res1 = await HcpApi.getManifest('', token);
-      res2 = await HcpApi.getCapitation('', token);
-      res4 = await HcpApi.downloadHcpManifest(seededHCPs[0].id, token);
+      });
+      await TestService.seedEnrollees(deps);
     });
-    it('downloads hcp manifest', async (done) => {
+
+    it('allows a superadmin to get all verififed enrollees for any hcp', async (done) => {
       try {
-        console.log(res4.body, res4.status);
-        expect(true).toBe(true);
+        const { token } = await TestService.getToken(
+          sampleStaffs[0],
+          ROLES.ENROLMENT_OFFICER
+        );
+        for (let hcp of HCPs) {
+          res = await HcpApi.getVerifiedHcpEnrollees({ hcpId: hcp.id, token });
+          expect(res.status).toEqual(200);
+          const { data } = res.body;
+          for (let enrollee of data.rows) {
+            expect(enrollee.isVerified).toBe(true);
+          }
+        }
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('ensures hcp users can view thier own verified enrollees', async (done) => {
+      try {
+        const { token } = await TestService.getHcpToken(HCPs[0]);
+        res = await HcpApi.getVerifiedHcpEnrollees({
+          hcpId: HCPs[0].id,
+          token,
+        });
+        expect(res.status).toEqual(200);
+        const { data } = res.body;
+        for (let enrollee of data.rows) {
+          expect(enrollee.hcpId).toBe(HCPs[0].id);
+          expect(enrollee.isVerified).toBe(true);
+        }
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('ensures hcp users cannot view enrollees in another hcp', async (done) => {
+      try {
+        const hcp0 = HCPs[0];
+        const hcp1 = HCPs[1];
+        const { token } = await TestService.getHcpToken(hcp0);
+        res = await HcpApi.getVerifiedHcpEnrollees({
+          hcpId: hcp1.id,
+          token,
+        });
+        const { errors } = res.body;
+        const expectedError =
+          'Access denied. As an HCP user, you can only view your own enrollees';
+        expect(res.status).toBe(401);
+        expect(errors[0]).toBe(expectedError);
         done();
       } catch (e) {
         done(e);
