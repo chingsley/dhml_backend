@@ -28,4 +28,30 @@ export default class UserController {
       Response.handleError('getAllUsers', error, req, res, next);
     }
   }
+
+  static async updateUser(req, res, next) {
+    try {
+      const userService = new UserService(req);
+      const user = await userService.editUserInfo();
+      return res.status(200).json({
+        message: 'update successful',
+        data: user,
+      });
+    } catch (error) {
+      Response.handleError('updateUser', error, req, res, next);
+    }
+  }
+
+  static async deleteUser(req, res, next) {
+    try {
+      const userService = new UserService(req);
+      const user = await userService.handleUserDelete();
+      return res.status(200).json({
+        message: 'user deleted',
+        data: user,
+      });
+    } catch (error) {
+      Response.handleError('deleteUser', error, req, res, next);
+    }
+  }
 }

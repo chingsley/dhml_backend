@@ -47,3 +47,15 @@ export function numberValidate(withRequiredFields) {
 export function dateValidate(withRequiredFields) {
   return withRequiredFields ? Joi.date().required() : Joi.date();
 }
+
+export function validateIntegerId(withRequiredFields) {
+  return withRequiredFields
+    ? Joi.number().min(1).required()
+    : Joi.number().min(1);
+}
+
+export function validateEmail(withRequiredFields) {
+  return withRequiredFields
+    ? Joi.string().email().trim().required()
+    : Joi.string().email().trim();
+}
