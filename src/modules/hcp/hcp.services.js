@@ -78,10 +78,10 @@ export default class HcpService extends AppService {
     });
   }
 
-  async fetchVerifiedHcpEnrollees() {
+  async fetchVerifiedHcpEnrollees(hcpId) {
     return db.Enrollee.findAndCountAll({
       where: {
-        hcpId: this.params.hcpId,
+        hcpId,
         isVerified: true,
         ...this.searchRecordsBy(enrolleeSearchableFields),
       },

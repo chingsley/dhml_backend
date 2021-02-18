@@ -12,10 +12,6 @@ export const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
 class _HcpService extends TestService {
   static HCP = db.HealthCareProvider;
 
-  // static get HCP() {
-  //   return db.HealthCareProvider;
-  // }
-
   static findById(id) {
     return db.HealthCareProvider.findOne({ where: { id } });
   }
