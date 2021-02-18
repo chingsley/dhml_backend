@@ -9,6 +9,10 @@ class UserApi {
     return app.post('/api/v1/users').set('authorization', token).send(user);
   }
 
+  static getAll(token) {
+    return app.get('/api/v1/users').set('authorization', token);
+  }
+
   static edit(userId, changes, token) {
     return app
       .patch(`/api/v1/users/${userId}`)
@@ -16,8 +20,8 @@ class UserApi {
       .send(changes);
   }
 
-  static getAll(token) {
-    return app.get('/api/v1/users').set('authorization', token);
+  static delete(userId, token) {
+    return app.delete(`/api/v1/users/${userId}`).set('authorization', token);
   }
 }
 
