@@ -1,17 +1,20 @@
 const faker = require('faker');
-const { getRandomInt } = require('../../utils/helpers');
 const ROLES = require('../constants/roles.constants');
-const rolesCount = Object.keys(ROLES).length;
+const userRoles = Object.keys(ROLES).filter((role) => role !== 'HCP');
 
 const { internet } = faker;
 
 const getSampleUsers = (staffs) => {
-  const sampleUsers = staffs.map((staff, index) => ({
-    staffId: index + 1,
-    email: internet.email(staff.firstName),
-    username: internet.userName(staff.firstName),
-    roleId: getRandomInt(rolesCount + 1, { min: 1 }),
-  }));
+  const sampleUsers = staffs.map((staff, index) => {
+    const randomUserRole = faker.random.arrayElement(userRoles);
+    const indexOfRandomUserRole = userRoles.indexOf(randomUserRole);
+    return {
+      staffId: index + 1,
+      email: internet.email(staff.firstName),
+      username: internet.userName(staff.firstName),
+      roleId: indexOfRandomUserRole + 1,
+    };
+  });
   return { sampleUsers };
 };
 

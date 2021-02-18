@@ -8,6 +8,8 @@ import {
   NO_DEFAULT_PASSWORD_USER,
   NO_EXPIRED_PASSWORD,
 } from '../../shared/constants/errors.constants';
+import { BASIC } from '../../shared/constants/roles.constants';
+import { HEADERS, QUERY } from '../../shared/constants/strings.constants';
 import { throwError } from '../../shared/helpers';
 import { isExpired } from '../../utils/helpers';
 import Jwt from '../../utils/Jwt';
@@ -60,8 +62,10 @@ export default class AuthMiddleware {
         const {
           rejectDefaultPassword = true,
           rejectExpiredPassword = false,
+          tokenLocation = HEADERS,
         } = options;
-        const { userId, hcpId } = this.verifyToken(req.headers);
+        const token = this.getTokenFromRequest(req, tokenLocation);
+        const { userId, hcpId } = this.verifyToken(token);
         let user, hcp;
         if (userId) user = await this.findUserById(userId);
         if (hcpId) hcp = await this.findHcpById(hcpId);
@@ -78,20 +82,59 @@ export default class AuthMiddleware {
     };
   }
 
-  static authorizeDownload(req, res, next) {
+  static getTokenFromRequest(req, tokenLocation) {
+    let token;
+    const validTokenLocations = [HEADERS, QUERY];
+    if (tokenLocation === HEADERS) {
+      token = req.headers.authorization;
+    } else if (tokenLocation === QUERY) {
+      token = req.query.token;
+    } else {
+      throw new Error(
+        `option "tokenLocation" for the "authorize" middleware must be one of ${validTokenLocations.join(
+          ', '
+        )}`
+      );
+    }
+    if (!token) {
+      throwError({
+        status: 401,
+        error: [
+          `Access denied. Missing authorization token in request ${tokenLocation}`,
+        ],
+        errorCode: AUTH001,
+      });
+    }
+    return token;
+  }
+
+  static authorizeRoleAssignment = (allowedRoles) => async (req, res, next) => {
     try {
-      const { token } = req.query;
-      if (!token) {
-        return res
-          .status(401)
-          .json({ errors: ['please supply token in the request query'] });
+      const { role: operatorRole } = req.user;
+      const { roleId } = req.body;
+      if (!roleId) {
+        return next();
       }
-      Jwt.decode(token);
+      const selectedRole = await this.findRoleById(roleId);
+      const canChangeRole = allowedRoles.includes(operatorRole.title);
+      const selectedRoleIsNotBasic = selectedRole.title !== BASIC;
+      if (!canChangeRole && selectedRoleIsNotBasic) {
+        throwError({
+          status: 401,
+          error: ['You are only authorized to assign the "basic" role'],
+        });
+      }
       return next();
     } catch (error) {
-      return Response.handleError('authorizeDownload', error, req, res, next);
+      return Response.handleError(
+        'authorizeRoleAssignment',
+        error,
+        req,
+        res,
+        next
+      );
     }
-  }
+  };
 
   static async validateAuthData(req, res, next) {
     try {
@@ -138,15 +181,16 @@ export default class AuthMiddleware {
     );
   }
 
-  static verifyToken = (reqHeaders) => {
-    const token = reqHeaders.authorization;
-    if (!token) {
-      throwError({
-        status: 401,
-        error: [ACCESS_DENIED],
-        errorCode: AUTH001,
-      });
-    }
+  static findRoleById(roleId) {
+    return db.Role.findOneWhere(
+      { id: roleId },
+      {
+        throwErrorIfNotFound: true,
+      }
+    );
+  }
+
+  static verifyToken = (token) => {
     const { userId, hcpId } = Jwt.decode(token);
     return { userId, hcpId };
   };

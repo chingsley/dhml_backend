@@ -67,6 +67,12 @@ class HcpApi extends TestService {
   static downloadHcpManifest(hcpId, token) {
     return app.get(`/api/v1/hcp/${hcpId}/download_manifest?token=${token}`);
   }
+
+  static getVerifiedHcpEnrollees({ hcpId, query = '', token }) {
+    return app
+      .get(`/api/v1/hcp/${hcpId}/verified_enrollees?${query}`)
+      .set('authorization', token);
+  }
 }
 
 export default HcpApi;

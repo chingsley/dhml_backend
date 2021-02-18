@@ -19,11 +19,7 @@ export default class UserService extends AppService {
       const { staffId, roleId, returnPassword } = this.userData;
       await this.validateStaffId(staffId);
       await this.validateRoleId(roleId); // define in appService
-      await this.validateUnique(['email', 'staffId'], {
-        resourceType: 'User',
-        model: db.User,
-        reqBody: this.userData,
-      });
+      await this.checkUniqueViolations();
       const user = await db.User.create(this.userData, { transaction: t });
       const defaultPass = await this.createDefaultPassword(
         { userId: user.id },
@@ -67,9 +63,44 @@ export default class UserService extends AppService {
     });
   };
 
+  async editUserInfo() {
+    const { userId } = this.params;
+    await this.checkUniqueViolations(userId);
+    const user = await this.findUserById(userId);
+    await user.update(this.body);
+    await user.reload({ include: { model: db.Role, as: 'role' } });
+    return user;
+  }
+
+  async handleUserDelete() {
+    const { userId } = this.params;
+    const user = await this.findUserById(userId);
+    await user.destroy();
+    return user;
+  }
+
+  async findUserById(userId) {
+    return await this.findOneRecord({
+      modelName: 'User',
+      where: { id: userId },
+      include: [{ model: db.Role, as: 'role' }],
+      isRequired: true,
+      errorIfNotFound: `Invalid userId. No user found for id.: ${userId}`,
+    });
+  }
+
   async validateRoleId(roleId) {
     const errorMsg = `Role with id: ${roleId} does not exist`;
     const options = { thowErrorIfNotFound: true, errorMsg };
     await db.Role.findOneWhere({ id: roleId }, options);
+  }
+
+  async checkUniqueViolations(userId) {
+    await this.validateUnique(['email', 'staffId'], {
+      resourceType: 'User',
+      model: db.User,
+      reqBody: this.userData,
+      resourceId: Number(userId),
+    });
   }
 }

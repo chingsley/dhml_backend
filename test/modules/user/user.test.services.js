@@ -1,22 +1,35 @@
-import supertest from 'supertest';
-// import db from '../../../src/database/models';
-// import getSampleStaffs from '../../../src/shared/samples/staff.samples';
+import db from '../../../src/database/models';
 
-import server from '../../../src/server';
 import TestService from '../app/app.test.service';
+import Password from '../../../src/utils/Password';
+import { TEST_PASSWORD } from '../../../src/shared/constants/passwords.constants';
 
-const app = supertest(server.server);
+class _UserService extends TestService {
+  static async seedBulk(sampleUsers) {
+    const users = await db.User.bulkCreate(sampleUsers);
+    const passwords = users.map((user) => ({
+      userId: user.id,
+      value: Password.hash(TEST_PASSWORD),
+      isDefaultValue: false,
+    }));
+    await db.Password.bulkCreate(passwords);
+    return users;
+  }
 
-class TestUser extends TestService {
-  static async register(user, token) {
-    let res;
-    const payload = user;
-    res = await app
-      .post('/api/v1/users')
-      .set('authorization', token)
-      .send(payload);
-    return res;
+  static async seedOne(sampleUser) {
+    const user = await db.User.create(sampleUser);
+    const passwords = {
+      userId: user.id,
+      value: Password.hash(TEST_PASSWORD),
+      isDefaultValue: false,
+    };
+    await db.Password.create(passwords);
+    return user;
+  }
+
+  static findOneWhere(condition) {
+    return db.User.findOne({ where: condition });
   }
 }
 
-export default TestUser;
+export default _UserService;
