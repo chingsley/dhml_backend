@@ -60,7 +60,7 @@ export default class AuthMiddleware {
     return async (req, res, next) => {
       try {
         const {
-          rejectDefaultPassword = true,
+          rejectDefaultPassword = false,
           rejectExpiredPassword = false,
           tokenLocation = HEADERS,
         } = options;
