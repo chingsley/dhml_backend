@@ -1,3 +1,5 @@
+const excelToJson = require('convert-excel-to-json');
+import { isDate } from 'moment';
 import Password from '../../utils/Password';
 
 export const erregenStaff = {
@@ -64,4 +66,40 @@ export const erregenPassword = {
   value: Password.hash('Testing*123'),
   userId: 1,
   isDefaultValue: false,
+};
+
+export const getStaffListProd = () => {
+  const { Sheet1 } = excelToJson({
+    sourceFile: 'STAFF_LIST_PROD.xls',
+    header: {
+      rows: 1,
+    },
+    columnToKey: {
+      // A: 'id',
+      B: 'surname',
+      C: 'firstName',
+      D: 'middleName',
+      E: 'gender',
+      F: 'phoneNumber',
+      G: 'dateOfBirth',
+      H: 'staffIdNo',
+      I: 'designation',
+      J: 'location',
+      K: 'dateOfFirstAppointment',
+    },
+  });
+  return Sheet1.map((staff) => {
+    if (staff.gender === 'M') {
+      staff.gender = 'male';
+    } else if (staff.gender === 'F') {
+      staff.gender = 'female';
+    }
+    if (staff.dateOfFirstAppointment && !isDate(staff.dateOfFirstAppointment)) {
+      staff.dateOfFirstAppointment = null;
+    }
+    if (staff.dateOfBirth && !isDate(staff.dateOfBirth)) {
+      staff.dateOfBirth = null;
+    }
+    return staff;
+  }).filter((staff) => !!staff.staffIdNo && staff.staffIdNo !== 'DHML/P/126');
 };

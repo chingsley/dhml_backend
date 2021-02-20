@@ -1,4 +1,3 @@
-import bcrypt from 'bcryptjs';
 import supertest from 'supertest';
 import moment from 'moment';
 import { Op } from 'sequelize';
@@ -13,9 +12,9 @@ import Password from '../../../src/utils/Password';
 import getSampleHCPs from '../../../src/shared/samples/hcp.samples';
 import getEnrollees from '../../../src/shared/samples/enrollee.samples';
 import NanoId from '../../../src/utils/NanoId';
-import { HCP } from '../../../src/shared/constants/roles.constants';
+import ROLES from '../../../src/shared/constants/roles.constants';
 
-const { AES_KEY, IV_KEY, BCRYPT_SALT } = process.env;
+const { AES_KEY, IV_KEY } = process.env;
 export const tomorrow = moment().add(1, 'days').format('YYYY-MM-DD');
 export const today = moment().format('YYYY-MM-DD');
 export const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
@@ -53,7 +52,7 @@ class TestService {
     return db.Staff.bulkCreate(staffs);
   }
 
-  static async seedUsers(noOfUsers = 1, userRole = 'dept user') {
+  static async seedUsers(noOfUsers = 1, userRole = ROLES.BASIC) {
     const { sampleStaffs } = getSampleStaffs(noOfUsers);
     const { sampleUsers } = getSampleUsers(sampleStaffs);
     const staffs = await db.Staff.bulkCreate(sampleStaffs);
@@ -66,22 +65,36 @@ class TestService {
       };
     });
     const users = await db.User.bulkCreate(usersSeed);
-    const password = this.getHash('Testing*123');
-    await db.Password.bulkCreate(
-      users.map((user) => ({
-        userId: user.id,
-        value: password,
+    await this.createBulkPassword('userId', users, TEST_PASSWORD);
+    return users;
+  }
+
+  static async seedHCPs(count) {
+    let hcpRole = await db.Role.findOne({ where: { title: ROLES.HCP } });
+    if (!hcpRole) {
+      hcpRole = await db.Role.create({ title: ROLES.HCP });
+    }
+    const HCPs = await db.HealthCareProvider.bulkCreate(
+      getSampleHCPs(count).map((hcp) => ({
+        ...hcp,
+        roleId: hcpRole.id,
       }))
     );
-    return { users };
+    await this.createBulkPassword('hcpId', HCPs, TEST_PASSWORD);
+    return HCPs;
+  }
+
+  static createBulkPassword(idType, records, password) {
+    return db.Password.bulkCreate(
+      records.map((record) => ({
+        [idType]: record.id,
+        value: Password.hash(password),
+      }))
+    );
   }
 
   static async getHcpToken(seededHcp) {
-    await db.Password.upsert({
-      hcpId: seededHcp.id,
-      value: Password.hash(TEST_PASSWORD),
-      isDefaultValue: false,
-    });
+    await this.createPassword('hcpId', seededHcp.id, TEST_PASSWORD);
     const res = await this.login({
       username: seededHcp.code,
       password: TEST_PASSWORD,
@@ -100,7 +113,7 @@ class TestService {
       roleId: role.id,
       staffId: staff.id,
     });
-    await this.createPassword(user.id, TEST_PASSWORD);
+    await this.createPassword('userId', user.id, TEST_PASSWORD);
     const res = await this.login({
       email: user.email,
       password: TEST_PASSWORD,
@@ -142,38 +155,16 @@ class TestService {
     );
   }
 
-  static async createPassword(userId, value) {
-    let hashed = await db.Password.findOne({ where: { userId } });
+  static async createPassword(idType, id, value) {
+    let hashed = await db.Password.findOne({ where: { [idType]: id } });
     if (!hashed) {
-      hashed = await db.Password.create(
-        {
-          userId,
-          value: this.getHash(value),
-          isDefaultValue: false,
-        }
-        // { returning: true }
-      );
+      hashed = await db.Password.create({
+        [idType]: id,
+        value: Password.hash(value),
+        isDefaultValue: false,
+      });
     }
-    // const
-
     return hashed;
-  }
-
-  static async seedHCPs(count) {
-    let hcpRole = await db.Role.findOne({ where: { title: HCP } });
-    if (!hcpRole) {
-      hcpRole = await db.Role.create({ title: HCP });
-    }
-    return db.HealthCareProvider.bulkCreate(
-      getSampleHCPs(count).map((hcp) => ({
-        ...hcp,
-        roleId: hcpRole.id,
-      }))
-    );
-  }
-
-  static getHash(sampleValue = 'Testing*123') {
-    return bcrypt.hashSync(sampleValue, Number(BCRYPT_SALT));
   }
 
   static fetchEnrolleeByIdNo(enrolleeIdNo) {
