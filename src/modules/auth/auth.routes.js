@@ -10,7 +10,7 @@ router.post(
   '/login',
   AppMiddleware.decryptRequestBody,
   AuthMiddleware.validateLoginDetails,
-  AuthController.loginUser
+  AuthController.login
 );
 
 /**
