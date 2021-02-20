@@ -14,8 +14,14 @@ export const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
 const app = supertest(server.server);
 
 class AuthApi {
-  static async login(payload) {
+  static login(payload) {
     return app.post('/api/v1/auth/login').send(cypher.formatRequest(payload));
+  }
+  static changePassword(payload, token) {
+    return app
+      .post('/api/v1/auth/password/change')
+      .set('authorization', token)
+      .send(cypher.formatRequest(payload));
   }
 }
 
