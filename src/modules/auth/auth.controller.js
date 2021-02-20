@@ -4,7 +4,7 @@ import Response from '../../utils/Response';
 import AuthService from './auth.services';
 
 export default class AuthController {
-  static async loginUser(req, res, next) {
+  static async login(req, res, next) {
     try {
       const authService = new AuthService(req);
       const { userType } = req.body;
@@ -16,7 +16,7 @@ export default class AuthController {
       }
       return res.status(200).json({ message: 'login successful', data });
     } catch (error) {
-      Response.handleError('loginUser', error, req, res, next);
+      Response.handleError('login', error, req, res, next);
     }
   }
 
