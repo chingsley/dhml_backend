@@ -2,9 +2,12 @@ const {
   getSampleUserPasswords,
   getSampleHcpPasswords,
 } = require('../../shared/samples/password.samples');
+const getSampleHCPs = require('../../shared/samples/hcp.samples');
+
+const hcpLength = getSampleHCPs().length;
 
 const sampleUserPasswords = getSampleUserPasswords('Testing*123');
-const sampleHcpPasswords = getSampleHcpPasswords('Testing*123');
+const sampleHcpPasswords = getSampleHcpPasswords('Testing*123', hcpLength);
 const samplePasswords = [...sampleUserPasswords, ...sampleHcpPasswords];
 
 module.exports = {
