@@ -7,7 +7,7 @@ const sgMail = require('@sendgrid/mail');
  * it yet
  */
 // import AuthController from '../../../src/modules/auth/auth.controller';
-import { LGN002 } from '../../../src/shared/constants/errors.constants';
+import { LGN003 } from '../../../src/shared/constants/errors.constants';
 import { TEST_PASSWORD } from '../../../src/shared/constants/passwords.constants';
 import TestService from '../app/app.test.service';
 import AuthApi from './auth.test.api';
@@ -28,12 +28,12 @@ describe('authController', () => {
       const [user] = await TestService.seedUsers(1);
       const [hcp] = await TestService.seedHCPs(1);
       res1 = await AuthApi.login({
-        email: user.email,
+        email: user.staffInfo.email,
         password: TEST_PASSWORD,
         userType: 'user',
       });
       res2 = await AuthApi.login({
-        username: hcp.code,
+        username: hcp.email,
         password: TEST_PASSWORD,
         userType: 'hcp',
       });
@@ -103,7 +103,7 @@ describe('authController', () => {
           data: { token: userToken },
         },
       } = await AuthApi.login({
-        email: user.email,
+        email: user.staffInfo.email,
         password: TEST_PASSWORD,
         userType: 'user',
       });
@@ -164,7 +164,7 @@ describe('authController', () => {
     it('it ensures user cannot login with old password', async (done) => {
       try {
         const res = await AuthApi.login({
-          email: user.email,
+          email: user.staffInfo.email,
           password: TEST_PASSWORD,
           userType: 'user',
         });
@@ -172,7 +172,7 @@ describe('authController', () => {
         const expectedError = 'Login failed. Invalid credentials';
         expect(res.status).toBe(401);
         expect(errors[0]).toEqual(expectedError);
-        expect(errorCode).toEqual(LGN002);
+        expect(errorCode).toEqual(LGN003);
 
         done();
       } catch (e) {
@@ -190,7 +190,7 @@ describe('authController', () => {
         const expectedError = 'Login failed. Invalid credentials';
         expect(res.status).toBe(401);
         expect(errors[0]).toEqual(expectedError);
-        expect(errorCode).toEqual(LGN002);
+        expect(errorCode).toEqual(LGN003);
 
         done();
       } catch (e) {
@@ -200,7 +200,7 @@ describe('authController', () => {
     it('it ensures user can login with new password', async (done) => {
       try {
         const res = await AuthApi.login({
-          email: user.email,
+          email: user.staffInfo.email,
           password: payload.newPassword,
           userType: 'user',
         });
