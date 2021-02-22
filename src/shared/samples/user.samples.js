@@ -10,7 +10,6 @@ const getSampleUsers = (staffs) => {
     const indexOfRandomUserRole = userRoles.indexOf(randomUserRole);
     return {
       staffId: index + 1,
-      email: internet.email(staff.firstName),
       username: internet.userName(staff.firstName),
       roleId: indexOfRandomUserRole + 1,
     };
