@@ -1,4 +1,5 @@
 import db from '../../database/models';
+import { throwError } from '../../shared/helpers';
 
 import AppService from '../app/app.service';
 
@@ -17,9 +18,10 @@ export default class UserService extends AppService {
     const t = await sequelize.transaction();
     try {
       const { staffId, roleId, returnPassword } = this.userData;
-      await this.validateStaffId(staffId);
-      await this.validateRoleId(roleId); // define in appService
-      await this.checkUniqueViolations();
+      const staff = await this.validateStaffId(staffId);
+      this.rejectStaffWithoutEmail(staff);
+      await this.validateRoleId(roleId); // move to appService
+      await this.checkUserUniqueViolations();
       const user = await db.User.create(this.userData, { transaction: t });
       const defaultPass = await this.createDefaultPassword(
         { userId: user.id },
@@ -29,7 +31,7 @@ export default class UserService extends AppService {
       );
       const result = user.dataValues;
       result.defaultPassword = returnPassword && defaultPass;
-      await this.sendPassword(user.email, defaultPass);
+      await this.sendPassword(staff.email, defaultPass);
       await t.commit();
       return result;
     } catch (error) {
@@ -39,6 +41,17 @@ export default class UserService extends AppService {
       // throw new Error(error.message);
     }
   }
+  rejectStaffWithoutEmail = (staff) => {
+    const { surname, email, staffIdNo } = staff;
+    if (!email) {
+      throwError({
+        status: 400,
+        error: [
+          `The staff ${surname} with staff ID NO. ${staffIdNo} does not have an email. Staff email is required for all users`,
+        ],
+      });
+    }
+  };
 
   fetchAllUsers = () => {
     return db.User.findAndCountAll({
@@ -65,10 +78,15 @@ export default class UserService extends AppService {
 
   async editUserInfo() {
     const { userId } = this.params;
-    await this.checkUniqueViolations(userId);
+    await this.checkUserUniqueViolations(userId);
     const user = await this.findUserById(userId);
     await user.update(this.body);
-    await user.reload({ include: { model: db.Role, as: 'role' } });
+    await user.reload({
+      include: [
+        { model: db.Role, as: 'role' },
+        { model: db.Staff, as: 'staffInfo' },
+      ],
+    });
     return user;
   }
 
@@ -93,8 +111,8 @@ export default class UserService extends AppService {
     await db.Role.findOneWhere({ id: roleId }, options);
   }
 
-  async checkUniqueViolations(userId) {
-    await this.validateUnique(['email', 'staffId'], {
+  async checkUserUniqueViolations(userId) {
+    await this.validateUnique(['staffId'], {
       resourceType: 'User',
       model: db.User,
       reqBody: this.userData,
