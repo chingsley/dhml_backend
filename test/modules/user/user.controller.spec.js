@@ -30,7 +30,6 @@ describe('UserController', () => {
       const role = await TestService.createRole(ROLES.DEPT_USER);
       const user = {
         staffId: seededStaff.id,
-        email: seededStaff.email,
         username: faker.internet.userName(seededStaff.firstName),
         roleId: role.id,
       };
@@ -93,7 +92,6 @@ describe('UserController', () => {
       const role = await TestService.createRole(ROLES.BASIC);
       const sampleUsers = seededStaffs.map((stff) => ({
         staffId: stff.id,
-        email: stff.email,
         username: faker.internet.userName(stff.firstName),
         roleId: role.id,
       }));
@@ -128,14 +126,13 @@ describe('UserController', () => {
       const role = await TestService.createRole(ROLES.BASIC);
       const sampleUsers = seededStaffs.map((stff) => ({
         staffId: stff.id,
-        email: stff.email,
         username: faker.internet.userName(stff.firstName),
         roleId: role.id,
       }));
       [user1, user2] = await _UserService.seedBulk(sampleUsers);
       const data = await TestService.getToken(stffs[0], ROLES.ADMIN);
       token = data.token;
-      changes = { email: 'newmail45454@gmail.com', staffId: user1.staffId };
+      changes = { username: 'newmail45454', staffId: user1.staffId };
       res = await UserApi.edit(user1.id, changes, token);
     });
     it('returns status 200 on successful update', async (done) => {
@@ -151,7 +148,7 @@ describe('UserController', () => {
         const { data } = res.body;
         expect(data).toEqual(
           expect.objectContaining({
-            email: changes.email,
+            username: changes.username,
           })
         );
         done();
@@ -174,7 +171,7 @@ describe('UserController', () => {
     });
     it('detects unique violation during update', async (done) => {
       try {
-        const changes = [{ email: user2.email }, { staffId: user2.staffId }];
+        const changes = [{ staffId: user2.staffId }];
         for (let change of changes) {
           const res = await UserApi.edit(user1.id, change, token);
           const { errors } = res.body;
@@ -235,7 +232,6 @@ describe('UserController', () => {
       const role = await TestService.createRole(ROLES.BASIC);
       const sampleUser = {
         staffId: seededStaff.id,
-        email: seededStaff.email,
         username: faker.internet.userName(seededStaff.firstName),
         roleId: role.id,
       };
@@ -265,7 +261,7 @@ describe('UserController', () => {
     });
     it('returns a "not found" error for an attempt to reuse the deleted userId', async (done) => {
       try {
-        const changes = { email: 'notfound@gmail.com' };
+        const changes = { username: 'notfound@gmail.com' };
         const res = await UserApi.edit(user1.id, changes, token);
         const { errors } = res.body;
         expect(errors[0]).toMatch(/invalid userId/i);

@@ -8,7 +8,7 @@ export default class UserController {
       const user = await userService.createUser();
       return res.status(201).json({
         message:
-          'registration complete. A default password has been sent to the user',
+          'registration complete. A default password has been sent to the staff email',
         data: user,
       });
     } catch (error) {
