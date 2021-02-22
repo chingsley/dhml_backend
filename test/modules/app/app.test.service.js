@@ -66,7 +66,11 @@ class TestService {
     });
     const users = await db.User.bulkCreate(usersSeed);
     await this.createBulkPassword('userId', users, TEST_PASSWORD);
-    return users;
+    const userIds = users.map((user) => user.id);
+    return db.User.findAll({
+      where: { id: userIds },
+      include: { model: db.Staff, as: 'staffInfo' },
+    });
   }
 
   static async seedHCPs(count) {
@@ -115,7 +119,7 @@ class TestService {
     });
     await this.createPassword('userId', user.id, TEST_PASSWORD);
     const res = await this.login({
-      email: user.email,
+      email: staff.email,
       password: TEST_PASSWORD,
       userType: 'user',
     });
