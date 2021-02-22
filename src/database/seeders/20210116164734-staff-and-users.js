@@ -10,9 +10,12 @@ const { sampleUsers } = getSampleUsers(
 module.exports = {
   // eslint-disable-next-line no-unused-vars
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkInsert('Staffs', sampleStaffs);
+    await queryInterface.bulkInsert('Staffs', [
+      { ...sampleStaffs[0], email: 'info.erregen@gmail.com' },
+      ...sampleStaffs.slice(1),
+    ]);
     await queryInterface.bulkInsert('Users', [
-      { ...sampleUsers[0], email: 'info.erregen@gmail.com', roleId: 1 }, // same email should match same record in staff. fix that.
+      { ...sampleUsers[0], roleId: 1, username: 'erregen' },
       ...sampleUsers.slice(1),
     ]);
   },

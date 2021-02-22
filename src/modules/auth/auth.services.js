@@ -5,6 +5,7 @@ import {
   DEFAULT_PWD_EXPIRED,
   LGN001,
   INVALID_CREDENTIAL,
+  LGN003,
   LGN002,
   INCORRECT_OLD_PASSWORD,
 } from '../../shared/constants/errors.constants';
@@ -27,11 +28,13 @@ export default class AuthService extends AppService {
 
   handleUserLogin = async () => {
     const { email, password } = this.reqBody;
-    let user = await this.findUserByEmail(email);
+    let staff = await this.findStaffByEmail(email, { errorCode: LGN001 });
+    const user = this.getUserInfoFromStaff(staff, { errorCode: LGN002 });
     this.rejectExpiredDefaultPass(user.password);
     this.validatePassword(password, user.password.value);
+    await user.reload({ include: { model: db.Staff, as: 'staffInfo' } });
     return {
-      user: { ...user.dataValues, password: undefined },
+      user,
       token: Jwt.generateToken({ userId: user.id }),
     };
   };
@@ -84,12 +87,11 @@ export default class AuthService extends AppService {
     try {
       const { userType, email, returnPassword } = this.body;
       const record = await this.findByEmail(email, userType);
-      this.validateMustHaveDefaultPassword(record);
+      this.ensurePasswordIsDefaultValue(record.password);
       let defaultPass, data, message;
-      const password = record.password;
       const trnx = { transaction: t };
       defaultPass = await this.generateDefaultPwd();
-      await password.update(
+      await record.password.update(
         { value: this.hashPassword(defaultPass), expiryDate: t24Hours },
         trnx
       );
@@ -108,30 +110,52 @@ export default class AuthService extends AppService {
     }
   };
 
-  findByEmail = function (email, recordType) {
+  findByEmail = async function (email, recordType) {
     const errorIfNotFound = `No ${recordType} found for the email ${email}`;
     if (recordType === 'user') {
-      return this.findUserByEmail(email, errorIfNotFound);
+      const staff = await this.findStaffByEmail(email, {
+        errorIfNotFound: `no staff exists with email: ${email}`,
+      });
+      const user = this.getUserInfoFromStaff(staff, {
+        errorIfNotFound: `The Staff member with email ${email} has not been registered as a user. Please register the staff first`,
+      });
+      return { ...user.dataValues, email };
     }
     if (recordType === 'hcp') {
-      return this.findHcpByEmailOrCode(email, errorIfNotFound);
+      return await this.findHcpByEmailOrCode(email, errorIfNotFound);
     }
   };
 
-  findUserByEmail = function (email, errorIfNotFound = INVALID_CREDENTIAL) {
+  findStaffByEmail = function (email, options) {
+    const { errorIfNotFound = INVALID_CREDENTIAL, errorCode } = options;
     return this.findOneRecord({
-      modelName: 'User',
+      modelName: 'Staff',
       where: { email: { [Op.iLike]: `${email}` } },
-      include: [
-        { model: db.Password, as: 'password' },
-        { model: db.Role, attributes: ['title'], as: 'role' },
-        { model: db.Staff, as: 'staffInfo' },
-      ],
+      include: {
+        model: db.User,
+        as: 'userInfo',
+        include: [
+          { model: db.Password, as: 'password' },
+          { model: db.Role, attributes: ['title'], as: 'role' },
+        ],
+      },
       isRequired: true,
       errorIfNotFound,
       status: 401,
-      errorCode: LGN001,
+      errorCode,
     });
+  };
+
+  getUserInfoFromStaff = (staff, options) => {
+    const { errorIfNotFound = INVALID_CREDENTIAL, errorCode } = options;
+    if (!staff.userInfo) {
+      throwError({
+        status: 401,
+        error: [errorIfNotFound],
+        errorCode,
+      });
+    }
+    return staff.userInfo;
   };
 
   findHcpByEmailOrCode = function (
@@ -167,17 +191,17 @@ export default class AuthService extends AppService {
       this.throwError({
         status: 401,
         error: [errorMsg],
-        errorCode: LGN002,
+        errorCode: LGN003,
       });
     }
   };
 
-  validateMustHaveDefaultPassword(record) {
-    if (record && !record.password.isDefaultValue) {
+  ensurePasswordIsDefaultValue(password) {
+    if (password && !password.isDefaultValue) {
       throwError({
         status: 401,
         error: [
-          'User has already changed their default password. They can change or reset your old password',
+          'User has already changed their default password. The system does not resend a default password after it has been changed. To get a new password, please use the password change or password reset feature',
         ],
       });
     }
