@@ -212,6 +212,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'hcpId',
       as: 'hcp',
     });
+    Enrollee.hasMany(models.ReferalCode, {
+      foreignKey: 'enrolleeId',
+      as: 'referalCodes',
+    });
   };
   Enrollee.createPrincipal = async function (enrolleeData) {
     const enrollee = await Enrollee.create(enrolleeData);
