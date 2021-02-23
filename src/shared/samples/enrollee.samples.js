@@ -99,13 +99,13 @@ function getPrincipal(index) {
 }
 
 function getSameSchemeDep(childIndex, { principal, principalIntegerId }) {
-  const variables = getVariableDependantFetutres(principal);
+  const variables = getVariableDependantFeatures(principal);
   const { relationshipToPrincipal: rtp } = variables;
   const dateOfBirth = rtp === 'child' ? date.past(30) : date.past(5);
   return {
     enrolleeIdNo: `${principal.enrolleeIdNo}-${childIndex + 1}`,
     ...getBaseFeatures(),
-    ...getVariableDependantFetutres(principal),
+    ...getVariableDependantFeatures(principal),
     surname: principal.surname,
     dependantClass: 'same-scheme-dependant',
     relationshipToPrincipal: rtp,
@@ -122,7 +122,7 @@ function getVcshipDep(childIndex, { principal, principalIntegerId }) {
   return {
     enrolleeIdNo: `${principal.enrolleeIdNo}-${childIndex + 1}`,
     ...getBaseFeatures(),
-    ...getVariableDependantFetutres(principal),
+    ...getVariableDependantFeatures(principal),
     surname: principal.surname,
     dependantClass: 'other-scheme-dependant',
     dateOfBirth: moment(date.past(20)).format('YYYY-MM-DD'),
@@ -155,7 +155,7 @@ function getBaseFeatures() {
   };
 }
 
-function getVariableDependantFetutres(principal) {
+function getVariableDependantFeatures(principal) {
   const rtp =
     principal.maritalStatus === 'married'
       ? random.arrayElement(['child', 'spouse'])
