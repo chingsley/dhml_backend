@@ -83,6 +83,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'hcpId',
       as: 'password',
     });
+    HealthCareProvider.hasMany(models.ReferalCode, {
+      foreignKey: 'destinationHcpId',
+      as: 'referalCodes',
+    });
   };
   HealthCareProvider.findOneWhere = async function (condition, options) {
     const {
