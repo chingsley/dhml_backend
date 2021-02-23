@@ -87,7 +87,7 @@ describe('EnrolleeController', () => {
 
     it('can enrol an afrship principal', async (done) => {
       try {
-        const res = await EnrolleeTest.enrol(afrshipPrincipal, token, {
+        const res = await EnrolleeApi.enrol(afrshipPrincipal, token, {
           withUploads: true,
         });
 
@@ -110,7 +110,7 @@ describe('EnrolleeController', () => {
     it('can enrol a dsship principal', async (done) => {
       try {
         const staff = await _StaffService.seedOne();
-        const res = await EnrolleeTest.enrol(
+        const res = await EnrolleeApi.enrol(
           { ...dsshipPrincipal, staffNumber: staff.staffIdNo },
           token
         );
@@ -131,7 +131,7 @@ describe('EnrolleeController', () => {
     });
     it('can enrol a vcship principal', async (done) => {
       try {
-        const res = await EnrolleeTest.enrol(vcshipPrincipal, token);
+        const res = await EnrolleeApi.enrol(vcshipPrincipal, token);
         res.status !== 201 && log(res.body);
         expect(res.status).toBe(201);
         expect(res.body).toHaveProperty('data');
@@ -152,7 +152,7 @@ describe('EnrolleeController', () => {
         const enrolleeIdNo = '1';
         const serviceNumbers = ['A/001/SP', 'A/002/SP'];
         for (let i = 0; i < 2; i++) {
-          const res = await EnrolleeTest.enrol(
+          const res = await EnrolleeApi.enrol(
             {
               ...specialPrincipal,
               enrolleeIdNo,
@@ -192,7 +192,7 @@ describe('EnrolleeController', () => {
         });
         const dependant = TestService.removeUnwantedFields(dependants[0]);
         for (let i = 0; i < 6; i++) {
-          const res = await EnrolleeTest.enrol(
+          const res = await EnrolleeApi.enrol(
             {
               ...dependant,
               enrolmentType: 'dependant',
@@ -231,7 +231,7 @@ describe('EnrolleeController', () => {
         });
         const dependant = TestService.removeUnwantedFields(dependants[0]);
         for (let i = 0; i < 6; i++) {
-          const res = await EnrolleeTest.enrol(
+          const res = await EnrolleeApi.enrol(
             {
               ...dependant,
               enrolmentType: 'dependant',
@@ -275,7 +275,7 @@ describe('EnrolleeController', () => {
         });
         const dependant = TestService.removeUnwantedFields(dependants[0]);
         for (let i = 0; i < 6; i++) {
-          const res = await EnrolleeTest.enrol(
+          const res = await EnrolleeApi.enrol(
             {
               ...dependant,
               enrolmentType: 'dependant',
@@ -361,7 +361,7 @@ describe('EnrolleeController', () => {
       try {
         const p1 = principal1;
         const changes = { firstName: 'New FirstName' };
-        const res = await EnrolleeTest.update(p1.id, changes, token);
+        const res = await EnrolleeApi.update(p1.id, changes, token);
         const { data } = res.body;
         expect(res.status).toBe(200);
         expect(data.firstName).toBe(changes.firstName);
@@ -375,7 +375,7 @@ describe('EnrolleeController', () => {
         const p1 = principal1;
         const p2 = principal2;
         const changes = { serviceNumber: p2.serviceNumber };
-        const res = await EnrolleeTest.update(p1.id, changes, token);
+        const res = await EnrolleeApi.update(p1.id, changes, token);
         expect(res.status).toBe(400);
         done();
       } catch (e) {
@@ -394,7 +394,7 @@ describe('EnrolleeController', () => {
             { id: d2.id, surname: newSurname },
           ],
         };
-        const res = await EnrolleeTest.update(p2.id, changes, token);
+        const res = await EnrolleeApi.update(p2.id, changes, token);
         const getByIds = EnrolleeTest.getEnrolleesByIdArray;
         const updatedDependants = await getByIds([d1.id, d2.id]);
         for (let { surname } of updatedDependants) {
@@ -450,7 +450,7 @@ describe('EnrolleeController', () => {
         ROLES.SUPERADMIN
       );
       token = data.token;
-      res = await EnrolleeTest.verifyPrincipal(principal.id, token);
+      res = await EnrolleeApi.verify(principal.id, token);
       verifiedPrincipal = await EnrolleeTest.findById(principal.id);
     });
 
@@ -545,7 +545,7 @@ describe('EnrolleeController', () => {
         ROLES.SUPERADMIN
       );
       token = data.token;
-      res = await EnrolleeTest.unverifyPrincipal(principal.id, token);
+      res = await EnrolleeApi.unverify(principal.id, token);
       unverifiedPrincipal = await EnrolleeTest.findById(principal.id);
     });
 
@@ -642,7 +642,7 @@ describe('EnrolleeController', () => {
 
     it('it returns status 200 and a success message', async (done) => {
       try {
-        const res = await EnrolleeTest.deleteEnrollee(principal1.id, token);
+        const res = await EnrolleeApi.delete(principal1.id, token);
         expect(res.status).toBe(200);
         expect(res.body).toHaveProperty('message');
         done();
@@ -652,7 +652,7 @@ describe('EnrolleeController', () => {
     });
     it('it deletes all of a principal"s dependant along with the principal', async (done) => {
       try {
-        await EnrolleeTest.deleteEnrollee(principal2.id, token);
+        await EnrolleeApi.delete(principal2.id, token);
         const depedants = await EnrolleeTest.getPrincipalDependants(
           principal2.id
         );
@@ -665,7 +665,7 @@ describe('EnrolleeController', () => {
     it('returns not found error if the enrolleeId is not founc', async (done) => {
       try {
         const nonExistingId = principal2.id * 5;
-        const res = await EnrolleeTest.deleteEnrollee(nonExistingId, token);
+        const res = await EnrolleeApi.delete(nonExistingId, token);
         expect(res.status).toBe(400);
         expect(res.body).toHaveProperty('errors');
         expect(res.body.errors[0]).toMatch(/no record found for/i);
@@ -834,6 +834,30 @@ describe('EnrolleeController', () => {
         const res = await EnrolleeApi.getAll(query, token);
         const { rows } = res.body.data;
         expect(rows[0].email).toEqual(subject.email);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('can search by enrolleeIdNo', async (done) => {
+      try {
+        const subject = seededPrincipals[0];
+        const query = `enrolleeIdNo=${subject.enrolleeIdNo}`;
+        const res = await EnrolleeApi.getAll(query, token);
+        const { rows } = res.body.data;
+        expect(rows[0].enrolleeIdNo).toEqual(subject.enrolleeIdNo);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('can search by serviceNumber', async (done) => {
+      try {
+        const subject = seededPrincipals[0];
+        const query = `serviceNumber=${subject.serviceNumber}`;
+        const res = await EnrolleeApi.getAll(query, token);
+        const { rows } = res.body.data;
+        expect(rows[0].serviceNumber).toEqual(subject.serviceNumber);
         done();
       } catch (e) {
         done(e);
