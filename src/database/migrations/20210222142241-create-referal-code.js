@@ -35,7 +35,7 @@ module.exports = {
           onDelete: 'RESTRICT',
           onUpdate: 'CASCADE',
         },
-        generatedBy: {
+        operatorId: {
           type: Sequelize.INTEGER,
           references: {
             model: 'Users',
@@ -56,7 +56,13 @@ module.exports = {
         clinicalFindings: {
           type: Sequelize.TEXT,
         },
-        specialistService: {
+        stateOfGeneration: {
+          type: Sequelize.STRING,
+        },
+        specialist: {
+          type: Sequelize.STRING,
+        },
+        specialistCode: {
           type: Sequelize.STRING,
         },
         isFlagged: {
