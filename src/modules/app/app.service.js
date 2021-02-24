@@ -35,12 +35,20 @@ export default class AppService {
     }
   }
 
-  async validateStaffId(staffId) {
+  // async validateStaffId(staffId) {
+  //   return await this.findOneRecord({
+  //     modelName: 'Staff',
+  //     where: { id: staffId },
+  //     isRequired: true,
+  //     errorIfNotFound: `Staff ID: ${staffId} not found`,
+  //   });
+  // }
+  async validateId(modelName, id) {
     return await this.findOneRecord({
-      modelName: 'Staff',
-      where: { id: staffId },
+      modelName,
+      where: { id },
       isRequired: true,
-      errorIfNotFound: `Staff ID: ${staffId} not found`,
+      errorIfNotFound: `No ${modelName} matches the id of ${id}`,
     });
   }
 
