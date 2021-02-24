@@ -48,8 +48,17 @@ module.exports = (sequelize, DataTypes) => {
       clinicalFindings: {
         type: DataTypes.TEXT,
       },
-      specialistService: {
+      stateOfGeneration: {
         type: DataTypes.STRING,
+        allowNull: false,
+      },
+      specialist: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      specialistCode: {
+        type: DataTypes.STRING,
+        allowNull: false,
       },
       isFlagged: {
         type: DataTypes.BOOLEAN,
