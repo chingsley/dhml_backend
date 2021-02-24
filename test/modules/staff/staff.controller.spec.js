@@ -237,7 +237,6 @@ describe('StaffController', () => {
               expect(staff[searchFiled]).toBe(searchValue);
             }
           }
-          expect(true).toBe(true);
         }
         done();
       } catch (e) {
@@ -245,7 +244,7 @@ describe('StaffController', () => {
       }
     });
     it(
-      'it catches errors thrown in the try block ',
+      'it catches errors thrown in the try block',
       TestService.testCatchBlock(StaffController.getAllStaff)
     );
   });

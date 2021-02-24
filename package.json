@@ -41,6 +41,7 @@
     "test:hcpController": "jest test/modules/hcp/hcp.controller.spec.js --detectOpenHandles --verbose --watch",
     "test:staffController": "jest test/modules/staff/staff.controller.spec.js --detectOpenHandles --verbose --watch",
     "test:roleController": "jest test/modules/role/role.controller.spec.js --detectOpenHandles --verbose --watch",
+    "test:refcodeMiddleware": "jest test/modules/refcode/refcode.middleware.spec.js --detectOpenHandles --verbose --watch",
     "temp": "jest test/modules/hcp/hcp.temp.spec.js --detectOpenHandles --verbose --watch"
   },
   "dependencies": {

@@ -5,9 +5,11 @@ module.exports = (sequelize, DataTypes) => {
     {
       code: {
         type: DataTypes.STRING,
+        unique: true,
       },
       proxyCode: {
         type: DataTypes.STRING,
+        unique: true,
       },
       enrolleeId: {
         type: DataTypes.INTEGER,

@@ -115,4 +115,6 @@ export const enrolleeQuerySchema = Joi.object({
   searchValue: Joi.string().trim(),
   searchItem: Joi.string().trim(),
   isVerified: Joi.string().trim().valid('true', 'false'),
+  serviceNumber: Joi.string().trim(),
+  enrolleeIdNo: Joi.string().trim(),
 });
