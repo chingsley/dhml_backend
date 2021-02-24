@@ -82,7 +82,7 @@ export default class EnrolleeService extends AppService {
     return await db.Enrollee.findAndCountAll({
       where: {
         ...this.searchRecordsBy(enrolleeSearchableFields),
-        ...this.exactMatch(['isVerified']),
+        ...this.exactMatch(['isVerified', 'enrolleeIdNo', 'serviceNumber']),
       },
       ...this.paginate(),
       order: orderBy,
