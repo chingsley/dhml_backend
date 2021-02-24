@@ -13,9 +13,11 @@ module.exports = {
         },
         code: {
           type: Sequelize.STRING,
+          unique: true,
         },
         proxyCode: {
           type: Sequelize.STRING,
+          unique: true,
         },
         enrolleeId: {
           type: Sequelize.INTEGER,
