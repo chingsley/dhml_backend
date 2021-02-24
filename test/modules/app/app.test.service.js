@@ -286,6 +286,31 @@ class TestService {
     return db.Enrollee.bulkCreate(enrollees);
   }
 
+  static seedAfrshipPrincipals(principals, hcp) {
+    return this.seedEnrollees(
+      principals.map((p, i) => {
+        return {
+          ...p,
+          hcpId: hcp.id,
+          serviceNumber: `SN/00${i}`,
+          staffNumber: undefined,
+        };
+      })
+    );
+  }
+
+  static seedDependants(dependants, seededDependantsPrincipals, hcp) {
+    const dependantsWithPrincipalId = dependants.reduce((acc, dep) => {
+      for (let { enrolleeIdNo, id } of seededDependantsPrincipals) {
+        if (dep.enrolleeIdNo.match(new RegExp(`${enrolleeIdNo}-`))) {
+          acc.push({ ...dep, principalId: id, hcpId: hcp.id });
+        }
+      }
+      return acc;
+    }, []);
+    return this.seedEnrollees(dependantsWithPrincipalId);
+  }
+
   static testCatchBlock = (method) => async (done) => {
     try {
       const req = undefined;

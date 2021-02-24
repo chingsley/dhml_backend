@@ -18,7 +18,8 @@ export default class UserService extends AppService {
     const t = await sequelize.transaction();
     try {
       const { staffId, roleId, returnPassword } = this.userData;
-      const staff = await this.validateStaffId(staffId);
+      // const staff = await this.validateStaffId(staffId);
+      const staff = await this.validateId('Staff', staffId);
       this.rejectStaffWithoutEmail(staff);
       await this.validateRoleId(roleId); // move to appService
       await this.checkUserUniqueViolations();
