@@ -6,7 +6,9 @@ const codeFactory = {
   async getReferalCode(enrollee, stateCode, specialistCode) {
     const date = moment().format('DDMMYY');
     const n = await this.getCodeSerialNo(specialistCode);
-    const serviceStatus = enrollee.serviceStatus === 'serving' ? 'S' : 'R'; // not concluded for dsship and dependants
+    // NOTE: computing the serviceStatus is not concluded;for dsship and dependants
+    // with serviceStatus null, how do we handle those? for now, they'll default to 'R'
+    const serviceStatus = enrollee.serviceStatus === 'serving' ? 'S' : 'R';
     return `${stateCode}/${date}/022/${specialistCode}-${n}/${serviceStatus}`;
   },
 
