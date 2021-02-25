@@ -15,4 +15,11 @@ router.post(
   RefcodeController.generateNewCode
 );
 
+router.get(
+  '/verify',
+  AuthMiddleware.authorize([SUPERADMIN]),
+  RefcodeMiddleware.validateQuery,
+  RefcodeController.verifyReferalCode
+);
+
 export default router;

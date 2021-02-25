@@ -1,11 +1,10 @@
+const { MAX_USER_COUNT } = require('../../shared/constants/seeders.constants');
 const getSampleStaffs = require('../../shared/samples/staff.samples');
 const getSampleUsers = require('../../shared/samples/user.samples');
 // const { downcaseAllFields } = require('../../utils/helpers');
 
 const { sampleStaffs } = getSampleStaffs();
-const { sampleUsers } = getSampleUsers(
-  sampleStaffs.slice(0, Math.floor(sampleStaffs.length / 2))
-);
+const { sampleUsers } = getSampleUsers(sampleStaffs.slice(0, MAX_USER_COUNT));
 
 module.exports = {
   // eslint-disable-next-line no-unused-vars

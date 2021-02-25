@@ -1,22 +1,98 @@
 const faker = require('faker');
+const { days, moment } = require('../../utils/timers');
+const { MAX_USER_COUNT } = require('../constants/seeders.constants');
 const {
   specialistCodes,
   stateCodes,
 } = require('../constants/statecodes.constants');
 
-function getSampleReferalCodes(count = 1) {
-  const refcodes = Array.from(Array(count).keys()).map((_, i) => ({
-    enrolleeId: i + 1,
-    destinationHcpId: i + 1,
+class SampleReferalCodes {
+  static chosenSpecialistCodes = [];
+
+  static getSeed(enrollees) {
+    const refcodes = Array.from(Array(enrollees.length).keys()).map((_, i) => {
+      const codeMetaData = this.getMetaData();
+      const operatorId =
+        faker.random.arrayElement(Array.from(Array(MAX_USER_COUNT).keys())) + 1;
+      return {
+        enrolleeId: i + 1,
+        destinationHcpId: this.getSecondaryHcpId(i),
+        operatorId,
+        ...codeMetaData,
+        ...this.generateSampleCode(enrollees[i], codeMetaData, i),
+      };
+    });
+
+    return refcodes;
+  }
+
+  /**
+   * enrollees are seededEnrollees with valid integer IDs
+   * secondaryHCPs are seeded secondary HCPs with valid integer IDs
+   */
+  static getTestSeed({ enrollees = [], secondaryHCPs = [], operatorId } = {}) {
+    const refcodes = Array.from(Array(enrollees.length).keys()).map((_, i) => {
+      const codeMetaData = this.getMetaData();
+      const secHcpLength = secondaryHCPs.length;
+      return {
+        enrolleeId: enrollees[i].id,
+        destinationHcpId: secondaryHCPs[i % secHcpLength].id,
+        operatorId,
+        ...codeMetaData,
+        ...this.generateSampleCode(enrollees[i], codeMetaData, i),
+      };
+    });
+
+    return refcodes;
+  }
+
+  static getTestPayloads(count = 1) {
+    return Array.from(Array(count).keys()).map(() => ({
+      ...this.getMetaData(),
+    }));
+  }
+
+  static generateSampleCode(enrollee, codeMetaData, i) {
+    const { stateOfGeneration, specialist } = codeMetaData;
+    const stateCode = stateCodes[stateOfGeneration];
+    const n = faker.random.arrayElement(Array.from(Array(120).keys()));
+    const day = moment(days.setPast(n)).format('DDMMYY');
+    const specialistCode = specialistCodes[specialist];
+    const count =
+      this.chosenSpecialistCodes.filter(
+        (record) =>
+          record.specialistCode === specialistCode && record.day === day
+      ).length + 1;
+    const { serviceStatus: svs } = enrollee;
+    const serviceStatus = svs ? (svs === 'serving' ? 'S' : 'R') : 'AD';
+    this.chosenSpecialistCodes.push({ specialistCode, day });
+    const code = `${stateCode}/${day}/022/${specialistCode}-${count}/${serviceStatus}`;
+    const proxyCode = `${day}-${i}`;
+    return { code, proxyCode, specialistCode };
+  }
+
+  /**
+   *
+   * @param {integer} i the index from getSampleReferCode function
+   * The secondary HCPs start at id 768, and the last hcp has id 1167 (check the db)
+   */
+  static getSecondaryHcpId(i) {
+    let result = (768 + i) % 1168;
+    if (result < 768) {
+      return this.getSecondaryHcpId(i + 1);
+    } else {
+      return result;
+    }
+  }
+
+  static getMetaData = () => ({
     reasonForReferral: faker.lorem.text(),
     diagnosis: faker.lorem.words(),
     diagnosisStatus: faker.random.arrayElement(['provisional', 'final']),
     clinicalFindings: faker.lorem.text(),
     specialist: faker.random.arrayElement(Object.keys(specialistCodes)),
     stateOfGeneration: faker.random.arrayElement(Object.keys(stateCodes)),
-  }));
-
-  return refcodes;
+  });
 }
 
-module.exports = getSampleReferalCodes;
+module.exports = SampleReferalCodes;
