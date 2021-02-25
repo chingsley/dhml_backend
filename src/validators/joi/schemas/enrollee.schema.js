@@ -117,4 +117,5 @@ export const enrolleeQuerySchema = Joi.object({
   isVerified: Joi.string().trim().valid('true', 'false'),
   serviceNumber: Joi.string().trim(),
   enrolleeIdNo: Joi.string().trim(),
+  referalCode: Joi.string().trim(),
 });

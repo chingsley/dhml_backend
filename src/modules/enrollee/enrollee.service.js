@@ -86,10 +86,12 @@ export default class EnrolleeService extends AppService {
       },
       ...this.paginate(),
       order: orderBy,
-      include: {
-        model: db.HealthCareProvider,
-        as: 'hcp',
-      },
+      include: [
+        {
+          model: db.HealthCareProvider,
+          as: 'hcp',
+        },
+      ],
     });
   }
 
