@@ -2,7 +2,7 @@ import Response from '../../../src/utils/Response';
 import { validateSchema } from '../../../src/validators/joi/config';
 import { getRefCodeSchema } from '../../../src/validators/joi/schemas/refcode.schema';
 
-export default class HcpMiddleware {
+export default class RefcodeMiddleware {
   static async validateNewRefcode(req, res, next) {
     try {
       const hcpSchema = getRefCodeSchema({ withRequiredFields: true });
