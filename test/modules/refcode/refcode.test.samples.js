@@ -1,6 +1,6 @@
 /* eslint-disable jest/expect-expect */
 import getEnrollees from '../../../src/shared/samples/enrollee.samples';
-import getSampleReferalCodes from '../../../src/shared/samples/refcode.samples';
+import SampleReferalCodes from '../../../src/shared/samples/refcode.samples';
 import TestService from '../app/app.test.service';
 import _HcpService from '../hcp/hcp.test.service';
 // const { log } = console;
@@ -27,7 +27,7 @@ export default class _RefcodeSamples {
 
     const payload = {
       data: {
-        ...getSampleReferalCodes(1)[0],
+        ...SampleReferalCodes.getTestPayloads(1)[0],
         enrolleeId: seededAfrshipPrincipals[0].id,
         destinationHcpId: secondaryHcps[0].id,
       },
