@@ -54,14 +54,6 @@ export default class AppService {
     }
   }
 
-  // async validateStaffId(staffId) {
-  //   return await this.findOneRecord({
-  //     modelName: 'Staff',
-  //     where: { id: staffId },
-  //     isRequired: true,
-  //     errorIfNotFound: `Staff ID: ${staffId} not found`,
-  //   });
-  // }
   async validateId(modelName, id) {
     return await this.findOneRecord({
       modelName,
@@ -182,11 +174,11 @@ export default class AppService {
     return filterObj;
   }
   exactMatch(arrOfFields, options = {}) {
-    const { map = {} } = options;
+    const { mapToColumn = {} } = options;
     const queryParams = this.query;
     const filterObj = arrOfFields.reduce((obj, key) => {
       if (queryParams[key]) {
-        const field = map[key] || key;
+        const field = mapToColumn[key] || key;
         const value = queryParams[key];
         return { ...obj, [field]: value };
       }
@@ -300,5 +292,11 @@ export default class AppService {
       html: passwordMsgTemplate(password),
       notificationType: 'password',
     });
+  }
+
+  get noTimeStamps() {
+    return {
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    };
   }
 }

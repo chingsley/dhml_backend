@@ -1,3 +1,4 @@
+import { Op } from 'sequelize';
 import AppService from '../app/app.service';
 import db from '../../database/models';
 import codeFactory from './refcode.factory';
@@ -26,12 +27,47 @@ export default class RefcodeService extends AppService {
     const stateCode = stateCodes[stateOfGeneration.toLowerCase()];
     const specialistCode = specialistCodes[specialist.toLowerCase()];
     const code = await this.getReferalCode(enrollee, stateCode, specialistCode);
-    return this.ReferalCodeModel.create({
+    const refcode = await this.ReferalCodeModel.create({
       ...this.body,
       code,
       proxyCode,
       operatorId,
       specialistCode,
+    });
+
+    await refcode.reloadAfterCreate();
+    return refcode;
+  }
+
+  async verifyRefcode() {
+    const { referalCode: code } = this.query;
+    return await this.findOneRecord({
+      modelName: 'ReferalCode',
+      where: { code },
+      include: [
+        {
+          model: db.HealthCareProvider,
+          as: 'destinationHcp',
+        },
+        {
+          model: db.Enrollee,
+          as: 'enrollee',
+          include: [
+            {
+              model: db.ReferalCode,
+              as: 'referalCodes',
+              where: { code: { [Op.not]: code } },
+              order: [['createdAt', 'DESC']],
+              limit: 5,
+            },
+            {
+              model: db.HealthCareProvider,
+              as: 'hcp',
+            },
+          ],
+        },
+      ],
+      errorIfNotFound: 'Invalid code. No record found.',
     });
   }
 }
