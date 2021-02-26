@@ -87,5 +87,45 @@ module.exports = (sequelize, DataTypes) => {
       as: 'generatedBy',
     });
   };
+  ReferalCode.prototype.reloadAfterCreate = async function () {
+    await this.reload({
+      include: [
+        {
+          model: this.sequelize.models.Enrollee,
+          as: 'enrollee',
+          attributes: [
+            'enrolleeIdNo',
+            'surname',
+            'firstName',
+            'middleName',
+            'serviceNumber',
+            'serviceStatus',
+            'staffNumber',
+            'scheme',
+          ],
+          include: {
+            model: this.sequelize.models.HealthCareProvider,
+            as: 'hcp',
+            attributes: ['id', 'code', 'name'],
+          },
+        },
+        {
+          model: this.sequelize.models.HealthCareProvider,
+          as: 'destinationHcp',
+          attributes: ['id', 'code', 'name'],
+        },
+        {
+          model: this.sequelize.models.User,
+          as: 'generatedBy',
+          attributes: ['id', 'username'],
+          include: {
+            model: this.sequelize.models.Staff,
+            as: 'staffInfo',
+            attributes: ['id', 'firstName', 'surname', 'staffIdNo'],
+          },
+        },
+      ],
+    });
+  };
   return ReferalCode;
 };

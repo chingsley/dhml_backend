@@ -6,7 +6,7 @@ import RefcodeApi from './refcode.test.api';
 import _RefcodeSamples from './refcode.test.samples';
 import RefcodeController from '../../../src/modules/refcode/refcode.controllers';
 import Jwt from '../../../src/utils/Jwt';
-// const { log } = console;
+import { VALID_REF_CODE } from '../../../src/validators/joi/schemas/refcode.schema';
 
 describe('RefcodeController', () => {
   let token, res, samplePayload;
@@ -45,7 +45,7 @@ describe('RefcodeController', () => {
   it('ensures the generated code matches the required format', async (done) => {
     try {
       const { data } = res.body;
-      expect(data.code).toMatch(/\w\w\/\d\d\d\d\d\d\/022\/(\d)*\w-\d\/\w/);
+      expect(data.code).toMatch(VALID_REF_CODE);
       done();
     } catch (e) {
       done(e);
@@ -79,11 +79,25 @@ describe('RefcodeController', () => {
       done(e);
     }
   });
+  it('returns associated models', async (done) => {
+    try {
+      const { data } = res.body;
+      expect(data).toHaveProperty('enrollee');
+      expect(data).toHaveProperty('destinationHcp');
+      expect(data).toHaveProperty('generatedBy');
+      expect(data.enrollee).toHaveProperty('hcp');
+      expect(data.generatedBy).toHaveProperty('staffInfo');
+      done();
+    } catch (e) {
+      done(e);
+    }
+  });
   it('creates multiple codes for the same enrollee', async (done) => {
     try {
       responses.forEach(({ res }, i) => {
         const { data } = res.body;
-        const matched = data.code.match(/\b(\d)*\w-\d\b/);
+        expect(data.code).toMatch(VALID_REF_CODE);
+        const matched = data.code.match(/\b(\d)*[A-Z]-(\d)*\b/);
         const codeSerialNumber = matched[0].split('-')[1];
         expect(Number(codeSerialNumber)).toEqual(i + 1);
       });
