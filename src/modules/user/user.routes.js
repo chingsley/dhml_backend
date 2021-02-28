@@ -26,10 +26,10 @@ router.patch(
   UserController.updateUser
 );
 router.delete(
-  '/:userId',
+  '/',
   AuthMiddleware.authorize([SUPERADMIN, ADMIN]),
-  AuthMiddleware.authorizeRoleAssignment([SUPERADMIN]),
-  UserController.deleteUser
+  UserMiddleware.validateUserIdArr,
+  UserController.deleteUsers
 );
 
 export default router;
