@@ -67,7 +67,7 @@ export default class RefcodeService extends AppService {
           ],
         },
       ],
-      errorIfNotFound: 'Invalid code. No record found.',
+      errorIfNotFound: 'Invalid code. No record found',
     });
   }
 }

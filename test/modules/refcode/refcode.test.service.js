@@ -3,10 +3,8 @@ import db from '../../../src/database/models';
 import TestService from '../app/app.test.service';
 
 class _RefcodeService extends TestService {
-  static HCP = db.HealthCareProvider;
-
-  static async countActive() {
-    return this.HCP.count({ where: { status: 'active' } });
+  static seedBulk(refcodes) {
+    return db.ReferalCode.bulkCreate(refcodes);
   }
 }
 
