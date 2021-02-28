@@ -29,14 +29,17 @@ class SampleReferalCodes {
   /**
    * enrollees are seededEnrollees with valid integer IDs
    * secondaryHCPs are seeded secondary HCPs with valid integer IDs
+   * operatorId userId of a seeded user, probable gotten
+   * from decoded token or seeded user
+   *
    */
-  static getTestSeed({ enrollees = [], secondaryHCPs = [], operatorId } = {}) {
+  static getTestSeed({ enrollees = [], secondaryHcps = [], operatorId } = {}) {
     const refcodes = Array.from(Array(enrollees.length).keys()).map((_, i) => {
       const codeMetaData = this.getMetaData();
-      const secHcpLength = secondaryHCPs.length;
+      const secHcpLength = secondaryHcps.length;
       return {
         enrolleeId: enrollees[i].id,
-        destinationHcpId: secondaryHCPs[i % secHcpLength].id,
+        destinationHcpId: secondaryHcps[i % secHcpLength].id,
         operatorId,
         ...codeMetaData,
         ...this.generateSampleCode(enrollees[i], codeMetaData, i),

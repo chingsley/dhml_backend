@@ -18,7 +18,7 @@ router.post(
 router.get(
   '/verify',
   AuthMiddleware.authorize([SUPERADMIN]),
-  RefcodeMiddleware.validateQuery,
+  RefcodeMiddleware.validateRefcode,
   RefcodeController.verifyReferalCode
 );
 

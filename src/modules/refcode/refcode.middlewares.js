@@ -20,7 +20,7 @@ export default class RefcodeMiddleware {
     }
   }
 
-  static async validateQuery(req, res, next) {
+  static async validateRefcode(req, res, next) {
     try {
       const { joiFormatted } = await validateSchema(
         codeVerificationSchema,
@@ -29,7 +29,7 @@ export default class RefcodeMiddleware {
       req.query = joiFormatted;
       return next();
     } catch (error) {
-      Response.handleError('validateQuery', error, req, res, next);
+      Response.handleError('validateRefcode', error, req, res, next);
     }
   }
 }
