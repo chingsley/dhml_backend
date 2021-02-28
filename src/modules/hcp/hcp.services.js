@@ -170,7 +170,9 @@ export default class HcpService extends AppService {
       this.query
     );
     const [total] = await this.executeQuery(getCapitationTotals, this.query);
-    return { count, rows: this.groupCapitationByState(rows), total };
+    const capitationByState = this.groupCapitationByState(rows);
+    // const
+    return { count, data: this.sumStatsPerState(capitationByState), total };
   }
 
   filterHcp() {
@@ -239,6 +241,23 @@ export default class HcpService extends AppService {
         acc[record.hcpState] = [record];
       }
       return acc;
+    }, {});
+  }
+
+  sumStatsPerState(obj) {
+    return Object.entries(obj).reduce((acc1, [state, capitations]) => {
+      acc1[state] = {
+        rows: capitations,
+        ...capitations.reduce(
+          (acc2, capitation) => {
+            acc2.totalAmount += Number(capitation.amount);
+            acc2.totalLives += Number(capitation.lives);
+            return acc2;
+          },
+          { totalAmount: 0, totalLives: 0 }
+        ),
+      };
+      return acc1;
     }, {});
   }
 }
