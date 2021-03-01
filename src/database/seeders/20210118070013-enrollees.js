@@ -3,7 +3,6 @@ const {
 } = require('../../shared/constants/seeders.constants');
 const getEnrollees = require('../../shared/samples/enrollee.samples');
 const SampleReferalCodes = require('../../shared/samples/refcode.samples');
-// const { downcaseAllFields } = require('../../utils/helpers');
 
 const { principals, dependants } = getEnrollees({
   numOfPrincipals: MAX_PRINCIPALS_COUNT,
@@ -25,9 +24,5 @@ module.exports = {
   down: async (queryInterface, Sequelize) => {
     await queryInterface.bulkDelete('ReferalCodes', null, {});
     await queryInterface.bulkDelete('Enrollees', null, {});
-    // return Promise.all([
-    //   queryInterface.bulkDelete('Enrollees', null, {}),
-    //   queryInterface.bulkDelete('Enrollees', null, {}),
-    // ]);
   },
 };
