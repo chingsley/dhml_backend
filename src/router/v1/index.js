@@ -6,6 +6,7 @@ import authRoutes from '../../modules/auth/auth.routes';
 import rolesRoutes from '../../modules/role/role.routes';
 import staffRoutes from '../../modules/staff/staff.routes';
 import hcpRoutes from '../../modules/hcp/hcp.routes';
+import refcodeRoutes from '../../modules/refcode/refcode.routes';
 
 const router = express.Router();
 
@@ -15,5 +16,6 @@ router.use('/enrollees', enrollmentRoutes);
 router.use('/roles', rolesRoutes);
 router.use('/staffs', staffRoutes);
 router.use('/hcp', hcpRoutes);
+router.use('/refcodes', refcodeRoutes);
 
 export default router;

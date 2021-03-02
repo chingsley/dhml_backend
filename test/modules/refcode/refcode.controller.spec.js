@@ -44,7 +44,6 @@ describe('RefcodeController', () => {
     });
     it('returns status 201 on successful code generation', async (done) => {
       try {
-        // log(res.body);
         expect(res.status).toBe(201);
         done();
       } catch (e) {
