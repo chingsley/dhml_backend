@@ -4,7 +4,7 @@ import { zeroPadding } from '../../utils/helpers';
 const db = require('../../database/models');
 const { Op } = require('sequelize');
 
-const {
+export const {
   Principal: principals,
   Spouse,
   Child1,
@@ -29,7 +29,7 @@ const {
   },
 });
 
-export const getProductionEnrollees = async () => {
+export const getProductionPrincipals = async () => {
   const hcps = await db.HealthCareProvider.findAll();
   const dictHcpId = hcps.reduce((acc, hcp) => {
     acc[hcp.code.toUpperCase()] = hcp.id;
@@ -93,13 +93,6 @@ export const getProductionDependants = async () => {
     acc[p.enrolleeIdNo] = p.surname;
     return acc;
   }, {});
-  console.log(
-    Spouse.length +
-      Child1.length +
-      Child2.length +
-      Child3.length +
-      Child4.length
-  );
 
   const { dependants } = [...Spouse, ...Child1, ...Child2, ...Child3, ...Child4]
     .filter((d) => {
