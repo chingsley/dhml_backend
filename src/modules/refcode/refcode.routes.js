@@ -21,5 +21,11 @@ router.get(
   RefcodeMiddleware.validateRefcode,
   RefcodeController.verifyReferalCode
 );
+router.patch(
+  '/:refcodeId',
+  AuthMiddleware.authorize([SUPERADMIN]),
+  RefcodeMiddleware.validateFlagStatus,
+  RefcodeController.changeFlagStatus
+);
 
 export default router;
