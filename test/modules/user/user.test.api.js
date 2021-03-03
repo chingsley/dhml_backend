@@ -20,8 +20,11 @@ class UserApi {
       .send(changes);
   }
 
-  static delete(userId, token) {
-    return app.delete(`/api/v1/users/${userId}`).set('authorization', token);
+  static delete(userIdArr, token) {
+    return app
+      .delete('/api/v1/users/')
+      .set('authorization', token)
+      .send({ userIds: userIdArr });
   }
 }
 

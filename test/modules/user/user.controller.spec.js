@@ -224,31 +224,34 @@ describe('UserController', () => {
       TestService.testCatchBlock(UserController.updateUser)
     );
   });
-  describe('deleteUser', () => {
-    let token, res, user1, stffs;
+  describe('deleteUsers', () => {
+    let token, res, user1, user2, stffs;
     beforeAll(async () => {
       await TestService.resetDB();
       await _RoleService.seedAllRoles();
-      const { sampleStaffs } = getSampleStaffs(2);
+      const COUNT_STAFF = 3;
+      const { sampleStaffs } = getSampleStaffs(COUNT_STAFF);
       stffs = sampleStaffs;
-      const seededStaff = await _StaffService.seedOne(stffs[1]);
+      const seededStaffs = await _StaffService.seedBulk(
+        stffs.slice(1, COUNT_STAFF)
+      );
       const role = await TestService.createRole(ROLES.BASIC);
-      const sampleUser = {
-        staffId: seededStaff.id,
-        email: seededStaff.email,
-        username: faker.internet.userName(seededStaff.firstName),
+      const sampleUsers = seededStaffs.map((staff) => ({
+        staffId: staff.id,
+        email: staff.email,
+        username: faker.internet.userName(staff.firstName),
         roleId: role.id,
-      };
-      user1 = await _UserService.seedOne(sampleUser);
+      }));
+      [user1, user2] = await _UserService.seedBulk(sampleUsers);
       const data = await TestService.getToken(stffs[0], ROLES.ADMIN);
       token = data.token;
-      res = await UserApi.delete(user1.id, token);
+      res = await UserApi.delete([user1.id, user2.id], token);
     });
     it('returns status 200 on successful update', async (done) => {
       try {
         const { message } = res.body;
         expect(res.status).toBe(200);
-        expect(message).toBe('user deleted');
+        expect(message).toBe('user(s) deleted');
         done();
       } catch (e) {
         done(e);
@@ -266,7 +269,7 @@ describe('UserController', () => {
     it('returns a "not found" error for an attempt to reuse the deleted userId', async (done) => {
       try {
         const changes = { email: 'notfound@gmail.com' };
-        const res = await UserApi.edit(user1.id, changes, token);
+        const res = await UserApi.edit(user2.id, changes, token);
         const { errors } = res.body;
         expect(errors[0]).toMatch(/invalid userId/i);
         done();
@@ -277,7 +280,7 @@ describe('UserController', () => {
     it('ensures only admin and superadmin can access the delete endpoint', async (done) => {
       try {
         const { token } = await TestService.getToken(stffs[0], ROLES.VERIFIER);
-        const res = await UserApi.delete(user1.id, token);
+        const res = await UserApi.delete([user1.id], token);
         const { errors, errorCode } = res.body;
         expect(res.status).toBe(401);
         expect(errorCode).toEqual('AUTH004');
@@ -289,7 +292,7 @@ describe('UserController', () => {
     });
     it(
       'it catches errors thrown in the try block ',
-      TestService.testCatchBlock(UserController.deleteUser)
+      TestService.testCatchBlock(UserController.deleteUsers)
     );
   });
 });

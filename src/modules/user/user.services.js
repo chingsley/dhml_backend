@@ -73,10 +73,8 @@ export default class UserService extends AppService {
   }
 
   async handleUserDelete() {
-    const { userId } = this.params;
-    const user = await this.findUserById(userId);
-    await user.destroy();
-    return user;
+    const { userIds } = this.body;
+    await db.User.destroy({ where: { id: userIds } });
   }
 
   async findUserById(userId) {

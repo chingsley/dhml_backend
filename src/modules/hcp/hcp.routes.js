@@ -18,8 +18,6 @@ const HOD_AND_HIGHER_ROLES = [
   roles.HOD_VHS,
 ];
 
-// console.log(HOD_AND_HIGHER_ROLES);
-
 const router = express.Router();
 
 router.post(

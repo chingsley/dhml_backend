@@ -41,7 +41,9 @@
     "test:hcpController": "jest test/modules/hcp/hcp.controller.spec.js --detectOpenHandles --verbose --watch",
     "test:staffController": "jest test/modules/staff/staff.controller.spec.js --detectOpenHandles --verbose --watch",
     "test:roleController": "jest test/modules/role/role.controller.spec.js --detectOpenHandles --verbose --watch",
-    "temp": "jest test/modules/hcp/hcp.temp.spec.js --detectOpenHandles --verbose --watch"
+    "temp": "jest test/modules/hcp/hcp.temp.spec.js --detectOpenHandles --verbose --watch",
+    "-------------------------": "-----------------------------",
+    "test:userMiddleware": "jest test/modules/user/user.middleware.spec.js --detectOpenHandles --verbose --watch"
   },
   "dependencies": {
     "@babel/cli": "^7.8.4",

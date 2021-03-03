@@ -42,16 +42,15 @@ export default class UserController {
     }
   }
 
-  static async deleteUser(req, res, next) {
+  static async deleteUsers(req, res, next) {
     try {
       const userService = new UserService(req);
-      const user = await userService.handleUserDelete();
+      await userService.handleUserDelete();
       return res.status(200).json({
-        message: 'user deleted',
-        data: user,
+        message: 'user(s) deleted',
       });
     } catch (error) {
-      Response.handleError('deleteUser', error, req, res, next);
+      Response.handleError('deleteUsers', error, req, res, next);
     }
   }
 }
