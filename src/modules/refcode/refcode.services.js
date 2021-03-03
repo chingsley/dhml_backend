@@ -70,6 +70,18 @@ export default class RefcodeService extends AppService {
       errorIfNotFound: 'Invalid code. No record found',
     });
   }
+
+  async setCodeFlagStatus() {
+    const { refcodeId } = this.params;
+    const { isFlagged } = this.body;
+    const refcode = await this.findOneRecord({
+      modelName: 'ReferalCode',
+      where: { id: refcodeId },
+      errorIfNotFound: `no referal code matches the id of ${refcodeId}`,
+    });
+    await refcode.update({ isFlagged });
+    return refcode;
+  }
 }
 
 Object.assign(RefcodeService.prototype, codeFactory);
