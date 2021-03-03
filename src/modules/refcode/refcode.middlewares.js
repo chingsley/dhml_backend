@@ -3,6 +3,7 @@ import { validateSchema } from '../../../src/validators/joi/config';
 import {
   getRefCodeSchema,
   codeVerificationSchema,
+  flagUpdateSchema,
 } from '../../../src/validators/joi/schemas/refcode.schema';
 
 export default class RefcodeMiddleware {
@@ -30,6 +31,18 @@ export default class RefcodeMiddleware {
       return next();
     } catch (error) {
       Response.handleError('validateRefcode', error, req, res, next);
+    }
+  }
+  static async validateFlagStatus(req, res, next) {
+    try {
+      const { joiFormatted } = await validateSchema(flagUpdateSchema, {
+        ...req.body,
+        ...req.params,
+      });
+      req.query = joiFormatted;
+      return next();
+    } catch (error) {
+      Response.handleError('validateFlagStatus', error, req, res, next);
     }
   }
 }
