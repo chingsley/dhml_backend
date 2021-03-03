@@ -22,6 +22,17 @@ export default class RefcodeController {
       Response.handleError('verifyReferalCode', error, req, res, next);
     }
   }
+  static async changeFlagStatus(req, res, next) {
+    try {
+      const refcodeService = new RefcodeService(req);
+      const data = await refcodeService.setCodeFlagStatus();
+      return res
+        .status(200)
+        .json({ message: 'referal code updated successfully', data });
+    } catch (error) {
+      Response.handleError('changeFlagStatus', error, req, res, next);
+    }
+  }
 }
 
 // reg. dep and dsship
