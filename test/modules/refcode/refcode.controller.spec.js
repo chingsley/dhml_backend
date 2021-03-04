@@ -230,14 +230,17 @@ describe('RefcodeController', () => {
     });
     it('successfully flags a referal code', async (done) => {
       try {
+        const flagReason = 'The reason for referal is not genuine';
+        const payload = { flag: true, flagReason };
         const res = await RefcodeApi.changeFlagStatus(
           refcode1.id,
-          { flag: true },
+          payload,
           token
         );
         const { data } = res.body;
         expect(res.status).toBe(200);
-        expect(data).toHaveProperty('isFlagged', true);
+        expect(data).toHaveProperty('isFlagged', payload.flag);
+        expect(data).toHaveProperty('flagReason', flagReason);
         done();
       } catch (e) {
         done(e);
@@ -247,14 +250,15 @@ describe('RefcodeController', () => {
       try {
         await refcode2.update({ isFlagged: true });
         expect(refcode2.isFlagged).toBe(true);
+        const payload = { flag: false };
         const res = await RefcodeApi.changeFlagStatus(
           refcode2.id,
-          { flag: false },
+          payload,
           token
         );
         await refcode2.reload();
         expect(res.status).toBe(200);
-        expect(refcode2.isFlagged).toBe(false);
+        expect(refcode2.isFlagged).toBe(payload.flag);
         done();
       } catch (e) {
         done(e);
@@ -280,6 +284,66 @@ describe('RefcodeController', () => {
     it(
       'it catches errors thrown in the try block',
       TestService.testCatchBlock(RefcodeController.changeFlagStatus)
+    );
+  });
+  describe('deleteRefcode', () => {
+    let token, res, refcode1, refcode2;
+
+    beforeAll(async () => {
+      await TestService.resetDB();
+      const { primaryHcps, secondaryHcps } = await _HcpService.seedHcps({
+        numPrimary: 1,
+        numSecondary: 3,
+      });
+      const { principals } = getEnrollees({ numOfPrincipals: 1 });
+      const [seededPrincipal] = await TestService.seedEnrollees(
+        principals.map((p) => ({ ...p, hcpId: primaryHcps[0].id }))
+      );
+      const { sampleStaffs } = getSampleStaffs(1);
+      const data = await TestService.getToken(
+        sampleStaffs[0],
+        ROLES.SUPERADMIN
+      );
+      token = data.token;
+      const { userId } = Jwt.decode(token);
+      const refcodes = SampleReferalCodes.getTestSeed({
+        enrollees: [seededPrincipal].repreatElement(2),
+        secondaryHcps,
+        operatorId: userId,
+      });
+      [refcode1, refcode2] = await _RefcodeService.seedBulk(refcodes);
+      const payload = { refcodeIds: [refcode1.id, refcode2.id] };
+      res = await RefcodeApi.deleteRefcode(payload, token);
+    });
+    it('returns status 200 on successful delete', async (done) => {
+      try {
+        expect(res.status).toBe(200);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns "not found" error for an attempted operation on a deleted refcodeId', async (done) => {
+      try {
+        const payload = { flag: false };
+        const refcodeId = refcode1.id;
+        const res = await RefcodeApi.changeFlagStatus(
+          refcodeId,
+          payload,
+          token
+        );
+        const { errors } = res.body;
+        const expectedError = `no referal code matches the id of ${refcodeId}`;
+        expect(res.status).toBe(400);
+        expect(errors[0]).toEqual(expectedError);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it(
+      'it catches errors thrown in the try block',
+      TestService.testCatchBlock(RefcodeController.deleteRefcode)
     );
   });
 });
