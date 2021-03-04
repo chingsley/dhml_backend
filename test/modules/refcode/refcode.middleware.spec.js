@@ -116,4 +116,37 @@ describe('RefcodeMiddleware', () => {
       TestService.testCatchBlock(RefcodeMiddleware.validateFlagStatus)
     );
   });
+  describe('validateRefcodeIdArr', () => {
+    let token;
+
+    beforeAll(async () => {
+      await TestService.resetDB();
+      const { sampleStaffs } = getSampleStaffs(1);
+      const data = await TestService.getToken(
+        sampleStaffs[0],
+        ROLES.SUPERADMIN
+      );
+      token = data.token;
+    });
+    it('returns status 200 on successful delete', async (done) => {
+      try {
+        const invalidPayloads = [
+          { refcodeIds: ['1a'] }, // non-integer
+          { refcodeIds: [-1] }, // negetive value
+          { refcodeIds: [1, 1] }, // duplicate values
+        ];
+        for (let payload of invalidPayloads) {
+          const res = await RefcodeApi.deleteRefcode(payload, token);
+          expect(res.status).toBe(400);
+        }
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it(
+      'it catches errors thrown in the try block',
+      TestService.testCatchBlock(RefcodeMiddleware.validateRefcodeIdArr)
+    );
+  });
 });
