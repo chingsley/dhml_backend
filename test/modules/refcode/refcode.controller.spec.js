@@ -201,4 +201,85 @@ describe('RefcodeController', () => {
       TestService.testCatchBlock(RefcodeController.verifyReferalCode)
     );
   });
+  describe('changeFlagStatus (flag/approve referal code)', () => {
+    let token, refcode1, refcode2;
+
+    beforeAll(async () => {
+      await TestService.resetDB();
+      const { primaryHcps, secondaryHcps } = await _HcpService.seedHcps({
+        numPrimary: 1,
+        numSecondary: 3,
+      });
+      const { principals } = getEnrollees({ numOfPrincipals: 1 });
+      const [seededPrincipal] = await TestService.seedEnrollees(
+        principals.map((p) => ({ ...p, hcpId: primaryHcps[0].id }))
+      );
+      const { sampleStaffs } = getSampleStaffs(1);
+      const data = await TestService.getToken(
+        sampleStaffs[0],
+        ROLES.SUPERADMIN
+      );
+      token = data.token;
+      const { userId } = Jwt.decode(token);
+      const refcodes = SampleReferalCodes.getTestSeed({
+        enrollees: [seededPrincipal].repreatElement(2),
+        secondaryHcps,
+        operatorId: userId,
+      });
+      [refcode1, refcode2] = await _RefcodeService.seedBulk(refcodes);
+    });
+    it('successfully flags a referal code', async (done) => {
+      try {
+        const res = await RefcodeApi.changeFlagStatus(
+          refcode1.id,
+          { flag: true },
+          token
+        );
+        const { data } = res.body;
+        expect(res.status).toBe(200);
+        expect(data).toHaveProperty('isFlagged', true);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('successfully approves a flagged code', async (done) => {
+      try {
+        await refcode2.update({ isFlagged: true });
+        expect(refcode2.isFlagged).toBe(true);
+        const res = await RefcodeApi.changeFlagStatus(
+          refcode2.id,
+          { flag: false },
+          token
+        );
+        await refcode2.reload();
+        expect(res.status).toBe(200);
+        expect(refcode2.isFlagged).toBe(false);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns 400 error for a non-exsisting refcodeId', async (done) => {
+      try {
+        const invalidId = refcode2.id * 5;
+        const res = await RefcodeApi.changeFlagStatus(
+          invalidId,
+          { flag: false },
+          token
+        );
+        const { errors } = res.body;
+        const expectedError = `no referal code matches the id of ${invalidId}`;
+        expect(res.status).toBe(400);
+        expect(errors[0]).toEqual(expectedError);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it(
+      'it catches errors thrown in the try block',
+      TestService.testCatchBlock(RefcodeController.changeFlagStatus)
+    );
+  });
 });
