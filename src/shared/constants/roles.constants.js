@@ -10,5 +10,6 @@ module.exports = {
   HOD_STORES: 'hod stores',
   HOD_ACCOUNT: 'hod account',
   BASIC: 'basic',
+  MD: 'md',
   HCP: 'hcp',
 };

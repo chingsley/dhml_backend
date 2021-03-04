@@ -8,3 +8,11 @@ export const getUserSchema = ({ withRequiredFields = true }) => {
     returnPassword: Joi.number().valid(0, 1).default(0),
   });
 };
+
+export const schemaUserIdArr = Joi.object({
+  userIds: Joi.array()
+    .items(Joi.number().integer().min(1))
+    .min(1)
+    .unique()
+    .required(),
+});
