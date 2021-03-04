@@ -73,14 +73,19 @@ export default class RefcodeService extends AppService {
 
   async setCodeFlagStatus() {
     const { refcodeId } = this.params;
-    const { flag } = this.body;
+    const { flag, flagReason } = this.body;
     const refcode = await this.findOneRecord({
       modelName: 'ReferalCode',
       where: { id: refcodeId },
       errorIfNotFound: `no referal code matches the id of ${refcodeId}`,
     });
-    await refcode.update({ isFlagged: flag });
+    await refcode.update({ isFlagged: flag, flagReason });
     return refcode;
+  }
+
+  async handleCodeDelete() {
+    const { refcodeIds } = this.body;
+    await db.ReferalCode.destroy({ where: { id: refcodeIds } });
   }
 }
 

@@ -22,6 +22,12 @@ class RefcodeApi {
       .send(payload)
       .set('authorization', token);
   }
+  static deleteRefcode(payload, token) {
+    return app
+      .delete('/api/v1/refcodes')
+      .send(payload)
+      .set('authorization', token);
+  }
 }
 
 export default RefcodeApi;
