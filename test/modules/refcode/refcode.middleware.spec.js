@@ -68,4 +68,52 @@ describe('RefcodeMiddleware', () => {
       TestService.testCatchBlock(RefcodeMiddleware.validateRefcode)
     );
   });
+  describe('validateFlagStatus', () => {
+    let token;
+
+    beforeAll(async () => {
+      const { sampleStaffs } = getSampleStaffs(1);
+      const data = await TestService.getToken(
+        sampleStaffs[0],
+        ROLES.SUPERADMIN
+      );
+      token = data.token;
+    });
+    it('returns 400 error for invalid refcodeId', async (done) => {
+      try {
+        const invalidIds = ['5a', -1];
+        for (let invalidId of invalidIds) {
+          const res = await RefcodeApi.changeFlagStatus(
+            invalidId,
+            { flag: false },
+            token
+          );
+          expect(res.status).toBe(400);
+        }
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('validates the payload', async (done) => {
+      try {
+        const invalidPayloads = [
+          { flag: 'not-boolean' },
+          { flag: 2 },
+          { notFlag: true },
+        ];
+        for (let payload of invalidPayloads) {
+          const res = await RefcodeApi.changeFlagStatus(1, payload, token);
+          expect(res.status).toBe(400);
+        }
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it(
+      'it catches errors thrown in the try block',
+      TestService.testCatchBlock(RefcodeMiddleware.validateFlagStatus)
+    );
+  });
 });

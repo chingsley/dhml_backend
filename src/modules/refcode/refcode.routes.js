@@ -22,7 +22,7 @@ router.get(
   RefcodeController.verifyReferalCode
 );
 router.patch(
-  '/:refcodeId',
+  '/:refcodeId/flag',
   AuthMiddleware.authorize([SUPERADMIN]),
   RefcodeMiddleware.validateFlagStatus,
   RefcodeController.changeFlagStatus
