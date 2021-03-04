@@ -37,6 +37,6 @@ export const codeVerificationSchema = Joi.object({
 });
 
 export const flagUpdateSchema = Joi.object({
-  isFlagged: Joi.bool().valid(true, false).required(),
+  flag: Joi.bool().valid(true, false).required(),
   refcodeId: Joi.number().integer().min(1).required(),
 });
