@@ -16,6 +16,12 @@ class RefcodeApi {
       .get(`/api/v1/refcodes/verify?referalCode=${code}`)
       .set('authorization', token);
   }
+  static changeFlagStatus(refcodeId, payload, token) {
+    return app
+      .patch(`/api/v1/refcodes/${refcodeId}/flag`)
+      .send(payload)
+      .set('authorization', token);
+  }
 }
 
 export default RefcodeApi;
