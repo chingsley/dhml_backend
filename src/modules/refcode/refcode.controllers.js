@@ -33,10 +33,13 @@ export default class RefcodeController {
       Response.handleError('changeFlagStatus', error, req, res, next);
     }
   }
+  static async deleteRefcode(req, res, next) {
+    try {
+      const refcodeService = new RefcodeService(req);
+      await refcodeService.handleCodeDelete();
+      return res.status(200).json({ message: 'deleted' });
+    } catch (error) {
+      Response.handleError('deleteRefcode', error, req, res, next);
+    }
+  }
 }
-
-// reg. dep and dsship
-// another layer of approval before fff goes to account
-// remarks when editing claims
-// code lifespan
-// used once and expires after lifespan like recharge card, after 4 months, the code becomes stale
