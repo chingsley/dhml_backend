@@ -1,6 +1,9 @@
 import Response from '../../utils/Response';
-import { validateSchema, Joi } from '../../validators/joi/config';
-import { getUserSchema } from '../../validators/joi/schemas/user.schema';
+import { validateSchema } from '../../validators/joi/config';
+import {
+  getUserSchema,
+  schemaUserIdArr,
+} from '../../validators/joi/schemas/user.schema';
 
 export default class UserMiddleware {
   static async validateNewUser(req, res, next) {
@@ -26,14 +29,7 @@ export default class UserMiddleware {
 
   static validateUserIdArr = async (req, res, next) => {
     try {
-      const schema = Joi.object({
-        userIds: Joi.array()
-          .items(Joi.number().integer())
-          .min(1)
-          .unique()
-          .required(),
-      });
-      const { joiFormatted } = await validateSchema(schema, req.body);
+      const { joiFormatted } = await validateSchema(schemaUserIdArr, req.body);
       req.body = joiFormatted;
       return next();
     } catch (error) {

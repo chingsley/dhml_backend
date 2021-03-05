@@ -38,5 +38,14 @@ export const codeVerificationSchema = Joi.object({
 
 export const flagUpdateSchema = Joi.object({
   flag: Joi.bool().valid(true, false).required(),
+  flagReason: Joi.string().trim().lowercase(),
   refcodeId: Joi.number().integer().min(1).required(),
+});
+
+export const schemaRefcodeIdArr = Joi.object({
+  refcodeIds: Joi.array()
+    .items(Joi.number().integer().min(1))
+    .min(1)
+    .unique()
+    .required(),
 });
