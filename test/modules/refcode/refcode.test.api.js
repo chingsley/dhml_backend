@@ -28,6 +28,10 @@ class RefcodeApi {
       .send(payload)
       .set('authorization', token);
   }
+
+  static getReferalCodes(query = '', token) {
+    return app.get(`/api/v1/refcodes?${query}`).set('authorization', token);
+  }
 }
 
 export default RefcodeApi;

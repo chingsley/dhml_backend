@@ -11,6 +11,8 @@ import _HcpService from '../hcp/hcp.test.service';
 import getEnrollees from '../../../src/shared/samples/enrollee.samples';
 import SampleReferalCodes from '../../../src/shared/samples/refcode.samples';
 import _RefcodeService from './refcode.test.service';
+import { refcodeSearchableFields } from '../../../src/shared/attributes/refcode.attributes';
+import { getRandomInt } from '../../../src/utils/helpers';
 require('../../../src/prototypes/array.extensions').extendArray();
 
 describe('RefcodeController', () => {
@@ -344,6 +346,143 @@ describe('RefcodeController', () => {
     it(
       'it catches errors thrown in the try block',
       TestService.testCatchBlock(RefcodeController.deleteRefcode)
+    );
+  });
+  describe('getReferalCodes', () => {
+    let token, seededRefcodes, res;
+
+    beforeAll(async () => {
+      await TestService.resetDB();
+      const { primaryHcps, secondaryHcps } = await _HcpService.seedHcps({
+        numPrimary: 2,
+        numSecondary: 3,
+      });
+      const { sampleStaffs } = getSampleStaffs(5);
+      await TestService.seedStaffs(sampleStaffs);
+      const { principals, dependants } = getEnrollees({
+        numOfPrincipals: 5,
+        sameSchemeDepPerPrincipal: 2,
+        vcshipDepPerPrincipal: 2,
+      });
+      const preparedPrincipals = principals.map((p, i) => {
+        if (p.scheme.toUpperCase() === 'DSSHIP') {
+          p.staffNumber = sampleStaffs[i].staffIdNo;
+        }
+        return { ...p, hcpId: primaryHcps[0].id };
+      });
+      const seededPrincipals = await TestService.seedEnrollees(
+        preparedPrincipals
+      );
+      const depsWithPrincipalId = dependants.map((d) => {
+        for (let p of seededPrincipals) {
+          const regexPrincipalEnrolleeIdNo = new RegExp(`${p.enrolleeIdNo}-`);
+          if (d.enrolleeIdNo.match(regexPrincipalEnrolleeIdNo)) {
+            return {
+              ...d,
+              principalId: p.id,
+              hcpId: p.hcpId,
+            };
+          }
+        }
+      });
+      const seededDeps = await TestService.seedEnrollees(depsWithPrincipalId);
+
+      const data = await TestService.getToken(
+        sampleStaffs[0],
+        ROLES.SUPERADMIN
+      );
+      token = data.token;
+      const { userId } = Jwt.decode(token);
+      const refcodes = SampleReferalCodes.getTestSeed({
+        enrollees: [...seededPrincipals, ...seededDeps],
+        secondaryHcps,
+        operatorId: userId,
+      });
+      seededRefcodes = await _RefcodeService.seedBulk(refcodes);
+      res = await RefcodeApi.getReferalCodes('', token);
+    });
+    it('returns status 200 on successful fetch', async (done) => {
+      try {
+        const { data } = res.body;
+        expect(res.status).toBe(200);
+        expect(data.count).toBe(seededRefcodes.length);
+        expect(data.rows).toHaveLength(seededRefcodes.length);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns the destinationHcp and the enrollee associated to each code', async (done) => {
+      try {
+        const { data } = res.body;
+        for (let refcode of data.rows) {
+          expect(refcode.destinationHcpId).toEqual(refcode.destinationHcp.id);
+          expect(refcode.enrolleeId).toEqual(refcode.enrollee.id);
+        }
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('can paginate the response', async (done) => {
+      try {
+        const pageSize = 5;
+        const pages = [0, 1, 2, 3, 4];
+        let fetchedCodes = [];
+        for (let page of pages) {
+          const res = await RefcodeApi.getReferalCodes(
+            `pageSize=${pageSize}&page=${page}`,
+            token
+          );
+          const { data } = res.body;
+          expect(res.status).toBe(200);
+          expect(data.count).toBe(seededRefcodes.length);
+          expect(data.rows).toHaveLength(pageSize);
+          for (let { id } of data.rows) {
+            expect(fetchedCodes.includes(id)).toBe(false);
+          }
+          fetchedCodes = [
+            ...fetchedCodes,
+            ...data.rows.map((refcode) => refcode.code),
+          ];
+        }
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('can filter the fields', async (done) => {
+      try {
+        const { log } = console;
+        await _RefcodeService.flag(
+          seededRefcodes.slice(0, Math.floor(seededRefcodes.length / 2))
+        );
+        const attributes = refcodeSearchableFields.map((field) => field.name);
+        for (let field of attributes) {
+          const searchField = field;
+          const searchValue =
+            seededRefcodes[getRandomInt(seededRefcodes.length - 1, { min: 0 })][
+              field
+            ];
+          const res = await RefcodeApi.getReferalCodes(
+            `searchField=${searchField}&searchValue=${searchValue}`,
+            token
+          );
+          const { data } = res.body;
+          res.status !== 200 && log(res.body);
+          expect(res.status).toBe(200);
+          for (let refcode of data.rows) {
+            expect(refcode[field]).toBe(searchValue);
+          }
+        }
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it(
+      'it catches errors thrown in the try block',
+      TestService.testCatchBlock(RefcodeController.getReferalCodes)
     );
   });
 });
