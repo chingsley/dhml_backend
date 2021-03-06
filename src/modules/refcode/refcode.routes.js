@@ -29,6 +29,17 @@ router.post(
   RefcodeMiddleware.validateNewRefcode,
   RefcodeController.generateNewCode
 );
+router.get(
+  '/',
+  AuthMiddleware.authorize([
+    ...ADMIN_AND_HIGHER,
+    HOD_MEDICAL,
+    VERIFIER,
+    ENROLMENT_OFFICER,
+  ]),
+  RefcodeMiddleware.validateRefcodeQuery,
+  RefcodeController.getReferalCodes
+);
 
 router.get(
   '/verify',
