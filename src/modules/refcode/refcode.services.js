@@ -6,6 +6,7 @@ import {
   stateCodes,
   specialistCodes,
 } from '../../shared/constants/statecodes.constants';
+import { refcodeSearchableFields } from '../../shared/attributes/refcode.attributes';
 
 export default class RefcodeService extends AppService {
   constructor({ body, files, query, params, user: operator }) {
@@ -86,6 +87,26 @@ export default class RefcodeService extends AppService {
   async handleCodeDelete() {
     const { refcodeIds } = this.body;
     await db.ReferalCode.destroy({ where: { id: refcodeIds } });
+  }
+
+  async getRefcodes() {
+    return await db.ReferalCode.findAndCountAll({
+      where: {
+        ...this.searchRecordsBy(refcodeSearchableFields),
+        ...this.exactMatch(['isFlagged']),
+      },
+      ...this.paginate(this.query),
+      include: [
+        {
+          model: db.HealthCareProvider,
+          as: 'destinationHcp',
+        },
+        {
+          model: db.Enrollee,
+          as: 'enrollee',
+        },
+      ],
+    });
   }
 }
 
