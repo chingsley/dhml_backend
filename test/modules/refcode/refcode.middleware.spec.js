@@ -38,7 +38,7 @@ describe('RefcodeMiddleware', () => {
       TestService.testCatchBlock(RefcodeMiddleware.validateNewRefcode)
     );
   });
-  describe('validateQuery', () => {
+  describe('validateRefcode', () => {
     let token;
 
     beforeAll(async () => {
@@ -147,6 +147,56 @@ describe('RefcodeMiddleware', () => {
     it(
       'it catches errors thrown in the try block',
       TestService.testCatchBlock(RefcodeMiddleware.validateRefcodeIdArr)
+    );
+  });
+  describe('validateRefcodeQuery', () => {
+    let token;
+
+    beforeAll(async () => {
+      await TestService.resetDB();
+      const { sampleStaffs } = getSampleStaffs(1);
+      const data = await TestService.getToken(
+        sampleStaffs[0],
+        ROLES.SUPERADMIN
+      );
+      token = data.token;
+    });
+    it('returns error with status 400 for invalid referal code', async (done) => {
+      try {
+        const invalidQueries = [
+          { query: 'id=stringValue', expectedError: '"id" must be a number' },
+          {
+            query: 'page=-1',
+            expectedError: '"page" must be larger than or equal to 0',
+          },
+          {
+            query: 'pageSize=-0',
+            expectedError: '"pageSize" must be larger than or equal to 1',
+          },
+          {
+            query: 'searchField=code&searchValue=1234',
+            expectedError:
+              'Invalid referal code. Please check the code and try again',
+          },
+          {
+            query: 'isFlagged=notBollean',
+            expectedError: '"isFlagged" must be one of [true, false]',
+          },
+        ];
+        for (let { query, expectedError } of invalidQueries) {
+          const res = await RefcodeApi.getReferalCodes(query, token);
+          const { errors } = res.body;
+          expect(res.status).toBe(400);
+          expect(errors[0]).toEqual(expectedError);
+        }
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it(
+      'it catches errors thrown in the try block',
+      TestService.testCatchBlock(RefcodeMiddleware.validateRefcodeQuery)
     );
   });
 });
