@@ -427,7 +427,7 @@ describe('RefcodeController', () => {
     it('can paginate the response', async (done) => {
       try {
         const pageSize = 5;
-        const pages = [0, 1, 2, 3, 4];
+        const pages = Array.from(Array(seededRefcodes.length).keys());
         let fetchedCodes = [];
         for (let page of pages) {
           const res = await RefcodeApi.getReferalCodes(
@@ -437,7 +437,7 @@ describe('RefcodeController', () => {
           const { data } = res.body;
           expect(res.status).toBe(200);
           expect(data.count).toBe(seededRefcodes.length);
-          expect(data.rows).toHaveLength(pageSize);
+          expect(data.rows.length).toBeLessThanOrEqual(pageSize);
           for (let { id } of data.rows) {
             expect(fetchedCodes.includes(id)).toBe(false);
           }
