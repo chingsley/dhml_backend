@@ -89,7 +89,10 @@ export default class AuthService extends AppService {
       const password = record.password;
       const trnx = { transaction: t };
       defaultPass = await this.generateDefaultPwd();
-      await password.update({ value: this.hashPassword(defaultPass) }, trnx);
+      await password.update(
+        { value: this.hashPassword(defaultPass), expiryDate: t24Hours },
+        trnx
+      );
       if (returnPassword) {
         data = { password: defaultPass };
         message = 'Successful';
