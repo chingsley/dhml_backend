@@ -1,4 +1,5 @@
 import { days } from '../../utils/timers';
+import { getPaginationParameters } from './helpers.scripts';
 
 // eslint-disable-next-line no-unused-vars
 export const getManifestWihoutZeroStats = (dialect, dbName, reqQuery = {}) => {
@@ -169,13 +170,6 @@ export const getCapitationTotals = (dialect, dbName, reqQuery = {}) => {
   const query = { postgres: query1, mysql: query2 };
   return query[dialect];
 };
-
-function getPaginationParameters(reqQuery = {}) {
-  const { page, pageSize } = reqQuery;
-  const limit = Number(pageSize) || null;
-  const offset = Number(page * pageSize) || 0;
-  return { limit, offset };
-}
 
 function getCapitationFilters(reqQuery) {
   const { limit, offset } = getPaginationParameters(reqQuery);

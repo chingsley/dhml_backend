@@ -51,19 +51,8 @@ export const schemaRefcodeIdArr = Joi.object({
 });
 
 export const refcodeQuerySchema = Joi.object({
-  id: Joi.number().integer().min(1),
   page: Joi.number().integer().min(0),
   pageSize: Joi.number().integer().min(1),
-  searchField: Joi.string().trim(),
-  searchValue: Joi.when('searchField', {
-    is: 'code',
-    then: Joi.string()
-      .regex(VALID_REF_CODE)
-      .error(
-        new Error('Invalid referal code. Please check the code and try again')
-      ),
-    otherwise: Joi.string().trim(),
-  }),
   searchItem: Joi.string().trim(),
   isFlagged: Joi.bool().valid(true, false),
 });
