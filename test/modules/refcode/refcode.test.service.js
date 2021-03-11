@@ -18,6 +18,16 @@ class _RefcodeService extends TestService {
   static approve(seededRefcodes) {
     return this.bulkUpdate(seededRefcodes, { isFlagged: false });
   }
+
+  static async reload(seededRefcode) {
+    await seededRefcode.reload({
+      include: [
+        { model: db.Enrollee, as: 'enrollee' },
+        { model: db.HealthCareProvider, as: 'destinationHcp' },
+      ],
+    });
+    return seededRefcode;
+  }
 }
 
 export default _RefcodeService;

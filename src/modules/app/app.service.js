@@ -207,8 +207,9 @@ export default class AppService {
       };
     }
     const { log } = console;
-    process.env.NODE_ENV === 'development' &&
+    !/(test|production)/.test(process.env.NODE_ENV) &&
       log('searchRecordsBy ===> ', conditions);
+
     return conditions;
   };
 

@@ -11,8 +11,6 @@ import _HcpService from '../hcp/hcp.test.service';
 import getEnrollees from '../../../src/shared/samples/enrollee.samples';
 import SampleReferalCodes from '../../../src/shared/samples/refcode.samples';
 import _RefcodeService from './refcode.test.service';
-import { refcodeSearchableFields } from '../../../src/shared/attributes/refcode.attributes';
-import { getRandomInt } from '../../../src/utils/helpers';
 require('../../../src/prototypes/array.extensions').extendArray();
 
 describe('RefcodeController', () => {
@@ -416,8 +414,8 @@ describe('RefcodeController', () => {
       try {
         const { data } = res.body;
         for (let refcode of data.rows) {
-          expect(refcode.destinationHcpId).toEqual(refcode.destinationHcp.id);
-          expect(refcode.enrolleeId).toEqual(refcode.enrollee.id);
+          expect(refcode.destinationHcpId).toBeTruthy();
+          expect(refcode.enrolleeId).toBeTruthy();
         }
         done();
       } catch (e) {
@@ -451,28 +449,43 @@ describe('RefcodeController', () => {
         done(e);
       }
     });
-    it('can filter the fields', async (done) => {
+    it('can search the records', async (done) => {
       try {
-        const { log } = console;
-        await _RefcodeService.flag(
-          seededRefcodes.slice(0, Math.floor(seededRefcodes.length / 2))
-        );
-        const attributes = refcodeSearchableFields.map((field) => field.name);
-        for (let field of attributes) {
-          const searchField = field;
-          const searchValue =
-            seededRefcodes[getRandomInt(seededRefcodes.length - 1, { min: 0 })][
-              field
-            ];
+        const subject = await _RefcodeService.reload(seededRefcodes[0]);
+        const searchParams = {
+          code: subject.code,
+          enrolleeFirstName: subject.enrollee.firstName,
+          enrolleeSurname: subject.enrollee.surname,
+          enrolleeScheme: subject.enrollee.scheme,
+          enrolleeIdNo: subject.enrollee.enrolleeIdNo,
+        };
+        for (let value of Object.values(searchParams)) {
           const res = await RefcodeApi.getReferalCodes(
-            `searchField=${searchField}&searchValue=${searchValue}`,
+            `searchItem=${value}`,
             token
           );
           const { data } = res.body;
-          res.status !== 200 && log(res.body);
-          expect(res.status).toBe(200);
-          for (let refcode of data.rows) {
-            expect(refcode[field]).toBe(searchValue);
+          expect(data.rows.length).toBeGreaterThanOrEqual(1);
+        }
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('can filter the record by "isFlagged" status', async (done) => {
+      try {
+        await _RefcodeService.flag(
+          seededRefcodes.slice(0, Math.floor(seededRefcodes.length / 2))
+        );
+        const searchParams = [true, false];
+        for (let searchItem of searchParams) {
+          const res = await RefcodeApi.getReferalCodes(
+            `isFlagged=${searchItem}`,
+            token
+          );
+          const { data } = res.body;
+          for (let row of data.rows) {
+            expect(row.isFlagged).toBe(searchItem);
           }
         }
         done();
