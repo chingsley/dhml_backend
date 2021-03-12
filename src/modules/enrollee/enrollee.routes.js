@@ -39,6 +39,7 @@ router.get(
   AppMiddleware.validateIdParams,
   EnrolleeController.getByEnrolleeId
 );
+
 router.patch(
   '/:enrolleeId',
   AuthMiddleware.authorize([SUPERADMIN, ADMIN, VERIFIER]),
@@ -60,7 +61,7 @@ router.patch(
 );
 router.delete(
   '/:enrolleeId',
-  AuthMiddleware.authorize([SUPERADMIN]),
+  AuthMiddleware.authorize([SUPERADMIN, ADMIN]),
   AppMiddleware.validateIdParams,
   EnrolleeController.deleteEnrollee
 );
