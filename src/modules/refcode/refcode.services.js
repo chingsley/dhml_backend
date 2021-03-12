@@ -7,6 +7,7 @@ import {
   specialistCodes,
 } from '../../shared/constants/statecodes.constants';
 import { fetchAllRefcodes } from '../../database/scripts/refcode.scripts';
+import { refcodeSearchableFields } from '../../shared/attributes/refcode.attributes';
 
 export default class RefcodeService extends AppService {
   constructor({ body, files, query, params, user: operator }) {
@@ -90,24 +91,6 @@ export default class RefcodeService extends AppService {
   }
 
   async getRefcodes() {
-    // return await db.ReferalCode.findAndCountAll({
-    //   where: {
-    //     ...this.searchRecordsBy(refcodeSearchableFields),
-    //     ...this.exactMatch(['isFlagged']),
-    //   },
-    //   ...this.paginate(this.query),
-    //   include: [
-    //     {
-    //       model: db.HealthCareProvider,
-    //       as: 'destinationHcp',
-    //     },
-    //     {
-    //       model: db.Enrollee,
-    //       as: 'enrollee',
-    //     },
-    //   ],
-    // });
-
     const nonPaginatedRows = await this.executeQuery(fetchAllRefcodes, {
       ...this.query,
       pageSize: undefined,
@@ -116,6 +99,31 @@ export default class RefcodeService extends AppService {
     const count = nonPaginatedRows.length;
     const rows = await this.executeQuery(fetchAllRefcodes, this.query);
     return { count, rows };
+  }
+
+  async fetchEnrolleeCodeHistory() {
+    const { enrolleeIdNo } = this.query;
+    const enrollee = await this.findOneRecord({
+      modelName: 'Enrollee',
+      where: { enrolleeIdNo },
+      errorIfNotFound: `no Enrollee matches the ID No. ${enrolleeIdNo}`,
+    });
+    const refcodeHistory = await db.ReferalCode.findAndCountAll({
+      where: {
+        enrolleeId: enrollee.id,
+        ...this.searchRecordsBy(refcodeSearchableFields),
+      },
+      ...this.paginate(),
+      include: [
+        {
+          model: db.HealthCareProvider,
+          as: 'destinationHcp',
+          attributes: ['name', 'code'],
+        },
+      ],
+    });
+    refcodeHistory.enrollee = enrollee;
+    return refcodeHistory;
   }
 }
 
