@@ -164,7 +164,6 @@ describe('RefcodeMiddleware', () => {
     it('returns error with status 400 for invalid referal code', async (done) => {
       try {
         const invalidQueries = [
-          { query: 'id=stringValue', expectedError: '"id" must be a number' },
           {
             query: 'page=-1',
             expectedError: '"page" must be larger than or equal to 0',
@@ -172,11 +171,6 @@ describe('RefcodeMiddleware', () => {
           {
             query: 'pageSize=-0',
             expectedError: '"pageSize" must be larger than or equal to 1',
-          },
-          {
-            query: 'searchField=code&searchValue=1234',
-            expectedError:
-              'Invalid referal code. Please check the code and try again',
           },
           {
             query: 'isFlagged=notBollean',
