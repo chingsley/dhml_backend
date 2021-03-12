@@ -56,3 +56,11 @@ export const refcodeQuerySchema = Joi.object({
   searchItem: Joi.string().trim(),
   isFlagged: Joi.bool().valid(true, false),
 });
+
+export const schemaEnrolleeIdNo = Joi.object({
+  enrolleeIdNo: Joi.string().trim().required(),
+  page: Joi.number().integer().min(0),
+  pageSize: Joi.number().integer().min(1),
+  searchField: Joi.string().trim(),
+  searchValue: Joi.string().trim(),
+});
