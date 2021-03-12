@@ -52,6 +52,13 @@ router.get(
   RefcodeMiddleware.validateRefcode,
   RefcodeController.verifyReferalCode
 );
+
+router.get(
+  '/history',
+  AuthMiddleware.authorize([SUPERADMIN, ADMIN, ENROLMENT_OFFICER, VERIFIER]),
+  RefcodeMiddleware.validateFetchCodeHistory,
+  RefcodeController.getEnrolleeCodeHistory
+);
 router.patch(
   '/:refcodeId/flag',
   AuthMiddleware.authorize([
