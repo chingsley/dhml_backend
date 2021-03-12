@@ -6,6 +6,7 @@ import {
   flagUpdateSchema,
   schemaRefcodeIdArr,
   refcodeQuerySchema,
+  schemaEnrolleeIdNo,
 } from '../../../src/validators/joi/schemas/refcode.schema';
 
 export default class RefcodeMiddleware {
@@ -69,6 +70,18 @@ export default class RefcodeMiddleware {
       return next();
     } catch (error) {
       Response.handleError('validateRefcodeQuery', error, req, res, next);
+    }
+  }
+  static async validateFetchCodeHistory(req, res, next) {
+    try {
+      const { joiFormatted } = await validateSchema(
+        schemaEnrolleeIdNo,
+        req.query
+      );
+      req.query = joiFormatted;
+      return next();
+    } catch (error) {
+      Response.handleError('validateFetchCodeHistory', error, req, res, next);
     }
   }
 }
