@@ -498,4 +498,124 @@ describe('RefcodeController', () => {
       TestService.testCatchBlock(RefcodeController.getReferalCodes)
     );
   });
+  describe('getEnrolleeCodeHistory', () => {
+    let token, res1, res2;
+    const numOfCodesForPrincipal1 = 6;
+    const numOfCodesForPrincipal2 = 1;
+    let [seededPrincipal1, seededPrincipal2] = [];
+
+    beforeAll(async () => {
+      await TestService.resetDB();
+      const { primaryHcps, secondaryHcps } = await _HcpService.seedHcps({
+        numPrimary: 1,
+        numSecondary: 3,
+      });
+      const { principals } = getEnrollees({ numOfPrincipals: 2 });
+      [seededPrincipal1, seededPrincipal2] = await TestService.seedEnrollees(
+        principals.map((p, i) => ({
+          ...p,
+          hcpId: primaryHcps[0].id,
+          staffNumber: null,
+          serviceNumber: `SN/100${i}`,
+        }))
+      );
+      const { sampleStaffs } = getSampleStaffs(1);
+      const data = await TestService.getToken(
+        sampleStaffs[0],
+        ROLES.SUPERADMIN
+      );
+      token = data.token;
+      const { userId } = Jwt.decode(token);
+      const refcodes = SampleReferalCodes.getTestSeed({
+        enrollees: [
+          ...[seededPrincipal1].repreatElement(numOfCodesForPrincipal1),
+          seededPrincipal2,
+        ],
+        secondaryHcps,
+        operatorId: userId,
+      });
+      await _RefcodeService.seedBulk(refcodes);
+      const promises = [seededPrincipal1, seededPrincipal2].map((principal) =>
+        RefcodeApi.getEnrolleeCodeHistory(
+          `enrolleeIdNo=${principal.enrolleeIdNo}`,
+          token
+        )
+      );
+      [res1, res2] = await Promise.all(promises);
+    });
+    it('returns status 200 on successfull response', async (done) => {
+      try {
+        expect(res1.status).toBe(200);
+        expect(res2.status).toBe(200);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns all the codes generated for each principal1', async (done) => {
+      try {
+        const { data } = res1.body;
+        expect(data.count).toEqual(numOfCodesForPrincipal1);
+        expect(data.rows).toHaveLength(numOfCodesForPrincipal1);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns all the codes generated for each principal2', async (done) => {
+      try {
+        const { data } = res2.body;
+        expect(data.count).toEqual(numOfCodesForPrincipal2);
+        expect(data.rows).toHaveLength(numOfCodesForPrincipal2);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns the details of the subject enrollee', async (done) => {
+      try {
+        const { data: data1 } = res1.body;
+        const { data: data2 } = res2.body;
+        expect(data1.enrollee.id).toEqual(seededPrincipal1.id);
+        expect(data2.enrollee.id).toEqual(seededPrincipal2.id);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns details of the user that generated the code', async (done) => {
+      try {
+        const { userId } = Jwt.decode(token);
+        const refcodes = [...res1.body.data.rows, ...res2.body.data.rows];
+        for (let refcode of refcodes) {
+          expect(refcode.generatedBy).toHaveProperty('id', userId);
+          expect(refcode.generatedBy).toHaveProperty('staffInfo');
+        }
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns error 400 if the enrolleeIdNo is not found', async (done) => {
+      try {
+        const nonExistingId = '111111';
+        const res = await RefcodeApi.getEnrolleeCodeHistory(
+          `enrolleeIdNo=${nonExistingId}`,
+          token
+        );
+        expect(res.status).toBe(400);
+        const { errors } = res.body;
+        expect(errors[0]).toEqual(
+          `no Enrollee matches the ID No. ${nonExistingId}`
+        );
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it(
+      'it catches errors thrown in the try block',
+      TestService.testCatchBlock(RefcodeController.getEnrolleeCodeHistory)
+    );
+  });
 });

@@ -32,6 +32,12 @@ class RefcodeApi {
   static getReferalCodes(query = '', token) {
     return app.get(`/api/v1/refcodes?${query}`).set('authorization', token);
   }
+
+  static getEnrolleeCodeHistory(query, token) {
+    return app
+      .get(`/api/v1/refcodes/history?${query}`)
+      .set('authorization', token);
+  }
 }
 
 export default RefcodeApi;
