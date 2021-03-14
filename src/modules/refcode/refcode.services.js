@@ -120,6 +120,23 @@ export default class RefcodeService extends AppService {
           as: 'destinationHcp',
           attributes: ['name', 'code'],
         },
+        {
+          model: db.User,
+          as: 'generatedBy',
+          attributes: ['id', 'staffId', 'username'],
+          include: {
+            model: db.Staff,
+            as: 'staffInfo',
+            attributes: [
+              'id',
+              'staffIdNo',
+              'email',
+              'surname',
+              'firstName',
+              'middleName',
+            ],
+          },
+        },
       ],
     });
     refcodeHistory.enrollee = enrollee;

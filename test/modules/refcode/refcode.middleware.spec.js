@@ -193,4 +193,56 @@ describe('RefcodeMiddleware', () => {
       TestService.testCatchBlock(RefcodeMiddleware.validateRefcodeQuery)
     );
   });
+  describe('getEnrolleeCodeHistory', () => {
+    let token;
+
+    beforeAll(async () => {
+      await TestService.resetDB();
+      const { sampleStaffs } = getSampleStaffs(1);
+      const data = await TestService.getToken(
+        sampleStaffs[0],
+        ROLES.SUPERADMIN
+      );
+      token = data.token;
+    });
+    it('returns status 400 for missing query', async (done) => {
+      try {
+        const res = await RefcodeApi.getEnrolleeCodeHistory('', token);
+        expect(res.status).toBe(400);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns status 400 for missing query with enrolleeIdNo', async (done) => {
+      try {
+        const res = await RefcodeApi.getEnrolleeCodeHistory(
+          'not_enrolleeIdNo=123456',
+          token
+        );
+        expect(res.status).toBe(400);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns status 400 for non-string enrolleeIdNo', async (done) => {
+      try {
+        const invalidFormat = { enrolleeIdNo: 123456 };
+        const res = await RefcodeApi.getEnrolleeCodeHistory(
+          `enrolleeIdNo=${invalidFormat}`,
+          token
+        );
+        expect(res.status).toBe(400);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+
+    it(
+      'it catches errors thrown in the try block',
+      TestService.testCatchBlock(RefcodeMiddleware.validateFetchCodeHistory)
+    );
+  });
 });
