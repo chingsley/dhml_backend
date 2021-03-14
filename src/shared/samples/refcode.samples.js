@@ -1,6 +1,7 @@
 const faker = require('faker');
 const { days, moment } = require('../../utils/timers');
 const { MAX_USER_COUNT } = require('../constants/seeders.constants');
+const db = require('../../database/models');
 const {
   specialistCodes,
   stateCodes,
@@ -9,17 +10,18 @@ const {
 class SampleReferalCodes {
   static chosenSpecialistCodes = [];
 
-  static getSeed(enrollees) {
-    const refcodes = Array.from(Array(enrollees.length).keys()).map((_, i) => {
+  static async getSeed() {
+    const seededEnrollees = await db.Enrollee.findAll();
+    const refcodes = seededEnrollees.map((enrollee, i) => {
       const codeMetaData = this.getMetaData();
       const operatorId =
         faker.random.arrayElement(Array.from(Array(MAX_USER_COUNT).keys())) + 1;
       return {
-        enrolleeId: i + 1,
+        enrolleeId: enrollee.id,
         destinationHcpId: this.getSecondaryHcpId(i),
         operatorId,
         ...codeMetaData,
-        ...this.generateSampleCode(enrollees[i], codeMetaData, i),
+        ...this.generateSampleCode(enrollee, codeMetaData, i),
       };
     });
 
