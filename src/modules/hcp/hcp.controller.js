@@ -59,7 +59,7 @@ export default class HcpController {
       return await downloadFile(
         res,
         data.rows,
-        `manifest_${moment(new Date()).format('YYYY_MM_DD_HH_MM')}.xlsx`
+        `manifest_${moment(new Date()).format('YYYY_MM_DD_HH_MM')}.pdf`
       );
     } catch (error) {
       Response.handleError('downloadHcpManifest', error, req, res, next);

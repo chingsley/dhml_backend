@@ -90,6 +90,7 @@
     "nodemailer": "^6.4.11",
     "passport-jwt": "^4.0.0",
     "paymentsdk": "^1.0.2",
+    "pdfmake": "^0.1.70",
     "pg": "^8.5.1",
     "pg-hstore": "^2.3.3",
     "randomatic": "^3.1.1",
