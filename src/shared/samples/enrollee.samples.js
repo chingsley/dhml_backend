@@ -1,5 +1,5 @@
 import { moment, days, months } from '../../utils/timers';
-import { ranks } from '../constants/ranks.constants';
+import { RANKS } from '../constants/ranks.constants';
 import {
   MAX_PRINCIPALS_COUNT,
   MAX_STAFF_COUNT,
@@ -61,7 +61,7 @@ function getPrincipal(index) {
   const isMillitary = i % 2 === 0;
   const isStaff = !isMillitary;
   const armOfService = isMillitary
-    ? random.arrayElement(['army', 'navy', 'airforce'])
+    ? random.arrayElement(['army', 'navy', 'air force'])
     : null;
   const gender = random.arrayElement(['male', 'female']);
   const title = gender === 'female' ? 'Mrs' : 'Mr';
@@ -81,7 +81,7 @@ function getPrincipal(index) {
     hcpId: getRandomInt(100, { min: 1 }),
     scheme: random.arrayElement(['DSSHIP', 'VCSHIP', 'AFRSHIP']),
     surname: name.lastName(),
-    rank: isMillitary ? random.arrayElement(ranks) : null,
+    rank: isMillitary ? random.arrayElement(RANKS) : null,
     serviceNumber: i % 2 === 0 ? `SN/${zeroPadding(j)}` : null,
     staffNumber: i % 2 !== 0 ? staffIdNos[i] : null,
     title: title,

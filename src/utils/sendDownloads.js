@@ -3,6 +3,7 @@ const generatePdf = require('./templates/generatePdf');
 const { log } = console;
 
 const delete_file = (path) =>
+  // eslint-disable-next-line no-unused-vars
   new Promise((res, rej) => {
     fs.unlink(path, (err) => {
       if (err) {
@@ -14,6 +15,7 @@ const delete_file = (path) =>
   });
 
 const makeTempDir = () =>
+  // eslint-disable-next-line no-unused-vars
   new Promise((res, rej) => {
     const folderName = '.temp_doc';
     if (!fs.existsSync(folderName)) {
@@ -28,18 +30,16 @@ const makeTempDir = () =>
 
 const downloadFile = async (res, data, documentName) => {
   await makeTempDir();
-  console.log('>>>>>>', generatePdf);
   const file_path = await generatePdf(data, documentName);
   return res.download(file_path, documentName, (err) => {
     if (err) {
-      console.log('error.......', err);
       return res.status(500).json({
         errors: [
           'Failed to download document, please try again shortly; or contact the technical support team if the error persists',
         ],
       });
     }
-    // delete_file(file_path);
+    delete_file(file_path);
   });
 };
 export default downloadFile;

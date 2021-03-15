@@ -47,3 +47,5 @@ export const banks = [
   'First Monument bank',
   'Fidelity bank',
 ];
+
+export const ARMED_FORCES = ['army', 'navy', 'air force'];

@@ -8,6 +8,11 @@ import { zeroPadding, getAvailableIds } from '../../utils/helpers';
 import { getReservedPrincipalIDs } from '../../database/scripts/enrollee.scripts';
 import AppService from '../app/app.service';
 import { enrolleeSearchableFields } from '../../shared/attributes/enrollee.attributes';
+import enrolleeValidators from './enrollee.validators';
+import {
+  AFRSHIP_PRINCIPAL,
+  DSSHIP_PRINCIPAL,
+} from '../../shared/constants/enrollee.constants';
 
 export default class EnrolleeService extends AppService {
   constructor({ body, files, query, params }) {
@@ -36,11 +41,49 @@ export default class EnrolleeService extends AppService {
       enrolleeData.enrolleeIdNo = await db.Enrollee.generateNewPrincipalIdNo();
     }
     const uploadedImages = files ? await Cloudinary.bulkUpload(files) : {};
-    const enrollee = await db.Enrollee.createPrincipal({
+    const enrollee = this.saveRecord({
       ...enrolleeData,
       ...uploadedImages,
     });
     return enrollee;
+  }
+
+  async saveRecord(enrolleeRecord) {
+    const t = await db.sequelize.transaction();
+    try {
+      const enrollee = await db.Enrollee.create(enrolleeRecord, {
+        transaction: t,
+      });
+      await this.validateEnrolleeKeyParams(enrollee);
+      await t.commit();
+      await enrollee.reloadDetails();
+      return enrollee;
+    } catch (error) {
+      // console.log('here....8', error);
+      await t.rollback();
+      throw error;
+    }
+  }
+
+  async validateEnrolleeKeyParams(enrollee) {
+    // console.log('here.....1.', this);
+    // const dict = {
+    //   [AFRSHIP_PRINCIPAL]: this.validateAfshipPrincipal,
+    //   [DSSHIP_PRINCIPAL]: this.validateDsshipPrincipal,
+    //   [AFRSHIP_DEPENDANT]: this.validateDependant,
+    //   [DSSHIP_DEPENDANT]: this.validateDependant,
+    //   [ADDITIONAL_DEPENDANT]: this.validateDependant,
+    // };
+    if (enrollee.type === AFRSHIP_PRINCIPAL) {
+      // console.log('********* 1');
+      return await this.validateAfshipPrincipal(enrollee);
+    } else if (enrollee.type === DSSHIP_PRINCIPAL) {
+      // console.log('********* 2');
+      return await this.validateDsshipPrincipal(enrollee);
+    } else {
+      // console.log('********* 3');
+      return await this.validateDependant(enrollee);
+    }
   }
 
   async enrolDependant() {
@@ -125,6 +168,7 @@ export default class EnrolleeService extends AppService {
       resourceId: this.params.enrolleeId,
     });
     const enrollee = await this.findWithReqParams();
+
     let dependantIds = [];
     if (dependants?.length > 0) {
       dependantIds = dependants.map((d) => d.id);
@@ -265,3 +309,5 @@ export default class EnrolleeService extends AppService {
     return allowed;
   }
 }
+
+Object.assign(EnrolleeService.prototype, enrolleeValidators);

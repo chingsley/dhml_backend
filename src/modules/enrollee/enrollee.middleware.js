@@ -9,14 +9,14 @@ import {
 export default class EnrolleeMiddleware {
   static async validateNewEnrollee(req, res, next) {
     try {
-      const { joiFormatted } = await validateSchema(newEnrolleeSchema, {
-        ...req.body,
-        // ...req.files,
-      });
+      const { joiFormatted } = await validateSchema(
+        newEnrolleeSchema(req.body.enrolmentType),
+        req.body
+      );
       req.body = joiFormatted;
       return next();
     } catch (error) {
-      Response.handleError('validateNewEnrollee', error, req, res, next);
+      return Response.handleError('validateNewEnrollee', error, req, res, next);
     }
   }
   static async validateEnrolleeUpdate(req, res, next) {
