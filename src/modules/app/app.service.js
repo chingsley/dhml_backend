@@ -17,13 +17,25 @@ export default class AppService {
 
   async validateUnique(
     fields,
-    { model, reqBody, resourceId = undefined, resourceType }
+    {
+      model,
+      reqBody,
+      resourceId = undefined,
+      resourceType,
+      nonStringDataTypes = [],
+    }
   ) {
     for (let field of fields) {
       const value = reqBody[field];
+      let condition;
+      if (nonStringDataTypes.includes(field)) {
+        condition = { [field]: value };
+      } else {
+        condition = { [field]: { [Op.iLike]: value } };
+      }
       if (value) {
         const found = await model.findOne({
-          where: { [field]: value },
+          where: condition,
         });
         if (found && found.id !== resourceId) {
           throwError({
@@ -97,7 +109,7 @@ export default class AppService {
   async ensureValidStaffNumber(staffIdNo) {
     if (staffIdNo) {
       await this.findOneRecord({
-        where: { staffIdNo },
+        where: { staffIdNo: { [Op.iLike]: staffIdNo } },
         modelName: 'Staff',
         errorIfNotFound: `Invalid staffIdNo, no record found for ID ${staffIdNo}`,
         include: {

@@ -95,6 +95,7 @@ export default class UserService extends AppService {
 
   async checkUniqueViolations(userId) {
     await this.validateUnique(['email', 'staffId'], {
+      nonStringDataTypes: ['staffId'],
       resourceType: 'User',
       model: db.User,
       reqBody: this.userData,
