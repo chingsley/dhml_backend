@@ -85,16 +85,20 @@ describe('EnrolleeController', () => {
       token = data.token;
     });
 
-    it('can enrol an afrship principal', async (done) => {
+    it('can enrol an afrship principal while detecting unique violation of service number', async (done) => {
       try {
-        const res = await EnrolleeTest.enrol(afrshipPrincipal, token, {
-          withUploads: true,
-        });
+        const responses = [];
+        for (let i = 0; i < 2; i++) {
+          responses[i] = await EnrolleeTest.enrol(afrshipPrincipal, token, {
+            withUploads: true,
+          });
+        }
+        const [res1, res2] = responses;
 
-        res.status !== 201 && log(res.body);
-        expect(res.status).toBe(201);
-        expect(res.body).toHaveProperty('data');
-        const { data } = res.body;
+        res1.status !== 201 && log(res1.body);
+        expect(res1.status).toBe(201);
+        expect(res1.body).toHaveProperty('data');
+        const { data } = res1.body;
         expect(data).toEqual(
           expect.objectContaining({
             enrolleeIdNo: zeroPadding(231),
@@ -102,27 +106,48 @@ describe('EnrolleeController', () => {
             scheme: afrshipPrincipal.scheme,
           })
         );
+
+        const { errors } = res2.body;
+        const { serviceNumber } = afrshipPrincipal;
+        expect(res2.status).toBe(400);
+        expect(errors[0]).toMatch(
+          new RegExp(`${serviceNumber} already exists`, 'i')
+        );
         done();
       } catch (e) {
         done(e);
       }
     });
-    it('can enrol a dsship principal', async (done) => {
+    it('can enrol a dsship principal while detecting unique violations of staffNumber irrespective of case', async (done) => {
       try {
         const staff = await _StaffService.seedOne();
-        const res = await EnrolleeTest.enrol(
-          { ...dsshipPrincipal, staffNumber: staff.staffIdNo },
-          token
-        );
-        res.status !== 201 && log(res.body);
-        expect(res.status).toBe(201);
-        expect(res.body).toHaveProperty('data');
-        const { data } = res.body;
+        const responses = [];
+        for (let i = 0; i < 2; i++) {
+          if (i > 0) {
+            staff.staffIdNo = staff.staffIdNo.toLowerCase();
+          }
+          responses[i] = await EnrolleeTest.enrol(
+            { ...dsshipPrincipal, staffNumber: staff.staffIdNo },
+            token
+          );
+        }
+        const [res1, res2] = responses;
+
+        res1.status !== 201 && log(res1.body);
+        expect(res1.status).toBe(201);
+        expect(res1.body).toHaveProperty('data');
+        const { data } = res1.body;
         expect(data).toEqual(
           expect.objectContaining({
             isPrincipal: true,
             scheme: dsshipPrincipal.scheme,
           })
+        );
+
+        expect(res2.status).toBe(400);
+        const { errors } = res2.body;
+        expect(errors[0]).toMatch(
+          new RegExp(`${staff.staffIdNo} already exists`, 'i')
         );
         done();
       } catch (e) {

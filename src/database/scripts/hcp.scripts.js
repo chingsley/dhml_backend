@@ -1,4 +1,5 @@
 import { days } from '../../utils/timers';
+import { CONTROL_HCPs } from './helpers.scripts';
 
 // eslint-disable-next-line no-unused-vars
 export const getManifestWihoutZeroStats = (dialect, dbName, reqQuery = {}) => {
@@ -36,7 +37,7 @@ export const getManifestWihoutZeroStats = (dialect, dbName, reqQuery = {}) => {
         GROUP BY h.id, h.code, h.name, DATE_TRUNC('month', "dateVerified")) AS d
       ON p.id = d.id AND p."verifiedOn" = d."verifiedOn") sub
     
-    WHERE DATE_TRUNC('month', "verifiedOn") <= '${date}' AND ${filter}
+    WHERE DATE_TRUNC('month', "verifiedOn") <= '${date}' AND ${filter} AND "hcpCode" NOT IN (${CONTROL_HCPs})
     GROUP BY id, "hcpCode", "hcpName", "hcpState", "hcpStatus"
     ORDER BY lives DESC, "hcpName" ASC
     LIMIT ${limit}
@@ -47,6 +48,7 @@ export const getManifestWihoutZeroStats = (dialect, dbName, reqQuery = {}) => {
   };
   return query[dialect];
 };
+
 // eslint-disable-next-line no-unused-vars
 export const getManifestWithZeroStats = (dialect, dbName, reqQuery = {}) => {
   const { limit, offset } = getPaginationParameters(reqQuery);
@@ -83,7 +85,7 @@ export const getManifestWithZeroStats = (dialect, dbName, reqQuery = {}) => {
         GROUP BY h.id, h.code, h.name, DATE_TRUNC('month', "dateVerified")) AS d
       ON p.id = d.id AND p."verifiedOn" = d."verifiedOn") sub
     
-    WHERE DATE_TRUNC('month', "verifiedOn") <= '${date}' AND ${filter}
+    WHERE DATE_TRUNC('month', "verifiedOn") <= '${date}' AND ${filter} AND "hcpCode" NOT IN (${CONTROL_HCPs})
     GROUP BY id, "hcpCode", "hcpName", "hcpState", "hcpStatus"
     ORDER BY lives DESC, "hcpName" ASC
    	LIMIT ${limit}
@@ -111,7 +113,7 @@ export const getCapitationWithoutZeroStats = (
     JOIN "Enrollees" e
     ON e."hcpId" = h.id AND e."isVerified"=true AND e."isActive"=true AND h.status='active'
     GROUP BY h.id, h.code, h.name, DATE_TRUNC('month', "dateVerified"))sub
-  WHERE DATE_TRUNC('month', "dateVerified") <= '${date}' AND ${filter}
+  WHERE DATE_TRUNC('month', "dateVerified") <= '${date}' AND ${filter} AND "hcpCode" NOT IN (${CONTROL_HCPs})
   GROUP BY id, "hcpCode", "hcpName", "hcpState", "hcpStatus"
   ORDER BY "hcpState" ASC
   LIMIT ${limit}
@@ -137,7 +139,7 @@ export const getCapitationWithZeroStats = (dialect, dbName, reqQuery = {}) => {
     ON e."hcpId" = h.id AND e."isVerified"=true AND e."isActive"=true
     WHERE h.status='active'
     GROUP BY h.id, h.code, h.name, DATE_TRUNC('month', "dateVerified"))sub
-  WHERE DATE_TRUNC('month', "dateVerified") <= '${date}' AND ${filter}
+  WHERE DATE_TRUNC('month', "dateVerified") <= '${date}' AND ${filter} AND "hcpCode" NOT IN (${CONTROL_HCPs})
   GROUP BY id, "hcpCode", "hcpName", "hcpState", "hcpStatus"
   ORDER BY amount DESC, "hcpName" ASC, "monthOfYear" ASC
   LIMIT ${limit}
@@ -161,7 +163,7 @@ export const getCapitationTotals = (dialect, dbName, reqQuery = {}) => {
       ON e."hcpId" = h.id AND e."isVerified"=true AND e."isActive"=true
       WHERE h.status='active'
       GROUP BY h.id, h.code, h.name, DATE_TRUNC('month', "dateVerified"))sub
-  WHERE DATE_TRUNC('month', "dateVerified") <='${date}' AND ${filter}
+  WHERE DATE_TRUNC('month', "dateVerified") <='${date}' AND ${filter} AND "hcpCode" NOT IN (${CONTROL_HCPs})
   `;
 
   const query2 = '';
