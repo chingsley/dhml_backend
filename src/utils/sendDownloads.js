@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { default: generate_csv } = require('./templates/generateTemplate');
+const generatePdf = require('./templates/generatePdf');
 const { log } = console;
 
 const delete_file = (path) =>
@@ -28,23 +28,18 @@ const makeTempDir = () =>
 
 const downloadFile = async (res, data, documentName) => {
   await makeTempDir();
-  const file_path = await generate_csv(data, documentName, [
-    'SVC Number / Staff Number',
-    'ID Number',
-    'Member',
-    'Family Name',
-    'Other Names',
-    'Date of Birth',
-    'Sex',
-  ]);
+  console.log('>>>>>>', generatePdf);
+  const file_path = await generatePdf(data, documentName);
   return res.download(file_path, documentName, (err) => {
-    if (err)
+    if (err) {
+      console.log('error.......', err);
       return res.status(500).json({
         errors: [
           'Failed to download document, please try again shortly; or contact the technical support team if the error persists',
         ],
       });
-    delete_file(file_path);
+    }
+    // delete_file(file_path);
   });
 };
 export default downloadFile;
