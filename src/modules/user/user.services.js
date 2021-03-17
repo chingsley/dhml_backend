@@ -112,12 +112,12 @@ export default class UserService extends AppService {
     await db.Role.findOneWhere({ id: roleId }, options);
   }
 
-  async checkUniqueViolations(userId) {
-    await this.validateUnique(['email', 'staffId'], {
-      nonStringDataTypes: ['staffId'],
+  async checkUserUniqueViolations(userId) {
+    await this.validateUnique(['staffId'], {
       resourceType: 'User',
       model: db.User,
       reqBody: this.userData,
+      nonStringDataTypes: ['staffId'],
       resourceId: Number(userId),
     });
   }

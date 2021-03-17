@@ -172,6 +172,7 @@ describe('EnrolleeController', () => {
               serviceNumber: serviceNumbers[i],
               rank: 'GEN',
               armOfService: 'army',
+              serviceStatus: 'serving',
             },
             token
           );
