@@ -56,6 +56,10 @@ export default class HcpController {
     try {
       const hcpService = new HcpService(req);
       const data = await hcpService.downloadEnrollees();
+      const { return_json } = req.headers;
+      if (return_json === 'true') {
+        return res.status(200).json({ data });
+      }
       return await downloadFile(
         res,
         data.rows,
