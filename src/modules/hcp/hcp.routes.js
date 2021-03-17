@@ -1,6 +1,6 @@
 import express from 'express';
 import roles, { DEPT_USER } from '../../shared/constants/roles.constants';
-import { QUERY } from '../../shared/constants/strings.constants';
+import { HEADERS_OR_QUERY } from '../../shared/constants/strings.constants';
 import AppMiddleware from '../app/app.middleware';
 import AuthMiddleware from '../auth/auth.middleware';
 import HcpController from '../hcp/hcp.controller';
@@ -68,7 +68,9 @@ router.get(
 );
 router.get(
   '/:hcpId/download_manifest',
-  AuthMiddleware.authorize([...HOD_AND_HIGHER_ROLES], { tokenLocation: QUERY }),
+  AuthMiddleware.authorize([...HOD_AND_HIGHER_ROLES], {
+    tokenLocation: HEADERS_OR_QUERY,
+  }),
   HcpController.downloadHcpManifest
 );
 router.patch(

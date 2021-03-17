@@ -9,7 +9,11 @@ import {
   NO_EXPIRED_PASSWORD,
 } from '../../shared/constants/errors.constants';
 import { BASIC } from '../../shared/constants/roles.constants';
-import { HEADERS, QUERY } from '../../shared/constants/strings.constants';
+import {
+  HEADERS,
+  QUERY,
+  HEADERS_OR_QUERY,
+} from '../../shared/constants/strings.constants';
 import { throwError } from '../../shared/helpers';
 import { isExpired } from '../../utils/helpers';
 import Jwt from '../../utils/Jwt';
@@ -84,11 +88,13 @@ export default class AuthMiddleware {
 
   static getTokenFromRequest(req, tokenLocation) {
     let token;
-    const validTokenLocations = [HEADERS, QUERY];
+    const validTokenLocations = [HEADERS, QUERY, HEADERS_OR_QUERY];
     if (tokenLocation === HEADERS) {
       token = req.headers.authorization;
     } else if (tokenLocation === QUERY) {
       token = req.query.token;
+    } else if (tokenLocation === HEADERS_OR_QUERY) {
+      token = req.headers.authorization || req.query.token;
     } else {
       throw new Error(
         `option "tokenLocation" for the "authorize" middleware must be one of ${validTokenLocations.join(
