@@ -107,6 +107,7 @@ export default class HcpService extends AppService {
         ['firstName', 'Other Name'],
         ['dateOfBirth', 'Date Of Birth'],
         ['gender', 'sex'],
+        'scheme',
       ],
       include: {
         model: db.Enrollee,
@@ -119,6 +120,7 @@ export default class HcpService extends AppService {
           ['firstName', 'Other Name'],
           ['dateOfBirth', 'Date Of Birth'],
           ['gender', 'Sex'],
+          'scheme',
         ],
       },
     });
