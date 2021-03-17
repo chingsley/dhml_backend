@@ -6,7 +6,7 @@ import { Joi, stringValidate, validateIntegerId } from '../config';
 
 export const validSpecialists = Object.keys(specialistCodes);
 export const validStates = Object.keys(stateCodes);
-export const VALID_REF_CODE = /^[A-Z]{2}\/\d{6}\/022\/(\d)+[A-Z]-[1-9][0-9]*\/(S|R|AD)$/;
+export const VALID_REF_CODE = /^[A-Z]{2,3}\/\d{6}\/022\/(\d)+[A-Z]-[1-9][0-9]*\/(S|R|AD)$/;
 
 export const getRefCodeSchema = ({ withRequiredFields = true }) => {
   return Joi.object({

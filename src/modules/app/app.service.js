@@ -34,6 +34,10 @@ export default class AppService {
         condition = { [field]: { [Op.iLike]: value } };
       }
       if (value) {
+        // console.log(
+        //   'here ..........................................................................',
+        //   condition
+        // );
         const found = await model.findOne({
           where: condition,
         });
