@@ -145,16 +145,12 @@ class TestService {
   static async createPassword(userId, value) {
     let hashed = await db.Password.findOne({ where: { userId } });
     if (!hashed) {
-      hashed = await db.Password.create(
-        {
-          userId,
-          value: this.getHash(value),
-          isDefaultValue: false,
-        }
-        // { returning: true }
-      );
+      hashed = await db.Password.create({
+        userId,
+        value: this.getHash(value),
+        isDefaultValue: false,
+      });
     }
-    // const
 
     return hashed;
   }

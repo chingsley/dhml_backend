@@ -1,5 +1,7 @@
+/* eslint-disable indent */
 'use strict';
 import { QueryTypes } from 'sequelize';
+import enrolleeConstant from '../../shared/constants/enrollee.constants';
 const { throwError } = require('../../shared/helpers');
 const { zeroPadding } = require('../../utils/helpers');
 const { getLastRegisteredPrincipal } = require('../scripts/enrollee.scripts');
@@ -174,6 +176,26 @@ module.exports = (sequelize, DataTypes) => {
           return this.principalId !== null;
         },
       },
+      type: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          let result = null;
+          if (!this.principalId && this.scheme?.match(/AFRSHIP/)) {
+            result = enrolleeConstant.AFRSHIP_PRINCIPAL;
+          } else if (this.principalId && this.scheme?.match(/AFRSHIP/)) {
+            result = enrolleeConstant.AFRSHIP_DEPENDANT;
+          } else if (!this.principalId && this.scheme?.match(/DSSHIP/)) {
+            result = enrolleeConstant.DSSHIP_PRINCIPAL;
+          } else if (this.principalId && this.scheme?.match(/DSSHIP/)) {
+            result = enrolleeConstant.DSSHIP_DEPENDANT;
+          } else if (this.principalId && this.scheme?.match(/VCSHIP/)) {
+            result = enrolleeConstant.ADDITIONAL_DEPENDANT;
+          } else {
+            result = null;
+          }
+          return result;
+        },
+      },
     },
     {}
   );
@@ -203,6 +225,18 @@ module.exports = (sequelize, DataTypes) => {
       ],
     });
     return enrollee;
+  };
+  Enrollee.prototype.reloadDetails = async function () {
+    await this.reload({
+      include: [
+        {
+          model: this.sequelize.models.HealthCareProvider,
+          as: 'hcp',
+          attributes: ['code', 'name'],
+        },
+      ],
+    });
+    return this;
   };
   Enrollee.createDependant = async function (dependantData, principal) {
     dependantData.dependantClass =
@@ -281,6 +315,10 @@ module.exports = (sequelize, DataTypes) => {
         });
       }
     }
+  };
+  Enrollee.prototype.isAfrshipPrincipal = function () {
+    const enrolmentType = this.principalId ? 'dependant' : 'principal';
+    return this.scheme.match(/AFRSHIP/i) && enrolmentType.match(/principal/i);
   };
   Enrollee.findOneWhere = async function (condition, options) {
     const {

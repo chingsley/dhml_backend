@@ -32,8 +32,8 @@ describe('EnrolleeController', () => {
       token,
       hcp,
       afrshipPrincipal,
+      afrshipPrincipal2,
       dsshipPrincipal,
-      vcshipPrincipal,
       specialPrincipal;
     beforeAll(async () => {
       await TestService.resetDB();
@@ -53,6 +53,9 @@ describe('EnrolleeController', () => {
         scheme: 'AFRSHIP',
         enrolmentType: 'principal',
         hcpId: hcp.id,
+        rank: 'MAJ',
+        armOfService: 'army',
+        serviceNumber: 'N/12345',
       };
       dsshipPrincipal = {
         ...principals[1],
@@ -60,23 +63,26 @@ describe('EnrolleeController', () => {
         enrolmentType: 'principal',
         hcpId: hcp.id,
       };
-      vcshipPrincipal = {
+      afrshipPrincipal2 = {
         ...principals[2],
-        scheme: 'VCSHIP',
+        scheme: 'AFRSHIP',
         enrolmentType: 'principal',
         hcpId: hcp.id,
+        rank: 'LT CDR',
+        armOfService: 'navy',
+        serviceNumber: 'NN/5878',
+        staffNumber: undefined,
       };
       specialPrincipal = {
         ...principals[3],
         scheme: 'AFRSHIP',
         enrolmentType: 'special-principal',
         staffNumber: undefined,
-        rank: 'General',
-        armOfService: 'army',
+        rank: 'VADM',
+        armOfService: 'navy',
+        serviceNumber: 'NN/1234',
         hcpId: hcp.id,
       };
-      specialPrincipal.serviceNumber =
-        specialPrincipal.serviceNumber || 'SN/001/SP';
       const { sampleStaffs } = getSampleStaffs(1);
       const data = await TestService.getToken(
         sampleStaffs[0],
@@ -154,34 +160,18 @@ describe('EnrolleeController', () => {
         done(e);
       }
     });
-    it('can enrol a vcship principal', async (done) => {
-      try {
-        const res = await EnrolleeTest.enrol(vcshipPrincipal, token);
-        res.status !== 201 && log(res.body);
-        expect(res.status).toBe(201);
-        expect(res.body).toHaveProperty('data');
-        const { data } = res.body;
-        expect(data).toEqual(
-          expect.objectContaining({
-            isPrincipal: true,
-            scheme: vcshipPrincipal.scheme,
-          })
-        );
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
     it('can enrol a special principal', async (done) => {
       try {
         const enrolleeIdNo = '1';
-        const serviceNumbers = ['A/001/SP', 'A/002/SP'];
+        const serviceNumbers = ['N/1234', 'N/12345'];
         for (let i = 0; i < 2; i++) {
           const res = await EnrolleeTest.enrol(
             {
               ...specialPrincipal,
               enrolleeIdNo,
               serviceNumber: serviceNumbers[i],
+              rank: 'GEN',
+              armOfService: 'army',
             },
             token
           );
@@ -225,6 +215,10 @@ describe('EnrolleeController', () => {
               principalId: principal.enrolleeIdNo,
               scheme: principal.scheme,
               hcpId: hcp.id,
+              rank: undefined,
+              armOfService: undefined,
+              serviceNumber: undefined,
+              staffNumber: undefined,
             },
             token
           );
@@ -264,6 +258,10 @@ describe('EnrolleeController', () => {
               principalId: principal.enrolleeIdNo,
               scheme: principal.scheme,
               hcpId: hcp.id,
+              rank: undefined,
+              armOfService: undefined,
+              serviceNumber: undefined,
+              staffNumber: undefined,
             },
             token
           );
@@ -287,27 +285,25 @@ describe('EnrolleeController', () => {
         done(e);
       }
     });
-    it('can enrol vcship dependants of more than 5 in number', async (done) => {
+    it('can enrol additional dependants under VCSHIP', async (done) => {
       try {
         const { dependants } = sampleEnrollees;
-        const serviceNumber = await TestService.getUniqueValue();
-        const principal = await TestService.getRegisteredPrincipal({
-          scheme: 'vcship',
-          withValues: {
-            hcpId: hcp.id,
-            serviceNumber,
-          },
-        });
+        const res1 = await EnrolleeApi.enrol({ ...afrshipPrincipal2 }, token);
+        const principal = res1.body.data;
         const dependant = TestService.removeUnwantedFields(dependants[0]);
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < 7; i++) {
           const res = await EnrolleeTest.enrol(
             {
               ...dependant,
               enrolmentType: 'dependant',
               relationshipToPrincipal: 'child',
               principalId: principal.enrolleeIdNo,
-              scheme: principal.scheme,
+              scheme: i < 5 ? principal.scheme : 'VCSHIP',
               hcpId: hcp.id,
+              rank: undefined,
+              armOfService: undefined,
+              serviceNumber: undefined,
+              staffNumber: undefined,
             },
             token
           );
@@ -318,6 +314,56 @@ describe('EnrolleeController', () => {
           const expected = `${principal.enrolleeIdNo}-${i + 1}`;
           expect(enrolleeIdNo).toEqual(expected);
         }
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('detects invalid rank during registration', async (done) => {
+      try {
+        const rank = 'CPL';
+        const armOfService = 'navy';
+        const res = await EnrolleeApi.enrol(
+          {
+            ...afrshipPrincipal,
+            rank,
+            armOfService,
+            serviceNumber: '23NA/24/24245',
+          },
+          token
+        );
+        const { errors } = res.body;
+        expect(res.status).toBe(400);
+        expect(errors[0]).toMatch(
+          new RegExp(`${rank} is not a valid rank in the ${armOfService}`, 'i')
+        );
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('detects invalid serviceNumber during registration', async (done) => {
+      try {
+        const rank = 'CPL';
+        const armOfService = 'army';
+        const serviceNumber = 'NN/24245';
+        const res = await EnrolleeApi.enrol(
+          {
+            ...afrshipPrincipal,
+            rank,
+            armOfService,
+            serviceNumber,
+          },
+          token
+        );
+        const { errors } = res.body;
+        expect(res.status).toBe(400);
+        expect(errors[0]).toMatch(
+          new RegExp(
+            `${serviceNumber} is not a valid service number for rank ${rank} in the ${armOfService}`,
+            'i'
+          )
+        );
         done();
       } catch (e) {
         done(e);
