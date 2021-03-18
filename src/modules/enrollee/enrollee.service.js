@@ -14,6 +14,8 @@ import {
   DSSHIP_PRINCIPAL,
 } from '../../shared/constants/enrollee.constants';
 
+const { log } = console;
+
 export default class EnrolleeService extends AppService {
   constructor({ body, files, query, params }) {
     super({ body, files, query, params });
@@ -66,14 +68,6 @@ export default class EnrolleeService extends AppService {
   }
 
   async validateEnrolleeKeyParams(enrollee) {
-    // console.log('here.....1.', this);
-    // const dict = {
-    //   [AFRSHIP_PRINCIPAL]: this.validateAfshipPrincipal,
-    //   [DSSHIP_PRINCIPAL]: this.validateDsshipPrincipal,
-    //   [AFRSHIP_DEPENDANT]: this.validateDependant,
-    //   [DSSHIP_DEPENDANT]: this.validateDependant,
-    //   [ADDITIONAL_DEPENDANT]: this.validateDependant,
-    // };
     if (enrollee.type === AFRSHIP_PRINCIPAL) {
       // console.log('********* 1');
       return await this.validateAfshipPrincipal(enrollee);
@@ -109,6 +103,55 @@ export default class EnrolleeService extends AppService {
       principal
     );
     return data;
+  }
+
+  async handleBulkUpload() {
+    const { enrollees: raw } = this.body;
+    const t = await db.sequelize.transaction();
+    let stop = false;
+    let completed = true;
+    let i = 0;
+
+    const enrollees = await this.extractDuplicateSVNs(raw);
+    const results = [];
+
+    // after debugging in test, change
+    //this to use bulkCreate instead of the while loop
+    while (enrollees[i] && !stop) {
+      try {
+        const result = await db.Enrollee.create(enrollees[i], {
+          transaction: t,
+        });
+        results.push(result);
+        i += 1;
+      } catch (error) {
+        log(enrollees[i], error);
+        stop = true;
+        completed = false;
+        await t.rollback();
+      }
+    }
+    if (completed) {
+      await t.commit();
+    }
+    return { 'results.length': results.length };
+  }
+
+  async extractDuplicateSVNs(enrollees) {
+    const enrolleesSVNs = enrollees.map((e) => e.serviceNumber);
+    const existingEnrollees = await db.Enrollee.findAll({
+      where: { serviceNumber: enrolleesSVNs },
+    });
+    const duplicates = existingEnrollees.map((e) => e.serviceNumber);
+    const enrolleesWithoutDuplicateSVNs = enrollees.filter(
+      (e) => !duplicates.includes(e.serviceNumber)
+    );
+    log({
+      enrolleesWithoutDuplicateSVNs: enrolleesWithoutDuplicateSVNs.length,
+      'duplicates.length': duplicates.length,
+      duplicates: duplicates.map((d) => `'${d}'`).join(', '),
+    });
+    return enrolleesWithoutDuplicateSVNs;
   }
 
   async getAllEnrollees() {
