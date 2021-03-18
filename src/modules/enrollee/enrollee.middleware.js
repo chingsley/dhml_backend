@@ -1,3 +1,5 @@
+import excelToJson from 'convert-excel-to-json';
+import { zeroPadding } from '../../utils/helpers';
 import Response from '../../utils/Response';
 import { validateSchema } from '../../validators/joi/config';
 import {
@@ -53,6 +55,51 @@ export default class EnrolleeMiddleware {
         req.query
       );
       req.query = joiFormatted;
+      return next();
+    } catch (error) {
+      Response.handleError('validateQuery', error, req, res, next);
+    }
+  }
+  static async validateEnrolleeUpload(req, res, next) {
+    try {
+      const { Enrollees } = excelToJson({
+        sourceFile: 'new_enrollees_170321.xlsx',
+        header: { rows: 1 },
+        columnToKey: {
+          A: 'enrolleeIdNo',
+          // B: 'relationshipToPrincipal',
+          C: 'hcpId',
+          D: 'scheme',
+          E: 'surname',
+          F: 'otherNames',
+          G: 'rank',
+          H: 'serviceNumber',
+          I: 'staffNumber',
+          J: 'title',
+          K: 'designation',
+          L: 'armOfService',
+          O: 'dateOfBirth',
+          P: 'gender',
+          Q: 'maritalStatus',
+          Z: 'bloodGroup',
+          AI: 'dateVerified',
+        },
+      });
+      const enrolleeIdNos = [];
+      const enrollees = Enrollees.map((e) => {
+        const enrolleeIdNo = zeroPadding(e.enrolleeIdNo);
+        enrolleeIdNos.push(enrolleeIdNo);
+        return {
+          ...e,
+          enrolleeIdNo,
+          firstName: e.otherNames.split(' ')[0],
+          middleName: e.otherNames.split(' ')[1],
+          otherNames: undefined,
+          isVerified: true,
+        };
+      });
+
+      req.body.enrollees = enrollees;
       return next();
     } catch (error) {
       Response.handleError('validateQuery', error, req, res, next);
