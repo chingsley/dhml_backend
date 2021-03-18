@@ -96,7 +96,7 @@ export default class HcpService extends AppService {
 
   async downloadEnrollees() {
     const { hcpId } = this.params;
-    const enrollees = await db.Enrollee.findAndCountAll({
+    const data = await db.Enrollee.findAndCountAll({
       where: { hcpId, principalId: null, isVerified: true },
       order: [['dateVerified', 'DESC']],
       attributes: [
@@ -124,7 +124,8 @@ export default class HcpService extends AppService {
         ],
       },
     });
-    return enrollees;
+    data.hcp = await db.HealthCareProvider.findOne({ where: { id: hcpId } });
+    return data;
   }
 
   async fetchManifest() {

@@ -20,6 +20,12 @@ router.post(
   EnrolleeMiddleware.validateNewEnrollee,
   EnrolleeController.addNewEnrollee
 );
+router.post(
+  '/upload',
+  AuthMiddleware.authorize([SUPERADMIN, ADMIN, ENROLMENT_OFFICER]),
+  EnrolleeMiddleware.validateEnrolleeUpload,
+  EnrolleeController.uploadEnrollees
+);
 router.get(
   '/',
   AuthMiddleware.authorize([
