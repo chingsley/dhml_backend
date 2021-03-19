@@ -37,6 +37,13 @@ export default class AppService {
         const found = await model.findOne({
           where: condition,
         });
+        // console.log({
+        //   value,
+        //   condition,
+        //   found,
+        //   'found.id': found.id,
+        //   resourceId,
+        // });
         if (found && found.id !== resourceId) {
           throwError({
             status: 400,
