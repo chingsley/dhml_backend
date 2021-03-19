@@ -1,3 +1,5 @@
+import { days } from '../../utils/timers';
+
 export const CONTROL_HCPs = ['XX/0000/P', 'XX/0001/P', 'XX/0002/P']
   .map((code) => `'${code}'`)
   .join(', ');
@@ -19,6 +21,22 @@ export function generateSearchQuery(searchItem, searchableFields) {
       )
       .join(' OR ')
   );
+}
+
+export function getCapitationFilters(reqQuery) {
+  const { limit, offset } = getPaginationParameters(reqQuery);
+  const { searchItem, hcpCode, hcpName, date = days.today } = reqQuery;
+  const fallback = '"hcpCode" IS NOT NULL';
+  const generalSearch =
+    searchItem &&
+    `LOWER("hcpCode") LIKE '%${searchItem.toLowerCase()}%' OR LOWER("hcpName") LIKE '%${searchItem.toLowerCase()}%' OR LOWER("hcpState") LIKE '%${searchItem.toLowerCase()}%'`;
+  const filterByHcpCode =
+    hcpCode && `LOWER("hcpCode") LIKE '%${hcpCode.toLowerCase()}%'`;
+  const filterByHcpName =
+    hcpName && `LOWER("hcpName") LIKE '%${hcpName.toLowerCase()}%'`;
+  const filter =
+    filterByHcpName || filterByHcpCode || generalSearch || fallback;
+  return { limit, offset, date, filter };
 }
 
 export const tableAlias = {

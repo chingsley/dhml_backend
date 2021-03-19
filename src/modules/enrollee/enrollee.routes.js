@@ -4,6 +4,7 @@ import {
   ENROLMENT_OFFICER,
   HOD_MEDICAL,
   HOD_VHS,
+  MD,
   SUPERADMIN,
   VERIFIER,
 } from '../../shared/constants/roles.constants';
@@ -14,23 +15,24 @@ import EnrolleeMiddleware from './enrollee.middleware';
 
 const router = express.Router();
 
+const allowedRoles = [MD, SUPERADMIN, ADMIN];
+
 router.post(
   '/',
-  AuthMiddleware.authorize([SUPERADMIN, ADMIN, ENROLMENT_OFFICER]),
+  AuthMiddleware.authorize([...allowedRoles, ENROLMENT_OFFICER]),
   EnrolleeMiddleware.validateNewEnrollee,
   EnrolleeController.addNewEnrollee
 );
 router.post(
   '/upload',
-  AuthMiddleware.authorize([SUPERADMIN, ADMIN, ENROLMENT_OFFICER]),
+  AuthMiddleware.authorize([...allowedRoles, ENROLMENT_OFFICER]),
   EnrolleeMiddleware.validateEnrolleeUpload,
   EnrolleeController.uploadEnrollees
 );
 router.get(
   '/',
   AuthMiddleware.authorize([
-    SUPERADMIN,
-    ADMIN,
+    ...allowedRoles,
     ENROLMENT_OFFICER,
     HOD_MEDICAL,
     HOD_VHS,
@@ -41,33 +43,33 @@ router.get(
 );
 router.get(
   '/:enrolleeId',
-  AuthMiddleware.authorize([SUPERADMIN, ADMIN, ENROLMENT_OFFICER, VERIFIER]),
+  AuthMiddleware.authorize([...allowedRoles, ENROLMENT_OFFICER, VERIFIER]),
   AppMiddleware.validateIdParams,
   EnrolleeController.getByEnrolleeId
 );
 
 router.patch(
   '/:enrolleeId',
-  AuthMiddleware.authorize([SUPERADMIN, ADMIN, VERIFIER]),
+  AuthMiddleware.authorize([...allowedRoles, VERIFIER]),
   AppMiddleware.validateIdParams,
   EnrolleeMiddleware.validateEnrolleeUpdate,
   EnrolleeController.updateEnrollee
 );
 router.patch(
   '/:enrolleeId/verify',
-  AuthMiddleware.authorize([SUPERADMIN, ADMIN, VERIFIER]),
+  AuthMiddleware.authorize([...allowedRoles, VERIFIER]),
   AppMiddleware.validateIdParams,
   EnrolleeController.verifyEnrollee
 );
 router.patch(
   '/:enrolleeId/unverify',
-  AuthMiddleware.authorize([SUPERADMIN, ADMIN, VERIFIER]),
+  AuthMiddleware.authorize([...allowedRoles, VERIFIER]),
   AppMiddleware.validateIdParams,
   EnrolleeController.unverifyEnrollee
 );
 router.delete(
   '/:enrolleeId',
-  AuthMiddleware.authorize([SUPERADMIN, ADMIN]),
+  AuthMiddleware.authorize([...allowedRoles]),
   AppMiddleware.validateIdParams,
   EnrolleeController.deleteEnrollee
 );

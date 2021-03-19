@@ -14,14 +14,14 @@ const {
   DEPT_USER,
 } = roles;
 
-const ADMIN_AND_HIGHER = [ADMIN, SUPERADMIN, MD];
+const allowedRoles = [ADMIN, SUPERADMIN, MD];
 
 const router = express.Router();
 
 router.post(
   '/',
   AuthMiddleware.authorize([
-    ...ADMIN_AND_HIGHER,
+    ...allowedRoles,
     HOD_MEDICAL,
     VERIFIER,
     ENROLMENT_OFFICER,
@@ -32,7 +32,7 @@ router.post(
 router.get(
   '/',
   AuthMiddleware.authorize([
-    ...ADMIN_AND_HIGHER,
+    ...allowedRoles,
     HOD_MEDICAL,
     VERIFIER,
     ENROLMENT_OFFICER,
@@ -44,7 +44,7 @@ router.get(
 router.get(
   '/verify',
   AuthMiddleware.authorize([
-    ...ADMIN_AND_HIGHER,
+    ...allowedRoles,
     HOD_MEDICAL,
     VERIFIER,
     ENROLMENT_OFFICER,
@@ -62,7 +62,7 @@ router.get(
 router.patch(
   '/:refcodeId/flag',
   AuthMiddleware.authorize([
-    ...ADMIN_AND_HIGHER,
+    ...allowedRoles,
     HOD_MEDICAL,
     VERIFIER,
     ENROLMENT_OFFICER,
@@ -73,7 +73,7 @@ router.patch(
 );
 router.delete(
   '/',
-  AuthMiddleware.authorize([...ADMIN_AND_HIGHER]),
+  AuthMiddleware.authorize([...allowedRoles]),
   RefcodeMiddleware.validateRefcodeIdArr,
   RefcodeController.deleteRefcode
 );

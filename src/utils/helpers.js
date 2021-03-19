@@ -12,10 +12,9 @@ export function getRandomInt(max, options = {}) {
 }
 
 // // range from min to max (both inclusive)
-// export function getRandomInt(max, options = {}) {
-//   const { min = 0 } = options;
-//   return Math.floor(Math.random() * (max - min + 1) + min);
-// }
+export function randInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
 
 export const zeroPadding = (id, maxLength = 6) => {
   if (Number(id).toString().length < maxLength) {

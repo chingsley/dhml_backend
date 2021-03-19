@@ -85,9 +85,7 @@ export default class EnrolleeService extends AppService {
     const files = this.files;
     await this.ensureValidHcpId(dependantData.hcpId);
     const { principalId: principalEnrolleeIdNo } = dependantData;
-    const principal = await this.getByEnrolleeIdNo(principalEnrolleeIdNo, {
-      throwErrorIfNotFound: true,
-    });
+    const principal = await this.getByEnrolleeIdNo(principalEnrolleeIdNo);
     dependantData.principalId = principal.id;
     this.validateDependantScheme(principal.scheme, dependantData.scheme);
     principal.checkDependantLimit(dependantData);
@@ -291,23 +289,21 @@ export default class EnrolleeService extends AppService {
     });
   }
 
-  async getByEnrolleeIdNo(enrolleeIdNo, { throwErrorIfNotFound }) {
-    const enrollee = await db.Enrollee.findOneWhere(
-      { enrolleeIdNo },
-      {
-        throwErrorIfNotFound,
-        errorMsg: `Invalid Enrollee ID number. No record found for EnrolleeIdNo.: ${enrolleeIdNo}`,
-        errorCode: 'E001',
-        include: [
-          { model: db.Enrollee, as: 'dependants' },
-          {
-            model: db.HealthCareProvider,
-            as: 'hcp',
-            attributes: ['code', 'name'],
-          },
-        ],
-      }
-    );
+  async getByEnrolleeIdNo(enrolleeIdNo) {
+    const enrollee = await this.findOneRecord({
+      modelName: 'Enrollee',
+      where: { enrolleeIdNo },
+      errorIfNotFound: `Invalid Enrollee ID number. No record found for EnrolleeIdNo.: ${enrolleeIdNo}`,
+      errorCode: 'E001',
+      include: [
+        { model: db.Enrollee, as: 'dependants' },
+        {
+          model: db.HealthCareProvider,
+          as: 'hcp',
+          attributes: ['code', 'name'],
+        },
+      ],
+    });
     return enrollee;
   }
 

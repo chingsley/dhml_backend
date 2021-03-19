@@ -9,6 +9,7 @@ import HcpMiddleware from './hcp.middleware';
 const { SUPERADMIN, ADMIN, VERIFIER, ENROLMENT_OFFICER, HCP } = roles;
 
 const HOD_AND_HIGHER_ROLES = [
+  roles.MD,
   roles.SUPERADMIN,
   roles.ADMIN,
   roles.HOD_ACCOUNT,
