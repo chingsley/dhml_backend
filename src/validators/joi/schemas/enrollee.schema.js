@@ -72,6 +72,7 @@ export const newEnrolleeSchema = (enrolmentType = '') =>
   });
 
 export const patchEnrolleeSchema = Joi.object({
+  principalId: Joi.string().trim(),
   surname: Joi.string().trim(),
   firstName: Joi.string().trim(),
   middleName: Joi.string().trim(),
