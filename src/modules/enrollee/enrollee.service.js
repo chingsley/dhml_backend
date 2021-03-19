@@ -161,7 +161,7 @@ export default class EnrolleeService extends AppService {
   async updateEnrolleeData() {
     const fls = this.files;
     const { dependants, ...rest } = this.body;
-    await this.validateUnique(['staffNumber', 'email', 'serviceNumber'], {
+    await this.validateUnique(['staffNumber', 'serviceNumber'], {
       model: db.Enrollee,
       reqBody: rest,
       resourceType: 'An Enrollee',
