@@ -25,10 +25,11 @@ describe('ReportsController', () => {
   });
   describe('getMonthlyCapitationSummary', () => {
     let sampleEnrollees, token, HCPs, seededPrincipals, seededDependants, res;
+    let MD_TOKEN, HOD_ACCOUNT_TOKEN, HOD_AUDIT_TOKEN;
     beforeAll(async () => {
       await TestService.resetDB();
       HCPs = await TestService.seedHCPs(4);
-      const { sampleStaffs } = getSampleStaffs(2);
+      const { sampleStaffs } = getSampleStaffs(3);
       sampleEnrollees = getEnrollees({
         numOfPrincipals: 40,
         sameSchemeDepPerPrincipal: 2,
@@ -59,9 +60,25 @@ describe('ReportsController', () => {
         }
       });
       seededDependants = await TestService.seedEnrollees(deps);
-      const data = await TestService.getToken(sampleStaffs[0], ROLES.MD);
-      token = data.token;
-      res = await ReportsApi.getMonthlyCapSum('', token);
+      const [md, hodAccount, hodAudit] = sampleStaffs;
+      const promiseArr = [
+        TestService.getToken(md, ROLES.MD),
+        TestService.getToken(hodAccount, ROLES.HOD_ACCOUNT),
+        TestService.getToken(hodAudit, ROLES.HOD_AUDIT),
+      ];
+      const results = await Promise.all(promiseArr);
+      [MD_TOKEN, HOD_ACCOUNT_TOKEN, HOD_AUDIT_TOKEN] = [
+        md.staffIdNo,
+        hodAccount.staffIdNo,
+        hodAudit.staffIdNo,
+      ].reduce((acc, staffIdNo) => {
+        const data = results.find(
+          (r) => r.user.staffInfo.staffIdNo === staffIdNo
+        );
+        acc.push(data.token);
+        return acc;
+      }, []);
+      res = await ReportsApi.getMonthlyCapSum('', MD_TOKEN);
     });
 
     it('returns status 200 on successful GET', async (done) => {
@@ -98,17 +115,6 @@ describe('ReportsController', () => {
         done(e);
       }
     });
-    // it('ensures the current month "running month" is not available for approval', async (done) => {
-    //   try {
-    //     const { rows } = res.body.data;
-    //     expect(new Date(rows[0].month).getTime()).toBeLessThan(
-    //       new Date(months.currentMonth).getTime()
-    //     );
-    //     done();
-    //   } catch (e) {
-    //     done(e);
-    //   }
-    // });
     it('ensures the current month "running month" (not returned in API) contains the total lives', async (done) => {
       try {
         const { rows } = res.body.data;
@@ -136,8 +142,22 @@ describe('ReportsController', () => {
     });
     it('initializes the record if not exist otherwise, it updates the existing record', async (done) => {
       try {
-        const res = await ReportsApi.getMonthlyCapSum('', token);
+        const res = await ReportsApi.getMonthlyCapSum('', MD_TOKEN);
         expect(res.status).toBe(200);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns empty result for non-MD role if no record is approved yet', async (done) => {
+      try {
+        for (let token of [HOD_ACCOUNT_TOKEN, HOD_AUDIT_TOKEN]) {
+          const res = await ReportsApi.getMonthlyCapSum('', token);
+          const { count, rows } = res.body.data;
+          expect(res.status).toBe(200);
+          expect(count).toBe(0);
+          expect(rows).toHaveLength(0);
+        }
         done();
       } catch (e) {
         done(e);
