@@ -1,4 +1,6 @@
 const dotenv = require('dotenv');
+const faker = require('faker');
+const { months, days } = require('../../utils/timers');
 dotenv.config();
 const db = require('../models');
 const SampleReferalCodes = require('../../shared/samples/refcode.samples');
@@ -8,7 +10,11 @@ if (process.env.SEED_WITH === 'LIVE_DATA') {
   const { principals, dependants } = enrollees.reduce(
     (acc, enrollee) => {
       if (enrollee.principalId === null) {
-        acc.principals.push(enrollee);
+        acc.principals.push({
+          ...enrollee,
+          isVerified: true,
+          dateVerified: faker.date.between(months.setPast(4), days.today),
+        });
       } else {
         acc.dependants.push(enrollee);
       }
@@ -25,17 +31,18 @@ if (process.env.SEED_WITH === 'LIVE_DATA') {
         where: { principalId: null },
       });
       const dictPrincipalId = seededPrincipals.reduce((acc, p) => {
-        acc[p.enrolleeIdNo] = p.id;
+        acc[p.enrolleeIdNo] = p;
         return acc;
       }, {});
       const dependantsWithPrincipalId = dependants.map((d) => {
         const principalEnrolleeIdNo = d.enrolleeIdNo.split('-')[0];
         return {
           ...d,
-          principalId: dictPrincipalId[principalEnrolleeIdNo],
+          principalId: dictPrincipalId[principalEnrolleeIdNo].id,
+          isVerified: dictPrincipalId[principalEnrolleeIdNo].isVerified,
+          dateVerified: dictPrincipalId[principalEnrolleeIdNo].dateVerified,
         };
       });
-      // console.log({ dictPrincipalId, dependantsWithPrincipalId });
       await queryInterface.bulkInsert('Enrollees', dependantsWithPrincipalId);
       const referalCodes = await SampleReferalCodes.getSeed();
       await queryInterface.bulkInsert('ReferalCodes', referalCodes);

@@ -23,8 +23,7 @@ export default class EnrolleeController {
       const result = await enrolleeService.handleBulkUpload();
       return res.status(200).json({ result, enrollees });
     } catch (error) {
-      console.log(error);
-      Response.handleError('addNewEnrollee', error, req, res, next);
+      Response.handleError('uploadEnrollees', error, req, res, next);
     }
   }
   static async getEnrollees(req, res, next) {

@@ -2,9 +2,11 @@ import express from 'express';
 import AppMiddleware from '../app/app.middleware';
 import AuthController from './auth.controller';
 import AuthMiddleware from './auth.middleware';
-import { ADMIN, SUPERADMIN } from '../../shared/constants/roles.constants';
+import { ADMIN, SUPERADMIN, MD } from '../../shared/constants/roles.constants';
 
 const router = express.Router();
+
+const allowedRoles = [ADMIN, SUPERADMIN, MD];
 
 router.post(
   '/login',
@@ -28,7 +30,7 @@ router.post(
 
 router.post(
   '/resend_default_password',
-  AuthMiddleware.authorize([SUPERADMIN, ADMIN]),
+  AuthMiddleware.authorize(allowedRoles),
   AuthMiddleware.validateAuthData,
   AuthController.resendDefaultPass
 );

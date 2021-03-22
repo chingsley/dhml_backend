@@ -42,6 +42,7 @@
     "test:staffController": "jest test/modules/staff/staff.controller.spec.js --detectOpenHandles --verbose --watch",
     "test:roleController": "jest test/modules/role/role.controller.spec.js --detectOpenHandles --verbose --watch",
     "test:refcodeController": "jest test/modules/refcode/refcode.controller.spec.js --detectOpenHandles --verbose --watch",
+    "test:reportsController": "jest test/modules/reports/reports.controller.spec.js --detectOpenHandles --verbose --watch",
     "temp": "jest test/modules/hcp/hcp.temp.spec.js --detectOpenHandles --verbose --watch",
     "-------------------------": "-----------------------------",
     "test:userMiddleware": "jest test/modules/user/user.middleware.spec.js --detectOpenHandles --verbose --watch",

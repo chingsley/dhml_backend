@@ -5,6 +5,7 @@ import enrolleeConstant from '../../shared/constants/enrollee.constants';
 const { throwError } = require('../../shared/helpers');
 const { zeroPadding } = require('../../utils/helpers');
 const { getLastRegisteredPrincipal } = require('../scripts/enrollee.scripts');
+const { Op } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
   const Enrollee = sequelize.define(
@@ -324,25 +325,15 @@ module.exports = (sequelize, DataTypes) => {
     const enrolmentType = this.principalId ? 'dependant' : 'principal';
     return this.scheme.match(/AFRSHIP/i) && enrolmentType.match(/principal/i);
   };
-  Enrollee.findOneWhere = async function (condition, options) {
-    const {
-      throwErrorIfNotFound = false,
-      errorMsg = 'Record not found',
-      include = [],
-      status = 404,
-    } = options;
-    const found = await this.findOne({
-      where: { ...condition },
-      include,
+
+  Enrollee.getFirstVerifiedEnrollee = async function () {
+    const [firstVerifiedEnrollee] = await this.findAll({
+      where: { dateVerified: { [Op.not]: null } },
+      order: [['dateVerified', 'ASC']],
+      limit: 1,
     });
-    if (!found && throwErrorIfNotFound) {
-      throwError({
-        status,
-        error: [errorMsg],
-        errorCode: options.errorCode,
-      });
-    }
-    return found;
+    return firstVerifiedEnrollee;
   };
+
   return Enrollee;
 };

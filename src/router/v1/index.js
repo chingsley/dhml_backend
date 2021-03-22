@@ -7,6 +7,7 @@ import rolesRoutes from '../../modules/role/role.routes';
 import staffRoutes from '../../modules/staff/staff.routes';
 import hcpRoutes from '../../modules/hcp/hcp.routes';
 import refcodeRoutes from '../../modules/refcode/refcode.routes';
+import reportsRoutes from '../../modules/reports/reports.routes';
 
 const router = express.Router();
 
@@ -17,5 +18,6 @@ router.use('/roles', rolesRoutes);
 router.use('/staffs', staffRoutes);
 router.use('/hcp', hcpRoutes);
 router.use('/refcodes', refcodeRoutes);
+router.use('/reports', reportsRoutes);
 
 export default router;
