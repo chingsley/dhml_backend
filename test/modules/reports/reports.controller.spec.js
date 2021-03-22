@@ -24,7 +24,7 @@ describe('ReportsController', () => {
     cloudinary.uploader.upload = originalImplementation;
   });
   describe('getMonthlyCapitationSummary', () => {
-    let sampleEnrollees, token, HCPs, seededPrincipals, seededDependants, res;
+    let sampleEnrollees, HCPs, seededPrincipals, seededDependants, res;
     let MD_TOKEN, HOD_ACCOUNT_TOKEN, HOD_AUDIT_TOKEN;
     beforeAll(async () => {
       await TestService.resetDB();
