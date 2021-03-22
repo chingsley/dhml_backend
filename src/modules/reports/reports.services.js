@@ -1,7 +1,8 @@
+/* eslint-disable indent */
 import AppService from '../app/app.service';
 import db from '../../database/models';
-// import { Op } from 'sequelize';
-// import { months } from '../../utils/timers';
+import { Op } from 'sequelize';
+import ROLES from '../../shared/constants/roles.constants';
 
 export default class ReportService extends AppService {
   constructor({ body, files, query, params }) {
@@ -12,10 +13,17 @@ export default class ReportService extends AppService {
     this.params = params;
   }
 
-  async getAllCapitationApprovals() {
+  async getAllCapitationApprovals(userRole) {
+    const filter =
+      userRole === ROLES.MD
+        ? {}
+        : {
+            dateApproved: { [Op.not]: null },
+          };
+
     await this.updateCapSumTable();
     return db.MonthlyCapitationSum.findAndCountAll({
-      // where: { month: { [Op.lt]: months.currentMonth } },
+      where: { ...filter },
       order: [['month', 'DESC']],
       ...this.paginate(this.query),
     });
