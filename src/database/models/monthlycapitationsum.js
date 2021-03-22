@@ -36,6 +36,24 @@ module.exports = (sequelize, DataTypes) => {
           return moment(this.month).format('MMMM YYYY');
         },
       },
+      isApproved: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return this.dateApproved !== null;
+        },
+      },
+      isAudited: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return this.dateAudited !== null;
+        },
+      },
+      isPaid: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return this.datePaid !== null;
+        },
+      },
     },
     {}
   );
