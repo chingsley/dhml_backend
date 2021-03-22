@@ -113,15 +113,21 @@ export default class EnrolleeService extends AppService {
 
   async getAllEnrollees() {
     const { isVerified } = this.query;
-    const orderBy = isVerified
-      ? [
-          ['dateVerified', 'DESC'],
-          ['id', 'ASC'],
-        ]
-      : [
-          ['createdAt', 'DESC'],
-          ['id', 'ASC'],
-        ];
+    let orderBy;
+    if (isVerified === 'true') {
+      orderBy = [
+        ['dateVerified', 'DESC'],
+        ['id', 'ASC'],
+      ];
+    } else if (isVerified === 'false') {
+      orderBy = [
+        ['createdAt', 'DESC'],
+        ['id', 'ASC'],
+      ];
+    } else {
+      orderBy = [['id', 'ASC']];
+    }
+
     return await db.Enrollee.findAndCountAll({
       where: {
         ...this.searchRecordsBy(enrolleeSearchableFields),
