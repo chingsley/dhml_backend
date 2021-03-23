@@ -43,9 +43,7 @@ export default class ReportService extends AppService {
   }
 
   async auditMonthlyCapSum() {
-    const capSum = await this.getCapSumById(this.params.summaryId, {
-      rejectCurrentMonth: true,
-    });
+    const capSum = await this.getCapSumById(this.params.summaryId);
     this.rejectIf(!capSum.isApproved, {
       withError: 'Cannot audit capitation before MD"s approval',
     });
@@ -61,9 +59,7 @@ export default class ReportService extends AppService {
    * @returns updated capSum
    */
   async payMonthlyCapSum() {
-    const capSum = await this.getCapSumById(this.params.summaryId, {
-      rejectCurrentMonth: true,
-    });
+    const capSum = await this.getCapSumById(this.params.summaryId);
     this.rejectIf(!capSum.isApproved, {
       withError: 'Cannot pay for capitation before MD"s approval',
     });
