@@ -47,7 +47,8 @@
     "-------------------------": "-----------------------------",
     "test:userMiddleware": "jest test/modules/user/user.middleware.spec.js --detectOpenHandles --verbose --watch",
     "test:enrolleeMiddleware": "jest test/modules/enrollee/enrollee.middleware.spec.js --detectOpenHandles --verbose --watch",
-    "test:refcodeMiddleware": "jest test/modules/refcode/refcode.middleware.spec.js --detectOpenHandles --verbose --watch"
+    "test:refcodeMiddleware": "jest test/modules/refcode/refcode.middleware.spec.js --detectOpenHandles --verbose --watch",
+    "test:reportsMiddleware": "jest test/modules/reports/reports.middleware.spec.js --detectOpenHandles --verbose --watch"
   },
   "dependencies": {
     "@babel/cli": "^7.8.4",
