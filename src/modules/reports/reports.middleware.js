@@ -17,7 +17,15 @@ export default class ReportsMiddleware {
   static async validateCapSumAudit(req, res, next) {
     try {
       const auditSchema = Joi.object({
-        audited: Joi.bool().required(),
+        auditStatus: Joi.string()
+          .trim()
+          .valid('audited', 'pending', 'flagged')
+          .required(),
+        flagReason: Joi.when('auditStatus', {
+          is: 'flagged',
+          then: Joi.string().trim().required(),
+          otherwise: Joi.forbidden(),
+        }),
       });
       const { joiFormatted } = await validateSchema(auditSchema, req.body);
       req.body = joiFormatted;
