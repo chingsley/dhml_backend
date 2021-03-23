@@ -18,11 +18,11 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       },
-      email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-      },
+      // email: {
+      //   type: DataTypes.STRING,
+      //   allowNull: false,
+      //   unique: true,
+      // },
       username: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -57,6 +57,10 @@ module.exports = (sequelize, DataTypes) => {
     User.belongsTo(models.Role, {
       foreignKey: 'roleId',
       as: 'role',
+    });
+    User.hasMany(models.ReferalCode, {
+      foreignKey: 'operatorId',
+      as: 'generatedCodes',
     });
   };
   User.findOneWhere = async function (condition, options) {

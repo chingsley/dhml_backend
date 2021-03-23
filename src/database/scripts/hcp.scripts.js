@@ -1,5 +1,6 @@
 import { days } from '../../utils/timers';
-import { CONTROL_HCPs } from './helpers.scripts';
+import { CONTROL_HCPs, getCapitationFilters } from './helpers.scripts';
+import { getPaginationParameters } from './helpers.scripts';
 
 // eslint-disable-next-line no-unused-vars
 export const getManifestWihoutZeroStats = (dialect, dbName, reqQuery = {}) => {
@@ -171,26 +172,3 @@ export const getCapitationTotals = (dialect, dbName, reqQuery = {}) => {
   const query = { postgres: query1, mysql: query2 };
   return query[dialect];
 };
-
-function getPaginationParameters(reqQuery = {}) {
-  const { page, pageSize } = reqQuery;
-  const limit = Number(pageSize) || null;
-  const offset = Number(page * pageSize) || 0;
-  return { limit, offset };
-}
-
-function getCapitationFilters(reqQuery) {
-  const { limit, offset } = getPaginationParameters(reqQuery);
-  const { searchItem, hcpCode, hcpName, date = days.today } = reqQuery;
-  const fallback = '"hcpCode" IS NOT NULL';
-  const generalSearch =
-    searchItem &&
-    `LOWER("hcpCode") LIKE '%${searchItem.toLowerCase()}%' OR LOWER("hcpName") LIKE '%${searchItem.toLowerCase()}%' OR LOWER("hcpState") LIKE '%${searchItem.toLowerCase()}%'`;
-  const filterByHcpCode =
-    hcpCode && `LOWER("hcpCode") LIKE '%${hcpCode.toLowerCase()}%'`;
-  const filterByHcpName =
-    hcpName && `LOWER("hcpName") LIKE '%${hcpName.toLowerCase()}%'`;
-  const filter =
-    filterByHcpName || filterByHcpCode || generalSearch || fallback;
-  return { limit, offset, date, filter };
-}

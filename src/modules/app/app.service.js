@@ -7,6 +7,8 @@ import { isBoolean, isValidDate } from '../../utils/helpers';
 import NodeMailer from '../../utils/NodeMailer';
 import { passwordMsgTemplate } from '../../utils/templates/forPassword';
 import NanoId from '../../utils/NanoId';
+import { monthlyCapSum } from '../../database/scripts/approvals.scripts';
+import { months, nextMonth } from '../../utils/timers';
 
 export default class AppService {
   constructor({ body, files, query }) {
@@ -34,6 +36,10 @@ export default class AppService {
         condition = { [field]: { [Op.iLike]: value } };
       }
       if (value) {
+        // console.log(
+        //   'here ..........................................................................',
+        //   condition
+        // );
         const found = await model.findOne({
           where: condition,
         });
@@ -54,12 +60,12 @@ export default class AppService {
     }
   }
 
-  async validateStaffId(staffId) {
+  async validateId(modelName, id) {
     return await this.findOneRecord({
-      modelName: 'Staff',
-      where: { id: staffId },
+      modelName,
+      where: { id },
       isRequired: true,
-      errorIfNotFound: `Staff ID: ${staffId} not found`,
+      errorIfNotFound: `No ${modelName} matches the id of ${id}`,
     });
   }
 
@@ -174,11 +180,11 @@ export default class AppService {
     return filterObj;
   }
   exactMatch(arrOfFields, options = {}) {
-    const { map = {} } = options;
+    const { mapToColumn = {} } = options;
     const queryParams = this.query;
     const filterObj = arrOfFields.reduce((obj, key) => {
       if (queryParams[key]) {
-        const field = map[key] || key;
+        const field = mapToColumn[key] || key;
         const value = queryParams[key];
         return { ...obj, [field]: value };
       }
@@ -214,8 +220,9 @@ export default class AppService {
       };
     }
     const { log } = console;
-    process.env.NODE_ENV === 'development' &&
+    !/(test|production)/.test(process.env.NODE_ENV) &&
       log('searchRecordsBy ===> ', conditions);
+
     return conditions;
   };
 
@@ -292,5 +299,61 @@ export default class AppService {
       html: passwordMsgTemplate(password),
       notificationType: 'password',
     });
+  }
+
+  get noTimeStamps() {
+    return {
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    };
+  }
+
+  async updateCapSumTable() {
+    let [lastRecordedCapSum] = await db.MonthlyCapitationSum.findAll({
+      order: [['month', 'DESC']],
+      limit: 1,
+    });
+    const bulkQuery = [];
+    let i = 0;
+
+    if (!lastRecordedCapSum) {
+      return this.initializeCapSum();
+    }
+    while (
+      new Date(lastRecordedCapSum.nextMonths(i)).getTime() <=
+      new Date(months.currentMonth).getTime()
+    ) {
+      bulkQuery.push(
+        this.executeQuery(monthlyCapSum, {
+          date: lastRecordedCapSum.nextMonths(i),
+        })
+      );
+      i = i + 1;
+    }
+
+    const results = await Promise.all(bulkQuery);
+    const upserts = results.map(([result]) =>
+      db.MonthlyCapitationSum.upsert(result)
+    );
+    await Promise.all(upserts);
+  }
+
+  async initializeCapSum() {
+    const firstVerifiedEnrollee = await db.Enrollee.getFirstVerifiedEnrollee();
+    const startMonth = months.firstDay(firstVerifiedEnrollee.dateVerified);
+    const currentMonth = months.currentMonth;
+    const dates = [startMonth];
+    while (
+      new Date(nextMonth(dates)).getTime() <= new Date(currentMonth).getTime()
+    ) {
+      dates.push(nextMonth(dates));
+    }
+    const bulkQuery = dates.map((date) =>
+      this.executeQuery(monthlyCapSum, { date })
+    );
+    const results = await Promise.all(bulkQuery);
+    const upserts = results.map(([result]) =>
+      db.MonthlyCapitationSum.upsert(result)
+    );
+    await Promise.all(upserts);
   }
 }

@@ -74,12 +74,16 @@ function getPrincipal(index) {
     ? company.companyName()
     : 'Federal Republic of Nigeria';
 
+  const scheme = isMillitary
+    ? 'AFRSHIP'
+    : random.arrayElement(['DSSHIP', 'VCSHIP']);
+
   const j = i + 1;
   return {
     enrolleeIdNo: zeroPadding(j + 230),
     ...getBaseFeatures(),
     hcpId: getRandomInt(100, { min: 1 }),
-    scheme: random.arrayElement(['DSSHIP', 'VCSHIP', 'AFRSHIP']),
+    scheme,
     surname: name.lastName(),
     rank: isMillitary ? random.arrayElement(RANKS) : null,
     serviceNumber: i % 2 === 0 ? `SN/${zeroPadding(j)}` : null,
@@ -92,20 +96,22 @@ function getPrincipal(index) {
     dateOfBirth: moment(date.past(150)).format('YYYY-MM-DD'),
     gender: gender,
     maritalStatus: random.arrayElement(['single', 'married']),
-    serviceStatus: random.arrayElement(['serving', 'retired']),
+    serviceStatus: isMillitary
+      ? random.arrayElement(['serving', 'retired'])
+      : undefined,
     isVerified,
     dateVerified,
   };
 }
 
 function getSameSchemeDep(childIndex, { principal, principalIntegerId }) {
-  const variables = getVariableDependantFetutres(principal);
+  const variables = getVariableDependantFeatures(principal);
   const { relationshipToPrincipal: rtp } = variables;
   const dateOfBirth = rtp === 'child' ? date.past(30) : date.past(5);
   return {
     enrolleeIdNo: `${principal.enrolleeIdNo}-${childIndex + 1}`,
     ...getBaseFeatures(),
-    ...getVariableDependantFetutres(principal),
+    ...getVariableDependantFeatures(principal),
     surname: principal.surname,
     dependantClass: 'same-scheme-dependant',
     relationshipToPrincipal: rtp,
@@ -122,7 +128,7 @@ function getVcshipDep(childIndex, { principal, principalIntegerId }) {
   return {
     enrolleeIdNo: `${principal.enrolleeIdNo}-${childIndex + 1}`,
     ...getBaseFeatures(),
-    ...getVariableDependantFetutres(principal),
+    ...getVariableDependantFeatures(principal),
     surname: principal.surname,
     dependantClass: 'other-scheme-dependant',
     dateOfBirth: moment(date.past(20)).format('YYYY-MM-DD'),
@@ -155,7 +161,7 @@ function getBaseFeatures() {
   };
 }
 
-function getVariableDependantFetutres(principal) {
+function getVariableDependantFeatures(principal) {
   const rtp =
     principal.maritalStatus === 'married'
       ? random.arrayElement(['child', 'spouse'])

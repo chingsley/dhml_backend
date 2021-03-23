@@ -13,6 +13,7 @@ const getSampleUserPasswords = (samplePassword, count = MAX_USER_COUNT) => {
   }
   return samplePasswords;
 };
+
 const getSampleHcpPasswords = (samplePassword, count = 250) => {
   const samplePasswords = [];
   const sampleValue = Password.hash(samplePassword);

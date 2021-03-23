@@ -17,8 +17,13 @@ const { darkgreen, blue, resetColor } = color;
 
 export const log = (...args) => {
   const { log: _log } = console;
-  const _args = args.map((arg) =>
-    typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg
-  );
+  const _args = args.map((arg) => {
+    return typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg;
+    // if(typeof arg === 'object') {
+    //   return JSON.stringify(arg, null, 2)
+    // } else if(typeof arg === 'string') {
+    //   return arg.replace(/\*/g, color.yellow)
+    // }
+  });
   _log('\n', darkgreen, '---@', blue, ..._args, darkgreen, '@---', resetColor);
 };
