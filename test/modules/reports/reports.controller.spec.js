@@ -209,10 +209,140 @@ describe('ReportsController', () => {
         done(e);
       }
     });
+    it('returns 401 for unauthorzed role', async (done) => {
+      try {
+        const capSum = capSumOlderMonth;
+        const payload = { approve: true };
+        const res = await ReportsApi.approveMonthlyCapSum(
+          capSum.id,
+          payload,
+          token[HOD_AUDIT]
+        );
+        const { errors, errorCode } = res.body;
+        expect(res.status).toBe(401);
+        expect(errors[0]).toBe('Access denied');
+        expect(errorCode).toEqual('AUTH004');
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
     it(
       'it catches errors thrown in the try block',
       TestService.testCatchBlock(
         ReportsController.approveMonthlyCapitationSummary
+      )
+    );
+  });
+  describe('auditMonthlyCapitationSummary', () => {
+    let sampleEnrollees, HCPs, capSums, token, capSumPreviousMonth;
+    const today = moment().format('YYYY-MM-DD');
+    beforeAll(async () => {
+      await TestService.resetDB();
+      HCPs = await TestService.seedHCPs(4);
+      sampleEnrollees = getEnrollees({
+        numOfPrincipals: 40,
+        sameSchemeDepPerPrincipal: 2,
+      });
+      await EnrolleeTest.seedAfrship(sampleEnrollees, HCPs);
+      token = await TestService.getTokenMultiple(
+        [MD, HOD_AUDIT, HOD_ACCOUNT],
+        getSampleStaffs(3).sampleStaffs
+      );
+
+      // this will execute the query to update the MonthlyCapSum table
+      await ReportsApi.getMonthlyCapSum('', token[MD]);
+
+      capSums = await _ReportService.findAllMCaps();
+      capSumPreviousMonth = capSums.sort(
+        (a, b) => new Date(a.month).getTime() - new Date(b.month).getTime()
+      )[0];
+
+      // approve the capSum to allow audit;
+      await capSumPreviousMonth.update({ dateApproved: today });
+    });
+
+    it('can successfully mark a report as audited', async (done) => {
+      try {
+        const capSum = capSumPreviousMonth;
+        const payload = { auditStatus: 'audited' };
+        const res = await ReportsApi.auditMonthlyCapSum(
+          capSum.id,
+          payload,
+          token[HOD_AUDIT]
+        );
+        const { data } = res.body;
+        expect(res.status).toBe(200);
+        expect(data.auditStatus).toBe(payload.auditStatus);
+        const auditDate = moment(data.dateAudited).format('YYYY-MM-DD');
+        expect(auditDate).toEqual(today);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('can undo the audit and set it to pending ', async (done) => {
+      try {
+        const capSum = capSumPreviousMonth;
+        const payload = { auditStatus: 'pending' };
+        const res = await ReportsApi.auditMonthlyCapSum(
+          capSum.id,
+          payload,
+          token[HOD_AUDIT]
+        );
+        const { data } = res.body;
+        expect(res.status).toBe(200);
+        expect(data.auditStatus).toBe(payload.auditStatus);
+        expect(data.dateAudited).toBe(null);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('can flag the report and specify a flag reason', async (done) => {
+      try {
+        const capSum = capSumPreviousMonth;
+        const payload = { auditStatus: 'flagged', flagReason: 'some reason' };
+        const res = await ReportsApi.auditMonthlyCapSum(
+          capSum.id,
+          payload,
+          token[HOD_AUDIT]
+        );
+        const { data } = res.body;
+        expect(res.status).toBe(200);
+        expect(data.auditStatus).toBe(payload.auditStatus);
+        expect(data.flagReason).toBe(payload.flagReason);
+        const auditDate = moment(data.dateAudited).format('YYYY-MM-DD');
+        expect(auditDate).toEqual(today);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('cannot audit a report before approval', async (done) => {
+      try {
+        const capSum = capSumPreviousMonth;
+        await capSum.update({ dateApproved: null });
+        const payload = { auditStatus: 'audited' };
+        const res = await ReportsApi.auditMonthlyCapSum(
+          capSum.id,
+          payload,
+          token[HOD_AUDIT]
+        );
+        const { errors } = res.body;
+        expect(res.status).toBe(400);
+        expect(errors[0]).toEqual(
+          'Cannot audit capitation before MD"s approval'
+        );
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it(
+      'it catches errors thrown in the try block',
+      TestService.testCatchBlock(
+        ReportsController.auditMonthlyCapitationSummary
       )
     );
   });

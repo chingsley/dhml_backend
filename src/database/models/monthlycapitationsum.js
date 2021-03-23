@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       auditStatus: {
         type: DataTypes.STRING,
+        defaultValue: 'pending',
       },
       dateAudited: {
         type: DataTypes.DATE,
