@@ -111,21 +111,12 @@ class TestService {
   }
 
   static async getTokenMultiple(rolesArr, staffArr) {
-    const stffsWithRoles = staffArr.map((stff, i) => ({
-      staff: stff,
-      role: rolesArr[i],
-    }));
-    const promiseArr = stffsWithRoles.map(({ staff, role }) =>
-      this.getToken(staff, role)
-    );
-    const results = await Promise.all(promiseArr);
-    return stffsWithRoles.reduce((acc, { staff, role }) => {
-      const data = results.find(
-        (r) => r.user.staffInfo.staffIdNo === staff.staffIdNo
-      );
-      acc[role] = data.token;
-      return acc;
-    }, {});
+    const token = {};
+    for (let i = 0; i < rolesArr.length; i++) {
+      const data = await this.getToken(staffArr[i], rolesArr[i]);
+      token[rolesArr[i]] = data.token;
+    }
+    return token;
   }
 
   static async getToken(sampleStaff, roleTitle) {
