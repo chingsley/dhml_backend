@@ -21,15 +21,19 @@ module.exports = (sequelize, DataTypes) => {
       dateApproved: {
         type: DataTypes.DATE,
       },
-      dateAudited: {
-        type: DataTypes.DATE,
+      auditStatus: {
+        type: DataTypes.STRING,
       },
-      datePaid: {
+      dateAudited: {
         type: DataTypes.DATE,
       },
       flagReason: {
         type: DataTypes.STRING,
       },
+      datePaid: {
+        type: DataTypes.DATE,
+      },
+
       monthInWords: {
         type: DataTypes.VIRTUAL,
         get() {
@@ -42,16 +46,19 @@ module.exports = (sequelize, DataTypes) => {
           return this.dateApproved !== null;
         },
       },
-      isAudited: {
-        type: DataTypes.VIRTUAL,
-        get() {
-          return this.dateAudited !== null;
-        },
-      },
       isPaid: {
         type: DataTypes.VIRTUAL,
         get() {
           return this.datePaid !== null;
+        },
+      },
+      isCurrentMonth: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return (
+            moment(this.month).clone().startOf('month').format('YYYY-MM-DD') ===
+            moment().clone().startOf('month').format('YYYY-MM-DD')
+          );
         },
       },
     },
@@ -69,5 +76,3 @@ module.exports = (sequelize, DataTypes) => {
   };
   return MonthlyCapitationSum;
 };
-
-// moment('2021-03-01').format('MMMM YYYY')

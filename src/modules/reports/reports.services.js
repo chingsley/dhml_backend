@@ -30,74 +30,69 @@ export default class ReportService extends AppService {
     });
   }
   async approveMonthlyCapSum() {
-    const { summaryId: id } = this.params;
+    const capSum = await this.getCapSumById(this.params.summaryId, {
+      rejectCurrentMonth: true,
+    });
+    this.rejectIf(capSum.isPaid, {
+      withError: 'cannot change approval, capitation has been paid for',
+    });
     const { approve } = this.body;
     const dateApproved = approve ? new Date() : null;
-    const capSum = await this.findOneRecord({
-      modelName: 'MonthlyCapitationSum',
-      where: { id },
-      errorIfNotFound: `no capitation summary was found with id ${id}`,
-    });
-    this.validateCapSumApproval(capSum, approve);
     await capSum.update({ dateApproved });
     return capSum;
   }
 
   async auditMonthlyCapSum() {
-    const { summaryId: id } = this.params;
-    const { audited } = this.body;
-    const dateAudited = audited ? new Date() : null;
-    const capSum = await this.findOneRecord({
-      modelName: 'MonthlyCapitationSum',
-      where: { id },
-      errorIfNotFound: `no capitation summary was found with id ${id}`,
+    const capSum = await this.getCapSumById(this.params.summaryId, {
+      rejectCurrentMonth: true,
     });
-    this.validateCapSumAuditing(capSum, audited);
-    await capSum.update({ dateAudited });
+    this.rejectIf(!capSum.isApproved, {
+      withError: 'Cannot audit capitation before MD"s approval',
+    });
+    const { auditStatus } = this.body;
+    const dateAudited = auditStatus === 'pending' ? null : new Date();
+    await capSum.update({ ...this.body, dateAudited });
     return capSum;
   }
 
+  /**
+   * might require the use of transactions due
+   * to the mail sending during payment
+   * @returns updated capSum
+   */
   async payMonthlyCapSum() {
-    const { summaryId: id } = this.params;
-    const capSum = await this.findOneRecord({
-      modelName: 'MonthlyCapitationSum',
-      where: { id },
-      errorIfNotFound: `no capitation summary was found with id ${id}`,
+    const capSum = await this.getCapSumById(this.params.summaryId, {
+      rejectCurrentMonth: true,
     });
-    this.validateCapSumPayment(capSum);
+    this.rejectIf(!capSum.isApproved, {
+      withError: 'Cannot pay for capitation before MD"s approval',
+    });
     await capSum.update({ datePaid: new Date() });
     return capSum;
   }
 
-  validateCapSumApproval(capSum, approve) {
-    if (capSum.isPaid && approve === false) {
+  async getCapSumById(id, { rejectCurrentMonth } = {}) {
+    const capSum = await this.findOneRecord({
+      modelName: 'MonthlyCapitationSum',
+      where: { id },
+      errorIfNotFound: `no capitation summary was found with id ${id}`,
+    });
+
+    if (rejectCurrentMonth && capSum.isCurrentMonth) {
       throwError({
         status: 400,
-        error: ['Cannot undo approval for capitation that has been paid for'],
+        error: ['Operation not allowed on current running capitation'],
       });
     }
+
+    return capSum;
   }
 
-  validateCapSumAuditing(capSum, audited) {
-    if (capSum.isPaid && audited === false) {
+  rejectIf(condition, { withError }) {
+    if (condition) {
       throwError({
         status: 400,
-        error: ['Cannot undo audit for capitation that has been paid for'],
-      });
-    }
-    if (!capSum.isApproved && audited === true) {
-      throwError({
-        status: 400,
-        error: ['Cannot audit capitation before MD"s approval'],
-      });
-    }
-  }
-
-  validateCapSumPayment(capSum) {
-    if (!capSum.isApproved) {
-      throwError({
-        status: 400,
-        error: ['Cannot pay for capitation before MD"s approval'],
+        error: [withError],
       });
     }
   }

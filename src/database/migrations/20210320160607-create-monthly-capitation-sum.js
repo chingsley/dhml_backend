@@ -26,14 +26,17 @@ module.exports = {
         dateApproved: {
           type: Sequelize.DATE,
         },
-        dateAudited: {
-          type: Sequelize.DATE,
+        auditStatus: {
+          type: Sequelize.STRING,
         },
-        datePaid: {
+        dateAudited: {
           type: Sequelize.DATE,
         },
         flagReason: {
           type: Sequelize.STRING,
+        },
+        datePaid: {
+          type: Sequelize.DATE,
         },
         createdAt: {
           allowNull: false,

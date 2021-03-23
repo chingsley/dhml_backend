@@ -4,6 +4,7 @@ const { months, days } = require('../../utils/timers');
 dotenv.config();
 const db = require('../models');
 const SampleReferalCodes = require('../../shared/samples/refcode.samples');
+const { log } = console;
 
 if (process.env.SEED_WITH === 'LIVE_DATA') {
   const enrollees = require('../../../live_data/Enrollees.json');
@@ -36,6 +37,9 @@ if (process.env.SEED_WITH === 'LIVE_DATA') {
       }, {});
       const dependantsWithPrincipalId = dependants.map((d) => {
         const principalEnrolleeIdNo = d.enrolleeIdNo.split('-')[0];
+        if (!dictPrincipalId[principalEnrolleeIdNo]) {
+          log(principalEnrolleeIdNo, d);
+        }
         return {
           ...d,
           principalId: dictPrincipalId[principalEnrolleeIdNo].id,
