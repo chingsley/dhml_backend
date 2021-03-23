@@ -346,4 +346,70 @@ describe('ReportsController', () => {
       )
     );
   });
+  describe('payMonthlyCapitation', () => {
+    let sampleEnrollees, HCPs, capSums, token, capSumPreviousMonth;
+    const today = moment().format('YYYY-MM-DD');
+    beforeAll(async () => {
+      await TestService.resetDB();
+      HCPs = await TestService.seedHCPs(4);
+      sampleEnrollees = getEnrollees({
+        numOfPrincipals: 40,
+        sameSchemeDepPerPrincipal: 2,
+      });
+      await EnrolleeTest.seedAfrship(sampleEnrollees, HCPs);
+      token = await TestService.getTokenMultiple(
+        [MD, HOD_ACCOUNT],
+        getSampleStaffs(3).sampleStaffs
+      );
+
+      await ReportsApi.getMonthlyCapSum('', token[MD]);
+
+      capSums = await _ReportService.findAllMCaps();
+      capSumPreviousMonth = capSums.sort(
+        (a, b) => new Date(a.month).getTime() - new Date(b.month).getTime()
+      )[0];
+
+      // approve the capSum to allow audit;
+      await capSumPreviousMonth.update({ dateApproved: today });
+    });
+
+    it('can successfully mark a report as paid', async (done) => {
+      try {
+        const capSum = capSumPreviousMonth;
+        const res = await ReportsApi.payMonthlyCapSum(
+          capSum.id,
+          token[HOD_ACCOUNT]
+        );
+        const { data } = res.body;
+        expect(res.status).toBe(200);
+        const paymentDate = moment(data.datePaid).format('YYYY-MM-DD');
+        expect(paymentDate).toEqual(today);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('cannot pay for a report before approval', async (done) => {
+      try {
+        const capSum = capSumPreviousMonth;
+        await capSum.update({ dateApproved: null });
+        const res = await ReportsApi.payMonthlyCapSum(
+          capSum.id,
+          token[HOD_ACCOUNT]
+        );
+        const { errors } = res.body;
+        expect(res.status).toBe(400);
+        expect(errors[0]).toEqual(
+          'Cannot pay for capitation before MD"s approval'
+        );
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it(
+      'it catches errors thrown in the try block',
+      TestService.testCatchBlock(ReportsController.payMonthlyCapitation)
+    );
+  });
 });

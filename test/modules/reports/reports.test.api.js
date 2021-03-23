@@ -26,6 +26,12 @@ class ReportsApi extends TestService {
       .set('authorization', token)
       .send(payload);
   }
+
+  static payMonthlyCapSum(summaryId, token) {
+    return app
+      .patch(`/api/v1/reports/capitation/${summaryId}/pay/`)
+      .set('authorization', token);
+  }
 }
 
 export default ReportsApi;
