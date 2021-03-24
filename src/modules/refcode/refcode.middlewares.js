@@ -1,5 +1,5 @@
-import Response from '../../../src/utils/Response';
-import { validateSchema } from '../../../src/validators/joi/config';
+import Response from '../../utils/Response';
+import { validateSchema } from '../../validators/joi/config';
 import {
   getRefCodeSchema,
   codeVerificationSchema,
@@ -7,7 +7,7 @@ import {
   schemaRefcodeIdArr,
   refcodeQuerySchema,
   schemaEnrolleeIdNo,
-} from '../../../src/validators/joi/schemas/refcode.schema';
+} from '../../validators/joi/schemas/refcode.schema';
 
 export default class RefcodeMiddleware {
   static async validateNewRefcode(req, res, next) {
