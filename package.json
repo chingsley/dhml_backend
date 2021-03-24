@@ -10,6 +10,7 @@
     "build": "rm -rf dist && mkdir dist && babel src --copy-files --out-dir dist",
     "start": "npm run build && node dist/index.js",
     "------------------": "-------------------------",
+    "autorestart:dist": "nodemon dist/index.js",
     "start:dev": "nodemon --exec babel-node ./src/index.js",
     "db:migrate:dev": "sequelize db:migrate --env development",
     "db:migrate:undo:dev": "sequelize db:migrate:undo:all --env development",
@@ -43,11 +44,13 @@
     "test:roleController": "jest test/modules/role/role.controller.spec.js --detectOpenHandles --verbose --watch",
     "test:refcodeController": "jest test/modules/refcode/refcode.controller.spec.js --detectOpenHandles --verbose --watch",
     "test:reportsController": "jest test/modules/reports/reports.controller.spec.js --detectOpenHandles --verbose --watch",
+    "test:statsController": "jest test/modules/stats/stats.controller.spec.js --detectOpenHandles --verbose --watch",
     "temp": "jest test/modules/hcp/hcp.temp.spec.js --detectOpenHandles --verbose --watch",
     "-------------------------": "-----------------------------",
     "test:userMiddleware": "jest test/modules/user/user.middleware.spec.js --detectOpenHandles --verbose --watch",
     "test:enrolleeMiddleware": "jest test/modules/enrollee/enrollee.middleware.spec.js --detectOpenHandles --verbose --watch",
-    "test:refcodeMiddleware": "jest test/modules/refcode/refcode.middleware.spec.js --detectOpenHandles --verbose --watch"
+    "test:refcodeMiddleware": "jest test/modules/refcode/refcode.middleware.spec.js --detectOpenHandles --verbose --watch",
+    "test:reportsMiddleware": "jest test/modules/reports/reports.middleware.spec.js --detectOpenHandles --verbose --watch"
   },
   "dependencies": {
     "@babel/cli": "^7.8.4",

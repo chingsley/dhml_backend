@@ -6,7 +6,7 @@ export const tomorrow = moment().add(1, 'days').format('YYYY-MM-DD');
 export const today = moment().format('YYYY-MM-DD');
 export const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
 
-class _ReportService extends TestService {
+class _StatsService extends TestService {
   static MCapSum = db.MonthlyCapitationSum;
 
   static findAllMCaps() {
@@ -14,4 +14,4 @@ class _ReportService extends TestService {
   }
 }
 
-export default _ReportService;
+export default _StatsService;

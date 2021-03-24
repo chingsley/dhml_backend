@@ -39,12 +39,14 @@ class TestService {
       }
     } else {
       const dbHcp = db.HealthCareProvider;
+      const dbMCaps = db.MonthlyCapitationSum;
       await db.Enrollee.destroy({ where: {}, truncate: { cascade: true } });
       await db.Password.destroy({ where: {}, truncate: { cascade: true } });
       await db.User.destroy({ where: {}, truncate: { cascade: true } });
       await db.Staff.destroy({ where: {}, truncate: { cascade: true } });
       await db.Role.destroy({ where: {}, truncate: { cascade: true } });
       await dbHcp.destroy({ where: {}, truncate: { cascade: true } });
+      await dbMCaps.destroy({ where: {}, truncate: { cascade: true } });
     }
   }
 
@@ -106,6 +108,15 @@ class TestService {
     });
     const { data } = res.body;
     return { hcp: data.hcp, token: data.token };
+  }
+
+  static async getTokenMultiple(rolesArr, staffArr) {
+    const token = {};
+    for (let i = 0; i < rolesArr.length; i++) {
+      const data = await this.getToken(staffArr[i], rolesArr[i]);
+      token[rolesArr[i]] = data.token;
+    }
+    return token;
   }
 
   static async getToken(sampleStaff, roleTitle) {

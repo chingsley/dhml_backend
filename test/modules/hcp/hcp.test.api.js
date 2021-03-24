@@ -11,8 +11,8 @@ export const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
 const app = supertest(server.server);
 
 class HcpApi extends TestService {
-  static async register(enrolee, token) {
-    const payload = enrolee;
+  static async register(hcp, token) {
+    const payload = hcp;
     const res = await app
       .post('/api/v1/hcp')
       .set('authorization', token)
