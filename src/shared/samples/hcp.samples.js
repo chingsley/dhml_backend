@@ -2,19 +2,24 @@ const excelToJson = require('convert-excel-to-json');
 const faker = require('faker');
 import { getRandomInt } from '../../utils/helpers';
 import { banks } from '../constants/lists.constants';
+require('dotenv').config();
+
+const { NODE_ENV } = process.env;
 
 function convertExcelToJson() {
   const { Sheet1: healthCareProviders } = excelToJson({
-    sourceFile: 'DHML_HCP_List_2.xlsx',
+    sourceFile: 'hcp_by_arm_of_service.xlsx',
     header: {
       rows: 1, // no. of rows to skip (skip the headers)
     },
     columnToKey: {
-      // A: 'id',
-      B: 'code',
-      C: 'name',
-      D: 'category',
-      E: 'state',
+      A: 'armOfService',
+      // B: 'id',
+      C: 'code',
+      D: 'name',
+      E: 'category',
+      F: 'state',
+      G: 'status',
     },
   });
   return healthCareProviders;
@@ -32,6 +37,7 @@ function getSampleHCPs(count) {
     bankAddress: faker.address.secondaryAddress(),
     accountNumber: getRandomInt(9999999999, { min: 1000000000 }),
     accountType: faker.random.arrayElement(['savings', 'current', 'corporate']),
+    status: NODE_ENV === 'test' ? undefined : hcp.status,
   }));
 
   return count ? HCPs.slice(0, count) : HCPs.slice();

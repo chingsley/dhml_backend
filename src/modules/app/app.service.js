@@ -143,11 +143,19 @@ export default class AppService {
     }
   }
 
-  executeQuery(queryFunction, reqQuery) {
+  async executeQuery(queryFunction, reqQuery, key) {
     const { dialect, database } = db.sequelize.options;
-    return db.sequelize.query(queryFunction(dialect, database, reqQuery), {
-      type: QueryTypes.SELECT,
-    });
+    const rows = await db.sequelize.query(
+      queryFunction(dialect, database, reqQuery),
+      {
+        type: QueryTypes.SELECT,
+      }
+    );
+    if (key) {
+      return { [key]: rows };
+    } else {
+      return rows;
+    }
   }
 
   throwError = (responseObj) => {
