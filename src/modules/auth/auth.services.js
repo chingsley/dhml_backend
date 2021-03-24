@@ -32,7 +32,12 @@ export default class AuthService extends AppService {
     const user = this.getUserInfoFromStaff(staff, { errorCode: LGN002 });
     this.rejectExpiredDefaultPass(user.password);
     this.validatePassword(password, user.password.value);
-    await user.reload({ include: { model: db.Staff, as: 'staffInfo' } });
+    await user.reload({
+      include: [
+        { model: db.Staff, as: 'staffInfo' },
+        { model: db.Role, attributes: ['title'], as: 'role' },
+      ],
+    });
     return {
       user,
       token: Jwt.generateToken({ userId: user.id }),
