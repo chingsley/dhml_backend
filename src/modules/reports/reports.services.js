@@ -22,7 +22,8 @@ export default class ReportService extends AppService {
             dateApproved: { [Op.not]: null },
           };
 
-    await this.updateCapSumTable();
+    // await this.updateCapSumTable();
+    await db.MonthlyCapitationSum.updateRecords();
     return db.MonthlyCapitationSum.findAndCountAll({
       where: { ...filter },
       order: [['month', 'DESC']],

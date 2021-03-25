@@ -561,6 +561,19 @@ describe('HcpController', () => {
       }
     });
 
+    it('returns the monthlyCapitationSum common to all HCPs for the given month', async (done) => {
+      try {
+        const {
+          data: { total, monthlyCapitationSum },
+        } = res2.body;
+        expect(`${monthlyCapitationSum.lives}`).toEqual(`${total.lives}`);
+        expect(`${monthlyCapitationSum.amount}`).toEqual(`${total.amount}`);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+
     it('ensures the total amount coputed from manifest matches the total in capitation', async (done) => {
       try {
         const { data: manifestData } = res1.body;
