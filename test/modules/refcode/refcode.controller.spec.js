@@ -104,6 +104,7 @@ describe('RefcodeController', () => {
       try {
         responses.forEach(({ res }, i) => {
           const { data } = res.body;
+          // console.log(res.body);
           expect(data.code).toMatch(VALID_REF_CODE);
           const matched = data.code.match(/\b(\d)*[A-Z]-(\d)*\b/);
           const codeSerialNumber = matched[0].split('-')[1];

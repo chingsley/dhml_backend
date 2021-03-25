@@ -9,6 +9,7 @@ import { enrolleeSearchableFields } from '../../shared/attributes/enrollee.attri
 import { hcpSearchableFields } from '../../shared/attributes/hcp.attribtes';
 import { throwError } from '../../shared/helpers';
 import { HCP } from '../../shared/constants/roles.constants';
+import { months } from '../../utils/timers';
 
 const { sequelize } = db;
 
@@ -155,7 +156,13 @@ export default class HcpService extends AppService {
       this.query
     );
     const [total] = await this.executeQuery(getCapitationTotals, this.query);
-    return { count, rows, total };
+    const { date = months.currentMonth } = this.query;
+    const monthlyCapitationSum = await db.MonthlyCapitationSum.updateAndFindOne(
+      {
+        where: { month: new Date(months.firstDay(date)) },
+      }
+    );
+    return { count, rows, total, monthlyCapitationSum };
   }
 
   async fetchCapitationSummary() {
@@ -174,7 +181,18 @@ export default class HcpService extends AppService {
     );
     const [total] = await this.executeQuery(getCapitationTotals, this.query);
     const capitationByState = this.groupCapitationByState(rows);
-    return { count, data: this.sumStatsPerState(capitationByState), total };
+
+    const { date = months.currentMonth } = this.query;
+    const condition = { month: new Date(months.firstDay(date)) };
+    const monthlyCapitationSum = await db.MonthlyCapitationSum.updateAndFindOne(
+      { where: condition }
+    );
+    return {
+      count,
+      data: this.sumStatsPerState(capitationByState),
+      total,
+      monthlyCapitationSum,
+    };
   }
 
   filterHcp() {
