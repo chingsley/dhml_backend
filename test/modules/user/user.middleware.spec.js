@@ -11,7 +11,7 @@ describe('userMiddleware', () => {
     beforeAll(async () => {
       await TestService.resetDB();
       const { sampleStaffs: stffs } = getSampleStaffs(1);
-      const data = await TestService.getToken(stffs[0], ROLES.ADMIN);
+      const data = await TestService.getToken(stffs[0], ROLES.SUPERADMIN);
       token = data.token;
     });
 

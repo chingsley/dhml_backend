@@ -320,12 +320,13 @@ export default class AppService {
       order: [['month', 'DESC']],
       limit: 1,
     });
-    const bulkQuery = [];
-    let i = 0;
 
     if (!lastRecordedCapSum) {
       return this.initializeCapSum();
     }
+
+    const bulkQuery = [];
+    let i = 0;
     while (
       new Date(lastRecordedCapSum.nextMonths(i)).getTime() <=
       new Date(months.currentMonth).getTime()
@@ -346,6 +347,7 @@ export default class AppService {
   }
 
   async initializeCapSum() {
+    const { log } = console;
     const firstVerifiedEnrollee = await db.Enrollee.getFirstVerifiedEnrollee();
     const startMonth = months.firstDay(firstVerifiedEnrollee.dateVerified);
     const currentMonth = months.currentMonth;
@@ -358,7 +360,9 @@ export default class AppService {
     const bulkQuery = dates.map((date) =>
       this.executeQuery(monthlyCapSum, { date })
     );
+    log('here.....1.1');
     const results = await Promise.all(bulkQuery);
+    log('here.....1.2');
     const upserts = results.map(([result]) =>
       db.MonthlyCapitationSum.upsert(result)
     );
