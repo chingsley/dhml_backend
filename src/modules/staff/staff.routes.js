@@ -4,6 +4,7 @@ import {
   DEPT_USER,
   ENROLMENT_OFFICER,
   HOD_ADMIN,
+  MD,
   SUPERADMIN,
   VERIFIER,
 } from '../../shared/constants/roles.constants';
@@ -16,13 +17,13 @@ const router = express.Router();
 
 router.post(
   '/',
-  AuthMiddleware.authorize([SUPERADMIN, ADMIN, HOD_ADMIN]),
+  AuthMiddleware.authorize([MD, SUPERADMIN, ADMIN, HOD_ADMIN]),
   StaffMiddleware.validateNewStaff,
   StaffController.addNewStaff
 );
 router.patch(
   '/:staffId',
-  AuthMiddleware.authorize([SUPERADMIN, ADMIN, HOD_ADMIN]),
+  AuthMiddleware.authorize([MD, SUPERADMIN, ADMIN, HOD_ADMIN]),
   AppMiddleware.validateIdParams,
   StaffMiddleware.validateStaffUpdate,
   StaffController.updateStaff
@@ -31,6 +32,7 @@ router.patch(
 router.get(
   '/',
   AuthMiddleware.authorize([
+    MD,
     SUPERADMIN,
     HOD_ADMIN,
     VERIFIER,

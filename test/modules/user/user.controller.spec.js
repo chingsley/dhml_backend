@@ -239,7 +239,7 @@ describe('UserController', () => {
         roleId: role.id,
       }));
       [user1, user2] = await _UserService.seedBulk(sampleUsers);
-      const data = await TestService.getToken(stffs[0], ROLES.ADMIN);
+      const data = await TestService.getToken(stffs[0], ROLES.SUPERADMIN);
       token = data.token;
       res = await UserApi.delete([user1.id, user2.id], token);
     });
@@ -273,9 +273,9 @@ describe('UserController', () => {
         done(e);
       }
     });
-    it('ensures only admin and superadmin can access the delete endpoint', async (done) => {
+    it('ensures only MD and superadmin can access the delete endpoint', async (done) => {
       try {
-        const { token } = await TestService.getToken(stffs[0], ROLES.VERIFIER);
+        const { token } = await TestService.getToken(stffs[0], ROLES.ADMIN);
         const res = await UserApi.delete([user1.id], token);
         const { errors, errorCode } = res.body;
         expect(res.status).toBe(401);

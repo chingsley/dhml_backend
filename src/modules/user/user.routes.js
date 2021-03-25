@@ -2,32 +2,34 @@ import express from 'express';
 import UserController from './user.controller';
 import UserMiddleware from './user.middleware';
 import AuthMiddleware from '../auth/auth.middleware';
-import { ADMIN, SUPERADMIN } from '../../shared/constants/roles.constants';
+import { ADMIN, MD, SUPERADMIN } from '../../shared/constants/roles.constants';
 
 const router = express.Router();
 
+const allowedRoles = [MD, SUPERADMIN, ADMIN];
+
 router.post(
   '/',
-  AuthMiddleware.authorize([SUPERADMIN, ADMIN]),
+  AuthMiddleware.authorize([...allowedRoles]),
   UserMiddleware.validateNewUser,
   AuthMiddleware.authorizeRoleAssignment([SUPERADMIN]),
   UserController.registerUser
 );
 router.get(
   '/',
-  AuthMiddleware.authorize([SUPERADMIN, ADMIN]),
+  AuthMiddleware.authorize([...allowedRoles]),
   UserController.getAllUsers
 );
 router.patch(
   '/:userId',
-  AuthMiddleware.authorize([SUPERADMIN, ADMIN]),
+  AuthMiddleware.authorize([...allowedRoles]),
   UserMiddleware.validateUserUpdate,
   AuthMiddleware.authorizeRoleAssignment([SUPERADMIN]),
   UserController.updateUser
 );
 router.delete(
   '/',
-  AuthMiddleware.authorize([SUPERADMIN, ADMIN]),
+  AuthMiddleware.authorize([SUPERADMIN]),
   UserMiddleware.validateUserIdArr,
   UserController.deleteUsers
 );
