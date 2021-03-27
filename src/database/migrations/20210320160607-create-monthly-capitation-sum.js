@@ -2,7 +2,7 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable(
-      'MonthlyCapitationSums',
+      'GeneralMonthlyCapitations',
       {
         id: {
           allowNull: false,
@@ -56,6 +56,6 @@ module.exports = {
   },
   // eslint-disable-next-line no-unused-vars
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('MonthlyCapitationSums');
+    return queryInterface.dropTable('GeneralMonthlyCapitations');
   },
 };

@@ -23,8 +23,8 @@ export default class ReportService extends AppService {
           };
 
     // await this.updateCapSumTable();
-    await db.MonthlyCapitationSum.updateRecords();
-    return db.MonthlyCapitationSum.findAndCountAll({
+    await db.GeneralMonthlyCapitation.updateRecords();
+    return db.GeneralMonthlyCapitation.findAndCountAll({
       where: { ...filter },
       order: [['month', 'DESC']],
       ...this.paginate(this.query),
@@ -70,7 +70,7 @@ export default class ReportService extends AppService {
 
   async getCapSumById(id, { rejectCurrentMonth } = {}) {
     const capSum = await this.findOneRecord({
-      modelName: 'MonthlyCapitationSum',
+      modelName: 'GeneralMonthlyCapitation',
       where: { id },
       errorIfNotFound: `no capitation summary was found with id ${id}`,
     });

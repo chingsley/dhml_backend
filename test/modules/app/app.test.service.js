@@ -39,7 +39,7 @@ class TestService {
       }
     } else {
       const dbHcp = db.HealthCareProvider;
-      const dbMCaps = db.MonthlyCapitationSum;
+      const dbMCaps = db.GeneralMonthlyCapitation;
       await db.Enrollee.destroy({ where: {}, truncate: { cascade: true } });
       await db.Password.destroy({ where: {}, truncate: { cascade: true } });
       await db.User.destroy({ where: {}, truncate: { cascade: true } });
