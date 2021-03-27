@@ -5,6 +5,7 @@ import {
   MD,
   SUPERADMIN,
 } from '../../shared/constants/roles.constants';
+import AppMiddleware from '../app/app.middleware';
 import AuthMiddleware from '../auth/auth.middleware';
 import AccountController from './account.controller';
 import AccountMiddleware from './account.middleware';
@@ -16,12 +17,20 @@ const allowedRoles = [SUPERADMIN, MD, HOD_ACCOUNT, HOD_AUDIT];
 router.get(
   '/capitation',
   AuthMiddleware.authorize([...allowedRoles]),
-  AccountMiddleware.validateDateQuery,
+  AppMiddleware.requireDateQuery,
   AccountController.getApprovedMonthSpecificCapitation
+);
+router.get(
+  '/capitation/payment_confirmation',
+  AuthMiddleware.authorize([...allowedRoles]),
+  AppMiddleware.validateQueryParams,
+  AppMiddleware.requireDateQuery,
+  AccountController.getPaymentConfirmation
 );
 router.patch(
   '/capitation/:capitationId',
   AuthMiddleware.authorize([...allowedRoles]),
+  AppMiddleware.validateIdParams,
   AccountMiddleware.validateTsaRemitaUpdate,
   AccountController.updateTsaRemitaValues
 );
