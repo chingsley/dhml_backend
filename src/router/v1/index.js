@@ -9,6 +9,7 @@ import hcpRoutes from '../../modules/hcp/hcp.routes';
 import refcodeRoutes from '../../modules/refcode/refcode.routes';
 import reportsRoutes from '../../modules/reports/reports.routes';
 import statsRoutes from '../../modules/stats/stats.routes';
+import accountRoutes from '../../modules/account/account.routes';
 
 const router = express.Router();
 
@@ -21,5 +22,6 @@ router.use('/hcp', hcpRoutes);
 router.use('/refcodes', refcodeRoutes);
 router.use('/reports', reportsRoutes);
 router.use('/stats', statsRoutes);
+router.use('/accounts', accountRoutes);
 
 export default router;
