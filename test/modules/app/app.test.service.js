@@ -39,14 +39,17 @@ class TestService {
       }
     } else {
       const dbHcp = db.HealthCareProvider;
-      const dbMCaps = db.GeneralMonthlyCapitation;
+      const dbGmc = db.GeneralMonthlyCapitation;
+      const dbHmc = db.HcpMonthlyCapitation;
+
       await db.Enrollee.destroy({ where: {}, truncate: { cascade: true } });
       await db.Password.destroy({ where: {}, truncate: { cascade: true } });
       await db.User.destroy({ where: {}, truncate: { cascade: true } });
       await db.Staff.destroy({ where: {}, truncate: { cascade: true } });
-      await db.Role.destroy({ where: {}, truncate: { cascade: true } });
+      await dbHmc.destroy({ where: {}, truncate: { cascade: true } });
+      await dbGmc.destroy({ where: {}, truncate: { cascade: true } });
       await dbHcp.destroy({ where: {}, truncate: { cascade: true } });
-      await dbMCaps.destroy({ where: {}, truncate: { cascade: true } });
+      await db.Role.destroy({ where: {}, truncate: { cascade: true } });
     }
   }
 

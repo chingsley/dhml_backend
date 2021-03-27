@@ -64,8 +64,8 @@ module.exports = (sequelize, DataTypes) => {
           model: 'Roles',
           key: 'id',
         },
-        onDelete: 'CASCADE',
-        onUpdate: 'RESTRICT',
+        onDelete: 'RESTRICT',
+        onUpdate: 'CASCADE',
       },
     },
     {}
