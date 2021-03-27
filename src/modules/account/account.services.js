@@ -41,6 +41,19 @@ export default class AccountService extends AppService {
     return capitation;
   }
 
+  fetchPaymentConfirmation() {
+    const { date } = this.query;
+    return db.HcpMonthlyCapitation.findAndCountAll({
+      where: { month: new Date(months.firstDay(date)) },
+      ...this.paginate(this.query),
+      include: {
+        model: db.HealthCareProvider,
+        as: 'hcp',
+        attributes: ['name', 'code', 'bank', 'accountNumber', 'state'],
+      },
+    });
+  }
+
   groupByState(capitation) {
     return capitation.reduce((acc, cap) => {
       if (!acc[cap.hcp.state]) {
