@@ -17,7 +17,7 @@ const allowedRoles = [SUPERADMIN, MD, HOD_ACCOUNT, HOD_AUDIT];
 router.get(
   '/capitation',
   AuthMiddleware.authorize([...allowedRoles]),
-  ReportsController.getMonthlyCapitationSummary
+  ReportsController.getGeneralMonthlyCapitation
 );
 router.patch(
   '/capitation/:summaryId/approval',

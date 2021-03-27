@@ -157,7 +157,7 @@ export default class HcpService extends AppService {
     );
     const [total] = await this.executeQuery(getCapitationTotals, this.query);
     const { date = months.currentMonth } = this.query;
-    const monthlyCapitationSum = await db.MonthlyCapitationSum.updateAndFindOne(
+    const monthlyCapitationSum = await db.GeneralMonthlyCapitation.updateAndFindOne(
       {
         where: { month: new Date(months.firstDay(date)) },
       }
@@ -184,7 +184,7 @@ export default class HcpService extends AppService {
 
     const { date = months.currentMonth } = this.query;
     const condition = { month: new Date(months.firstDay(date)) };
-    const monthlyCapitationSum = await db.MonthlyCapitationSum.updateAndFindOne(
+    const monthlyCapitationSum = await db.GeneralMonthlyCapitation.updateAndFindOne(
       { where: condition }
     );
     return {

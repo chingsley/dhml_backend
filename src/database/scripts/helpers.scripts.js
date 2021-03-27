@@ -1,4 +1,4 @@
-import { days } from '../../utils/timers';
+import { days, moment } from '../../utils/timers';
 
 export const CONTROL_HCPs = ['XX/0000/P', 'XX/0001/P', 'XX/0002/P']
   .map((code) => `'${code}'`)
@@ -25,7 +25,12 @@ export function generateSearchQuery(searchItem, searchableFields) {
 
 export function getCapitationFilters(reqQuery) {
   const { limit, offset } = getPaginationParameters(reqQuery);
-  const { searchItem, hcpCode, hcpName, date = days.today } = reqQuery;
+  const { searchItem, hcpCode, hcpName, date = days.today } = {
+    ...reqQuery,
+    date: reqQuery.date
+      ? moment(reqQuery.date).format('YYYY-MM-DD')
+      : undefined,
+  };
   const fallback = '"hcpCode" IS NOT NULL';
   const generalSearch =
     searchItem &&

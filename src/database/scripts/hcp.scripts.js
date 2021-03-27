@@ -1,4 +1,4 @@
-import { days } from '../../utils/timers';
+import { days, moment } from '../../utils/timers';
 import { CONTROL_HCPs, getCapitationFilters } from './helpers.scripts';
 import { getPaginationParameters } from './helpers.scripts';
 
@@ -6,7 +6,12 @@ import { getPaginationParameters } from './helpers.scripts';
 export const getManifestWihoutZeroStats = (dialect, dbName, reqQuery = {}) => {
   const { limit, offset } = getPaginationParameters(reqQuery);
 
-  const { searchItem, hcpCode, hcpName, date = days.today } = reqQuery;
+  const { searchItem, hcpCode, hcpName, date = days.today } = {
+    ...reqQuery,
+    date: reqQuery.date
+      ? moment(reqQuery.date).format('YYYY-MM-DD')
+      : undefined,
+  };
   const fallback = '"hcpCode" IS NOT NULL';
   const generalSearch =
     searchItem &&
@@ -54,7 +59,12 @@ export const getManifestWihoutZeroStats = (dialect, dbName, reqQuery = {}) => {
 export const getManifestWithZeroStats = (dialect, dbName, reqQuery = {}) => {
   const { limit, offset } = getPaginationParameters(reqQuery);
 
-  const { searchItem, hcpCode, hcpName, date = days.today } = reqQuery;
+  const { searchItem, hcpCode, hcpName, date = days.today } = {
+    ...reqQuery,
+    date: reqQuery.date
+      ? moment(reqQuery.date).format('YYYY-MM-DD')
+      : undefined,
+  };
   const fallback = '"hcpCode" IS NOT NULL';
   const generalSearch =
     searchItem &&
@@ -69,7 +79,7 @@ export const getManifestWithZeroStats = (dialect, dbName, reqQuery = {}) => {
     postgres: `
     SELECT id "hcpId", "hcpCode", "hcpName", "hcpState", "hcpStatus", MAX("verifiedOn") AS "monthOfYear", SUM("principals") principals, SUM("dependants") dependants,  SUM("principals") +  SUM("dependants") lives
     FROM
-      (SELECT COALESCE(p.id,d.id) id, COALESCE(p.code,d.code) "hcpCode", COALESCE(p.name,d.name) "hcpName", COALESCE(p.state,d.state) "hcpState", COALESCE(p.status,d.status) "hcpStatus", COALESCE(p."verifiedOn",d."verifiedOn") "verifiedOn", principals, dependants
+      (SELECT COALESCE(p.id,d.id) id, COALESCE(p.code,d.code) "hcpCode", COALESCE(p.name,d.name) "hcpName", COALESCE(p.state,d.state) "hcpState", COALESCE(p.status,d.status) "hcpStatus", COALESCE(p."verifiedOn",d."verifiedOn") "verifiedOn", COALESCE(principals, 0) principals, COALESCE(dependants, 0) dependants
       FROM
         (SELECT h.id, h.code, h.name, h.status, h.state, COALESCE(DATE_TRUNC('month', "dateVerified"), '${date}') "verifiedOn", count(e.id) as principals
         FROM "HealthCareProviders" h

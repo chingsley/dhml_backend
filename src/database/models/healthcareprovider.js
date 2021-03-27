@@ -64,8 +64,8 @@ module.exports = (sequelize, DataTypes) => {
           model: 'Roles',
           key: 'id',
         },
-        onDelete: 'CASCADE',
-        onUpdate: 'RESTRICT',
+        onDelete: 'RESTRICT',
+        onUpdate: 'CASCADE',
       },
     },
     {}
@@ -86,6 +86,10 @@ module.exports = (sequelize, DataTypes) => {
     HealthCareProvider.hasMany(models.ReferalCode, {
       foreignKey: 'destinationHcpId',
       as: 'referalCodes',
+    });
+    HealthCareProvider.hasMany(models.HcpMonthlyCapitation, {
+      foreignKey: 'hcpId',
+      as: 'hcpMonthlyCapSum',
     });
   };
   HealthCareProvider.findOneWhere = async function (condition, options) {
