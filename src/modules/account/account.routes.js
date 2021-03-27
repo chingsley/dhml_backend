@@ -19,5 +19,11 @@ router.get(
   AccountMiddleware.validateDateQuery,
   AccountController.getApprovedMonthSpecificCapitation
 );
+router.patch(
+  '/capitation/:capitationId',
+  AuthMiddleware.authorize([...allowedRoles]),
+  AccountMiddleware.validateTsaRemitaUpdate,
+  AccountController.updateTsaRemitaValues
+);
 
 export default router;
