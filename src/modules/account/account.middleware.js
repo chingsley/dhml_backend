@@ -13,4 +13,17 @@ export default class AccountMiddleware {
       Response.handleError('validateDateQuery', error, req, res, next);
     }
   }
+  static async validateTsaRemitaUpdate(req, res, next) {
+    try {
+      const schema = Joi.object({
+        tsaCharge: Joi.number().required(),
+        rrr: Joi.string().trim().required(),
+      });
+      const { joiFormatted } = await validateSchema(schema, req.body);
+      req.body = joiFormatted;
+      return next();
+    } catch (error) {
+      Response.handleError('validateTsaRemitaUpdate', error, req, res, next);
+    }
+  }
 }

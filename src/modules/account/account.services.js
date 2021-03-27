@@ -21,7 +21,34 @@ export default class AccountService extends AppService {
     const { date } = this.query;
     const hcpCapitations = await db.HcpMonthlyCapitation.findAll({
       where: { month: new Date(months.firstDay(date)) },
+      include: {
+        model: db.HealthCareProvider,
+        as: 'hcp',
+        attributes: ['code', 'name', 'accountNumber', 'state'],
+      },
     });
-    return hcpCapitations;
+    return this.groupByState(hcpCapitations);
+  }
+
+  async updateTsaRemita() {
+    const { capitationId: id } = this.params;
+    const capitation = await this.findOneRecord({
+      modelName: 'HcpMonthlyCapitation',
+      where: { id },
+      errorIfNotFound: 'no capitation record matches the supplied id value',
+    });
+    await capitation.update(this.body);
+    return capitation;
+  }
+
+  groupByState(capitation) {
+    return capitation.reduce((acc, cap) => {
+      if (!acc[cap.hcp.state]) {
+        acc[cap.hcp.state] = [cap];
+      } else {
+        acc[cap.hcp.state].push(cap);
+      }
+      return acc;
+    }, {});
   }
 }
