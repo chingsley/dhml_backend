@@ -17,6 +17,7 @@ export default class AppMiddleware {
         enrolleeId: Joi.number().integer().min(1),
         userId: Joi.number().integer().min(1),
         summaryId: Joi.number().integer().min(1),
+        capitationId: Joi.number().integer().min(1),
       });
       const { joiFormatted } = await validateSchema(
         paramsSchema,
@@ -27,6 +28,32 @@ export default class AppMiddleware {
       return next();
     } catch (error) {
       Response.handleError('validateIdParams', error, req, res, next);
+    }
+  }
+  static async validateQueryParams(req, res, next) {
+    try {
+      const querySchema = Joi.object({
+        page: Joi.number().integer().min(0),
+        pageSize: Joi.number().integer().min(1),
+        searchItem: Joi.string().trim(),
+        searchField: Joi.string().trim(),
+      }).unknown();
+      const { joiFormatted } = await validateSchema(querySchema, req.query);
+      req.query = joiFormatted;
+      return next();
+    } catch (error) {
+      Response.handleError('validateQueryParams', error, req, res, next);
+    }
+  }
+  static async requireDateQuery(req, res, next) {
+    try {
+      const schema = Joi.object({
+        date: Joi.date().format('YYYY-MM-DD').max('now').required(),
+      }).unknown();
+      await validateSchema(schema, req.query);
+      return next();
+    } catch (error) {
+      Response.handleError('requireDateQuery', error, req, res, next);
     }
   }
   static validateImageUpload(req, res, next) {

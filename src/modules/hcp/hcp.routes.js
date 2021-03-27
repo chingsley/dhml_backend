@@ -12,6 +12,7 @@ const HOD_AND_HIGHER_ROLES = [
   roles.MD,
   roles.SUPERADMIN,
   roles.ADMIN,
+  roles.HOD_AUDIT,
   roles.HOD_ACCOUNT,
   roles.HOD_ADMIN,
   roles.HOD_MEDICAL,
