@@ -2,7 +2,7 @@ import Response from '../../utils/Response';
 import ReportService from './reports.services';
 
 export default class ReportsController {
-  static async getMonthlyCapitationSummary(req, res, next) {
+  static async getGeneralMonthlyCapitation(req, res, next) {
     try {
       const reportService = new ReportService(req);
       const userRole = req.user?.role?.title;
@@ -10,7 +10,7 @@ export default class ReportsController {
       return res.status(200).json({ data });
     } catch (error) {
       Response.handleError(
-        'getMonthlyCapitationSummary',
+        'getGeneralMonthlyCapitation',
         error,
         req,
         res,

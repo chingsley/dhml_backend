@@ -5,8 +5,8 @@ import { monthlyCapSum } from '../scripts/approvals.scripts';
 import { months, nextMonth } from '../../utils/timers';
 
 module.exports = (sequelize, DataTypes) => {
-  const MonthlyCapitationSum = sequelize.define(
-    'MonthlyCapitationSum',
+  const GeneralMonthlyCapitation = sequelize.define(
+    'GeneralMonthlyCapitation',
     {
       month: {
         type: DataTypes.DATE,
@@ -69,19 +69,22 @@ module.exports = (sequelize, DataTypes) => {
     {}
   );
   // eslint-disable-next-line no-unused-vars
-  MonthlyCapitationSum.associate = function (models) {
-    // associations can be defined here
+  GeneralMonthlyCapitation.associate = function (models) {
+    GeneralMonthlyCapitation.hasMany(models.HcpMonthlyCapitation, {
+      foreignKey: 'gmcId',
+      as: 'hcpMonthlyCapitations',
+    });
   };
 
-  MonthlyCapitationSum.prototype.nextMonths = function (i) {
+  GeneralMonthlyCapitation.prototype.nextMonths = function (i) {
     return moment(this.month).add(i, 'months').format('YYYY-MM-DD');
   };
 
-  MonthlyCapitationSum.prototype.formatMonth = function (format) {
+  GeneralMonthlyCapitation.prototype.formatMonth = function (format) {
     return moment(this.month).format(format);
   };
 
-  MonthlyCapitationSum.runScript = async function (
+  GeneralMonthlyCapitation.runScript = async function (
     queryFunction,
     reqQuery,
     key
@@ -100,7 +103,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
 
-  MonthlyCapitationSum.updateRecords = async function () {
+  GeneralMonthlyCapitation.updateRecords = async function () {
     let [lastRecordedCapSum] = await this.findAll({
       order: [['month', 'DESC']],
       limit: 1,
@@ -129,7 +132,7 @@ module.exports = (sequelize, DataTypes) => {
     await Promise.all(upserts);
   };
 
-  MonthlyCapitationSum.initializeRecords = async function () {
+  GeneralMonthlyCapitation.initializeRecords = async function () {
     // const { log } = console;
     const firstVerifiedEnrollee = await this.sequelize.models.Enrollee.getFirstVerifiedEnrollee();
     const startMonth = months.firstDay(firstVerifiedEnrollee.dateVerified);
@@ -149,9 +152,9 @@ module.exports = (sequelize, DataTypes) => {
     const upserts = results.map(([result]) => this.upsert(result));
     await Promise.all(upserts);
   };
-  MonthlyCapitationSum.updateAndFindOne = async function (options) {
+  GeneralMonthlyCapitation.updateAndFindOne = async function (options) {
     await this.updateRecords();
     return this.findOne(options);
   };
-  return MonthlyCapitationSum;
+  return GeneralMonthlyCapitation;
 };

@@ -12,7 +12,7 @@ import moment from 'moment';
 const { MD, HOD_AUDIT, HOD_ACCOUNT } = ROLES;
 
 describe('ReportsController', () => {
-  describe('getMonthlyCapitationSummary', () => {
+  describe('getGeneralMonthlyCapitation', () => {
     let sampleEnrollees, HCPs, seededPrincipals, seededDependants, res, token;
     beforeAll(async () => {
       await TestService.resetDB();
@@ -119,7 +119,7 @@ describe('ReportsController', () => {
 
     it(
       'it catches errors thrown in the try block',
-      TestService.testCatchBlock(ReportsController.getMonthlyCapitationSummary)
+      TestService.testCatchBlock(ReportsController.getGeneralMonthlyCapitation)
     );
   });
   describe('approveMonthlyCapitationSummary', () => {
