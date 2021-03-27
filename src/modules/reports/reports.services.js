@@ -5,6 +5,8 @@ import { Op } from 'sequelize';
 import ROLES from '../../shared/constants/roles.constants';
 import { throwError } from '../../shared/helpers';
 
+const { sequelize } = db;
+
 export default class ReportService extends AppService {
   constructor({ body, files, query, params }) {
     super({ body, files, query, params });
@@ -22,7 +24,6 @@ export default class ReportService extends AppService {
             dateApproved: { [Op.not]: null },
           };
 
-    // await this.updateCapSumTable();
     await db.GeneralMonthlyCapitation.updateRecords();
     return db.GeneralMonthlyCapitation.findAndCountAll({
       where: { ...filter },
@@ -30,17 +31,32 @@ export default class ReportService extends AppService {
       ...this.paginate(this.query),
     });
   }
+
   async approveMonthlyCapSum() {
-    const capSum = await this.getCapSumById(this.params.summaryId, {
-      rejectCurrentMonth: true,
-    });
-    this.rejectIf(capSum.isPaid, {
-      withError: 'cannot change approval, capitation has been paid for',
-    });
-    const { approve } = this.body;
-    const dateApproved = approve ? new Date() : null;
-    await capSum.update({ dateApproved });
-    return capSum;
+    const t = await sequelize.transaction();
+    try {
+      const capSum = await this.getCapSumById(this.params.summaryId, {
+        rejectCurrentMonth: true,
+      });
+      this.rejectIf(capSum.isPaid, {
+        withError: 'cannot change approval, capitation has been paid for',
+      });
+      const { approve } = this.body;
+      // const dateApproved = approve ? new Date() : null;
+      if (approve) {
+        await capSum.update({ dateApproved: new Date() }, { transaction: t });
+        await db.HcpMonthlyCapitation.addMonthlyRecord(capSum, t);
+      } else {
+        await capSum.update({ dateApproved: null }, { transaction: t });
+        await db.HcpMonthlyCapitation.deleteMonthRecord(capSum, t);
+      }
+
+      await t.commit();
+      return capSum;
+    } catch (error) {
+      await t.rollback();
+      throw error;
+    }
   }
 
   async auditMonthlyCapSum() {

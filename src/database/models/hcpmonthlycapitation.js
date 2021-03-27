@@ -1,4 +1,7 @@
 'use strict';
+import { QueryTypes } from 'sequelize';
+import { getCapitationWithoutZeroStats } from '../scripts/hcp.scripts';
+
 module.exports = (sequelize, DataTypes) => {
   const HcpMonthlyCapitation = sequelize.define(
     'HcpMonthlyCapitation',
@@ -22,6 +25,10 @@ module.exports = (sequelize, DataTypes) => {
       },
       tsaCharge: {
         type: DataTypes.DOUBLE,
+      },
+      lives: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
       },
       amount: {
         type: DataTypes.DOUBLE,
@@ -49,6 +56,42 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'gmcId',
       as: 'generalMonthlyCapitation',
     });
+  };
+  HcpMonthlyCapitation.runScript = async function (
+    queryFunction,
+    reqQuery,
+    key
+  ) {
+    const { dialect, database } = sequelize.options;
+    const rows = await sequelize.query(
+      queryFunction(dialect, database, reqQuery),
+      {
+        type: QueryTypes.SELECT,
+      }
+    );
+    if (key) {
+      return { [key]: rows };
+    } else {
+      return rows;
+    }
+  };
+  HcpMonthlyCapitation.addMonthlyRecord = async function (gmcRecord, t) {
+    const { month, id: gmcId } = gmcRecord;
+    const results = await this.runScript(getCapitationWithoutZeroStats, {
+      date: month,
+    });
+    const hcpCaps = results.map((result) => ({
+      lives: result.lives,
+      amount: result.amount,
+      hcpId: result.hcpId,
+      month,
+      gmcId,
+    }));
+    await this.bulkCreate(hcpCaps, { transaction: t });
+  };
+
+  HcpMonthlyCapitation.deleteMonthRecord = async function (gmcRecord, t) {
+    await this.destroy({ where: { gmcId: gmcRecord.id }, transaction: t });
   };
   return HcpMonthlyCapitation;
 };

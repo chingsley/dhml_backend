@@ -114,7 +114,7 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     const bulkQuery = [];
-    let i = 0;
+    let i = 0; // 0 so that it includes the lastRecordedCapSum in the list to update
     while (
       new Date(lastRecordedCapSum.nextMonths(i)).getTime() <=
       new Date(months.currentMonth).getTime()
@@ -146,12 +146,10 @@ module.exports = (sequelize, DataTypes) => {
     const bulkQuery = dates.map((date) =>
       this.runScript(monthlyCapSum, { date })
     );
-    // log('here.....1.1');
     const results = await Promise.all(bulkQuery);
-    // log('here.....1.2');
-    const upserts = results.map(([result]) => this.upsert(result));
-    await Promise.all(upserts);
+    await this.bulkCreate(results.map((results) => results[0]));
   };
+
   GeneralMonthlyCapitation.updateAndFindOne = async function (options) {
     await this.updateRecords();
     return this.findOne(options);
