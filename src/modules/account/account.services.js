@@ -1,8 +1,8 @@
 /* eslint-disable indent */
 import AppService from '../app/app.service';
 import db from '../../database/models';
-import { months } from '../../utils/timers';
-// import { Op } from 'sequelize';
+import { months, moment } from '../../utils/timers';
+import { Op } from 'sequelize';
 // import ROLES from '../../shared/constants/roles.constants';
 // import { throwError } from '../../shared/helpers';
 
@@ -41,9 +41,9 @@ export default class AccountService extends AppService {
     return capitation;
   }
 
-  fetchPaymentConfirmation() {
+  async fetchPaymentConfirmation() {
     const { date } = this.query;
-    return db.HcpMonthlyCapitation.findAndCountAll({
+    const data = await db.HcpMonthlyCapitation.findAndCountAll({
       where: { month: new Date(months.firstDay(date)) },
       ...this.paginate(this.query),
       include: {
@@ -52,6 +52,37 @@ export default class AccountService extends AppService {
         attributes: ['name', 'code', 'bank', 'accountNumber', 'state'],
       },
     });
+    const dateInWords = moment(date).format('MMMM YYYY');
+    this.throwErrorIf(data.count === 0, {
+      withMessage: `No records found for the selected month, please confirm that the capitation for ${dateInWords} has been approved.`,
+    });
+    return data;
+  }
+
+  async fetchNhisReport() {
+    const { date } = this.query;
+    const data = await db.HcpMonthlyCapitation.findAndCountAll({
+      where: { month: new Date(months.firstDay(date)) },
+      ...this.paginate(this.query),
+      include: [
+        {
+          model: db.GeneralMonthlyCapitation,
+          as: 'generalMonthlyCapitation',
+          attributes: ['datePaid'],
+          where: { datePaid: { [Op.not]: null } },
+        },
+        {
+          model: db.HealthCareProvider,
+          as: 'hcp',
+          attributes: ['name', 'code', 'bank', 'accountNumber', 'state'],
+        },
+      ],
+    });
+    const dateInWords = moment(date).format('MMMM YYYY');
+    this.throwErrorIf(data.count === 0, {
+      withMessage: `No records found for the selected month, please confirm that the capitation for ${dateInWords} has been approved and paid for`,
+    });
+    return data;
   }
 
   groupByState(capitation) {

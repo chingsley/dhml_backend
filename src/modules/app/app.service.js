@@ -149,6 +149,16 @@ export default class AppService {
     throw new Error(JSON.stringify(responseObj));
   };
 
+  throwErrorIf(condition, options) {
+    const { withMessage, status = 400 } = options;
+    if (condition) {
+      this.throwError({
+        status,
+        error: [withMessage],
+      });
+    }
+  }
+
   /**
    *
    * @param {array} arrOfFields array of fields to filterBy
