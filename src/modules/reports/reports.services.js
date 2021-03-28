@@ -42,7 +42,6 @@ export default class ReportService extends AppService {
         withError: 'cannot change approval, capitation has been paid for',
       });
       const { approve } = this.body;
-      // const dateApproved = approve ? new Date() : null;
       if (approve) {
         await capSum.update({ dateApproved: new Date() }, { transaction: t });
         await db.HcpMonthlyCapitation.addMonthlyRecord(capSum, t);
@@ -90,21 +89,17 @@ export default class ReportService extends AppService {
       where: { id },
       errorIfNotFound: `no capitation summary was found with id ${id}`,
     });
-
-    if (rejectCurrentMonth && capSum.isCurrentMonth) {
-      throwError({
-        status: 400,
-        error: ['Operation not allowed on current running capitation'],
-      });
-    }
+    this.rejectIf(rejectCurrentMonth && capSum.isCurrentMonth, {
+      withError: 'Operation not allowed on current running capitation',
+    });
 
     return capSum;
   }
 
-  rejectIf(condition, { withError }) {
+  rejectIf(condition, { withError, status = 400 }) {
     if (condition) {
       throwError({
-        status: 400,
+        status: status,
         error: [withError],
       });
     }
