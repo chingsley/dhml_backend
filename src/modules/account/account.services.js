@@ -56,7 +56,10 @@ export default class AccountService extends AppService {
     this.throwErrorIf(data.count === 0, {
       withMessage: `No records found for the selected month, please confirm that the capitation for ${dateInWords} has been approved.`,
     });
-    return data;
+    return {
+      ...data,
+      total: this.sumUp(data.rows, ['lives', 'amount']),
+    };
   }
 
   async fetchNhisReport() {
@@ -82,7 +85,10 @@ export default class AccountService extends AppService {
     this.throwErrorIf(data.count === 0, {
       withMessage: `No records found for the selected month, please confirm that the capitation for ${dateInWords} has been approved and paid for`,
     });
-    return data;
+    return {
+      ...data,
+      total: this.sumUp(data.rows, ['lives', 'amount']),
+    };
   }
 
   groupByState(capitation) {

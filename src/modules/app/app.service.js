@@ -306,6 +306,20 @@ export default class AppService {
     });
   }
 
+  sumUp(rows, fields) {
+    const initial = fields.reduce((acc, field) => {
+      acc[field] = 0;
+      return acc;
+    }, {});
+
+    return rows.reduce((acc, row) => {
+      for (let key of Object.keys(initial)) {
+        acc[key] += Number(row[key]);
+      }
+      return acc;
+    }, initial);
+  }
+
   get noTimeStamps() {
     return {
       attributes: { exclude: ['createdAt', 'updatedAt'] },

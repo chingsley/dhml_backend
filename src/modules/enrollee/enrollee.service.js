@@ -96,6 +96,7 @@ export default class EnrolleeService extends AppService {
       {
         ...dependantData,
         hcpId: dependantData.hcpId || principal.hcpId,
+        armOfService: principal.armOfService,
         ...uploadedImages,
       },
       principal
