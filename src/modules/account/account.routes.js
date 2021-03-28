@@ -20,6 +20,13 @@ router.get(
   AppMiddleware.requireDateQuery,
   AccountController.getApprovedMonthSpecificCapitation
 );
+router.patch(
+  '/capitation/:capitationId',
+  AuthMiddleware.authorize([...allowedRoles]),
+  AppMiddleware.validateIdParams,
+  AccountMiddleware.validateTsaRemitaUpdate,
+  AccountController.updateTsaRemitaValues
+);
 router.get(
   '/capitation/payment_confirmation',
   AuthMiddleware.authorize([...allowedRoles]),
@@ -27,12 +34,12 @@ router.get(
   AppMiddleware.requireDateQuery,
   AccountController.getPaymentConfirmation
 );
-router.patch(
-  '/capitation/:capitationId',
+router.get(
+  '/capitation/nhis_report',
   AuthMiddleware.authorize([...allowedRoles]),
-  AppMiddleware.validateIdParams,
-  AccountMiddleware.validateTsaRemitaUpdate,
-  AccountController.updateTsaRemitaValues
+  AppMiddleware.validateQueryParams,
+  AppMiddleware.requireDateQuery,
+  AccountController.getNhisReport
 );
 
 export default router;

@@ -4,8 +4,8 @@ import AccountService from './account.services';
 export default class AccountController {
   static async getApprovedMonthSpecificCapitation(req, res, next) {
     try {
-      const capitationService = new AccountService(req);
-      const data = await capitationService.getMonthSpecificCaps();
+      const accountService = new AccountService(req);
+      const data = await accountService.getMonthSpecificCaps();
       return res.status(200).json({ data });
     } catch (error) {
       Response.handleError(
@@ -20,8 +20,8 @@ export default class AccountController {
 
   static async updateTsaRemitaValues(req, res, next) {
     try {
-      const capitationService = new AccountService(req);
-      const data = await capitationService.updateTsaRemita();
+      const accountService = new AccountService(req);
+      const data = await accountService.updateTsaRemita();
       return res.status(200).json({ data });
     } catch (error) {
       Response.handleError('updateTsaRemitaValues', error, req, res, next);
@@ -30,11 +30,20 @@ export default class AccountController {
 
   static async getPaymentConfirmation(req, res, next) {
     try {
-      const capitationService = new AccountService(req);
-      const data = await capitationService.fetchPaymentConfirmation();
+      const accountService = new AccountService(req);
+      const data = await accountService.fetchPaymentConfirmation();
       return res.status(200).json({ data });
     } catch (error) {
       Response.handleError('getPaymentConfirmation', error, req, res, next);
+    }
+  }
+  static async getNhisReport(req, res, next) {
+    try {
+      const accountService = new AccountService(req);
+      const data = await accountService.fetchNhisReport();
+      return res.status(200).json({ data });
+    } catch (error) {
+      Response.handleError('getNhisReport', error, req, res, next);
     }
   }
 }
