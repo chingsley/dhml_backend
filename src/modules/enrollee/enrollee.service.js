@@ -94,6 +94,14 @@ export default class EnrolleeService extends AppService {
     const principal = await this.getByEnrolleeIdNo(principalEnrolleeIdNo, {
       throwErrorIfNotFound: true,
     });
+    if (!principal.isPrincipal) {
+      throwError({
+        status: 400,
+        error: [
+          `The enrollee with ID no. ${principalEnrolleeIdNo} is not a principal. You cannot register a dependant under another dependant.`,
+        ],
+      });
+    }
     dependantData.principalId = principal.id;
     this.validateDependantScheme(principal.scheme, dependantData.scheme);
     principal.checkDependantLimit(dependantData);
