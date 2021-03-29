@@ -1,4 +1,4 @@
-import { days, moment } from '../../utils/timers';
+import { days, moment, firstDayOfYear } from '../../utils/timers';
 
 export const CONTROL_HCPs = ['XX/0000/P', 'XX/0001/P', 'XX/0002/P']
   .map((code) => `'${code}'`)
@@ -49,3 +49,5 @@ export const tableAlias = {
   r: 'r',
   h: 'h',
 };
+
+export const yearly = (year) => firstDayOfYear(year);

@@ -1,4 +1,4 @@
-import { CONTROL_HCPs } from './helpers.scripts';
+import { CONTROL_HCPs, yearly } from './helpers.scripts';
 
 const activeHcps = () => `
 SELECT status, count(id)
@@ -36,6 +36,21 @@ FROM "HealthCareProviders"
 WHERE status = 'active' AND code NOT IN (${CONTROL_HCPs})
 GROUP BY "geopoliticalZone"
 `;
+
+export const capitationByArmOfService = (_, __, { year }) => `
+SELECT *
+FROM
+(
+SELECT COALESCE(h."armOfService", 'CIVIL') "armOfService", hmc.month, SUM(hmc.lives) lives, SUM(hmc.amount) amount
+FROM  "HcpMonthlyCapitations" hmc
+LEFT JOIN "HealthCareProviders" h
+	ON hmc."hcpId" = h.id
+GROUP BY "armOfService", hmc.month
+ORDER BY "armOfService" ASC, month ASC
+) monthly
+${year ? `WHERE DATE_TRUNC('year', "month") = '${yearly(year)}'` : '--'}
+`;
+
 export default [
   activeHcps,
   hcpsByArmOfService,

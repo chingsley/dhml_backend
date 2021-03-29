@@ -1,7 +1,6 @@
 import { Op } from 'sequelize';
 import bcrypt from 'bcryptjs';
 import db from '../../database/models';
-import { throwError } from '../../shared/helpers';
 import { QueryTypes } from 'sequelize';
 import { isBoolean, isValidDate } from '../../utils/helpers';
 import NodeMailer from '../../utils/NodeMailer';
@@ -38,7 +37,7 @@ export default class AppService {
           where: condition,
         });
         if (found && found.id !== resourceId) {
-          throwError({
+          this.throwError({
             status: 400,
             error: [`${resourceType} with ${field}: ${value} already exists`],
           });
@@ -71,7 +70,7 @@ export default class AppService {
       include,
     });
     if (!record && isRequired) {
-      throwError({
+      this.throwError({
         status: status || 400,
         error: errorIfNotFound
           ? [errorIfNotFound]
@@ -132,6 +131,7 @@ export default class AppService {
 
   async executeQuery(queryFunction, reqQuery, key) {
     const { dialect, database } = db.sequelize.options;
+    // console.log(queryFunction(dialect, database, reqQuery));
     const rows = await db.sequelize.query(
       queryFunction(dialect, database, reqQuery),
       {
@@ -155,6 +155,15 @@ export default class AppService {
       this.throwError({
         status,
         error: [withMessage],
+      });
+    }
+  }
+
+  rejectIf(condition, { withError, status = 400 }) {
+    if (condition) {
+      this.throwError({
+        status: status,
+        error: [withError],
       });
     }
   }
@@ -237,7 +246,7 @@ export default class AppService {
     } else if (value === 'principal') {
       return { principalId: { [Op.is]: null } };
     } else {
-      throwError({
+      this.throwError({
         status: 400,
         error:
           'Invalid value for enrolment type. Allowed values are "dependant" or "principal"',

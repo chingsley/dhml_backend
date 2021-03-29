@@ -201,7 +201,7 @@ describe('ReportsController', () => {
           token[MD]
         );
         const expectedErr =
-          'Operation not allowed on current running capitation';
+          'Operation not allowed on current running capitation until month end';
         const { errors } = res.body;
         expect(errors[0]).toEqual(expectedErr);
         done();
