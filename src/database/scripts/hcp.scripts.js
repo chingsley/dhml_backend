@@ -132,7 +132,6 @@ export const getCapitationWithoutZeroStats = (
   `;
 
   const query2 = '';
-
   const query = { postgres: query1, mysql: query2 };
   return query[dialect];
 };

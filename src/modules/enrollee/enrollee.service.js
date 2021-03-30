@@ -85,7 +85,11 @@ export default class EnrolleeService extends AppService {
     const files = this.files;
     await this.ensureValidHcpId(dependantData.hcpId);
     const { principalId: principalEnrolleeIdNo } = dependantData;
-    const principal = await this.getByEnrolleeIdNo(principalEnrolleeIdNo);
+    const enrollee = await this.getByEnrolleeIdNo(principalEnrolleeIdNo);
+    this.rejectIf(!enrollee.isPrincipal, {
+      withError: `The enrollee with ID no. ${principalEnrolleeIdNo} is not a principal. You cannot register a dependant under another dependant.`,
+    });
+    const principal = enrollee;
     dependantData.principalId = principal.id;
     this.validateDependantScheme(principal.scheme, dependantData.scheme);
     principal.checkDependantLimit(dependantData);
