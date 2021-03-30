@@ -32,6 +32,7 @@ router.get(
   '/',
   AuthMiddleware.authorize([
     SUPERADMIN,
+    ADMIN,
     HOD_ADMIN,
     VERIFIER,
     ENROLMENT_OFFICER,
