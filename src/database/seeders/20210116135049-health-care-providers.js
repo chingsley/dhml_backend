@@ -5,12 +5,7 @@ const HCPs = require('../../../live_data/HealthCareProviders.json');
 const { randInt } = require('../../utils/helpers');
 
 const roleId = Object.keys(ROLES).indexOf('HCP') + 1;
-const armOfService = [
-  'NIGERIAN NAVY',
-  'NIGERIAN ARMY',
-  'NIGERIAN AIR FORCE',
-  undefined,
-];
+const armOfService = ['NAVY', 'ARMY', 'AIR FORCE', 'TRI-SERVICE', undefined];
 
 module.exports = {
   // eslint-disable-next-line no-unused-vars
