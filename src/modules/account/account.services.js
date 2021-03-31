@@ -27,6 +27,10 @@ export default class AccountService extends AppService {
         attributes: ['code', 'name', 'accountNumber', 'state'],
       },
     });
+    const dateInWords = moment(date).format('MMMM YYYY');
+    this.rejectIf(hcpCapitations.length < 1, {
+      withError: `There's no approved capitation for ${dateInWords}`,
+    });
     return this.groupByState(hcpCapitations);
   }
 
@@ -83,7 +87,7 @@ export default class AccountService extends AppService {
     });
     const dateInWords = moment(date).format('MMMM YYYY');
     this.throwErrorIf(data.count === 0, {
-      withMessage: `No records found for the selected month, please confirm that the capitation for ${dateInWords} has been approved and paid for`,
+      withMessage: `No records found for the selected month, please confirm that the capitation for ${dateInWords} has been paid for`,
     });
     return {
       ...data,
