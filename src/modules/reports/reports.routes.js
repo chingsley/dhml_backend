@@ -19,6 +19,13 @@ router.get(
   AuthMiddleware.authorize([...allowedRoles]),
   ReportsController.getGeneralMonthlyCapitation
 );
+router.get(
+  '/capitation/analysis',
+  AuthMiddleware.authorize([...allowedRoles]),
+  AppMiddleware.validateQueryParams,
+  AppMiddleware.requireDateQuery,
+  ReportsController.getCapitationByArmOfService
+);
 router.patch(
   '/capitation/:summaryId/approval',
   AuthMiddleware.authorize([MD]),

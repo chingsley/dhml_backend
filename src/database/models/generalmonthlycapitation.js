@@ -126,7 +126,6 @@ module.exports = (sequelize, DataTypes) => {
       );
       i = i + 1;
     }
-
     const results = await Promise.all(bulkQuery);
     const upserts = results.map(([result]) => this.upsert(result));
     await Promise.all(upserts);

@@ -3,7 +3,8 @@ import AppService from '../app/app.service';
 import db from '../../database/models';
 import { Op } from 'sequelize';
 import ROLES from '../../shared/constants/roles.constants';
-import { throwError } from '../../shared/helpers';
+import { capitationByArmOfService } from '../../database/scripts/stats.scripts';
+import reportHelpers from './reports.helpers';
 
 const { sequelize } = db;
 
@@ -90,18 +91,17 @@ export default class ReportService extends AppService {
       errorIfNotFound: `no capitation summary was found with id ${id}`,
     });
     this.rejectIf(rejectCurrentMonth && capSum.isCurrentMonth, {
-      withError: 'Operation not allowed on current running capitation',
+      withError:
+        'Operation not allowed on current running capitation until month end',
     });
 
     return capSum;
   }
 
-  rejectIf(condition, { withError, status = 400 }) {
-    if (condition) {
-      throwError({
-        status: status,
-        error: [withError],
-      });
-    }
+  async getCapByArmOfService() {
+    const data = await this.executeQuery(capitationByArmOfService, this.query);
+    return this.summarized(data, this.query);
   }
 }
+
+Object.assign(ReportService.prototype, reportHelpers);

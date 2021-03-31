@@ -23,9 +23,20 @@ const dateOnly = (dateTime) => moment(dateTime).format('YYYY-MM-DD');
  * @param {array} dateArr array of date values
  * @returns date in the format (YYYY-MM-DD)
  */
-export const nextMonth = (dateArr) =>
+const nextMonth = (dateArr) =>
   moment(dateArr[dateArr.length - 1])
     .add(1, 'months')
     .format('YYYY-MM-DD');
 
-module.exports = { moment, days, t24Hours, months, dateOnly, nextMonth };
+const firstDayOfYear = (date) =>
+  moment(date).clone().startOf('year').format('YYYY-MM-DD');
+
+module.exports = {
+  moment,
+  days,
+  t24Hours,
+  months,
+  dateOnly,
+  nextMonth,
+  firstDayOfYear,
+};
