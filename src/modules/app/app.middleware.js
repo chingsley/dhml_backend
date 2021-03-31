@@ -3,6 +3,7 @@ import Cypher from '../../utils/Cypher';
 import { isEmptyObject } from '../../utils/helpers';
 import Response from '../../utils/Response';
 import dotenv from 'dotenv';
+import { ANALYSIS_DISPLAY_OPTIONS } from '../../shared/constants/lists.constants';
 dotenv.config();
 
 const { AES_KEY, IV_KEY } = process.env;
@@ -37,6 +38,9 @@ export default class AppMiddleware {
         pageSize: Joi.number().integer().min(1),
         searchItem: Joi.string().trim(),
         searchField: Joi.string().trim(),
+        display: Joi.string()
+          .trim()
+          .valid(...Object.values(ANALYSIS_DISPLAY_OPTIONS)),
       }).unknown();
       const { joiFormatted } = await validateSchema(querySchema, req.query);
       req.query = joiFormatted;

@@ -4,6 +4,7 @@ import db from '../../database/models';
 import { Op } from 'sequelize';
 import ROLES from '../../shared/constants/roles.constants';
 import { capitationByArmOfService } from '../../database/scripts/stats.scripts';
+import reportHelpers from './reports.helpers';
 
 const { sequelize } = db;
 
@@ -83,11 +84,6 @@ export default class ReportService extends AppService {
     return capSum;
   }
 
-  async getCapByArmOfService() {
-    const data = await this.executeQuery(capitationByArmOfService, this.query);
-    return data;
-  }
-
   async getCapSumById(id, { rejectCurrentMonth } = {}) {
     const capSum = await this.findOneRecord({
       modelName: 'GeneralMonthlyCapitation',
@@ -101,4 +97,11 @@ export default class ReportService extends AppService {
 
     return capSum;
   }
+
+  async getCapByArmOfService() {
+    const data = await this.executeQuery(capitationByArmOfService, this.query);
+    return this.summarized(data, this.query);
+  }
 }
+
+Object.assign(ReportService.prototype, reportHelpers);

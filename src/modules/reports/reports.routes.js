@@ -22,6 +22,8 @@ router.get(
 router.get(
   '/capitation/analysis',
   AuthMiddleware.authorize([...allowedRoles]),
+  AppMiddleware.validateQueryParams,
+  AppMiddleware.requireDateQuery,
   ReportsController.getCapitationByArmOfService
 );
 router.patch(

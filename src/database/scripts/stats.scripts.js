@@ -37,7 +37,7 @@ WHERE status = 'active' AND code NOT IN (${CONTROL_HCPs})
 GROUP BY "geopoliticalZone"
 `;
 
-export const capitationByArmOfService = (_, __, { year }) => `
+export const capitationByArmOfService = (_, __, { date: year }) => `
 SELECT *
 FROM
 (

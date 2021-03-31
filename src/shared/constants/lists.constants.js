@@ -49,3 +49,9 @@ export const banks = [
 ];
 
 export const ARMED_FORCES = ['army', 'navy', 'air force'];
+
+export const ANALYSIS_DISPLAY_OPTIONS = {
+  annual: 'annual',
+  biannual: 'biannual',
+  quarterly: 'quarterly',
+};
