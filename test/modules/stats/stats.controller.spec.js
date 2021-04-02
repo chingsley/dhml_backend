@@ -41,7 +41,6 @@ describe('StatsController', () => {
           'hcpsByArmOfService',
           'enrolleesByArmOfService',
           'activeHcpsByState',
-          'activeHcpsByGeopoliticalZone',
         ];
         for (let key of expectedKeys) {
           expect(data).toHaveProperty(key);
