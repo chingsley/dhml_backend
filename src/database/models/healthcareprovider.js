@@ -67,6 +67,12 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'RESTRICT',
         onUpdate: 'CASCADE',
       },
+      armOfService: {
+        type: DataTypes.STRING,
+      },
+      geopoliticalZone: {
+        type: DataTypes.STRING,
+      },
     },
     {}
   );
