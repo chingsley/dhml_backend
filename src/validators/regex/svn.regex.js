@@ -72,5 +72,5 @@ const airForce = {
 export const serviceNumRegex = {
   ARMY: army,
   NAVY: navy,
-  AIRFORCE: airForce,
+  'AIR FORCE': airForce,
 };

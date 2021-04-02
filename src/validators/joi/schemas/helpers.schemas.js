@@ -20,7 +20,7 @@ export const aosValidation = (enrolmentTyps) => {
         .trim()
         .uppercase()
         .required()
-        .valid('ARMY', 'NAVY', 'AIRFORCE'),
+        .valid('ARMY', 'NAVY', 'AIR FORCE'),
       otherwise: Joi.forbidden(),
     });
   } else {

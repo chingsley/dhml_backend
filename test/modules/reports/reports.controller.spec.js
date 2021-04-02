@@ -56,12 +56,12 @@ describe('ReportsController', () => {
         done(e);
       }
     });
-    it('returns ensures the monthly capitation sum is cummulative', async (done) => {
+    it('ensures the monthly capitation sum is cummulative', async (done) => {
       try {
         const { rows } = res.body.data;
         for (let i = 0; i < rows.length - 1; i++) {
-          expect(rows[i].lives).toBeGreaterThan(rows[i + 1].lives);
-          expect(rows[i].amount).toBeGreaterThan(rows[i + 1].amount);
+          expect(rows[i].lives).toBeGreaterThanOrEqual(rows[i + 1].lives);
+          expect(rows[i].amount).toBeGreaterThanOrEqual(rows[i + 1].amount);
         }
         done();
       } catch (e) {
