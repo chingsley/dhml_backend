@@ -24,7 +24,7 @@ export default class AccountService extends AppService {
       include: {
         model: db.HealthCareProvider,
         as: 'hcp',
-        attributes: ['code', 'name', 'accountNumber', 'state'],
+        attributes: { exclude: ['createdAt', 'updatedAt', 'roleId'] },
       },
     });
     const dateInWords = moment(date).format('MMMM YYYY');
