@@ -61,7 +61,7 @@ function getPrincipal(index) {
   const isMillitary = i % 2 === 0;
   const isStaff = !isMillitary;
   const armOfService = isMillitary
-    ? random.arrayElement(['army', 'navy', 'air force'])
+    ? random.arrayElement(['ARMY', 'NAVY', 'AIR FORCE'])
     : null;
   const gender = random.arrayElement(['male', 'female']);
   const title = gender === 'female' ? 'Mrs' : 'Mr';
