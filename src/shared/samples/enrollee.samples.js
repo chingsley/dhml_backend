@@ -176,7 +176,12 @@ function getVariableDependantFeatures(principal) {
     getRandomInt(100, { min: 1 }),
     principal.hcpId,
   ]);
-  return { relationshipToPrincipal: rtp, gender, hcpId };
+  return {
+    relationshipToPrincipal: rtp,
+    gender,
+    hcpId,
+    armOfService: principal.armOfService,
+  };
 }
 
 module.exports = getEnrollees;

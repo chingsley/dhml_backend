@@ -15,7 +15,7 @@ GROUP BY "armOfService"
 `;
 
 const enrolleesByArmOfService = () => `
-SELECT  COALESCE(e."armOfService", 'NOT SPECIFIED') "armOfService", count(e.id) "count"
+SELECT  COALESCE(e."armOfService", 'unspecified') "armOfService", count(e.id) "count"
 FROM "Enrollees" e
 JOIN "HealthCareProviders" h
 	ON e."hcpId" = h.id AND h.code NOT IN  (${CONTROL_HCPs})
@@ -30,11 +30,36 @@ WHERE status = 'active' AND code NOT IN (${CONTROL_HCPs})
 GROUP BY state
 `;
 
-const activeHcpsByGeopoliticalZone = () => `
-SELECT COALESCE("geopoliticalZone", 'NOT SPECIFIED') "geopoliticalZone", count(id)
+const hcpsByCategory = () => `
+SELECT "category", count(id)
 FROM "HealthCareProviders"
-WHERE status = 'active' AND code NOT IN (${CONTROL_HCPs})
-GROUP BY "geopoliticalZone"
+WHERE code NOT IN (${CONTROL_HCPs})
+GROUP BY "category"
+`;
+
+const enrolleesByVerifiedStatus = () => `
+SELECT  CASE WHEN e."isVerified" = TRUE THEN TRUE ELSE FALSE END AS "isVerified",
+		COUNT(e.id)
+FROM "Enrollees" e
+JOIN "HealthCareProviders" h
+	ON e."hcpId" = h.id AND h.code NOT IN (${CONTROL_HCPs})
+GROUP BY "isVerified"
+`;
+
+export const afrshipPrincipalsByServiceStatus = () => `
+SELECT   CASE WHEN e."serviceStatus" IS NULL THEN 'unspecified' ELSE e."serviceStatus" END, COUNT(e.id)
+FROM "Enrollees" e
+JOIN "HealthCareProviders" h
+	ON e."hcpId" = h.id AND h.code NOT IN (${CONTROL_HCPs})
+WHERE e."principalId" IS NULL AND e.scheme = 'AFRSHIP'
+GROUP BY e."serviceStatus"
+`;
+export const enrolleesByScheme = () => `
+SELECT   CASE WHEN e."scheme" IS NULL THEN 'unspecified' ELSE e."scheme" END, COUNT(e.id)--, e.scheme, e."principalId"
+FROM "Enrollees" e
+JOIN "HealthCareProviders" h
+	ON e."hcpId" = h.id AND h.code NOT IN (${CONTROL_HCPs})
+GROUP BY e."scheme"
 `;
 
 export const capitationByArmOfService = (_, __, { date: year }) => `
@@ -56,5 +81,8 @@ export default [
   hcpsByArmOfService,
   enrolleesByArmOfService,
   activeHcpsByState,
-  activeHcpsByGeopoliticalZone,
+  hcpsByCategory,
+  enrolleesByVerifiedStatus,
+  afrshipPrincipalsByServiceStatus,
+  enrolleesByScheme,
 ];
