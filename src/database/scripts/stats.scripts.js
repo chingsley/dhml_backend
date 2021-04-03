@@ -1,4 +1,4 @@
-import { CONTROL_HCPs, yearly } from './helpers.scripts';
+import { CONTROL_HCPs } from './helpers.scripts';
 
 const activeHcps = () => `
 SELECT status, count(id)
@@ -54,6 +54,7 @@ JOIN "HealthCareProviders" h
 WHERE e."principalId" IS NULL AND e.scheme = 'AFRSHIP'
 GROUP BY e."serviceStatus"
 `;
+
 export const enrolleesByScheme = () => `
 SELECT   CASE WHEN e."scheme" IS NULL THEN 'unspecified' ELSE e."scheme" END, COUNT(e.id)--, e.scheme, e."principalId"
 FROM "Enrollees" e
@@ -62,18 +63,10 @@ JOIN "HealthCareProviders" h
 GROUP BY e."scheme"
 `;
 
-export const capitationByArmOfService = (_, __, { date: year }) => `
-SELECT *
-FROM
-(
-SELECT COALESCE(h."armOfService", 'CIVIL') "armOfService", hmc.month, SUM(hmc.lives) lives, SUM(hmc.amount) amount
-FROM  "HcpMonthlyCapitations" hmc
-LEFT JOIN "HealthCareProviders" h
-	ON hmc."hcpId" = h.id
-GROUP BY "armOfService", hmc.month
-ORDER BY "armOfService" ASC, month ASC
-) monthly
-${year ? `WHERE DATE_TRUNC('year', "month") = '${yearly(year)}'` : '--'}
+export const avgDurationForVerification = () => `
+SELECT CEIL(AVG(DATE_PART('day', "dateVerified" - "createdAt"))) days
+FROM "Enrollees"
+WHERE "isVerified" = TRUE --AND DATE_TRUNC('month', "dateVerified")  = DATE_TRUNC('month', CURRENT_DATE)
 `;
 
 export default [
@@ -85,4 +78,5 @@ export default [
   enrolleesByVerifiedStatus,
   afrshipPrincipalsByServiceStatus,
   enrolleesByScheme,
+  avgDurationForVerification,
 ];

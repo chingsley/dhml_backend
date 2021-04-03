@@ -3,7 +3,7 @@ import AppService from '../app/app.service';
 import db from '../../database/models';
 import { Op } from 'sequelize';
 import ROLES from '../../shared/constants/roles.constants';
-import { capitationByArmOfService } from '../../database/scripts/stats.scripts';
+import { capitationByArmOfService } from '../../database/scripts/analysis.scripts';
 import reportHelpers from './reports.helpers';
 
 const { sequelize } = db;

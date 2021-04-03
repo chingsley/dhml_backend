@@ -9,6 +9,7 @@ module.exports = {
   HOD_ADMIN: 'hod admin',
   HOD_STORES: 'hod stores',
   HOD_ACCOUNT: 'hod account',
+  ACCOUNT_OFFICER: 'account officer',
   HOD_AUDIT: 'hod audit',
   BASIC: 'basic',
   MD: 'md',
