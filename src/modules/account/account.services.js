@@ -53,7 +53,7 @@ export default class AccountService extends AppService {
       include: {
         model: db.HealthCareProvider,
         as: 'hcp',
-        attributes: ['name', 'code', 'bank', 'accountNumber', 'state'],
+        attributes: { exclude: ['createdAt', 'updatedAt'] },
       },
     });
     const dateInWords = moment(date).format('MMMM YYYY');
@@ -87,7 +87,7 @@ export default class AccountService extends AppService {
     });
     const dateInWords = moment(date).format('MMMM YYYY');
     this.throwErrorIf(data.count === 0, {
-      withMessage: `No records found for the selected month, please confirm that the capitation for ${dateInWords} has been paid for`,
+      withMessage: `No records found for the selected month. Please confirm that the capitation for ${dateInWords} has been paid.`,
     });
     return {
       ...data,
