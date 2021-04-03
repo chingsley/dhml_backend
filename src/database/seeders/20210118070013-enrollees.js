@@ -1,6 +1,6 @@
 const dotenv = require('dotenv');
 const faker = require('faker');
-const { months, days } = require('../../utils/timers');
+const { months, days, moment } = require('../../utils/timers');
 dotenv.config();
 const db = require('../models');
 const SampleReferalCodes = require('../../shared/samples/refcode.samples');
@@ -8,6 +8,12 @@ const { randInt } = require('../../utils/helpers');
 const armOfService = ['NAVY', 'ARMY', 'AIR FORCE', 'TRI-SERVICE'];
 const serviceStatus = ['retired', 'serving', undefined];
 const { log } = console;
+
+const createdAt = (enrollee) => ({
+  createdAt: moment(enrollee.dateVerified ?? new Date())
+    .subtract(randInt(1, 30), 'days')
+    .format('YYYY-MM-DD'),
+});
 
 if (process.env.SEED_WITH === 'LIVE_DATA') {
   const enrollees = require('../../../live_data/Enrollees.json');
@@ -28,6 +34,7 @@ if (process.env.SEED_WITH === 'LIVE_DATA') {
           serviceStatus: enrollee.scheme.match(/afrship/i)
             ? serviceStatus[randInt(0, serviceStatus.length - 1)]
             : undefined,
+          ...createdAt(enrollee),
         });
       } else {
         acc.dependants.push(enrollee);
@@ -40,27 +47,28 @@ if (process.env.SEED_WITH === 'LIVE_DATA') {
   module.exports = {
     // eslint-disable-next-line no-unused-vars
     up: async (queryInterface, Sequelize) => {
-      await queryInterface.bulkInsert('Enrollees', principals.slice(0, 50000));
-      // const seededPrincipals = await db.Enrollee.findAll({
-      //   where: { principalId: null },
-      // });
-      // const dictPrincipalId = seededPrincipals.reduce((acc, p) => {
-      //   acc[p.enrolleeIdNo] = p;
-      //   return acc;
-      // }, {});
-      // const dependantsWithPrincipalId = dependants.map((d) => {
-      //   const principalEnrolleeIdNo = d.enrolleeIdNo.split('-')[0];
-      //   if (!dictPrincipalId[principalEnrolleeIdNo]) {
-      //     log(principalEnrolleeIdNo, d);
-      //   }
-      //   return {
-      //     ...d,
-      //     principalId: dictPrincipalId[principalEnrolleeIdNo].id,
-      //     isVerified: dictPrincipalId[principalEnrolleeIdNo].isVerified,
-      //     dateVerified: dictPrincipalId[principalEnrolleeIdNo].dateVerified,
-      //   };
-      // });
-      // await queryInterface.bulkInsert('Enrollees', dependantsWithPrincipalId);
+      await queryInterface.bulkInsert('Enrollees', principals);
+      const seededPrincipals = await db.Enrollee.findAll({
+        where: { principalId: null },
+      });
+      const dictPrincipalId = seededPrincipals.reduce((acc, p) => {
+        acc[p.enrolleeIdNo] = p;
+        return acc;
+      }, {});
+      const dependantsWithPrincipalId = dependants.map((d) => {
+        const principalEnrolleeIdNo = d.enrolleeIdNo.split('-')[0];
+        if (!dictPrincipalId[principalEnrolleeIdNo]) {
+          log(principalEnrolleeIdNo, d);
+        }
+        return {
+          ...d,
+          principalId: dictPrincipalId[principalEnrolleeIdNo].id,
+          isVerified: dictPrincipalId[principalEnrolleeIdNo].isVerified,
+          dateVerified: dictPrincipalId[principalEnrolleeIdNo].dateVerified,
+          ...createdAt(dictPrincipalId[principalEnrolleeIdNo]),
+        };
+      });
+      await queryInterface.bulkInsert('Enrollees', dependantsWithPrincipalId);
       const referalCodes = await SampleReferalCodes.getSeed();
       await queryInterface.bulkInsert('ReferalCodes', referalCodes);
     },
@@ -86,10 +94,20 @@ if (process.env.SEED_WITH === 'LIVE_DATA') {
   module.exports = {
     // eslint-disable-next-line no-unused-vars
     up: async (queryInterface, Sequelize) => {
-      await queryInterface.bulkInsert('Enrollees', principals);
-      await queryInterface.bulkInsert('Enrollees', dependants);
-      const referalCodes = await SampleReferalCodes.getSeed();
-      await queryInterface.bulkInsert('ReferalCodes', referalCodes);
+      try {
+        await queryInterface.bulkInsert(
+          'Enrollees',
+          principals.map((p) => ({ ...p, ...createdAt(p) }))
+        );
+        await queryInterface.bulkInsert(
+          'Enrollees',
+          dependants.map((d) => ({ ...d, ...createdAt(d) }))
+        );
+        const referalCodes = await SampleReferalCodes.getSeed();
+        await queryInterface.bulkInsert('ReferalCodes', referalCodes);
+      } catch (e) {
+        log(e.message);
+      }
     },
 
     // eslint-disable-next-line no-unused-vars

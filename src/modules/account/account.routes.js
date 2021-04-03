@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+  ACCOUNT_OFFICER,
   HOD_ACCOUNT,
   HOD_AUDIT,
   MD,
@@ -22,7 +23,7 @@ router.get(
 );
 router.patch(
   '/capitation/:capitationId',
-  AuthMiddleware.authorize([...allowedRoles]),
+  AuthMiddleware.authorize([HOD_ACCOUNT, ACCOUNT_OFFICER]),
   AppMiddleware.validateIdParams,
   AccountMiddleware.validateTsaRemitaUpdate,
   AccountController.updateTsaRemitaValues
@@ -36,7 +37,7 @@ router.get(
 );
 router.get(
   '/capitation/nhis_report',
-  AuthMiddleware.authorize([...allowedRoles]),
+  AuthMiddleware.authorize([...allowedRoles, ACCOUNT_OFFICER]),
   AppMiddleware.validateQueryParams,
   AppMiddleware.requireDateQuery,
   AccountController.getNhisReport
