@@ -3,10 +3,19 @@ import AppService from '../app/app.service';
 import db from '../../database/models';
 import { months, moment } from '../../utils/timers';
 import { Op } from 'sequelize';
+import { downloadPaymentAdvice } from '../../utils/pdf/generatePaymentAdvicePdf';
+import send_email_report from '../../utils/pdf/sendPaymentAdvice';
 // import ROLES from '../../shared/constants/roles.constants';
 // import { throwError } from '../../shared/helpers';
 
 // const { sequelize } = db;
+
+const delayInSeconds = (timeout) =>
+  new Promise((res) => {
+    setTimeout(() => {
+      res();
+    }, timeout * 1000);
+  });
 
 export default class AccountService extends AppService {
   constructor({ body, files, query, params }) {
@@ -21,17 +30,79 @@ export default class AccountService extends AppService {
     const { date } = this.query;
     const hcpCapitations = await db.HcpMonthlyCapitation.findAll({
       where: { month: new Date(months.firstDay(date)) },
-      include: {
-        model: db.HealthCareProvider,
-        as: 'hcp',
-        attributes: { exclude: ['createdAt', 'updatedAt', 'roleId'] },
-      },
+      include: [
+        {
+          model: db.HealthCareProvider,
+          as: 'hcp',
+          attributes: { exclude: ['createdAt', 'updatedAt', 'roleId'] },
+        },
+        {
+          model: db.GeneralMonthlyCapitation,
+          as: 'generalMonthlyCapitation',
+          attributes: ['dateApproved', 'datePaid'],
+        },
+      ],
     });
     const dateInWords = moment(date).format('MMMM YYYY');
     this.rejectIf(hcpCapitations.length < 1, {
       withError: `There's no approved capitation for ${dateInWords}`,
     });
     return this.groupByState(hcpCapitations);
+  }
+
+  async sendHcpMonthlyPaymentAdvice() {
+    const { hcpMonthCapId: id } = this.params;
+    const hcpMonthlyPaymentAdvice = await db.HcpMonthlyCapitation.findOne({
+      where: { id },
+      include: [
+        {
+          model: db.HealthCareProvider,
+          as: 'hcp',
+          attributes: { exclude: ['createdAt', 'updatedAt', 'roleId'] },
+        },
+        {
+          model: db.GeneralMonthlyCapitation,
+          as: 'generalMonthlyCapitation',
+          attributes: ['dateApproved', 'datePaid'],
+          where: { datePaid: { [Op.not]: null } },
+        },
+      ],
+    });
+    this.rejectIf(!hcpMonthlyPaymentAdvice, {
+      withError: `No paid capitation was found for the id of ${id}. Please confirm that the id is correct and that the capitation has been paid`,
+    });
+    const hmpa = hcpMonthlyPaymentAdvice;
+    const { amount } = hmpa;
+    const {
+      name: hcpName,
+      bank: bankName,
+      accountNumber,
+      armOfService,
+    } = hmpa.hcp;
+    const { datePaid } = hmpa.generalMonthlyCapitation;
+    const capitationMonth = moment(hmpa.month).format('MMMM YYYY');
+
+    const pdf = await downloadPaymentAdvice(
+      {
+        capitationMonth,
+        datePaid,
+        hcpName,
+        bankName,
+        accountNumber,
+        armOfService,
+        amount,
+      },
+      'payment_advice.pdf'
+    );
+    await delayInSeconds(3);
+    await send_email_report({
+      email: 'chingsleychinonso@gmail.com',
+      pathToAttachment: `${process.cwd()}/${pdf}`,
+      fileName: 'payment_advice',
+      fileType: 'application/pdf',
+      capitationMonth,
+    });
+    return hmpa;
   }
 
   async updateTsaRemita() {
