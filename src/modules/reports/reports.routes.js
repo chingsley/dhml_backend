@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+  ACCOUNT_OFFICER,
   HOD_ACCOUNT,
   HOD_AUDIT,
   MD,
@@ -12,7 +13,7 @@ import ReportsMiddleware from './reports.middleware';
 
 const router = express.Router();
 
-const allowedRoles = [SUPERADMIN, MD, HOD_ACCOUNT, HOD_AUDIT];
+const allowedRoles = [SUPERADMIN, MD, HOD_ACCOUNT, HOD_AUDIT, ACCOUNT_OFFICER];
 
 router.get(
   '/capitation',

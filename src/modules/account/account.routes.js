@@ -13,7 +13,7 @@ import AccountMiddleware from './account.middleware';
 
 const router = express.Router();
 
-const allowedRoles = [SUPERADMIN, MD, HOD_ACCOUNT, HOD_AUDIT];
+const allowedRoles = [SUPERADMIN, MD, HOD_ACCOUNT, HOD_AUDIT, ACCOUNT_OFFICER];
 
 router.get(
   '/capitation',
@@ -37,10 +37,15 @@ router.get(
 );
 router.get(
   '/capitation/nhis_report',
-  AuthMiddleware.authorize([...allowedRoles, ACCOUNT_OFFICER]),
+  AuthMiddleware.authorize([...allowedRoles]),
   AppMiddleware.validateQueryParams,
   AppMiddleware.requireDateQuery,
   AccountController.getNhisReport
+);
+router.post(
+  '/capitation/:hcpMonthCapId/send_payment_advice',
+  AuthMiddleware.authorize([...allowedRoles]),
+  AccountController.sendPaymentAdvice
 );
 
 export default router;
