@@ -46,4 +46,13 @@ export default class AccountController {
       Response.handleError('getNhisReport', error, req, res, next);
     }
   }
+  static async sendPaymentAdvice(req, res, next) {
+    try {
+      const accountService = new AccountService(req);
+      const data = await accountService.sendHcpMonthlyPaymentAdvice();
+      return res.status(200).json({ message: 'email sent successfully', data });
+    } catch (error) {
+      Response.handleError('sendPaymentAdvice', error, req, res, next);
+    }
+  }
 }
