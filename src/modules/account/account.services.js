@@ -96,7 +96,7 @@ export default class AccountService extends AppService {
     );
     await delayInSeconds(3);
     await send_email_report({
-      email: 'chingsleychinonso@gmail.com',
+      email: process.env.SAMPLE_HCP_RECIPIENT,
       pathToAttachment: `${process.cwd()}/${pdf}`,
       fileName: 'payment_advice',
       fileType: 'application/pdf',
