@@ -25,6 +25,7 @@ class EnrolleeApi extends TestService {
         .field('gender', enrolee.gender)
         .field('serviceNumber', enrolee.serviceNumber)
         .field('rank', enrolee.rank)
+        .field('armOfService', enrolee.armOfService)
         .field('dateOfBirth', '2000-01-02')
         .field('identificationType', enrolee.identificationType)
         .field('identificationNumber', enrolee.identificationNumber)

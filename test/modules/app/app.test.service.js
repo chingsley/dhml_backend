@@ -1,7 +1,5 @@
 import supertest from 'supertest';
 import moment from 'moment';
-import { Op } from 'sequelize';
-
 import getSampleStaffs from '../../../src/shared/samples/staff.samples';
 import db from '../../../src/database/models';
 import getSampleUsers from '../../../src/shared/samples/user.samples';
@@ -189,18 +187,6 @@ class TestService {
     return db.Enrollee.findOne({ where: { enrolleeIdNo } });
   }
 
-  static async findAfrshipPrincipal({ hcpId }) {
-    const serviceNumber = await TestService.getUniqueValue();
-    const afrshipPrincipal = await TestService.getRegisteredPrincipal({
-      scheme: 'AFRSHIP',
-      withValues: {
-        serviceNumber,
-        staffNumber: undefined,
-        hcpId,
-      },
-    });
-    return afrshipPrincipal;
-  }
   static async findRegStaff(staffIdNo, staffFileNo) {
     let staff = await db.Staff.findOne({ where: { staffIdNo, staffFileNo } });
     if (!staff) {
@@ -212,40 +198,6 @@ class TestService {
       });
     }
     return staff;
-  }
-  static async findDsshipPrincipal({ hcpId }) {
-    const staffNumber = await this.getUniqueValue();
-    const staffFileNo = await this.getUniqueValue();
-    const staff = await this.findRegStaff(staffNumber, staffFileNo);
-    const afrshipPrincipal = await TestService.getRegisteredPrincipal({
-      scheme: 'DSSHIP',
-      withValues: {
-        staffNumber: staff.staffIdNo,
-        serviceNumber: undefined,
-        hcpId,
-      },
-    });
-    return afrshipPrincipal;
-  }
-
-  static async getRegisteredPrincipal({ scheme, withValues }) {
-    let principal = await db.Enrollee.findOne({
-      where: {
-        scheme: { [Op.iLike]: scheme.toLowerCase() },
-        principalId: { [Op.is]: null },
-      },
-    });
-    if (!principal) {
-      const { principals } = this.getSampleEnrollees({ numberOfPrincipals: 1 });
-      const enrolleeIdNo = await db.Enrollee.generateNewPrincipalIdNo();
-      principal = await db.Enrollee.create({
-        ...principals[0],
-        enrolleeIdNo,
-        scheme,
-        ...withValues,
-      });
-    }
-    return principal;
   }
 
   static async getUniqueValue() {
