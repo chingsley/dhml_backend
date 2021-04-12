@@ -68,7 +68,7 @@ router.get(
 );
 router.get(
   '/:hcpId/download_manifest',
-  AuthMiddleware.authorize([...HOD_AND_HIGHER_ROLES], {
+  AuthMiddleware.authorize([...HOD_AND_HIGHER_ROLES, ENROLMENT_OFFICER], {
     tokenLocation: HEADERS_OR_QUERY,
   }),
   HcpController.downloadHcpManifest
