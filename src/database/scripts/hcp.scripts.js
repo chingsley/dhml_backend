@@ -1,4 +1,4 @@
-import { days } from '../../utils/timers';
+import { days, moment } from '../../utils/timers';
 import { CONTROL_HCPs } from './helpers.scripts';
 
 // eslint-disable-next-line no-unused-vars
@@ -54,6 +54,7 @@ export const getManifestWithZeroStats = (dialect, dbName, reqQuery = {}) => {
   const { limit, offset } = getPaginationParameters(reqQuery);
 
   const { searchItem, hcpCode, hcpName, date = days.today } = reqQuery;
+  const formattedDate = moment(date).format('YYYY-MM-DD');
   const fallback = '"hcpCode" IS NOT NULL';
   const generalSearch =
     searchItem &&
@@ -70,14 +71,14 @@ export const getManifestWithZeroStats = (dialect, dbName, reqQuery = {}) => {
     FROM
       (SELECT COALESCE(p.id,d.id) id, COALESCE(p.code,d.code) "hcpCode", COALESCE(p.name,d.name) "hcpName", COALESCE(p.state,d.state) "hcpState", COALESCE(p.status,d.status) "hcpStatus", COALESCE(p."verifiedOn",d."verifiedOn") "verifiedOn", principals, dependants
       FROM
-        (SELECT h.id, h.code, h.name, h.status, h.state, COALESCE(DATE_TRUNC('month', "dateVerified"), '${date}') "verifiedOn", count(e.id) as principals
+        (SELECT h.id, h.code, h.name, h.status, h.state, COALESCE(DATE_TRUNC('month', "dateVerified"), '${formattedDate}') "verifiedOn", count(e.id) as principals
         FROM "HealthCareProviders" h
         LEFT JOIN "Enrollees" e
             ON h.id = e."hcpId" AND e."principalId" IS NULL AND e."isVerified"=true AND e."isActive"=true
         WHERE h.status='active'
         GROUP BY h.id, h.code, h.name, DATE_TRUNC('month', "dateVerified")) AS p
       FULL OUTER JOIN
-        (SELECT h.id, h.code, h.name, h.status, h.state, COALESCE(DATE_TRUNC('month', "dateVerified"), '${date}') "verifiedOn", count(e.id) as dependants
+        (SELECT h.id, h.code, h.name, h.status, h.state, COALESCE(DATE_TRUNC('month', "dateVerified"), '${formattedDate}') "verifiedOn", count(e.id) as dependants
         FROM "HealthCareProviders" h
         LEFT JOIN "Enrollees" e
             ON h.id = e."hcpId" AND e."principalId" IS NOT NULL AND e."isVerified"=true AND e."isActive"=true
@@ -85,11 +86,44 @@ export const getManifestWithZeroStats = (dialect, dbName, reqQuery = {}) => {
         GROUP BY h.id, h.code, h.name, DATE_TRUNC('month', "dateVerified")) AS d
       ON p.id = d.id AND p."verifiedOn" = d."verifiedOn") sub
     
-    WHERE DATE_TRUNC('month', "verifiedOn") <= '${date}' AND ${filter} AND "hcpCode" NOT IN (${CONTROL_HCPs})
+    WHERE DATE_TRUNC('month', "verifiedOn") <= '${formattedDate}' AND ${filter} AND "hcpCode" NOT IN (${CONTROL_HCPs})
     GROUP BY id, "hcpCode", "hcpName", "hcpState", "hcpStatus"
     ORDER BY lives DESC, "hcpName" ASC
    	LIMIT ${limit}
    	OFFSET ${offset}
+      `,
+    mysql: `
+    `,
+  };
+  return query[dialect];
+};
+
+export const getManifestByHcpId = (dialect, dbName, reqQuery = {}) => {
+  const { hcpId, date = days.today } = reqQuery;
+  const formattedDate = moment(date).format('YYYY-MM-DD');
+  const query = {
+    postgres: `
+    SELECT id "hcpId", "hcpCode", "hcpName", "hcpState", "hcpStatus", MAX("verifiedOn") AS "monthOfYear", SUM("principals") principals, SUM("dependants") dependants,  SUM("principals") +  SUM("dependants") lives
+    FROM
+      (SELECT COALESCE(p.id,d.id) id, COALESCE(p.code,d.code) "hcpCode", COALESCE(p.name,d.name) "hcpName", COALESCE(p.state,d.state) "hcpState", COALESCE(p.status,d.status) "hcpStatus", COALESCE(p."verifiedOn",d."verifiedOn") "verifiedOn", principals, dependants
+      FROM
+        (SELECT h.id, h.code, h.name, h.status, h.state, COALESCE(DATE_TRUNC('month', "dateVerified"), '${formattedDate}') "verifiedOn", count(e.id) as principals
+        FROM "HealthCareProviders" h
+        LEFT JOIN "Enrollees" e
+            ON h.id = e."hcpId" AND e."principalId" IS NULL AND e."isVerified"=true AND e."isActive"=true
+        WHERE h.status='active'
+        GROUP BY h.id, h.code, h.name, DATE_TRUNC('month', "dateVerified")) AS p
+      FULL OUTER JOIN
+        (SELECT h.id, h.code, h.name, h.status, h.state, COALESCE(DATE_TRUNC('month', "dateVerified"), '${formattedDate}') "verifiedOn", count(e.id) as dependants
+        FROM "HealthCareProviders" h
+        LEFT JOIN "Enrollees" e
+            ON h.id = e."hcpId" AND e."principalId" IS NOT NULL AND e."isVerified"=true AND e."isActive"=true
+        WHERE  h.status='active'
+        GROUP BY h.id, h.code, h.name, DATE_TRUNC('month', "dateVerified")) AS d
+      ON p.id = d.id AND p."verifiedOn" = d."verifiedOn") sub
+    
+    WHERE DATE_TRUNC('month', "verifiedOn") <= '${formattedDate}' AND id = ${hcpId}
+    GROUP BY id, "hcpCode", "hcpName", "hcpState", "hcpStatus"
       `,
     mysql: `
     `,
