@@ -81,8 +81,12 @@ export default class HcpController {
   }
   static async getManifest(req, res, next) {
     try {
+      const { user, userType } = req;
       const hcpService = new HcpService(req);
-      const data = await hcpService.fetchManifest();
+      const data =
+        userType.toLowerCase() === 'hcp'
+          ? await hcpService.fetchManifestByHcpId(user.id)
+          : await hcpService.fetchManifest();
       return res.status(200).json({ data });
     } catch (error) {
       Response.handleError('getManifest', error, req, res, next);

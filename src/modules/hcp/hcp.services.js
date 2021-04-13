@@ -1,15 +1,17 @@
 import db from '../../database/models';
+import { Op } from 'sequelize';
 import AppService from '../app/app.service';
 import {
   getCapitationTotals,
   getManifestWithZeroStats,
   getCapitationWithoutZeroStats,
+  getManifestByHcpId,
 } from '../../database/scripts/hcp.scripts';
 import { enrolleeSearchableFields } from '../../shared/attributes/enrollee.attributes';
 import { hcpSearchableFields } from '../../shared/attributes/hcp.attribtes';
 import { throwError } from '../../shared/helpers';
 import { HCP } from '../../shared/constants/roles.constants';
-import { months } from '../../utils/timers';
+import { months, moment } from '../../utils/timers';
 
 const { sequelize } = db;
 
@@ -80,10 +82,16 @@ export default class HcpService extends AppService {
   }
 
   async fetchVerifiedHcpEnrollees(hcpId) {
+    const { date = moment().format('YYYY-MM-DD') } = this.query;
     return db.Enrollee.findAndCountAll({
       where: {
         hcpId,
         isVerified: true,
+        dateVerified: {
+          [Op.lte]: new Date(
+            moment(date).clone().endOf('month').format('YYYY-MM-DD')
+          ),
+        },
         ...this.searchRecordsBy(enrolleeSearchableFields),
       },
       ...this.paginate(),
@@ -97,8 +105,18 @@ export default class HcpService extends AppService {
 
   async downloadEnrollees() {
     const { hcpId } = this.params;
+    const { date = moment().format('YYYY-MM-DD') } = this.query;
     const data = await db.Enrollee.findAndCountAll({
-      where: { hcpId, principalId: null, isVerified: true },
+      where: {
+        hcpId,
+        principalId: null,
+        isVerified: true,
+        dateVerified: {
+          [Op.lte]: new Date(
+            moment(date).clone().endOf('month').format('YYYY-MM-DD')
+          ),
+        },
+      },
       order: [['dateVerified', 'DESC']],
       attributes: [
         'serviceNumber',
@@ -113,7 +131,14 @@ export default class HcpService extends AppService {
       include: {
         model: db.Enrollee,
         as: 'dependants',
-        where: { isVerified: true },
+        where: {
+          isVerified: true,
+          dateVerified: {
+            [Op.lte]: new Date(
+              moment(date).clone().endOf('month').format('YYYY-MM-DD')
+            ),
+          },
+        },
         required: false,
         attributes: [
           ['relationshipToPrincipal', 'Member'],
@@ -139,6 +164,14 @@ export default class HcpService extends AppService {
     const total = this.summarizeManifest(nonPaginatedRows);
     const rows = await this.executeQuery(getManifestWithZeroStats, this.query);
     return { count, rows, total };
+  }
+
+  async fetchManifestByHcpId(hcpId) {
+    const rows = await this.executeQuery(getManifestByHcpId, {
+      ...this.query,
+      hcpId,
+    });
+    return { count: rows.length, rows, total: this.summarizeManifest(rows) };
   }
 
   async fetchCapitation() {
