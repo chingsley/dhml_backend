@@ -10,7 +10,6 @@ import http from 'http';
 
 import Notif from './utils/Notification';
 
-import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 
 import swaggerDoc from './swagger.json';
@@ -22,8 +21,8 @@ const server = express();
 
 server.use(helmet());
 server.use(cors());
-server.use(bodyParser.urlencoded({ extended: true }));
-server.use(bodyParser.json());
+server.use(express.urlencoded({ extended: true }));
+server.use(express.json());
 server.use(
   fileUpload({
     limits: { fileSize: 50 * 1024 * 1024 },
