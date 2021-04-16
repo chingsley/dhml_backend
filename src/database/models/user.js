@@ -18,11 +18,6 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       },
-      // email: {
-      //   type: DataTypes.STRING,
-      //   allowNull: false,
-      //   unique: true,
-      // },
       username: {
         type: DataTypes.STRING,
         allowNull: false,

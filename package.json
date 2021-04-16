@@ -73,7 +73,6 @@
     "babel-loader": "^8.0.6",
     "babel-plugin-module-resolver": "^4.0.0",
     "bcryptjs": "^2.4.3",
-    "body-parser": "^1.19.0",
     "cloudinary": "^1.23.0",
     "convert-excel-to-json": "^1.7.0",
     "cors": "^2.8.5",
@@ -142,7 +141,8 @@
       "<rootDir>/src/utils/",
       "<rootDir>/test/",
       "<rootDir>/src/server.js",
-      "<rootDir>/src/database/models/index.js"
+      "<rootDir>/src/database/models/index.js",
+      "<rootDir>/src/database/scripts/"
     ]
   },
   "lint-staged": {
