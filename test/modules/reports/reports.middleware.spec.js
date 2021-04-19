@@ -69,7 +69,7 @@ describe('validateCapSumAudit', () => {
           {
             payload: { auditStatus: true },
             expectedErr:
-              '"auditStatus" must be one of [audited, pending, flagged]',
+              '"auditStatus" must be one of [audit pass, flagged, pending]',
           },
           {
             payload: { auditStatus: 'flagged' },

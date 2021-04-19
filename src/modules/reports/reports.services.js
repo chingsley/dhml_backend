@@ -5,8 +5,7 @@ import { Op } from 'sequelize';
 import ROLES from '../../shared/constants/roles.constants';
 import { capitationByArmOfService } from '../../database/scripts/analysis.scripts';
 import reportHelpers from './reports.helpers';
-
-const { sequelize } = db;
+import { AUDIT_STATUS } from '../../shared/constants/lists.constants';
 
 export default class ReportService extends AppService {
   constructor({ body, files, query, params }) {
@@ -18,56 +17,77 @@ export default class ReportService extends AppService {
   }
 
   async getAllCapitationApprovals(userRole) {
-    const filter =
-      userRole === ROLES.MD
-        ? {}
-        : {
-            dateApproved: { [Op.not]: null },
-          };
-
+    const filter = (model, userRole) => {
+      if (model === 'GeneralMonthlyCapitation' && userRole === ROLES.MD) {
+        return { auditStatus: AUDIT_STATUS.auditPass };
+      } else if (model === 'Voucher' && userRole === ROLES.HOD_AUDIT) {
+        return { where: { id: { [Op.not]: null } } };
+      } else {
+        return {};
+      }
+    };
     await db.GeneralMonthlyCapitation.updateRecords();
     return db.GeneralMonthlyCapitation.findAndCountAll({
-      where: { ...filter },
+      where: { ...filter('GeneralMonthlyCapitation', userRole) },
       order: [['month', 'DESC']],
       ...this.paginate(this.query),
+      include: [
+        {
+          model: db.Voucher,
+          as: 'voucher',
+          ...filter('Voucher', userRole),
+          attributes: ['id', ['createdAt', 'auditRequestedOn']],
+        },
+      ],
     });
   }
 
   async approveMonthlyCapSum() {
-    const t = await sequelize.transaction();
+    const capSum = await this.getCapSumById(this.params.summaryId, {
+      rejectCurrentMonth: true,
+    });
+    this.rejectIf(capSum.auditStatus !== AUDIT_STATUS.auditPass, {
+      withError: 'Cannot approve. Capitation has not passed audit.',
+    });
+    this.rejectIf(capSum.isPaid, {
+      withError: 'Cannot change approval, capitation has been paid.',
+    });
+    const { approve } = this.body;
+    const dateApproved = approve ? new Date() : null;
+    await capSum.update({ dateApproved });
+    return capSum;
+  }
+
+  async auditMonthlyCapSum() {
+    const t = await db.sequelize.transaction();
+    const { auditPass, pending } = AUDIT_STATUS;
+    const capSum = await this.getCapSumById(this.params.summaryId);
+    this.rejectIf(!capSum.voucher, {
+      withError: 'This captitation has not been marked ready for audit.',
+    });
+    this.rejectIf(capSum.isApproved, {
+      // to avoid having an "approved" capitation with audit status "flagged" or "pending".
+      withError: 'Cannot change audit status, capitation has been approved.',
+    });
+    const { auditStatus } = this.body;
+    const dateAudited = auditStatus === pending ? null : new Date();
     try {
-      const capSum = await this.getCapSumById(this.params.summaryId, {
-        rejectCurrentMonth: true,
-      });
-      this.rejectIf(capSum.isPaid, {
-        withError: 'cannot change approval, capitation has been paid for',
-      });
-      const { approve } = this.body;
-      if (approve) {
-        await capSum.update({ dateApproved: new Date() }, { transaction: t });
+      if (auditStatus === auditPass) {
+        await capSum.update(
+          { ...this.body, flagReason: null, dateAudited },
+          { transaction: t }
+        );
         await db.HcpMonthlyCapitation.addMonthlyRecord(capSum, t);
       } else {
-        await capSum.update({ dateApproved: null }, { transaction: t });
+        await capSum.update({ ...this.body, dateAudited }, { transaction: t });
         await db.HcpMonthlyCapitation.deleteMonthRecord(capSum, t);
       }
-
       await t.commit();
       return capSum;
     } catch (error) {
       await t.rollback();
       throw error;
     }
-  }
-
-  async auditMonthlyCapSum() {
-    const capSum = await this.getCapSumById(this.params.summaryId);
-    this.rejectIf(!capSum.isApproved, {
-      withError: 'Cannot audit capitation before MD"s approval',
-    });
-    const { auditStatus } = this.body;
-    const dateAudited = auditStatus === 'pending' ? null : new Date();
-    await capSum.update({ ...this.body, dateAudited });
-    return capSum;
   }
 
   /**
@@ -81,20 +101,6 @@ export default class ReportService extends AppService {
       withError: 'Cannot pay for capitation before MD"s approval',
     });
     await capSum.update({ datePaid: new Date() });
-    return capSum;
-  }
-
-  async getCapSumById(id, { rejectCurrentMonth } = {}) {
-    const capSum = await this.findOneRecord({
-      modelName: 'GeneralMonthlyCapitation',
-      where: { id },
-      errorIfNotFound: `no capitation summary was found with id ${id}`,
-    });
-    this.rejectIf(rejectCurrentMonth && capSum.isCurrentMonth, {
-      withError:
-        'Operation not allowed on current running capitation until month end',
-    });
-
     return capSum;
   }
 

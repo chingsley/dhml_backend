@@ -81,6 +81,27 @@ export default class AppService {
     return record;
   }
 
+  async getCapSumById(id, { rejectCurrentMonth } = {}) {
+    const capSum = await this.findOneRecord({
+      modelName: 'GeneralMonthlyCapitation',
+      where: { id },
+      errorIfNotFound: `no capitation summary was found with id ${id}`,
+      include: [
+        {
+          model: db.Voucher,
+          as: 'voucher',
+          attributes: ['id', ['createdAt', 'auditRequestedOn']],
+        },
+      ],
+    });
+    this.rejectIf(rejectCurrentMonth && capSum.isCurrentMonth, {
+      withError:
+        'Operation not allowed on current running capitation until month end',
+    });
+
+    return capSum;
+  }
+
   /**
    * NOTE: In the if() block here, I could use if(page && pageSize)
    * but that leads to a bug, because if page is '0' in req.query,

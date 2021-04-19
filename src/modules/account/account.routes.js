@@ -21,6 +21,12 @@ router.get(
   AppMiddleware.requireDateQuery,
   AccountController.getApprovedMonthSpecificCapitation
 );
+router.post(
+  '/capitation/voucher',
+  AuthMiddleware.authorize([HOD_ACCOUNT, ACCOUNT_OFFICER]),
+  AccountMiddleware.validateVoucher,
+  AccountController.updateOrCreateVoucher
+);
 router.patch(
   '/capitation/:capitationId',
   AuthMiddleware.authorize([HOD_ACCOUNT, ACCOUNT_OFFICER]),

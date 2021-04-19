@@ -166,6 +166,27 @@ export default class AccountService extends AppService {
     };
   }
 
+  async upsertCapitationVoucher() {
+    const t = await db.sequelize.transaction();
+    try {
+      // eslint-disable-next-line no-unused-vars
+      const capSum = await this.getCapSumById(this.reqBody.gmcId, {
+        rejectCurrentMonth: true,
+      });
+      const voucher = await db.Voucher.updateOrCreate(this.reqBody, t);
+
+      /**
+       * this operation is currently done at the point of "auditing..."
+       */
+      // await db.HcpMonthlyCapitation.addMonthlyRecord(capSum, t);
+      await t.commit();
+      return voucher;
+    } catch (error) {
+      await t.rollback();
+      throw error;
+    }
+  }
+
   groupByState(capitation) {
     return capitation.reduce((acc, cap) => {
       if (!acc[cap.hcp.state]) {

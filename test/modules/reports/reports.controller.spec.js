@@ -8,8 +8,12 @@ import ReportsApi from './reports.test.api';
 import EnrolleeTest from '../enrollee/enrollee.test.service';
 import _ReportService from './reports.test.service';
 import moment from 'moment';
+import getSampleVoucher from '../../../src/shared/samples/voucher.sample';
+import { AUDIT_STATUS } from '../../../src/shared/constants/lists.constants';
 
+const rateInNaira = Number(process.env.RATE_IN_NAIRA);
 const { MD, HOD_AUDIT, HOD_ACCOUNT } = ROLES;
+const { pending, flagged, auditPass } = AUDIT_STATUS;
 
 describe('ReportsController', () => {
   describe('getGeneralMonthlyCapitation', () => {
@@ -31,7 +35,7 @@ describe('ReportsController', () => {
         [MD, HOD_AUDIT, HOD_ACCOUNT],
         getSampleStaffs(3).sampleStaffs
       );
-      res = await ReportsApi.getMonthlyCapSum('', token[MD]);
+      res = await ReportsApi.getMonthlyCapSum('', token[HOD_ACCOUNT]);
     });
 
     it('returns status 200 on successful GET', async (done) => {
@@ -68,12 +72,12 @@ describe('ReportsController', () => {
         done(e);
       }
     });
-    it('ensures the current month "running month" (not returned in API) contains the total lives', async (done) => {
+    it('ensures the capitation for current month returns correct values for number of lives and amount', async (done) => {
       try {
         const { rows } = res.body.data;
         const totalLives = seededPrincipals.length + seededDependants.length;
         expect(rows[0].lives).toEqual(totalLives);
-        expect(rows[0].amount).toEqual(totalLives * 750);
+        expect(rows[0].amount).toEqual(totalLives * rateInNaira);
         done();
       } catch (e) {
         done(e);
@@ -95,16 +99,16 @@ describe('ReportsController', () => {
     });
     it('initializes the record if not exist otherwise, it updates the existing record', async (done) => {
       try {
-        const res = await ReportsApi.getMonthlyCapSum('', token[MD]);
+        const res = await ReportsApi.getMonthlyCapSum('', token[HOD_ACCOUNT]);
         expect(res.status).toBe(200);
         done();
       } catch (e) {
         done(e);
       }
     });
-    it('returns empty result for non-MD role if no record is approved yet', async (done) => {
+    it('returns empty result for MD and AUDITOR if VOUCHER is not yet created for any record', async (done) => {
       try {
-        for (let token of [token[HOD_ACCOUNT], token[HOD_AUDIT]]) {
+        for (let token of [token[HOD_AUDIT], token[MD]]) {
           const res = await ReportsApi.getMonthlyCapSum('', token);
           const { count, rows } = res.body.data;
           expect(res.status).toBe(200);
@@ -116,10 +120,201 @@ describe('ReportsController', () => {
         done(e);
       }
     });
+    it('returns empty result for MD if there"s no record with audit pass', async (done) => {
+      try {
+        const res = await ReportsApi.getMonthlyCapSum('', token[MD]);
+        const { count, rows } = res.body.data;
+        expect(res.status).toBe(200);
+        expect(count).toBe(0);
+        expect(rows).toHaveLength(0);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('ensures auditor can see records that have voucher; but MD will not', async (done) => {
+      try {
+        const { rows } = res.body.data;
+        const earliestCapSum = rows[rows.length - 1];
+        const voucher = getSampleVoucher(earliestCapSum.id);
+        await ReportsApi.createVoucheer(voucher, token[HOD_ACCOUNT]);
+        const res2 = await ReportsApi.getMonthlyCapSum('', token[HOD_AUDIT]);
+        expect(res2.body.data.count).toBe(1);
+        expect(res2.body.data.rows).toHaveLength(1);
+        expect(res2.body.data.rows[0].id).toEqual(voucher.gmcId);
+
+        const res3 = await ReportsApi.getMonthlyCapSum('', token[MD]);
+        expect(res3.body.data.count).toBe(0);
+        expect(res3.body.data.rows).toHaveLength(0);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('ensures MD will not see audited, but flagged records', async (done) => {
+      try {
+        const { rows } = res.body.data;
+        const earliestCapSum = rows[rows.length - 1];
+        const voucher = getSampleVoucher(earliestCapSum.id);
+        await ReportsApi.createVoucheer(voucher, token[HOD_ACCOUNT]);
+        const summaryId = earliestCapSum.id;
+        const payload = {
+          auditStatus: flagged,
+          flagReason: 'testing...',
+        };
+        await ReportsApi.auditMonthlyCapSum(
+          summaryId,
+          payload,
+          token[HOD_AUDIT]
+        );
+        const res2 = await ReportsApi.getMonthlyCapSum('', token[MD]);
+        expect(res2.body.data.count).toBe(0);
+        expect(res2.body.data.rows).toHaveLength(0);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('ensures MD can see audited records with status "audit pass"', async (done) => {
+      try {
+        const { rows } = res.body.data;
+        const earliestCapSum = rows[rows.length - 1];
+        const voucher = getSampleVoucher(earliestCapSum.id);
+        await ReportsApi.createVoucheer(voucher, token[HOD_ACCOUNT]);
+        const summaryId = earliestCapSum.id;
+        const payload = { auditStatus: auditPass };
+        await ReportsApi.auditMonthlyCapSum(
+          summaryId,
+          payload,
+          token[HOD_AUDIT]
+        );
+        const res2 = await ReportsApi.getMonthlyCapSum('', token[MD]);
+        expect(res2.body.data.count).toBe(1);
+        expect(res2.body.data.rows).toHaveLength(1);
+        expect(res2.body.data.rows[0].id).toEqual(voucher.gmcId);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
 
     it(
       'it catches errors thrown in the try block',
       TestService.testCatchBlock(ReportsController.getGeneralMonthlyCapitation)
+    );
+  });
+  describe('auditMonthlyCapitationSummary', () => {
+    let sampleEnrollees, HCPs, capSums, token, capSumPreviousMonth;
+    const today = moment().format('YYYY-MM-DD');
+    beforeAll(async () => {
+      await TestService.resetDB();
+      HCPs = await TestService.seedHCPs(4);
+      sampleEnrollees = getEnrollees({
+        numOfPrincipals: 40,
+        sameSchemeDepPerPrincipal: 2,
+      });
+      await EnrolleeTest.seedAfrship(sampleEnrollees, HCPs);
+      token = await TestService.getTokenMultiple(
+        [MD, HOD_AUDIT, HOD_ACCOUNT],
+        getSampleStaffs(3).sampleStaffs
+      );
+
+      // this will execute the query to update the MonthlyCapSum table
+      await ReportsApi.getMonthlyCapSum('', token[HOD_ACCOUNT]);
+
+      capSums = await _ReportService.findAllMCaps();
+      capSumPreviousMonth = capSums.sort(
+        (a, b) => new Date(a.month).getTime() - new Date(b.month).getTime()
+      )[0];
+
+      // approve the capSum to allow audit;
+      const voucher = getSampleVoucher(capSumPreviousMonth.id);
+      await ReportsApi.createVoucheer(voucher, token[HOD_ACCOUNT]);
+    });
+
+    it('can successfully mark a report as audited', async (done) => {
+      try {
+        const capSum = capSumPreviousMonth;
+        const payload = { auditStatus: auditPass };
+        const res = await ReportsApi.auditMonthlyCapSum(
+          capSum.id,
+          payload,
+          token[HOD_AUDIT]
+        );
+        const { data } = res.body;
+        expect(res.status).toBe(200);
+        expect(data.auditStatus).toBe(payload.auditStatus);
+        const auditDate = moment(data.dateAudited).format('YYYY-MM-DD');
+        expect(auditDate).toEqual(today);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('can undo the audit and set it to pending ', async (done) => {
+      try {
+        const capSum = capSumPreviousMonth;
+        const payload = { auditStatus: pending };
+        const res = await ReportsApi.auditMonthlyCapSum(
+          capSum.id,
+          payload,
+          token[HOD_AUDIT]
+        );
+        const { data } = res.body;
+        expect(res.status).toBe(200);
+        expect(data.auditStatus).toBe(payload.auditStatus);
+        expect(data.dateAudited).toBe(null);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('can flag the report and specify a flag reason', async (done) => {
+      try {
+        const capSum = capSumPreviousMonth;
+        const payload = { auditStatus: flagged, flagReason: 'some reason' };
+        const res = await ReportsApi.auditMonthlyCapSum(
+          capSum.id,
+          payload,
+          token[HOD_AUDIT]
+        );
+        const { data } = res.body;
+        expect(res.status).toBe(200);
+        expect(data.auditStatus).toBe(payload.auditStatus);
+        expect(data.flagReason).toBe(payload.flagReason);
+        const auditDate = moment(data.dateAudited).format('YYYY-MM-DD');
+        expect(auditDate).toEqual(today);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('cannot audit a report if voucher has not been created for the record', async (done) => {
+      try {
+        const capSum = capSumPreviousMonth;
+        // this next next line will cancel previous created voucher for the capsum if there were any
+        await _ReportService.deleteCapSumVoucher(capSum.id);
+        const payload = { auditStatus: auditPass };
+        const res = await ReportsApi.auditMonthlyCapSum(
+          capSum.id,
+          payload,
+          token[HOD_AUDIT]
+        );
+        const { errors } = res.body;
+        expect(res.status).toBe(400);
+        expect(errors[0]).toEqual(
+          'This captitation has not been marked ready for audit.'
+        );
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it(
+      'it catches errors thrown in the try block',
+      TestService.testCatchBlock(
+        ReportsController.auditMonthlyCapitationSummary
+      )
     );
   });
   describe('approveMonthlyCapitationSummary', () => {
@@ -139,11 +334,18 @@ describe('ReportsController', () => {
       );
 
       // this will execute the query to update the MonthlyCapSum table
-      await ReportsApi.getMonthlyCapSum('', token[MD]);
+      await ReportsApi.getMonthlyCapSum('', token[HOD_ACCOUNT]);
       capSums = await _ReportService.findAllMCaps();
       capSumOlderMonth = capSums.sort(
         (a, b) => new Date(a.month).getTime() - new Date(b.month).getTime()
       )[0];
+      const voucher = getSampleVoucher(capSumOlderMonth.id);
+      await ReportsApi.createVoucheer(voucher, token[HOD_ACCOUNT]);
+      await ReportsApi.auditMonthlyCapSum(
+        capSumOlderMonth.id,
+        { auditStatus: auditPass },
+        token[HOD_AUDIT]
+      );
     });
 
     it('successfully approves a capitation summary', async (done) => {
@@ -178,7 +380,7 @@ describe('ReportsController', () => {
           );
           expect(res.status).toBe(400);
           const expectedErr =
-            'cannot change approval, capitation has been paid for';
+            'Cannot change approval, capitation has been paid.';
           const { errors } = res.body;
           expect(errors[0]).toEqual(expectedErr);
         }
@@ -190,9 +392,8 @@ describe('ReportsController', () => {
     });
     it('fails if the the capitation sum is for the current month', async (done) => {
       try {
-        const capSum = capSums.sort(
-          (a, b) => new Date(b.month).getTime() - new Date(a.month).getTime()
-        )[0];
+        const capSum = capSumOlderMonth;
+        const capSumMonth = capSum.month;
         await capSum.update({ month: moment().clone().startOf('month') });
         const payload = { approve: true };
         const res = await ReportsApi.approveMonthlyCapSum(
@@ -204,6 +405,7 @@ describe('ReportsController', () => {
           'Operation not allowed on current running capitation until month end';
         const { errors } = res.body;
         expect(errors[0]).toEqual(expectedErr);
+        capSumOlderMonth.month = capSumMonth;
         done();
       } catch (e) {
         done(e);
@@ -231,118 +433,6 @@ describe('ReportsController', () => {
       'it catches errors thrown in the try block',
       TestService.testCatchBlock(
         ReportsController.approveMonthlyCapitationSummary
-      )
-    );
-  });
-  describe('auditMonthlyCapitationSummary', () => {
-    let sampleEnrollees, HCPs, capSums, token, capSumPreviousMonth;
-    const today = moment().format('YYYY-MM-DD');
-    beforeAll(async () => {
-      await TestService.resetDB();
-      HCPs = await TestService.seedHCPs(4);
-      sampleEnrollees = getEnrollees({
-        numOfPrincipals: 40,
-        sameSchemeDepPerPrincipal: 2,
-      });
-      await EnrolleeTest.seedAfrship(sampleEnrollees, HCPs);
-      token = await TestService.getTokenMultiple(
-        [MD, HOD_AUDIT, HOD_ACCOUNT],
-        getSampleStaffs(3).sampleStaffs
-      );
-
-      // this will execute the query to update the MonthlyCapSum table
-      await ReportsApi.getMonthlyCapSum('', token[MD]);
-
-      capSums = await _ReportService.findAllMCaps();
-      capSumPreviousMonth = capSums.sort(
-        (a, b) => new Date(a.month).getTime() - new Date(b.month).getTime()
-      )[0];
-
-      // approve the capSum to allow audit;
-      await capSumPreviousMonth.update({ dateApproved: today });
-    });
-
-    it('can successfully mark a report as audited', async (done) => {
-      try {
-        const capSum = capSumPreviousMonth;
-        const payload = { auditStatus: 'audited' };
-        const res = await ReportsApi.auditMonthlyCapSum(
-          capSum.id,
-          payload,
-          token[HOD_AUDIT]
-        );
-        const { data } = res.body;
-        expect(res.status).toBe(200);
-        expect(data.auditStatus).toBe(payload.auditStatus);
-        const auditDate = moment(data.dateAudited).format('YYYY-MM-DD');
-        expect(auditDate).toEqual(today);
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-    it('can undo the audit and set it to pending ', async (done) => {
-      try {
-        const capSum = capSumPreviousMonth;
-        const payload = { auditStatus: 'pending' };
-        const res = await ReportsApi.auditMonthlyCapSum(
-          capSum.id,
-          payload,
-          token[HOD_AUDIT]
-        );
-        const { data } = res.body;
-        expect(res.status).toBe(200);
-        expect(data.auditStatus).toBe(payload.auditStatus);
-        expect(data.dateAudited).toBe(null);
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-    it('can flag the report and specify a flag reason', async (done) => {
-      try {
-        const capSum = capSumPreviousMonth;
-        const payload = { auditStatus: 'flagged', flagReason: 'some reason' };
-        const res = await ReportsApi.auditMonthlyCapSum(
-          capSum.id,
-          payload,
-          token[HOD_AUDIT]
-        );
-        const { data } = res.body;
-        expect(res.status).toBe(200);
-        expect(data.auditStatus).toBe(payload.auditStatus);
-        expect(data.flagReason).toBe(payload.flagReason);
-        const auditDate = moment(data.dateAudited).format('YYYY-MM-DD');
-        expect(auditDate).toEqual(today);
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-    it('cannot audit a report before approval', async (done) => {
-      try {
-        const capSum = capSumPreviousMonth;
-        await capSum.update({ dateApproved: null });
-        const payload = { auditStatus: 'audited' };
-        const res = await ReportsApi.auditMonthlyCapSum(
-          capSum.id,
-          payload,
-          token[HOD_AUDIT]
-        );
-        const { errors } = res.body;
-        expect(res.status).toBe(400);
-        expect(errors[0]).toEqual(
-          'Cannot audit capitation before MD"s approval'
-        );
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-    it(
-      'it catches errors thrown in the try block',
-      TestService.testCatchBlock(
-        ReportsController.auditMonthlyCapitationSummary
       )
     );
   });

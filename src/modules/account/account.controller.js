@@ -55,4 +55,19 @@ export default class AccountController {
       Response.handleError('sendPaymentAdvice', error, req, res, next);
     }
   }
+  static async updateOrCreateVoucher(req, res, next) {
+    try {
+      const accountService = new AccountService(req);
+      const data = await accountService.upsertCapitationVoucher();
+      return res
+        .status(200)
+        .json({
+          message:
+            'Voucher successfully saved. The capitation is now available for audit.',
+          data,
+        });
+    } catch (error) {
+      Response.handleError('updateOrCreateVoucher', error, req, res, next);
+    }
+  }
 }
