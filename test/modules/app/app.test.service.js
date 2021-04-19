@@ -45,6 +45,7 @@ class TestService {
       await db.User.destroy({ where: {}, truncate: { cascade: true } });
       await db.Staff.destroy({ where: {}, truncate: { cascade: true } });
       await dbHmc.destroy({ where: {}, truncate: { cascade: true } });
+      await db.Voucher.destroy({ where: {}, truncate: { cascade: true } });
       await dbGmc.destroy({ where: {}, truncate: { cascade: true } });
       await dbHcp.destroy({ where: {}, truncate: { cascade: true } });
       await db.Role.destroy({ where: {}, truncate: { cascade: true } });

@@ -2,6 +2,8 @@ import { days, moment } from '../../utils/timers';
 import { CONTROL_HCPs, getCapitationFilters } from './helpers.scripts';
 import { getPaginationParameters } from './helpers.scripts';
 
+const rateInNaira = Number(process.env.RATE_IN_NAIRA);
+
 // eslint-disable-next-line no-unused-vars
 export const getManifestWihoutZeroStats = (dialect, dbName, reqQuery = {}) => {
   const { limit, offset } = getPaginationParameters(reqQuery);
@@ -150,7 +152,7 @@ export const getCapitationWithoutZeroStats = (
   const { limit, offset, date, filter } = getCapitationFilters(reqQuery);
 
   const query1 = `
-  SELECT id "hcpId", "hcpCode", "hcpName", "hcpState", "hcpStatus", MAX("dateVerified") "monthOfYear", SUM(lives) lives, SUM(lives)*750 amount
+  SELECT id "hcpId", "hcpCode", "hcpName", "hcpState", "hcpStatus", MAX("dateVerified") "monthOfYear", SUM(lives) lives, SUM(lives)*${rateInNaira} amount
   FROM
     (SELECT h.id, h.code "hcpCode", h.name "hcpName",h.status "hcpStatus", h.state "hcpState", COALESCE(DATE_TRUNC('month', "dateVerified"), '${date}') "dateVerified", count(e.id) lives
     FROM "HealthCareProviders" h
@@ -174,7 +176,7 @@ export const getCapitationWithZeroStats = (dialect, dbName, reqQuery = {}) => {
   const { limit, offset, date, filter } = getCapitationFilters(reqQuery);
 
   const query1 = `
-  SELECT id "hcpId", "hcpCode", "hcpName", "hcpState", "hcpStatus", MAX("dateVerified") "monthOfYear", SUM(lives) lives, SUM(lives)*750 amount
+  SELECT id "hcpId", "hcpCode", "hcpName", "hcpState", "hcpStatus", MAX("dateVerified") "monthOfYear", SUM(lives) lives, SUM(lives)*${rateInNaira} amount
   FROM
     (SELECT h.id, h.code "hcpCode", h.name "hcpName",h.status "hcpStatus", h.state "hcpState", COALESCE(DATE_TRUNC('month', "dateVerified"), '${date}') "dateVerified", count(e.id) lives
     FROM "HealthCareProviders" h
@@ -198,7 +200,7 @@ export const getCapitationWithZeroStats = (dialect, dbName, reqQuery = {}) => {
 export const getCapitationTotals = (dialect, dbName, reqQuery = {}) => {
   const { date, filter } = getCapitationFilters(reqQuery);
   const query1 = `
-  SELECT SUM(lives) lives, SUM(lives)*750 amount
+  SELECT SUM(lives) lives, SUM(lives)*${rateInNaira} amount
   FROM
       (SELECT h.id, h.code "hcpCode", h.name "hcpName",h.status "hcpStatus", h.state "hcpState", COALESCE(DATE_TRUNC('month', "dateVerified"), '${date}') "dateVerified", count(e.id) lives
       FROM "HealthCareProviders" h

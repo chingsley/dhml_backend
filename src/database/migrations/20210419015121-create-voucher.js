@@ -2,7 +2,7 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable(
-      'HcpMonthlyCapitations',
+      'Vouchers',
       {
         id: {
           allowNull: false,
@@ -10,43 +10,52 @@ module.exports = {
           primaryKey: true,
           type: Sequelize.INTEGER,
         },
-        hcpId: {
-          allowNull: false,
-          type: Sequelize.INTEGER,
-          references: {
-            model: 'HealthCareProviders',
-            key: 'id',
-          },
-          onDelete: 'RESTRICT',
-          onUpdate: 'CASCADE',
-        },
-        month: {
-          allowNull: false,
-          type: Sequelize.DATE,
-        },
-        rrr: {
-          type: Sequelize.STRING,
-        },
-        tsaCharge: {
-          type: Sequelize.DOUBLE,
-        },
-        lives: {
-          type: Sequelize.INTEGER,
-          allowNull: false,
-        },
-        amount: {
-          type: Sequelize.DOUBLE,
-          allowNull: false,
-        },
         gmcId: {
-          allowNull: false,
           type: Sequelize.INTEGER,
+          allowNull: false,
+          unique: true,
           references: {
             model: 'GeneralMonthlyCapitations',
             key: 'id',
           },
-          onDelete: 'RESTRICT',
+          onDelete: 'CASCADE',
           onUpdate: 'CASCADE',
+        },
+        department: {
+          type: Sequelize.STRING,
+        },
+        acCode: {
+          type: Sequelize.STRING,
+        },
+        pvNo: {
+          type: Sequelize.STRING,
+        },
+        payee: {
+          type: Sequelize.STRING,
+        },
+        serviceDate: {
+          type: Sequelize.DATE,
+        },
+        serviceDescription: {
+          type: Sequelize.TEXT,
+        },
+        preparedBy: {
+          type: Sequelize.STRING,
+        },
+        preparerDesignation: {
+          type: Sequelize.STRING,
+        },
+        datePrepared: {
+          type: Sequelize.DATE,
+        },
+        authorizedBy: {
+          type: Sequelize.STRING,
+        },
+        authorizerDesignation: {
+          type: Sequelize.STRING,
+        },
+        dateAuthorized: {
+          type: Sequelize.DATE,
         },
         createdAt: {
           allowNull: false,
@@ -66,6 +75,6 @@ module.exports = {
   },
   // eslint-disable-next-line no-unused-vars
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('HcpMonthlyCapitations');
+    return queryInterface.dropTable('Vouchers');
   },
 };

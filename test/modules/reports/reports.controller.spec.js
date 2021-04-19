@@ -9,6 +9,7 @@ import EnrolleeTest from '../enrollee/enrollee.test.service';
 import _ReportService from './reports.test.service';
 import moment from 'moment';
 
+const rateInNaira = Number(process.env.RATE_IN_NAIRA);
 const { MD, HOD_AUDIT, HOD_ACCOUNT } = ROLES;
 
 describe('ReportsController', () => {
@@ -73,7 +74,7 @@ describe('ReportsController', () => {
         const { rows } = res.body.data;
         const totalLives = seededPrincipals.length + seededDependants.length;
         expect(rows[0].lives).toEqual(totalLives);
-        expect(rows[0].amount).toEqual(totalLives * 750);
+        expect(rows[0].amount).toEqual(totalLives * rateInNaira);
         done();
       } catch (e) {
         done(e);

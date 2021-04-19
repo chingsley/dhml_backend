@@ -1,6 +1,8 @@
 import { months } from '../../utils/timers';
 import { CONTROL_HCPs } from './helpers.scripts';
 
+const rateInNaira = Number(process.env.RATE_IN_NAIRA);
+
 /**
  * gets the total capitation for all hcps from begining to current date
  * 'currentMonth' is what gets in the CapitationApprovals table as 'month'
@@ -15,10 +17,10 @@ export const monthlyCapSum = (dialect, dbName, filters) => {
   const { date = months.currentMonth } = filters;
   // console.log(date);
   const query1 = `
-  SELECT '${date}' "month", COALESCE(SUM(lives), 0) lives, COALESCE(SUM(lives)*750 , 0) amount, MAX("month") "lastVerifiedMonth"
+  SELECT '${date}' "month", COALESCE(SUM(lives), 0) lives, ${rateInNaira} "rateInNaira", COALESCE(SUM(lives)*${rateInNaira} , 0) amount, MAX("month") "lastVerifiedMonth"
   FROM
   (
-  SELECT DATE_TRUNC('month', "dateVerified") "month", count(e.id) lives, count(e.id) * 750 amount
+  SELECT DATE_TRUNC('month', "dateVerified") "month", count(e.id) lives, count(e.id) * ${rateInNaira} amount
   FROM "HealthCareProviders" h
   JOIN "Enrollees" e
       ON e."hcpId" = h.id AND e."isVerified"=true AND e."isActive"=true AND h.status='active' AND h.code NOT IN (${CONTROL_HCPs})
