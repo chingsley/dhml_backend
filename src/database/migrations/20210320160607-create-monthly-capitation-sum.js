@@ -19,6 +19,10 @@ module.exports = {
           type: Sequelize.INTEGER,
           allowNull: false,
         },
+        rateInNaira: {
+          type: Sequelize.DOUBLE,
+          allowNull: false,
+        },
         amount: {
           type: Sequelize.DOUBLE,
           allowNull: false,

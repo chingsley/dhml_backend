@@ -14,6 +14,7 @@ import _StaffService from '../staff/staff.test.services';
 import { MAX_STAFF_COUNT } from '../../../src/shared/constants/seeders.constants';
 // import { dateOnly, months } from '../../../src/utils/timers';
 
+const rateInNaira = Number(process.env.RATE_IN_NAIRA);
 const { log } = console;
 
 describe('HcpController', () => {
@@ -414,7 +415,7 @@ describe('HcpController', () => {
     const NUM_SUSPENDED_HCP = 5;
     const TOTAL_COUNT_HCP = NUM_ACTIVE_HCP + NUM_SUSPENDED_HCP;
     const LIVES_PER_HCP = 5;
-    const PER_UNIT_CHARGE = 750;
+    const PER_UNIT_CHARGE = rateInNaira;
 
     beforeAll(async () => {
       await TestService.resetDB();

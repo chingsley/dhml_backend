@@ -1,8 +1,10 @@
 'use strict';
+import { Op } from 'sequelize';
 import { moment } from '../../utils/timers';
 import { QueryTypes } from 'sequelize';
 import { monthlyCapSum } from '../scripts/approvals.scripts';
 import { months, nextMonth } from '../../utils/timers';
+import { AUDIT_STATUS } from '../../shared/constants/lists.constants';
 
 module.exports = (sequelize, DataTypes) => {
   const GeneralMonthlyCapitation = sequelize.define(
@@ -17,6 +19,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      rateInNaira: {
+        type: DataTypes.DOUBLE,
+        allowNull: false,
+      },
       amount: {
         type: DataTypes.DOUBLE,
         allowNull: false,
@@ -26,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       auditStatus: {
         type: DataTypes.STRING,
-        defaultValue: 'pending',
+        defaultValue: AUDIT_STATUS.pending,
       },
       dateAudited: {
         type: DataTypes.DATE,
@@ -37,7 +43,6 @@ module.exports = (sequelize, DataTypes) => {
       datePaid: {
         type: DataTypes.DATE,
       },
-
       monthInWords: {
         type: DataTypes.VIRTUAL,
         get() {
@@ -74,6 +79,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'gmcId',
       as: 'hcpMonthlyCapitations',
     });
+    GeneralMonthlyCapitation.hasOne(models.Voucher, {
+      foreignKey: 'gmcId',
+      as: 'voucher',
+    });
   };
 
   GeneralMonthlyCapitation.prototype.nextMonths = function (i) {
@@ -103,7 +112,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
 
-  GeneralMonthlyCapitation.updateRecords = async function () {
+  GeneralMonthlyCapitation.updateRecords_Depricated = async function () {
     let [lastRecordedCapSum] = await this.findAll({
       order: [['month', 'DESC']],
       limit: 1,
@@ -127,6 +136,7 @@ module.exports = (sequelize, DataTypes) => {
       i = i + 1;
     }
     const results = await Promise.all(bulkQuery);
+
     const upserts = results.map(([result]) => this.upsert(result));
     await Promise.all(upserts);
   };
@@ -147,6 +157,27 @@ module.exports = (sequelize, DataTypes) => {
     );
     const results = await Promise.all(bulkQuery);
     await this.bulkCreate(results.map((results) => results[0]));
+  };
+
+  GeneralMonthlyCapitation.updateRecords = async function () {
+    const count = await this.count();
+    if (count === 0) {
+      return this.initializeRecords();
+    }
+
+    const pendingAndFlaggedRecords = await this.findAll({
+      where: { auditStatus: { [Op.not]: AUDIT_STATUS.auditPass } },
+      attributes: ['month'],
+    });
+
+    const bulkQuery = pendingAndFlaggedRecords.map((record) => {
+      return this.runScript(monthlyCapSum, {
+        date: moment(record.month).format('YYYY-MM-DD'),
+      });
+    });
+    const results = await Promise.all(bulkQuery);
+    const upserts = results.map(([result]) => this.upsert(result));
+    await Promise.all(upserts);
   };
 
   GeneralMonthlyCapitation.updateAndFindOne = async function (options) {

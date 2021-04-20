@@ -218,19 +218,7 @@ module.exports = (sequelize, DataTypes) => {
       as: 'referalCodes',
     });
   };
-  Enrollee.createPrincipal = async function (enrolleeData) {
-    const enrollee = await Enrollee.create(enrolleeData);
-    await enrollee.reload({
-      include: [
-        {
-          model: enrollee.sequelize.models.HealthCareProvider,
-          as: 'hcp',
-          attributes: ['code', 'name'],
-        },
-      ],
-    });
-    return enrollee;
-  };
+
   Enrollee.prototype.reloadDetails = async function () {
     await this.reload({
       include: [
@@ -310,7 +298,9 @@ module.exports = (sequelize, DataTypes) => {
   Enrollee.prototype.checkSpouseLimit = function (newDependant) {
     if (newDependant.relationshipToPrincipal === 'spouse') {
       const spouse = this.dependants.find(
-        (depndt) => depndt.relationshipToPrincipal === 'spouse'
+        (depndt) =>
+          depndt.relationshipToPrincipal === 'spouse' &&
+          depndt.scheme !== 'VCSHIP'
       );
       if (spouse) {
         const errorMsg = `The principal, ${this.firstName} ${this.surname}, already has a spouse registered by the name ${spouse.surname} ${spouse.firstName}. Only one spouse can be enrolled as dependant`;
@@ -321,10 +311,10 @@ module.exports = (sequelize, DataTypes) => {
       }
     }
   };
-  Enrollee.prototype.isAfrshipPrincipal = function () {
-    const enrolmentType = this.principalId ? 'dependant' : 'principal';
-    return this.scheme.match(/AFRSHIP/i) && enrolmentType.match(/principal/i);
-  };
+  // Enrollee.prototype.isAfrshipPrincipal = function () {
+  //   const enrolmentType = this.principalId ? 'dependant' : 'principal';
+  //   return this.scheme.match(/AFRSHIP/i) && enrolmentType.match(/principal/i);
+  // };
 
   Enrollee.getFirstVerifiedEnrollee = async function () {
     const [firstVerifiedEnrollee] = await this.findAll({
