@@ -187,6 +187,15 @@ export default class AccountService extends AppService {
     }
   }
 
+  findVoucherById() {
+    return this.findOneRecord({
+      modelName: 'Voucher',
+      where: { id: this.params.voucherId },
+      include: { model: db.GeneralMonthlyCapitation, as: 'capitation' },
+      errorIfNotFound: `No Voucher matches the id of ${this.params.voucherId}`,
+    });
+  }
+
   groupByState(capitation) {
     return capitation.reduce((acc, cap) => {
       if (!acc[cap.hcp.state]) {

@@ -59,15 +59,24 @@ export default class AccountController {
     try {
       const accountService = new AccountService(req);
       const data = await accountService.upsertCapitationVoucher();
-      return res
-        .status(200)
-        .json({
-          message:
-            'Voucher successfully saved. The capitation is now available for audit.',
-          data,
-        });
+      return res.status(200).json({
+        message:
+          'Voucher successfully saved. The capitation is now available for audit.',
+        data,
+      });
     } catch (error) {
       Response.handleError('updateOrCreateVoucher', error, req, res, next);
+    }
+  }
+  static async getVoucherById(req, res, next) {
+    try {
+      const accountService = new AccountService(req);
+      const data = await accountService.findVoucherById();
+      return res.status(200).json({
+        data,
+      });
+    } catch (error) {
+      Response.handleError('getVoucherById', error, req, res, next);
     }
   }
 }
