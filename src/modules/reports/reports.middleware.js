@@ -1,5 +1,6 @@
 import { Joi, validateSchema } from '../../validators/joi/config';
 import Response from '../../utils/Response';
+import { AUDIT_STATUS } from '../../shared/constants/lists.constants';
 
 export default class ReportsMiddleware {
   static async validateCapSumApproval(req, res, next) {
@@ -19,10 +20,10 @@ export default class ReportsMiddleware {
       const auditSchema = Joi.object({
         auditStatus: Joi.string()
           .trim()
-          .valid('audited', 'pending', 'flagged')
+          .valid(...Object.values(AUDIT_STATUS))
           .required(),
         flagReason: Joi.when('auditStatus', {
-          is: 'flagged',
+          is: AUDIT_STATUS.flagged,
           then: Joi.string().trim().required(),
           otherwise: Joi.forbidden(),
         }),

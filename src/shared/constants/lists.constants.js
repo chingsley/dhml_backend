@@ -55,3 +55,9 @@ export const ANALYSIS_DISPLAY_OPTIONS = {
   biannual: 'biannual',
   quarterly: 'quarterly',
 };
+
+export const AUDIT_STATUS = {
+  auditPass: 'audit pass',
+  flagged: 'flagged',
+  pending: 'pending',
+};
