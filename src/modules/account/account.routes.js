@@ -27,6 +27,12 @@ router.post(
   AccountMiddleware.validateVoucher,
   AccountController.updateOrCreateVoucher
 );
+router.get(
+  '/capitation/voucher/:voucherId',
+  AppMiddleware.validateIdParams,
+  AuthMiddleware.authorize([...allowedRoles]),
+  AccountController.getVoucherById
+);
 router.patch(
   '/capitation/:capitationId',
   AuthMiddleware.authorize([HOD_ACCOUNT, ACCOUNT_OFFICER]),
