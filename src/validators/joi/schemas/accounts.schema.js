@@ -7,6 +7,8 @@ export const getVoucherSchema = () => {
     acCode: Joi.string().trim(),
     pvNo: Joi.string().trim(),
     payee: Joi.string().trim(),
+    address: Joi.string().trim(),
+    amountInWords: Joi.string().trim().required(),
     serviceDate: Joi.date().format('YYYY-MM-DD'),
     serviceDescription: Joi.string().trim(),
     preparedBy: Joi.string().trim(),
