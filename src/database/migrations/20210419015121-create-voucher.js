@@ -33,6 +33,12 @@ module.exports = {
         payee: {
           type: Sequelize.STRING,
         },
+        address: {
+          type: Sequelize.TEXT,
+        },
+        amountInWords: {
+          type: Sequelize.TEXT,
+        },
         serviceDate: {
           type: Sequelize.DATE,
         },

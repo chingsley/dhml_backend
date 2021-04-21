@@ -26,6 +26,12 @@ module.exports = (sequelize, DataTypes) => {
       payee: {
         type: DataTypes.STRING,
       },
+      address: {
+        type: DataTypes.STRING,
+      },
+      amountInWords: {
+        type: DataTypes.TEXT,
+      },
       serviceDate: {
         type: DataTypes.DATE,
       },
