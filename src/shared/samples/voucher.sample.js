@@ -8,6 +8,7 @@ const getSampleVoucher = (gmcId) => ({
   acCode: `${getRandomInt(9999999999, { min: 1000000000 })}`,
   pvNo: `${getRandomInt(9999999999, { min: 1000000000 })}`,
   payee: faker.name.lastName(),
+  amountInWords: 'amount in words (to be specified by user',
   serviceDate: months.setPast(2),
   serviceDescription: faker.lorem.words(),
   preparedBy: faker.name.lastName(),
@@ -16,6 +17,7 @@ const getSampleVoucher = (gmcId) => ({
   authorizedBy: faker.name.lastName(),
   authorizerDesignation: 'Accountant',
   dateAuthorized: days.today,
+  address: `${faker.address.zipCode()} ${faker.address.city()},  ${faker.address.state()}, ${faker.address.country()}`,
 });
 
 export default getSampleVoucher;
