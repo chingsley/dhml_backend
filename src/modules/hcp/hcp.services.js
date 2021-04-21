@@ -218,7 +218,7 @@ export default class HcpService extends AppService {
     const { date = months.currentMonth } = this.query;
     const condition = { month: new Date(months.firstDay(date)) };
     const monthlyCapitationSum = await db.GeneralMonthlyCapitation.updateAndFindOne(
-      { where: condition }
+      { where: condition, include: { model: db.Voucher, as: 'voucher' } }
     );
     return {
       count,

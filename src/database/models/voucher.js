@@ -1,4 +1,6 @@
-'use strict';
+const { ACCOUNTANT_NAME, ACCOUNTANT_SIGNATURE } = process.env;
+
+('use strict');
 module.exports = (sequelize, DataTypes) => {
   const Voucher = sequelize.define(
     'Voucher',
@@ -55,6 +57,18 @@ module.exports = (sequelize, DataTypes) => {
       },
       dateAuthorized: {
         type: DataTypes.DATE,
+      },
+      accountantName: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return ACCOUNTANT_NAME;
+        },
+      },
+      accountantSignature: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return ACCOUNTANT_SIGNATURE;
+        },
       },
     },
     {}
