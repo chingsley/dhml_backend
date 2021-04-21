@@ -1,13 +1,24 @@
 import Response from '../../utils/Response';
 import ReportService from './reports.services';
 
+const { ACCOUNTANT_NAME, ACCOUNTANT_SIGNATURE } = process.env;
+
 export default class ReportsController {
   static async getGeneralMonthlyCapitation(req, res, next) {
     try {
       const reportService = new ReportService(req);
       const userRole = req.user?.role?.title;
-      const data = await reportService.getAllCapitationApprovals(userRole);
-      return res.status(200).json({ data });
+      const data = await reportService.getGeneralMonthlyCap(userRole);
+      return res.status(200).json({
+        data: {
+          ...data,
+          accountant: {
+            name: ACCOUNTANT_NAME,
+            designation: 'ACCOUNTANT',
+            signature: ACCOUNTANT_SIGNATURE,
+          },
+        },
+      });
     } catch (error) {
       Response.handleError(
         'getGeneralMonthlyCapitation',

@@ -16,7 +16,7 @@ export default class ReportService extends AppService {
     this.params = params;
   }
 
-  async getAllCapitationApprovals(userRole) {
+  async getGeneralMonthlyCap(userRole) {
     const filter = (model, userRole) => {
       if (model === 'GeneralMonthlyCapitation' && userRole === ROLES.MD) {
         return { auditStatus: AUDIT_STATUS.auditPass };
