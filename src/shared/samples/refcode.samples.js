@@ -10,12 +10,12 @@ const {
 class SampleReferalCodes {
   static chosenSpecialistCodes = [];
 
-  static async getSeed() {
+  static async getSeed(usersCount = MAX_USER_COUNT) {
     const seededEnrollees = await db.Enrollee.findAll();
     const refcodes = seededEnrollees.map((enrollee, i) => {
       const codeMetaData = this.getMetaData();
       const operatorId =
-        faker.random.arrayElement(Array.from(Array(MAX_USER_COUNT).keys())) + 1;
+        faker.random.arrayElement(Array.from(Array(usersCount).keys())) + 1;
       return {
         enrolleeId: enrollee.id,
         destinationHcpId: this.getSecondaryHcpId(i),
