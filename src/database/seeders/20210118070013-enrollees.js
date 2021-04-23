@@ -69,7 +69,8 @@ if (process.env.SEED_WITH === 'LIVE_DATA') {
         };
       });
       await queryInterface.bulkInsert('Enrollees', dependantsWithPrincipalId);
-      const referalCodes = await SampleReferalCodes.getSeed();
+      const usersCount = await db.User.count();
+      const referalCodes = await SampleReferalCodes.getSeed(usersCount);
       await queryInterface.bulkInsert('ReferalCodes', referalCodes);
     },
 
@@ -103,7 +104,8 @@ if (process.env.SEED_WITH === 'LIVE_DATA') {
           'Enrollees',
           dependants.map((d) => ({ ...d, ...createdAt(d) }))
         );
-        const referalCodes = await SampleReferalCodes.getSeed();
+        const usersCount = await db.User.count();
+        const referalCodes = await SampleReferalCodes.getSeed(usersCount);
         await queryInterface.bulkInsert('ReferalCodes', referalCodes);
       } catch (e) {
         log(e.message);
