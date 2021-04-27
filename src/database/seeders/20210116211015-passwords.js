@@ -1,18 +1,22 @@
+const db = require('../models');
 const {
   getSampleUserPasswords,
   getSampleHcpPasswords,
 } = require('../../shared/samples/password.samples');
-const getSampleHCPs = require('../../shared/samples/hcp.samples');
 
-const hcpLength = getSampleHCPs().length;
-
-const sampleUserPasswords = getSampleUserPasswords('Testing*123');
-const sampleHcpPasswords = getSampleHcpPasswords('Testing*123', hcpLength);
-const samplePasswords = [...sampleUserPasswords, ...sampleHcpPasswords];
+// const hcpLength = getSampleHCPs().length;
 
 module.exports = {
   // eslint-disable-next-line no-unused-vars
-  up: (queryInterface, Sequelize) => {
+  up: async (queryInterface, Sequelize) => {
+    const usersCount = await db.User.count();
+    const sampleUserPasswords = getSampleUserPasswords(
+      'Testing*123',
+      usersCount
+    );
+    const hcpCount = await db.HealthCareProvider.count();
+    const sampleHcpPasswords = getSampleHcpPasswords('Testing*123', hcpCount);
+    const samplePasswords = [...sampleUserPasswords, ...sampleHcpPasswords];
     return queryInterface.bulkInsert('Passwords', samplePasswords);
   },
 
