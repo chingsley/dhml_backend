@@ -83,4 +83,5 @@ export const enrolleeSearchableFields = [
   { name: 'isVerified', type: 'boolean' },
   { name: 'enrolmentType', type: 'custom' },
   { name: 'gender', type: 'string' },
+  { name: 'enrolleeIdNo', type: 'string' },
 ];
