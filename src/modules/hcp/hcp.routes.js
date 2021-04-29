@@ -108,5 +108,10 @@ router.delete(
   AppMiddleware.validateIdParams,
   HcpController.deleteHcp
 );
+router.get(
+  '/dropdown',
+  AuthMiddleware.authorize(),
+  HcpController.getHcpDropDownList
+);
 
 export default router;

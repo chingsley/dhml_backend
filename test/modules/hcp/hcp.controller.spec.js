@@ -409,6 +409,79 @@ describe('HcpController', () => {
       TestService.testCatchBlock(HcpController.getAllHcp)
     );
   });
+  describe('getHcpDropDownList', () => {
+    let token, seededHCPs;
+    beforeAll(async () => {
+      await TestService.resetDB();
+      const hcps = getSampleHCPs();
+      seededHCPs = await _HcpService.bulkInsert([
+        ...hcps.slice(0, 10),
+        ...hcps.slice(hcps.length - 10).map((hcp) => ({
+          ...hcp,
+          status: 'suspended',
+        })),
+      ]);
+      const { sampleStaffs: stff } = getSampleStaffs(1);
+      const data = await TestService.getToken(stff[0], ROLES.SUPERADMIN);
+      token = data.token;
+    });
+    it('returns status 200 and the total record in the db', async (done) => {
+      try {
+        const res = await HcpApi.getDropDownListOfHcps('', token);
+        expect(res.status).toBe(200);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns only the primary hcp"s', async (done) => {
+      try {
+        const res = await HcpApi.getDropDownListOfHcps('', token);
+        const { data } = res.body;
+        for (let hcp of data.rows) {
+          expect(hcp.code).toMatch(/\/P$/i);
+        }
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('can paginate the response data', async (done) => {
+      try {
+        const PAGE_SIZE = 3;
+        const query = `pageSize=${PAGE_SIZE}&page=0`;
+        const res = await HcpApi.getDropDownListOfHcps(query, token);
+        const { data } = res.body;
+        expect(res.status).toBe(200);
+        expect(data.rows).toHaveLength(PAGE_SIZE);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('can match the record by id, code, name to return specific hcp', async (done) => {
+      try {
+        const queries = {
+          // id: seededHCPs[0].id,
+          code: seededHCPs[1].code,
+        };
+        for (let [key, value] of Object.entries(queries)) {
+          const query = `${key}=${value}`;
+          const res = await HcpApi.getDropDownListOfHcps(query, token);
+          const { rows, count } = res.body.data;
+          expect(count).toEqual(1);
+          expect(rows[0][key]).toEqual(value);
+        }
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it(
+      'it catches errors thrown in the try block',
+      TestService.testCatchBlock(HcpController.getHcpDropDownList)
+    );
+  });
   describe('manifest/capitation', () => {
     let token, seededHCPs, primaryHcpNoEnrollee, res1, res2, res3, res4;
     const NUM_ACTIVE_HCP = 15;
