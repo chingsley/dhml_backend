@@ -81,6 +81,20 @@ export default class HcpService extends AppService {
     });
   }
 
+  fetchHcpDropDownList() {
+    return db.HealthCareProvider.findAndCountAll({
+      where: {
+        ...this.searchRecordsBy(hcpSearchableFields),
+        ...this.filterHcp(),
+        ...this.exactMatch(['id', 'code', 'email']),
+        category: { [Op.iLike]: 'primary' },
+      },
+      attributes: ['id', 'name', 'code'],
+      order: [['code', 'ASC']],
+      ...this.paginate(),
+    });
+  }
+
   async fetchVerifiedHcpEnrollees(hcpId) {
     const { date = moment().format('YYYY-MM-DD') } = this.query;
     return db.Enrollee.findAndCountAll({
