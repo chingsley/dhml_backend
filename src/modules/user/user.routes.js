@@ -12,7 +12,7 @@ router.post(
   '/',
   AuthMiddleware.authorize([...allowedRoles]),
   UserMiddleware.validateNewUser,
-  AuthMiddleware.authorizeRoleAssignment([SUPERADMIN]),
+  AuthMiddleware.authorizeRoleAssignment([SUPERADMIN, MD]),
   UserController.registerUser
 );
 router.get(
@@ -24,12 +24,12 @@ router.patch(
   '/:userId',
   AuthMiddleware.authorize([...allowedRoles]),
   UserMiddleware.validateUserUpdate,
-  AuthMiddleware.authorizeRoleAssignment([SUPERADMIN]),
+  AuthMiddleware.authorizeRoleAssignment([SUPERADMIN, MD]),
   UserController.updateUser
 );
 router.delete(
   '/',
-  AuthMiddleware.authorize([SUPERADMIN]),
+  AuthMiddleware.authorize([SUPERADMIN, MD]),
   UserMiddleware.validateUserIdArr,
   UserController.deleteUsers
 );

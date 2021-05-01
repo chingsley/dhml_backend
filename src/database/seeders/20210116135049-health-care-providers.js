@@ -5,7 +5,8 @@ const HCPs = require('../../../live_data/HealthCareProviders.json');
 const { randInt } = require('../../utils/helpers');
 const db = require('../../database/models');
 
-const armOfService = ['NAVY', 'ARMY', 'AIR FORCE', 'TRI-SERVICE', undefined];
+// const armOfService = ['NAVY', 'ARMY', 'AIR FORCE', 'TRI-SERVICE', undefined];
+const armOfService = [undefined, undefined, undefined, undefined, undefined];
 
 module.exports = {
   // eslint-disable-next-line no-unused-vars
