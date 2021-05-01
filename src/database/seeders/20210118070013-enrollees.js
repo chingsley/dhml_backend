@@ -71,12 +71,12 @@ if (process.env.SEED_WITH === 'LIVE_DATA') {
       await queryInterface.bulkInsert('Enrollees', dependantsWithPrincipalId);
       const usersCount = await db.User.count();
       const referalCodes = await SampleReferalCodes.getSeed(usersCount);
-      await queryInterface.bulkInsert('ReferalCodes', referalCodes);
+      // await queryInterface.bulkInsert('ReferalCodes', referalCodes);
     },
 
     // eslint-disable-next-line no-unused-vars
     down: async (queryInterface, Sequelize) => {
-      await queryInterface.bulkDelete('ReferalCodes', null, {});
+      // await queryInterface.bulkDelete('ReferalCodes', null, {});
       await queryInterface.bulkDelete('Enrollees', null, {});
     },
   };
@@ -106,7 +106,7 @@ if (process.env.SEED_WITH === 'LIVE_DATA') {
         );
         const usersCount = await db.User.count();
         const referalCodes = await SampleReferalCodes.getSeed(usersCount);
-        await queryInterface.bulkInsert('ReferalCodes', referalCodes);
+        // await queryInterface.bulkInsert('ReferalCodes', referalCodes);
       } catch (e) {
         log(e.message);
       }
@@ -114,7 +114,7 @@ if (process.env.SEED_WITH === 'LIVE_DATA') {
 
     // eslint-disable-next-line no-unused-vars
     down: async (queryInterface, Sequelize) => {
-      await queryInterface.bulkDelete('ReferalCodes', null, {});
+      // await queryInterface.bulkDelete('ReferalCodes', null, {});
       await queryInterface.bulkDelete('Enrollees', null, {});
     },
   };

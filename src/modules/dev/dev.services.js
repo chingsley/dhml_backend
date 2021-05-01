@@ -42,4 +42,13 @@ export default class DevService extends AppService {
       });
     }
   }
+
+  async updateOrCreateRole() {
+    const roleTitle = this.body.role;
+    let role = await db.Role.findOne({ where: { title: roleTitle } });
+    if (!role) {
+      role = await db.Role.create({ title: roleTitle });
+    }
+    return role;
+  }
 }

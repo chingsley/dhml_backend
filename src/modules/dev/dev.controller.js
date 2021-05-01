@@ -11,4 +11,13 @@ export default class DevController {
       Response.handleError('updateDependant', error, req, res, next);
     }
   }
+  static async addNewRole(req, res, next) {
+    try {
+      const devService = new DevService(req);
+      const data = await devService.updateOrCreateRole();
+      return res.status(200).json({ data });
+    } catch (error) {
+      Response.handleError('addNewRole', error, req, res, next);
+    }
+  }
 }

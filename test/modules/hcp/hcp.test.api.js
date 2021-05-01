@@ -44,6 +44,9 @@ class HcpApi extends TestService {
     return await app.get(`/api/v1/hcp?${query}`).set('authorization', token);
   }
 
+  static getDropDownListOfHcps(query, token) {
+    return app.get(`/api/v1/hcp/dropdown?${query}`).set('authorization', token);
+  }
   static getById(hcpId, token) {
     return app.get(`/api/v1/hcp/${hcpId}`).set('authorization', token);
   }
