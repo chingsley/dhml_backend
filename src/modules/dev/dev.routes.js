@@ -9,5 +9,6 @@ router.patch(
   AuthMiddleware.authorize(),
   DevController.updateDependant
 );
+router.post('/roles', AuthMiddleware.authorize(), DevController.addNewRole);
 
 export default router;
