@@ -28,7 +28,7 @@ export const getStaffSchema = ({ withRequiredFields = true }) => {
     staffIdNo: stringValidate(withRequiredFields),
     surname: stringValidate(withRequiredFields),
     firstName: stringValidate(withRequiredFields),
-    email: Joi.string().trim(),
+    email: stringValidate(withRequiredFields),
     middleName: Joi.string().trim(),
     gender: stringValidate(withRequiredFields),
     photograph: Joi.string().trim(),
