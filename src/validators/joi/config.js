@@ -40,9 +40,7 @@ export function stringValidate(withRequiredFields) {
 }
 
 export function numberValidate(withRequiredFields) {
-  return withRequiredFields
-    ? Joi.number().integer().required()
-    : Joi.number().integer();
+  return withRequiredFields ? Joi.number().required() : Joi.number();
 }
 export function dateValidate(withRequiredFields) {
   return withRequiredFields ? Joi.date().required() : Joi.date();

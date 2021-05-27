@@ -7,6 +7,7 @@ import HcpController from '../hcp/hcp.controller';
 import HcpMiddleware from './hcp.middleware';
 
 const {
+  MD,
   SUPERADMIN,
   ADMIN,
   VERIFIER,
@@ -32,7 +33,7 @@ const router = express.Router();
 
 router.post(
   '/',
-  AuthMiddleware.authorize([SUPERADMIN, ADMIN]),
+  AuthMiddleware.authorize([roles.MD, SUPERADMIN, ADMIN]),
   HcpMiddleware.validateNewHcp,
   HcpController.addNewHcp
 );
@@ -97,7 +98,13 @@ router.patch(
 // add restriction for editing account information
 router.patch(
   '/:hcpId',
-  AuthMiddleware.authorize([SUPERADMIN, ADMIN, HOD_ACCOUNT, ACCOUNT_OFFICER]),
+  AuthMiddleware.authorize([
+    MD,
+    SUPERADMIN,
+    ADMIN,
+    HOD_ACCOUNT,
+    ACCOUNT_OFFICER,
+  ]),
   AppMiddleware.validateIdParams,
   HcpMiddleware.validateHcpUpdate,
   HcpController.updateHcp
