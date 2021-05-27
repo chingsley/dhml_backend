@@ -45,7 +45,7 @@ export default class HcpService extends AppService {
       );
       const result = hcp.dataValues;
       result.defaultPassword = returnPassword && defaultPass;
-      await this.sendPassword(hcp.email, defaultPass);
+      !returnPassword && (await this.sendPassword(hcp.email, defaultPass));
       await t.commit();
       return result;
     } catch (error) {
@@ -65,6 +65,10 @@ export default class HcpService extends AppService {
     const results = await db.HealthCareProvider.update(this.body, {
       where: { id: hcpId },
       returning: true,
+    });
+    this.rejectIf(!results[1][0], {
+      withError: `No hcp matches the id of ${hcpId}`,
+      status: 404,
     });
     return results[1][0];
   }
@@ -204,11 +208,10 @@ export default class HcpService extends AppService {
     );
     const [total] = await this.executeQuery(getCapitationTotals, this.query);
     const { date = months.currentMonth } = this.query;
-    const monthlyCapitationSum = await db.GeneralMonthlyCapitation.updateAndFindOne(
-      {
+    const monthlyCapitationSum =
+      await db.GeneralMonthlyCapitation.updateAndFindOne({
         where: { month: new Date(months.firstDay(date)) },
-      }
-    );
+      });
     return { count, rows, total, monthlyCapitationSum };
   }
 
@@ -231,9 +234,11 @@ export default class HcpService extends AppService {
 
     const { date = months.currentMonth } = this.query;
     const condition = { month: new Date(months.firstDay(date)) };
-    const monthlyCapitationSum = await db.GeneralMonthlyCapitation.updateAndFindOne(
-      { where: condition, include: { model: db.Voucher, as: 'voucher' } }
-    );
+    const monthlyCapitationSum =
+      await db.GeneralMonthlyCapitation.updateAndFindOne({
+        where: condition,
+        include: { model: db.Voucher, as: 'voucher' },
+      });
     return {
       count,
       data: this.sumStatsPerState(capitationByState),
