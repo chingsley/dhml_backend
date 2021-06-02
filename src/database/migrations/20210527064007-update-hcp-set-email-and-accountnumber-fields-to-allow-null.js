@@ -24,24 +24,3 @@ module.exports = {
     });
   },
 };
-
-// [
-//   queryInterface.changeColumn(
-//     'HealthCareProviders',
-//     'email',
-//     {
-//       type: Sequelize.STRING,
-//       allowNull: true,
-//     },
-//     { transaction: t }
-//   ),
-//   queryInterface.changeColumn(
-//     'HealthCareProviders',
-//     'accountNumber',
-//     {
-//       type: Sequelize.STRING,
-//       allowNull: true,
-//     },
-//     { transaction: t }
-//   ),
-// ]
