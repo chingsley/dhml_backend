@@ -237,7 +237,6 @@ describe('StaffController', () => {
               expect(staff[searchFiled]).toBe(searchValue);
             }
           }
-          expect(true).toBe(true);
         }
         done();
       } catch (e) {
