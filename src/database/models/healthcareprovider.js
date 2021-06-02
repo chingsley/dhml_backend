@@ -33,29 +33,24 @@ module.exports = (sequelize, DataTypes) => {
       },
       email: {
         type: DataTypes.STRING,
-        allowNull: false,
       },
       phoneNumber: {
         type: DataTypes.STRING,
-        allowNull: false,
       },
       alternativePhoneNumber: {
         type: DataTypes.STRING,
       },
       bank: {
         type: DataTypes.STRING,
-        allowNull: false,
       },
       bankAddress: {
         type: DataTypes.STRING,
       },
       accountNumber: {
         type: DataTypes.STRING,
-        allowNull: false,
       },
       accountType: {
         type: DataTypes.STRING,
-        allowNull: false,
       },
       roleId: {
         type: DataTypes.INTEGER,
