@@ -49,6 +49,7 @@ class TestService {
       await dbGmc.destroy({ where: {}, truncate: { cascade: true } });
       await dbHcp.destroy({ where: {}, truncate: { cascade: true } });
       await db.Role.destroy({ where: {}, truncate: { cascade: true } });
+      await db.ReferalCode.destroy({ where: {}, truncate: { cascade: true } });
     }
   }
 
