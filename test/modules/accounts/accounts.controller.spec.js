@@ -47,20 +47,15 @@ describe('AccountController', () => {
       // approve the capSum to allow audit;
       const voucher = getSampleVoucher(earliestCapSum.id);
       await ReportsApi.createVoucheer(voucher, token[HOD_ACCOUNT]);
-      const __res = await ReportsApi.auditMonthlyCapSum(
+      await ReportsApi.auditMonthlyCapSum(
         earliestCapSum.id,
         { auditStatus: 'audit pass' },
         token[HOD_AUDIT]
       );
-      const _res = await ReportsApi.approveMonthlyCapSum(
+      await ReportsApi.approveMonthlyCapSum(
         earliestCapSum.id,
         { approve: true },
         token[MD]
-      );
-      console.log(
-        __res.body,
-        _res.body,
-        moment(new Date(earliestCapSum.monthInWords)).format('YYYY-DD-MM')
       );
       res = await AccountsApi.getApprovedMonthSpecificCapitation(
         moment(new Date(earliestCapSum.monthInWords)).format('YYYY-MM-DD'),
@@ -70,21 +65,19 @@ describe('AccountController', () => {
 
     it.only('returns status 200 on successful GET', async (done) => {
       try {
-        console.log(res.body);
         expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty('data');
         done();
       } catch (e) {
         done(e);
       }
     });
 
-    it('returns the monthly capitation summary in descending order of month', async (done) => {
+    it.only('groups the returned data by hcp states', async (done) => {
       try {
-        const { rows } = res.body.data;
-        for (let i = 0; i < rows.length - 1; i++) {
-          expect(new Date(rows[i].month).getTime()).toBeGreaterThan(
-            new Date(rows[i + 1].month).getTime()
-          );
+        const { data } = res.body;
+        for (let hcp of HCPs) {
+          expect(hcp.state in data).toBe(true);
         }
         done();
       } catch (e) {
