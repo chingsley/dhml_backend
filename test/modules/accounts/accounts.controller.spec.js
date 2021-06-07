@@ -4,22 +4,21 @@ import getEnrollees from '../../../src/shared/samples/enrollee.samples';
 import TestService from '../app/app.test.service';
 import ROLES from '../../../src/shared/constants/roles.constants';
 import getSampleStaffs from '../../../src/shared/samples/staff.samples';
-import ReportsController from '../../../src/modules/reports/reports.controller';
 import ReportsApi from '../reports/reports.test.api';
 import EnrolleeTest from '../enrollee/enrollee.test.service';
 import getSampleVoucher from '../../../src/shared/samples/voucher.sample';
-import { AUDIT_STATUS } from '../../../src/shared/constants/lists.constants';
 import _ReportService from '../reports/reports.test.service';
 import AccountsApi from './accounts.test.api';
+import AccountController from '../../../src/modules/account/account.controller';
+import { dateInWords, months, nextMonth } from '../../../src/utils/timers';
 
 const rateInNaira = Number(process.env.RATE_IN_NAIRA);
 const { MD, HOD_AUDIT, HOD_ACCOUNT } = ROLES;
-const { pending, flagged, auditPass } = AUDIT_STATUS;
 
 describe('AccountController', () => {
   describe('getApprovedMonthSpecificCapitation', () => {
     let sampleEnrollees, HCPs, seededPrincipals, seededDependants, res, token;
-    let capSums, earliestCapSum;
+    let capSums, earliestCapSum, subjectMonth;
     beforeAll(async () => {
       await TestService.resetDB();
       HCPs = await TestService.seedHCPs(4);
@@ -57,13 +56,16 @@ describe('AccountController', () => {
         { approve: true },
         token[MD]
       );
+      subjectMonth = moment(new Date(earliestCapSum.monthInWords)).format(
+        'YYYY-MM-DD'
+      );
       res = await AccountsApi.getApprovedMonthSpecificCapitation(
-        moment(new Date(earliestCapSum.monthInWords)).format('YYYY-MM-DD'),
+        subjectMonth,
         token[MD]
       );
     });
 
-    it.only('returns status 200 on successful GET', async (done) => {
+    it('returns status 200 on successful GET', async (done) => {
       try {
         expect(res.status).toBe(200);
         expect(res.body).toHaveProperty('data');
@@ -72,159 +74,123 @@ describe('AccountController', () => {
         done(e);
       }
     });
-
-    it.only('groups the returned data by hcp states', async (done) => {
+    it('groups the returned data by hcp states', async (done) => {
       try {
         const { data } = res.body;
-        for (let hcp of HCPs) {
-          expect(hcp.state in data).toBe(true);
+        const hcpStates = HCPs.map((hcp) => hcp.state);
+        Object.keys(data).map((state) => {
+          expect(hcpStates.includes(state)).toBe(true);
+        });
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('ensures that each group contains captition for hcps in the same state', async (done) => {
+      try {
+        const { data } = res.body;
+        for (let [state, hcpCapitation] of Object.entries(data)) {
+          for (let { hcp } of hcpCapitation) {
+            expect(hcp.state).toEqual(state);
+          }
         }
         done();
       } catch (e) {
         done(e);
       }
     });
-    it('ensures the monthly capitation sum is cummulative', async (done) => {
+    it('ensures the total lives matches the sum of enrollees', async (done) => {
       try {
-        const { rows } = res.body.data;
-        for (let i = 0; i < rows.length - 1; i++) {
-          expect(rows[i].lives).toBeGreaterThanOrEqual(rows[i + 1].lives);
-          expect(rows[i].amount).toBeGreaterThanOrEqual(rows[i + 1].amount);
-        }
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-    it('ensures the capitation for current month returns correct values for number of lives and amount', async (done) => {
-      try {
-        const { rows } = res.body.data;
-        const totalLives = seededPrincipals.length + seededDependants.length;
-        expect(rows[0].lives).toEqual(totalLives);
-        expect(rows[0].amount).toEqual(totalLives * rateInNaira);
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-    it('initializes the approval dates and flagReason to null', async (done) => {
-      try {
-        const { rows } = res.body.data;
-        for (let record of rows) {
-          expect(record.dateApproved).toBe(null);
-          expect(record.dateAudited).toBe(null);
-          expect(record.datePaid).toBe(null);
-          expect(record.flagReason).toBe(null);
-        }
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-    it('initializes the record if not exist otherwise, it updates the existing record', async (done) => {
-      try {
-        const res = await ReportsApi.getMonthlyCapSum('', token[HOD_ACCOUNT]);
-        expect(res.status).toBe(200);
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-    it('returns empty result for MD and AUDITOR if VOUCHER is not yet created for any record', async (done) => {
-      try {
-        for (let token of [token[HOD_AUDIT], token[MD]]) {
-          const res = await ReportsApi.getMonthlyCapSum('', token);
-          const { count, rows } = res.body.data;
-          expect(res.status).toBe(200);
-          expect(count).toBe(0);
-          expect(rows).toHaveLength(0);
-        }
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-    it('returns empty result for MD if there"s no record with audit pass', async (done) => {
-      try {
-        const res = await ReportsApi.getMonthlyCapSum('', token[MD]);
-        const { count, rows } = res.body.data;
-        expect(res.status).toBe(200);
-        expect(count).toBe(0);
-        expect(rows).toHaveLength(0);
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-    it('ensures auditor can see records that have voucher; but MD will not', async (done) => {
-      try {
-        const { rows } = res.body.data;
-        const earliestCapSum = rows[rows.length - 1];
-        const voucher = getSampleVoucher(earliestCapSum.id);
-        await ReportsApi.createVoucheer(voucher, token[HOD_ACCOUNT]);
-        const res2 = await ReportsApi.getMonthlyCapSum('', token[HOD_AUDIT]);
-        expect(res2.body.data.count).toBe(1);
-        expect(res2.body.data.rows).toHaveLength(1);
-        expect(res2.body.data.rows[0].id).toEqual(voucher.gmcId);
-
-        const res3 = await ReportsApi.getMonthlyCapSum('', token[MD]);
-        expect(res3.body.data.count).toBe(0);
-        expect(res3.body.data.rows).toHaveLength(0);
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-    it('ensures MD will not see audited, but flagged records', async (done) => {
-      try {
-        const { rows } = res.body.data;
-        const earliestCapSum = rows[rows.length - 1];
-        const voucher = getSampleVoucher(earliestCapSum.id);
-        await ReportsApi.createVoucheer(voucher, token[HOD_ACCOUNT]);
-        const summaryId = earliestCapSum.id;
-        const payload = {
-          auditStatus: flagged,
-          flagReason: 'testing...',
-        };
-        await ReportsApi.auditMonthlyCapSum(
-          summaryId,
-          payload,
-          token[HOD_AUDIT]
+        const { data } = res.body;
+        const mergedStateCapitations = Object.values(data).reduce(
+          (acc, caps) => {
+            acc = [...acc, ...caps];
+            return acc;
+          },
+          []
         );
-        const res2 = await ReportsApi.getMonthlyCapSum('', token[MD]);
-        expect(res2.body.data.count).toBe(0);
-        expect(res2.body.data.rows).toHaveLength(0);
-        done();
-      } catch (e) {
-        done(e);
-      }
-    });
-    it('ensures MD can see audited records with status "audit pass"', async (done) => {
-      try {
-        const { rows } = res.body.data;
-        const earliestCapSum = rows[rows.length - 1];
-        const voucher = getSampleVoucher(earliestCapSum.id);
-        await ReportsApi.createVoucheer(voucher, token[HOD_ACCOUNT]);
-        const summaryId = earliestCapSum.id;
-        const payload = { auditStatus: auditPass };
-        await ReportsApi.auditMonthlyCapSum(
-          summaryId,
-          payload,
-          token[HOD_AUDIT]
+        const totalCapitationLives = mergedStateCapitations.reduce(
+          (acc, cap) => {
+            acc += parseInt(cap.lives);
+            return acc;
+          },
+          0
         );
-        const res2 = await ReportsApi.getMonthlyCapSum('', token[MD]);
-        expect(res2.body.data.count).toBe(1);
-        expect(res2.body.data.rows).toHaveLength(1);
-        expect(res2.body.data.rows[0].id).toEqual(voucher.gmcId);
+        const enrolleesVerifiedInSubjectMonth = [
+          ...seededDependants,
+          ...seededPrincipals,
+        ].filter((enrollee) => {
+          return (
+            months.firstDay(enrollee.dateVerified) ===
+            months.firstDay(subjectMonth)
+          );
+        });
+        expect(enrolleesVerifiedInSubjectMonth).toHaveLength(
+          totalCapitationLives
+        );
         done();
       } catch (e) {
         done(e);
       }
     });
-
+    it('ensures total amount equals product sum of enrollees verified in subject and the rateInNaira', async (done) => {
+      try {
+        const { data } = res.body;
+        const mergedStateCapitations = Object.values(data).reduce(
+          (acc, caps) => {
+            acc = [...acc, ...caps];
+            return acc;
+          },
+          []
+        );
+        const totalAmount = mergedStateCapitations.reduce((acc, cap) => {
+          acc += Number(cap.amount);
+          return acc;
+        }, 0);
+        const enrolleesVerifiedInSubjectMonth = [
+          ...seededDependants,
+          ...seededPrincipals,
+        ].filter((enrollee) => {
+          return (
+            months.firstDay(enrollee.dateVerified) ===
+            months.firstDay(subjectMonth)
+          );
+        });
+        expect(enrolleesVerifiedInSubjectMonth.length * rateInNaira).toEqual(
+          totalAmount
+        );
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns 400 error if no capitations were found for the specified month', async (done) => {
+      try {
+        const date = nextMonth([subjectMonth]);
+        const res = await AccountsApi.getApprovedMonthSpecificCapitation(
+          date,
+          token[MD]
+        );
+        expect(res.status).toBe(400);
+        const {
+          errors: [error],
+        } = res.body;
+        expect(error).toMatch(
+          new RegExp(
+            `There's no approved capitation for ${dateInWords(date)}`,
+            'i'
+          )
+        );
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
     it(
       'it catches errors thrown in the try block',
-      TestService.testCatchBlock(ReportsController.getGeneralMonthlyCapitation)
+      TestService.testCatchBlock(
+        AccountController.getApprovedMonthSpecificCapitation
+      )
     );
   });
 });
