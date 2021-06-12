@@ -145,4 +145,5 @@ dhml_reference_code_format.xlsx
 enrollees_production.xlsx
 dEPENDENTS_OF_PRINCIPAL_FOR_iNTEGRATION_FINAL.xlsx
 *.xlsx
+*.xls
 *.logs
