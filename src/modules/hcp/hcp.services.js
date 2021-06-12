@@ -82,6 +82,14 @@ export default class HcpService extends AppService {
       },
       order: [['id', 'ASC']],
       ...this.paginate(),
+      include: {
+        model: db.Specialty,
+        as: 'specialties',
+        attributes: ['id', 'name'],
+        through: {
+          attributes: [],
+        },
+      },
     });
   }
 

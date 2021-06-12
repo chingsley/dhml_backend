@@ -92,6 +92,11 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'hcpId',
       as: 'hcpMonthlyCapSum',
     });
+    HealthCareProvider.belongsToMany(models.Specialty, {
+      through: 'HcpSpecialties',
+      foreignKey: 'hcpId',
+      as: 'specialties',
+    });
   };
   HealthCareProvider.findOneWhere = async function (condition, options) {
     const {
