@@ -7,7 +7,7 @@ import { getHcpSchema } from '../../validators/joi/schemas/hcp.schema';
 export default class HcpMiddleware {
   static async validateNewHcp(req, res, next) {
     try {
-      const hcpSchema = getHcpSchema({ withRequiredFields: true });
+      const hcpSchema = getHcpSchema({ withRequiredFields: true, req });
       const { joiFormatted } = await validateSchema(hcpSchema, req.body);
       req.body = joiFormatted;
       return next();
@@ -17,7 +17,7 @@ export default class HcpMiddleware {
   }
   static async validateHcpUpdate(req, res, next) {
     try {
-      const hcpSchema = getHcpSchema({ withRequiredFields: false });
+      const hcpSchema = getHcpSchema({ withRequiredFields: false, req });
       const { joiFormatted } = await validateSchema(hcpSchema, req.body);
       req.body = joiFormatted;
       return next();

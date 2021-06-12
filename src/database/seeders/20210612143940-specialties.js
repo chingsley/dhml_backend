@@ -1,4 +1,5 @@
 'use strict';
+
 const { specialties } = require('../../shared/samples/specialties.sample');
 
 module.exports = {

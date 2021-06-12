@@ -1,6 +1,7 @@
 import { Joi, stringValidate, numberValidate } from '../config';
 
-export const getHcpSchema = ({ withRequiredFields = true }) => {
+export const getHcpSchema = ({ withRequiredFields = true, req = {} }) => {
+  const defaultSpecialtyIds = req.method === 'POST' ? [] : null;
   return Joi.object({
     code: stringValidate(withRequiredFields),
     name: stringValidate(withRequiredFields),
@@ -17,5 +18,12 @@ export const getHcpSchema = ({ withRequiredFields = true }) => {
     accountNumber: numberValidate(withRequiredFields),
     accountType: stringValidate(withRequiredFields),
     returnPassword: Joi.bool().valid(true, false),
+    specialtyIds: Joi.array()
+      .items(
+        Joi.string().guid({
+          version: ['uuidv4', 'uuidv5'],
+        })
+      )
+      .default(defaultSpecialtyIds),
   });
 };
