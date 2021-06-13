@@ -11,6 +11,7 @@ import reportsRoutes from '../../modules/reports/reports.routes';
 import statsRoutes from '../../modules/stats/stats.routes';
 import accountRoutes from '../../modules/account/account.routes';
 import devRoutes from '../../modules/dev/dev.routes';
+import specialtyRoutes from '../../modules/specialty/specialty.routes';
 
 const router = express.Router();
 
@@ -24,6 +25,7 @@ router.use('/refcodes', refcodeRoutes);
 router.use('/reports', reportsRoutes);
 router.use('/stats', statsRoutes);
 router.use('/accounts', accountRoutes);
+router.use('/specialties', specialtyRoutes);
 router.use('/devs', devRoutes);
 
 export default router;
