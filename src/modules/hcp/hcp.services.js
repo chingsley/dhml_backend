@@ -39,6 +39,11 @@ export default class HcpService extends AppService {
         { ...this.body, roleId: hcpRole.id },
         trnx
       );
+      const { specialtyIds } = this.body;
+      const promiseArr = specialtyIds.map((specialtyId) =>
+        db.HcpSpecialty.create({ hcpId: hcp.id, specialtyId }, trnx)
+      );
+      await Promise.all(promiseArr);
       const defaultPass = await this.createDefaultPassword(
         { hcpId: hcp.id },
         trnx
@@ -47,7 +52,10 @@ export default class HcpService extends AppService {
       result.defaultPassword = returnPassword && defaultPass;
       !returnPassword && (await this.sendPassword(hcp.email, defaultPass));
       await t.commit();
-      return result;
+      return db.HealthCareProvider.findOne({
+        where: { id: hcp.id },
+        include: { ...this.specialtyModel(db) },
+      });
     } catch (error) {
       await t.rollback();
       throw error;
@@ -55,22 +63,53 @@ export default class HcpService extends AppService {
   }
 
   async updateHcpInfo() {
+    const t = await sequelize.transaction();
+    try {
+      const trnx = { transaction: t };
+      const hcpId = Number(this.params.hcpId);
+      const { specialtyIds } = this.body;
+      await this.validateUnique(['code', 'email'], {
+        model: db.HealthCareProvider,
+        reqBody: this.body,
+        resourceType: 'HCP',
+        resourceId: hcpId,
+      });
+      if (specialtyIds) {
+        await this.updateHcpSpecialties(specialtyIds, trnx);
+      }
+      const results = await db.HealthCareProvider.update(this.body, {
+        where: { id: hcpId },
+        returning: true,
+        ...trnx,
+      });
+      this.rejectIf(!results[1][0], {
+        withError: `No hcp matches the id of ${hcpId}`,
+        status: 404,
+      });
+      await t.commit();
+      return this.findHpcById(hcpId);
+      // return results[1][0];
+    } catch (error) {
+      await t.rollback();
+      throw error;
+    }
+  }
+
+  async updateHcpSpecialties(specialtyIds, trnx) {
     const hcpId = Number(this.params.hcpId);
-    await this.validateUnique(['code', 'email'], {
-      model: db.HealthCareProvider,
-      reqBody: this.body,
-      resourceType: 'HCP',
-      resourceId: hcpId,
-    });
-    const results = await db.HealthCareProvider.update(this.body, {
+    const promiseArr = specialtyIds.map((specialtyId) =>
+      db.HcpSpecialty.create({ hcpId, specialtyId }, trnx)
+    );
+    await db.HcpSpecialty.destroy({ where: { hcpId }, ...trnx });
+    await Promise.all(promiseArr);
+    return true;
+  }
+
+  findHpcById(hcpId) {
+    return db.HealthCareProvider.findOne({
       where: { id: hcpId },
-      returning: true,
+      include: { ...this.specialtyModel(db) },
     });
-    this.rejectIf(!results[1][0], {
-      withError: `No hcp matches the id of ${hcpId}`,
-      status: 404,
-    });
-    return results[1][0];
   }
 
   async fetchAllHcp() {
@@ -82,14 +121,7 @@ export default class HcpService extends AppService {
       },
       order: [['id', 'ASC']],
       ...this.paginate(),
-      include: {
-        model: db.Specialty,
-        as: 'specialties',
-        attributes: ['id', 'name'],
-        through: {
-          attributes: [],
-        },
-      },
+      include: { ...this.specialtyModel(db) },
     });
   }
 

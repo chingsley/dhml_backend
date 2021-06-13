@@ -355,4 +355,13 @@ export default class AppService {
       attributes: { exclude: ['createdAt', 'updatedAt'] },
     };
   }
+
+  specialtyModel(db) {
+    return {
+      model: db.Specialty,
+      as: 'specialties',
+      attributes: ['id', 'name'],
+      through: { attributes: [] },
+    };
+  }
 }
