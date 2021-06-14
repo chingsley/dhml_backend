@@ -13,7 +13,7 @@ import { v4 as uuidv4 } from 'uuid';
 //   'Orthodontics',
 // ].map((specialty) => ({ name: specialty, id: uuidv4() }));
 
-export const specialties = [
+const sampleSpecialities = [
   { name: 'FAMILY PHYSICIAN', code: null },
   { name: 'PAEDIATRICIAN', code: '5A' },
   { name: 'DERMATOLOGIST', code: null },
@@ -48,3 +48,5 @@ export const specialties = [
   { name: 'PHYSICIAN', code: '4A' },
   { name: 'MAXILLO-FACIAL SURGEON', code: '2B' },
 ].map((specialty) => ({ ...specialty, id: uuidv4() }));
+
+export default sampleSpecialities;

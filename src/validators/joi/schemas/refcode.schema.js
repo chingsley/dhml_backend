@@ -3,15 +3,20 @@ import {
   stateCodes,
 } from '../../../shared/constants/statecodes.constants';
 import { Joi, stringValidate, validateIntegerId } from '../config';
+import helpers from './helpers.schemas';
+import SharedFields from '../SharedFields';
+
+const sharedFields = new SharedFields({ Joi, helpers });
 
 export const validSpecialists = Object.keys(specialistCodes);
 export const validStates = Object.keys(stateCodes);
-export const VALID_REF_CODE = /^[A-Z]{2,3}\/\d{6}\/022\/(\d)+[A-Z]-[1-9][0-9]*\/(S|R|AD)$/;
+export const VALID_REF_CODE =
+  /^[A-Z]{2,3}\/\d{6}\/022\/(\d)+[A-Z]-[1-9][0-9]*\/(S|R|AD)$/;
 
 export const getRefCodeSchema = ({ withRequiredFields = true }) => {
   return Joi.object({
     enrolleeId: validateIntegerId(withRequiredFields),
-    destinationHcpId: validateIntegerId(withRequiredFields),
+    receivingHcpId: validateIntegerId(withRequiredFields),
     reasonForReferral: stringValidate(withRequiredFields),
     diagnosis: stringValidate(withRequiredFields),
     diagnosisStatus: Joi.string()
@@ -31,6 +36,51 @@ export const getRefCodeSchema = ({ withRequiredFields = true }) => {
       .required(),
   });
 };
+
+export const schemaCodeRequestForNewEnrollee = (enrolmentType) => {
+  return Joi.object({
+    ...sharedFields.newEnrolleeFields(enrolmentType),
+    ...sharedFields.refcodeRequestFields(validStates),
+    // receivingHcpId: Joi.number().min(1).required(),
+    // reasonForReferral: Joi.string().trim().required(),
+    // diagnosis: Joi.string().trim().required(),
+    // diagnosisStatus: Joi.string()
+    //   .trim()
+    //   .valid('provisional', 'final')
+    //   .required(),
+    // clinicalFindings: Joi.string().trim().required(),
+    // specialtyId: Joi.string()
+    //   .guid({
+    //     version: ['uuidv4', 'uuidv5'],
+    //   })
+    //   .required(),
+    // stateOfGeneration: Joi.string()
+    //   .trim()
+    //   .lowercase()
+    //   .valid(...validStates)
+    //   .required(),
+  });
+};
+
+export const schemaCodeRequestForExistingEnrollee = Joi.object({
+  enrolleeIdNo: Joi.string().trim().required(),
+  ...sharedFields.refcodeRequestFields(validStates),
+  // receivingHcpId: Joi.number().min(1).required(),
+  // reasonForReferral: Joi.string().trim().required(),
+  // diagnosis: Joi.string().trim().required(),
+  // diagnosisStatus: Joi.string().trim().valid('provisional', 'final').required(),
+  // clinicalFindings: Joi.string().trim().required(),
+  // specialtyId: Joi.string()
+  //   .guid({
+  //     version: ['uuidv4', 'uuidv5'],
+  //   })
+  //   .required(),
+  // stateOfGeneration: Joi.string()
+  //   .trim()
+  //   .lowercase()
+  //   .valid(...validStates)
+  //   .required(),
+}).unknown();
 
 export const codeVerificationSchema = Joi.object({
   referalCode: Joi.string().regex(VALID_REF_CODE).required(),

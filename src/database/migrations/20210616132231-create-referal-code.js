@@ -26,7 +26,7 @@ module.exports = {
           onDelete: 'CASCADE',
           onUpdate: 'CASCADE',
         },
-        destinationHcpId: {
+        referringHcpId: {
           type: Sequelize.INTEGER,
           references: {
             model: 'HealthCareProviders',
@@ -35,10 +35,10 @@ module.exports = {
           onDelete: 'RESTRICT',
           onUpdate: 'CASCADE',
         },
-        operatorId: {
+        receivingHcpId: {
           type: Sequelize.INTEGER,
           references: {
-            model: 'Users',
+            model: 'HealthCareProviders',
             key: 'id',
           },
           onDelete: 'RESTRICT',
@@ -50,28 +50,51 @@ module.exports = {
         diagnosis: {
           type: Sequelize.STRING,
         },
-        diagnosisStatus: {
-          type: Sequelize.STRING, // final or provisional
-        },
         clinicalFindings: {
           type: Sequelize.TEXT,
         },
         stateOfGeneration: {
           type: Sequelize.STRING,
         },
-        specialist: {
+        specialtyId: {
+          type: Sequelize.UUID,
+          references: {
+            model: 'Specialties',
+            key: 'id',
+          },
+          onDelete: 'RESTRICT',
+          onUpdate: 'CASCADE',
+        },
+        dateFlagged: {
+          type: Sequelize.DATE,
+        },
+        requesterEmail: {
+          // requester could be user or hcp so we can't use requesterId, as it will be referencing either hchp or user
           type: Sequelize.STRING,
         },
-        specialistCode: {
-          type: Sequelize.STRING,
-        },
-        isFlagged: {
-          type: Sequelize.BOOLEAN,
-          allowNull: false,
-          defaultValue: false,
+        flaggedById: {
+          type: Sequelize.INTEGER,
+          references: {
+            model: 'Users',
+            key: 'id',
+          },
+          onDelete: 'RESTRICT',
+          onUpdate: 'CASCADE',
         },
         flagReason: {
           type: Sequelize.TEXT,
+        },
+        dateApproved: {
+          type: Sequelize.DATE,
+        },
+        approvedById: {
+          type: Sequelize.INTEGER,
+          references: {
+            model: 'Users',
+            key: 'id',
+          },
+          onDelete: 'RESTRICT',
+          onUpdate: 'CASCADE',
         },
         createdAt: {
           allowNull: false,

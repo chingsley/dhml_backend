@@ -19,27 +19,54 @@ export default class RefcodeService extends AppService {
     this.ReferalCodeModel = db.ReferalCode;
     this.operator = operator;
   }
-  async generateReferalCode() {
-    const operatorId = this.operator.id;
-    const { stateOfGeneration } = this.body;
-    const { enrolleeId, destinationHcpId, specialist } = this.body;
-    const enrollee = await this.validateId('Enrollee', enrolleeId);
-    await this.validateId('HealthCareProvider', destinationHcpId);
-    const proxyCode = await this.getProxyCode();
-    const stateCode = stateCodes[stateOfGeneration.toLowerCase()];
-    const specialistCode = specialistCodes[specialist.toLowerCase()];
-    const code = await this.getReferalCode(enrollee, stateCode, specialistCode);
+  async createRequestForReferalCodeSVC() {
+    const {
+      enrolleeIdNo,
+      referringHcpId,
+      receivingHcpId,
+      specialtyId,
+      ...newEnrolleeData
+    } = this.body;
+    await this.validateId('HealthCareProvider', referringHcpId);
+    await this.validateId('HealthCareProvider', receivingHcpId);
+    await this.validateId('Specialty', specialtyId);
+    const enrollee = enrolleeIdNo
+      ? await this.findOneRecord({
+        where: { enrolleeIdNo },
+        modelName: 'Enrollee',
+        errorIfNotFound: 'Invalid enrollee Id No. Record not found',
+      })
+      : await this.registerNewEnrollee(newEnrolleeData);
     const refcode = await this.ReferalCodeModel.create({
       ...this.body,
-      code,
-      proxyCode,
-      operatorId,
-      specialistCode,
+      enrolleeId: enrollee.id,
     });
 
     await refcode.reloadAfterCreate();
     return refcode;
   }
+
+  // async generateReferalCode() {
+  //   const operatorId = this.operator.id;
+  //   const { stateOfGeneration } = this.body;
+  //   const { enrolleeId, receivingHcpId, specialist } = this.body;
+  //   const enrollee = await this.validateId('Enrollee', enrolleeId);
+  //   await this.validateId('HealthCareProvider', receivingHcpId);
+  //   const proxyCode = await this.getProxyCode();
+  //   const stateCode = stateCodes[stateOfGeneration.toLowerCase()];
+  //   const specialistCode = specialistCodes[specialist.toLowerCase()];
+  //   const code = await this.getReferalCode(enrollee, stateCode, specialistCode);
+  //   const refcode = await this.ReferalCodeModel.create({
+  //     ...this.body,
+  //     code,
+  //     proxyCode,
+  //     operatorId,
+  //     specialistCode,
+  //   });
+
+  //   await refcode.reloadAfterCreate();
+  //   return refcode;
+  // }
 
   async verifyRefcode() {
     const { referalCode: code } = this.query;

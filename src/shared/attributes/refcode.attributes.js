@@ -4,7 +4,7 @@ export const refcodeSearchableFields = [
   { name: 'enrolleeId', type: 'number' },
   { name: 'diagnosis', type: 'string' },
   { name: 'stateOfGeneration', type: 'string' },
-  { name: 'destinationHcpId', type: 'number' },
+  { name: 'receivingHcpId', type: 'number' },
   { name: 'operatorId', type: 'number' },
   { name: 'diagnosis', type: 'string' },
   { name: 'diagnosisStatus', type: 'string' },

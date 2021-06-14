@@ -2,17 +2,31 @@ import Response from '../../utils/Response';
 import RefcodeService from './refcode.services';
 
 export default class RefcodeController {
-  static async generateNewCode(req, res, next) {
+  static async createRequestForRefcodeCTRL(req, res, next) {
     try {
       const refcodeService = new RefcodeService(req);
-      const data = await refcodeService.generateReferalCode();
+      const data = await refcodeService.createRequestForReferalCodeSVC();
       return res
         .status(201)
-        .json({ message: 'new code successfully generated', data });
+        .json({
+          message: 'Request for Referral Code has been successfully sent',
+          data,
+        });
     } catch (error) {
       Response.handleError('generateNewCode', error, req, res, next);
     }
   }
+  // static async generateNewCode(req, res, next) {
+  //   try {
+  //     const refcodeService = new RefcodeService(req);
+  //     const data = await refcodeService.generateReferalCode();
+  //     return res
+  //       .status(201)
+  //       .json({ message: 'new code successfully generated', data });
+  //   } catch (error) {
+  //     Response.handleError('generateNewCode', error, req, res, next);
+  //   }
+  // }
   static async verifyReferalCode(req, res, next) {
     try {
       const refcodeService = new RefcodeService(req);

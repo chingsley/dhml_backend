@@ -5,7 +5,7 @@ import server from '../../../src/server';
 const app = supertest(server.server);
 
 class RefcodeApi {
-  static generateNewCode(payload, token) {
+  static requestForCode(payload, token) {
     return app
       .post('/api/v1/refcodes')
       .set('authorization', token)

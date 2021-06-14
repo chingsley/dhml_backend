@@ -85,7 +85,7 @@ module.exports = (sequelize, DataTypes) => {
       as: 'password',
     });
     HealthCareProvider.hasMany(models.ReferalCode, {
-      foreignKey: 'destinationHcpId',
+      foreignKey: 'receivingHcpId',
       as: 'referalCodes',
     });
     HealthCareProvider.hasMany(models.HcpMonthlyCapitation, {

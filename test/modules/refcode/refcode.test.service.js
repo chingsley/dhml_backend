@@ -28,6 +28,31 @@ class _RefcodeService extends TestService {
     });
     return seededRefcode;
   }
+
+  static decoratePayload(payload) {
+    return {
+      data: payload,
+      remove(field) {
+        return Object.entries(this.data).reduce((acc, entry) => {
+          const [key, value] = entry;
+          if (field !== key) {
+            acc[key] = value;
+          }
+          return acc;
+        }, {});
+      },
+      setValue([key, value]) {
+        const prevData = this.data;
+        return { ...prevData, [key]: value };
+      },
+      set(changes) {
+        return {
+          ...this.data,
+          ...changes,
+        };
+      },
+    };
+  }
 }
 
 export default _RefcodeService;
