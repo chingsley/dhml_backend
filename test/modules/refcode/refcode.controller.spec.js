@@ -3,7 +3,6 @@ import getSampleStaffs from '../../../src/shared/samples/staff.samples';
 import TestService from '../app/app.test.service';
 import ROLES from '../../../src/shared/constants/roles.constants';
 import RefcodeApi from './refcode.test.api';
-import _RefcodeSamples from './refcode.test.samples';
 import RefcodeController from '../../../src/modules/refcode/refcode.controllers';
 import Jwt from '../../../src/utils/Jwt';
 import { VALID_REF_CODE } from '../../../src/validators/joi/schemas/refcode.schema';
@@ -11,38 +10,49 @@ import _HcpService from '../hcp/hcp.test.service';
 import getEnrollees from '../../../src/shared/samples/enrollee.samples';
 import SampleReferalCodes from '../../../src/shared/samples/refcode.samples';
 import _RefcodeService from './refcode.test.service';
+import _SpecialityService from '../speciality/speciality.test.services';
 require('../../../src/prototypes/array.extensions').extendArray();
 
 describe('RefcodeController', () => {
   describe('generateNewCode', () => {
-    let token, res, samplePayload;
-    let secondaryHcps, seededAfrshipPrincipals;
+    let token, res, seededEnrollee;
     const responses = [];
 
     beforeAll(async () => {
       await TestService.resetDB();
-      const sampleData = await _RefcodeSamples.initialize();
-      samplePayload = sampleData.payload;
-      secondaryHcps = sampleData.secondaryHcps;
-      seededAfrshipPrincipals = sampleData.seededAfrshipPrincipals;
+      // const sampleData = await _RefcodeSamples.initialize();
+      // samplePayload = sampleData.payload;
+      // secondaryHcps = sampleData.secondaryHcps;
+      // seededAfrshipPrincipals = sampleData.seededAfrshipPrincipals;
+      const {
+        primaryHcps: [primaryHcp],
+        secondaryHcps: [secondaryHcp],
+      } = await _HcpService.seedHcps({
+        numPrimary: 1,
+        numSecondary: 1,
+      });
+      const { principals } = getEnrollees({ numOfPrincipals: 1 });
+      [seededEnrollee] = await TestService.seedAfrshipPrincipals(
+        principals,
+        primaryHcp
+      );
+      const speciality = await _SpecialityService.seedOne();
+      // console.log(seededEnrollee, seededEnrollee.enrolleeIdNo,)
+      const payload = SampleReferalCodes.generateSampleRefcodeRequest({
+        enrolleeIdNo: seededEnrollee.enrolleeIdNo,
+        specialtyId: speciality.id,
+        referringHcpId: primaryHcp.id,
+        receivingHcpId: secondaryHcp.id,
+      });
       const { sampleStaffs } = getSampleStaffs(1);
       const data = await TestService.getToken(
         sampleStaffs[0],
         ROLES.SUPERADMIN
       );
       token = data.token;
-
-      for (let i = 0; i < seededAfrshipPrincipals.length; i++) {
-        const payload = samplePayload.set({
-          enrolleeId: seededAfrshipPrincipals[i].id,
-          destinationHcpId: secondaryHcps[0].id,
-        });
-        const res = await RefcodeApi.generateNewCode(payload, token);
-        responses.push({ payload, res });
-      }
-      res = responses[0].res;
+      res = await RefcodeApi.requestForCode(payload, token);
     });
-    it('returns status 201 on successful code generation', async (done) => {
+    it.only('returns status 201 on successful code generation', async (done) => {
       try {
         expect(res.status).toBe(201);
         done();
@@ -162,7 +172,7 @@ describe('RefcodeController', () => {
         const { data } = res.body;
         const { enrollee, destinationHcp } = data;
         expect(data.enrolleeId).toEqual(enrollee.id);
-        expect(data.destinationHcpId).toEqual(destinationHcp.id);
+        expect(data.receivingHcpId).toEqual(destinationHcp.id);
         expect(res.status).toBe(200);
         done();
       } catch (e) {
@@ -415,7 +425,7 @@ describe('RefcodeController', () => {
       try {
         const { data } = res.body;
         for (let refcode of data.rows) {
-          expect(refcode.destinationHcpId).toBeTruthy();
+          expect(refcode.receivingHcpId).toBeTruthy();
           expect(refcode.enrolleeId).toBeTruthy();
         }
         done();

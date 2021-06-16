@@ -23,23 +23,23 @@ export const fetchAllRefcodes = (dialect, dbName, reqQuery = {}) => {
     postgres:
       isFlagged === undefined
         ? `
-    SELECT ${r}.id, ${r}.code, ${r}."isFlagged", ${r}."enrolleeId", ${e}."enrolleeIdNo", ${e}.rank, ${e}.surname, ${e}."firstName", ${e}."middleName", ${e}.scheme, ${r}."destinationHcpId", ${h}.name "destinationHcp"
+    SELECT ${r}.id, ${r}.code, ${r}."isFlagged", ${r}."enrolleeId", ${e}."enrolleeIdNo", ${e}.rank, ${e}.surname, ${e}."firstName", ${e}."middleName", ${e}.scheme, ${r}."receivingHcpId", ${h}.name "destinationHcp"
     FROM "ReferalCodes" ${r}
     JOIN "Enrollees" ${e}
       ON ${r}."enrolleeId" = ${e}.id
     JOIN "HealthCareProviders" ${h}
-      ON 	${r}."destinationHcpId" = ${h}.id
+      ON 	${r}."receivingHcpId" = ${h}.id
     WHERE ${search}
     LIMIT ${limit}
     OFFSET ${offset}
     `
         : `
-    SELECT ${r}.id, ${r}.code, ${r}."isFlagged", ${r}."enrolleeId", ${e}."enrolleeIdNo", ${e}.rank, ${e}.surname, ${e}."firstName", ${e}."middleName", ${e}.scheme, ${r}."destinationHcpId", ${h}.name "destinationHcp"
+    SELECT ${r}.id, ${r}.code, ${r}."isFlagged", ${r}."enrolleeId", ${e}."enrolleeIdNo", ${e}.rank, ${e}.surname, ${e}."firstName", ${e}."middleName", ${e}.scheme, ${r}."receivingHcpId", ${h}.name "destinationHcp"
     FROM "ReferalCodes" ${r}
     JOIN "Enrollees" ${e}
       ON ${r}."enrolleeId"=${e}.id AND ${r}."isFlagged"=${JSON.parse(isFlagged)}
     JOIN "HealthCareProviders" ${h}
-      ON 	${r}."destinationHcpId" = ${h}.id
+      ON 	${r}."receivingHcpId" = ${h}.id
     WHERE ${search}
     LIMIT ${limit}
     OFFSET ${offset}

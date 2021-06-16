@@ -55,6 +55,15 @@ export default class AppService {
     });
   }
 
+  // async valueExists({ field, value, table }) {
+  //   return await this.findOneRecord({
+  //     modelName: table,
+  //     where: { [field]: value },
+  //     isRequired: true,
+  //     errorIfNotFound: `No ${modelName} matches the id of ${id}`,
+  //   });
+  // }
+
   async findOneRecord(options = {}) {
     const {
       modelName,

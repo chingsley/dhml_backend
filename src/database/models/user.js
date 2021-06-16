@@ -54,8 +54,12 @@ module.exports = (sequelize, DataTypes) => {
       as: 'role',
     });
     User.hasMany(models.ReferalCode, {
-      foreignKey: 'operatorId',
-      as: 'generatedCodes',
+      foreignKey: 'approvedById',
+      as: 'approvedCodes',
+    });
+    User.hasMany(models.ReferalCode, {
+      foreignKey: 'flaggedById',
+      as: 'flaggedCodes',
     });
   };
   User.findOneWhere = async function (condition, options) {

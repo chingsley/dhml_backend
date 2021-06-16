@@ -1,0 +1,31 @@
+import moment from 'moment';
+import db from '../../../src/database/models';
+import sampleSpecialities from '../../../src/shared/samples/specialties.sample';
+import TestService from '../app/app.test.service';
+
+export const tomorrow = moment().add(1, 'days').format('YYYY-MM-DD');
+export const today = moment().format('YYYY-MM-DD');
+export const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+
+class _SpecialityService extends TestService {
+  static async seedOne(speciality = this.getSamples(1)[0]) {
+    const [result] = await db.Specialty.upsert(speciality, {
+      returning: true,
+    });
+    return result;
+  }
+
+  static getSamples(count = sampleSpecialities.length) {
+    return sampleSpecialities.slice(0, count);
+  }
+
+  static seedBulk(specialities) {
+    return db.Speciality.bulkCreate(specialities);
+  }
+
+  static findOneWhere(condition) {
+    return db.Speciality.findOne({ where: condition });
+  }
+}
+
+export default _SpecialityService;

@@ -10,28 +10,45 @@ const {
 class SampleReferalCodes {
   static chosenSpecialistCodes = [];
 
-  static async getSeed(usersCount = MAX_USER_COUNT) {
-    const seededEnrollees = await db.Enrollee.findAll();
-    const refcodes = seededEnrollees.map((enrollee, i) => {
-      const codeMetaData = this.getMetaData();
-      const operatorId =
-        faker.random.arrayElement(Array.from(Array(usersCount).keys())) + 1;
-      return {
-        enrolleeId: enrollee.id,
-        destinationHcpId: this.getSecondaryHcpId(i),
-        operatorId,
-        ...codeMetaData,
-        ...this.generateSampleCode(enrollee, codeMetaData, i),
-      };
-    });
-
-    return refcodes;
+  static generateSampleRefcodeRequest({
+    enrolleeIdNo,
+    specialtyId,
+    referringHcpId,
+    receivingHcpId,
+  }) {
+    return {
+      enrolleeIdNo,
+      reasonForReferral: faker.lorem.text(),
+      diagnosis: faker.lorem.words(),
+      clinicalFindings: faker.lorem.text(),
+      specialtyId,
+      referringHcpId,
+      receivingHcpId,
+    };
   }
+
+  // static async getSeed(usersCount = MAX_USER_COUNT) {
+  //   const seededEnrollees = await db.Enrollee.findAll();
+  //   const refcodes = seededEnrollees.map((enrollee, i) => {
+  //     const codeMetaData = this.getMetaData();
+  //     // const operatorId =
+  //     //   faker.random.arrayElement(Array.from(Array(usersCount).keys())) + 1;
+  //     return {
+  //       enrolleeId: enrollee.id,
+  //       receivingHcpId: this.getSecondaryHcpId(i),
+  //       // operatorId,
+  //       ...codeMetaData,
+  //       ...this.generateSampleCode(enrollee, codeMetaData, i),
+  //     };
+  //   });
+
+  //   return refcodes;
+  // }
 
   /**
    * enrollees are seededEnrollees with valid integer IDs
    * secondaryHCPs are seeded secondary HCPs with valid integer IDs
-   * operatorId userId of a seeded user, probable gotten
+   * operatorId userId of a seeded user, probably gotten
    * from decoded token or seeded user
    *
    */
@@ -41,7 +58,7 @@ class SampleReferalCodes {
       const secHcpLength = secondaryHcps.length;
       return {
         enrolleeId: enrollees[i].id,
-        destinationHcpId: secondaryHcps[i % secHcpLength].id,
+        receivingHcpId: secondaryHcps[i % secHcpLength].id,
         operatorId,
         ...codeMetaData,
         ...this.generateSampleCode(enrollees[i], codeMetaData, i),
