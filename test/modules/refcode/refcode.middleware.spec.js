@@ -1,5 +1,6 @@
 /* eslint-disable jest/expect-expect */
 import getSampleStaffs from '../../../src/shared/samples/staff.samples';
+import getEnrollees from '../../../src/shared/samples/enrollee.samples';
 import TestService from '../app/app.test.service';
 import ROLES from '../../../src/shared/constants/roles.constants';
 import RefcodeApi from './refcode.test.api';
@@ -8,7 +9,7 @@ import _RefcodeService from './refcode.test.service';
 import SampleReferalCodes from '../../../src/shared/samples/refcode.samples';
 
 describe('RefcodeMiddleware', () => {
-  describe.only('validateRequestForRefcode', () => {
+  describe.only('validateRequestForRefcode (for existing Enrollee)', () => {
     let token, res, payload;
 
     beforeAll(async () => {
@@ -46,6 +47,55 @@ describe('RefcodeMiddleware', () => {
       'it catches errors thrown in the try block',
       TestService.testCatchBlock(RefcodeMiddleware.validateRequestForRefcode)
     );
+  });
+  describe.only('validateRequestForRefcode (for New Enrollee)', () => {
+    let token, res, payload;
+
+    beforeAll(async () => {
+      await TestService.resetDB();
+      const sampleEnrollees = getEnrollees({ numOfPrincipals: 1 });
+      const principals = TestService.removeNullValues(
+        sampleEnrollees.principals
+      );
+      const codeRelatedPayload =
+        SampleReferalCodes.generateSampleRefcodeRequest({
+          referringHcpId: 2,
+          receivingHcpId: 3,
+          specialtyId: '24c5676a-6cd6-4b1b-886e-bec3b59e0ba9',
+        });
+      payload = _RefcodeService.decoratePayload({
+        ...principals[0],
+        scheme: 'AFRSHIP',
+        enrolmentType: 'principal',
+        hcpId: 1,
+        rank: 'MAJ',
+        armOfService: 'army',
+        serviceNumber: 'N/12345',
+        ...codeRelatedPayload,
+        enrolleeIdNo: undefined,
+      });
+      const { sampleStaffs } = getSampleStaffs(1);
+      const data = await TestService.getToken(
+        sampleStaffs[0],
+        ROLES.SUPERADMIN
+      );
+      token = data.token;
+    });
+    it('validates new enrollee data during code request', async (done) => {
+      try {
+        for (let field of ['enrolmentType', 'scheme', 'surname', 'firstName']) {
+          res = await RefcodeApi.requestForCode(
+            { ...payload.remove(field) },
+            token
+          );
+          const { errors } = res.body;
+          expect(errors[0]).toBe(`"${field}" is required`);
+        }
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
   });
   describe('validateRefcode', () => {
     let token;
