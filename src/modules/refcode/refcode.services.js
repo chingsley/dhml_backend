@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { Op } from 'sequelize';
 import AppService from '../app/app.service';
 import db from '../../database/models';
@@ -19,24 +20,17 @@ export default class RefcodeService extends AppService {
     this.ReferalCodeModel = db.ReferalCode;
     this.operator = operator;
   }
-  async createRequestForReferalCodeSVC() {
-    const {
-      enrolleeIdNo,
-      referringHcpId,
-      receivingHcpId,
-      specialtyId,
-      ...newEnrolleeData
-    } = this.body;
+  async createRequestForReferalCodeSVC(payload) {
+    const { enrolleeIdNo, referringHcpId, receivingHcpId, specialtyId } =
+      payload;
     await this.validateId('HealthCareProvider', referringHcpId);
     await this.validateId('HealthCareProvider', receivingHcpId);
     await this.validateId('Specialty', specialtyId);
-    const enrollee = enrolleeIdNo
-      ? await this.findOneRecord({
-        where: { enrolleeIdNo },
-        modelName: 'Enrollee',
-        errorIfNotFound: 'Invalid enrollee Id No. Record not found',
-      })
-      : await this.registerNewEnrollee(newEnrolleeData);
+    const enrollee = await this.findOneRecord({
+      where: { enrolleeIdNo },
+      modelName: 'Enrollee',
+      errorIfNotFound: 'Invalid enrollee Id No. Record not found',
+    });
     const refcode = await this.ReferalCodeModel.create({
       ...this.body,
       enrolleeId: enrollee.id,

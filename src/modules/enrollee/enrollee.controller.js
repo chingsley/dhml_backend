@@ -4,11 +4,8 @@ import EnrolleeService from './enrollee.service';
 export default class EnrolleeController {
   static async addNewEnrollee(req, res, next) {
     try {
-      const { enrolmentType } = req.body;
       const enrolleeService = new EnrolleeService(req);
-      const enrollee = enrolmentType.match(/principal/i)
-        ? await enrolleeService.enrolPrincipal()
-        : await enrolleeService.enrolDependant();
+      const enrollee = await enrolleeService.registerNewEnrollee(req.body);
       return res
         .status(201)
         .json({ message: 'Data successfully saved', data: enrollee });

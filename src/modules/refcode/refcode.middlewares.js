@@ -1,7 +1,6 @@
 import Response from '../../utils/Response';
 import { validateSchema } from '../../validators/joi/config';
 import {
-  // getRefCodeSchema,
   codeVerificationSchema,
   flagUpdateSchema,
   schemaRefcodeIdArr,

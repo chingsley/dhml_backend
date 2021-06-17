@@ -14,16 +14,10 @@ import _SpecialityService from '../speciality/speciality.test.services';
 require('../../../src/prototypes/array.extensions').extendArray();
 
 describe('RefcodeController', () => {
-  describe('generateNewCode', () => {
-    let token, res, seededEnrollee;
-    const responses = [];
-
+  describe.only('createRequestForRefcodeCTRL (for existing Enrollee)', () => {
+    let token, res, seededEnrollee, referringHcp, receivingHcp;
     beforeAll(async () => {
       await TestService.resetDB();
-      // const sampleData = await _RefcodeSamples.initialize();
-      // samplePayload = sampleData.payload;
-      // secondaryHcps = sampleData.secondaryHcps;
-      // seededAfrshipPrincipals = sampleData.seededAfrshipPrincipals;
       const {
         primaryHcps: [primaryHcp],
         secondaryHcps: [secondaryHcp],
@@ -31,13 +25,14 @@ describe('RefcodeController', () => {
         numPrimary: 1,
         numSecondary: 1,
       });
+      referringHcp = primaryHcp;
+      receivingHcp = secondaryHcp;
       const { principals } = getEnrollees({ numOfPrincipals: 1 });
       [seededEnrollee] = await TestService.seedAfrshipPrincipals(
         principals,
         primaryHcp
       );
       const speciality = await _SpecialityService.seedOne();
-      // console.log(seededEnrollee, seededEnrollee.enrolleeIdNo,)
       const payload = SampleReferalCodes.generateSampleRefcodeRequest({
         enrolleeIdNo: seededEnrollee.enrolleeIdNo,
         specialtyId: speciality.id,
@@ -52,13 +47,218 @@ describe('RefcodeController', () => {
       token = data.token;
       res = await RefcodeApi.requestForCode(payload, token);
     });
-    it.only('returns status 201 on successful code generation', async (done) => {
+    it('returns status 201 on successful code generation', async (done) => {
       try {
         expect(res.status).toBe(201);
         done();
       } catch (e) {
         done(e);
       }
+    });
+    it('returns a success message and the referal code defaults to null', async (done) => {
+      try {
+        const { message, data } = res.body;
+        expect(message).toMatch(/successfully/i);
+        expect(data.code).toBe(null);
+        expect(res.status).toBe(201);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns some data about the subject enrollee', async (done) => {
+      try {
+        const { data } = res.body;
+        expect(data.enrollee).toEqual(
+          expect.objectContaining({
+            enrolleeIdNo: seededEnrollee.enrolleeIdNo,
+            surname: seededEnrollee.surname,
+            firstName: seededEnrollee.firstName,
+            middleName: seededEnrollee.middleName,
+            serviceNumber: seededEnrollee.serviceNumber,
+            serviceStatus: seededEnrollee.serviceStatus,
+            staffNumber: seededEnrollee.staffNumber,
+            scheme: seededEnrollee.scheme,
+          })
+        );
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns info about the referring hcp', async (done) => {
+      try {
+        const { data } = res.body;
+        expect(data.referringHcp).toEqual(
+          expect.objectContaining({
+            id: referringHcp.id,
+            code: referringHcp.code,
+            name: referringHcp.name,
+          })
+        );
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns info about the receving hcp', async (done) => {
+      try {
+        const { data } = res.body;
+        expect(data.receivingHcp).toEqual(
+          expect.objectContaining({
+            id: receivingHcp.id,
+            code: receivingHcp.code,
+            name: receivingHcp.name,
+          })
+        );
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it(
+      'it catches errors thrown in the try block',
+      TestService.testCatchBlock(RefcodeController.createRequestForRefcodeCTRL)
+    );
+  });
+  describe.only('createRequestForRefcodeCTRL (for new Enrollee)', () => {
+    let token, res, newEnrolleePayload, referringHcp, receivingHcp;
+    beforeAll(async () => {
+      await TestService.resetDB();
+      const {
+        primaryHcps: [primaryHcp],
+        secondaryHcps: [secondaryHcp],
+      } = await _HcpService.seedHcps({
+        numPrimary: 1,
+        numSecondary: 1,
+      });
+      referringHcp = primaryHcp;
+      receivingHcp = secondaryHcp;
+      const sampleEnrollees = getEnrollees({ numOfPrincipals: 1 });
+      const principals = TestService.removeNullValues(
+        sampleEnrollees.principals
+      );
+      newEnrolleePayload = {
+        ...principals[0],
+        scheme: 'AFRSHIP',
+        enrolmentType: 'principal',
+        hcpId: primaryHcp.id,
+        rank: 'MAJ',
+        armOfService: 'army',
+        serviceNumber: 'N/12345',
+      };
+      const speciality = await _SpecialityService.seedOne();
+      const codePayload = SampleReferalCodes.generateSampleRefcodeRequest({
+        specialtyId: speciality.id,
+        referringHcpId: primaryHcp.id,
+        receivingHcpId: secondaryHcp.id,
+      });
+      const { sampleStaffs } = getSampleStaffs(1);
+      const data = await TestService.getToken(
+        sampleStaffs[0],
+        ROLES.SUPERADMIN
+      );
+      token = data.token;
+      res = await RefcodeApi.requestForCode(
+        { ...newEnrolleePayload, ...codePayload },
+        token
+      );
+    });
+    it('returns status 201 on successful code generation', async (done) => {
+      try {
+        expect(res.status).toBe(201);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns a success message and the referal code defaults to null', async (done) => {
+      try {
+        const { message, data } = res.body;
+        expect(message).toMatch(/successfully/i);
+        expect(data.code).toBe(null);
+        expect(res.status).toBe(201);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns some data about the subject enrollee', async (done) => {
+      try {
+        const { data } = res.body;
+        expect(data.enrollee).toEqual(
+          expect.objectContaining({
+            surname: newEnrolleePayload.surname,
+            firstName: newEnrolleePayload.firstName,
+            middleName: newEnrolleePayload.middleName,
+            serviceStatus: newEnrolleePayload.serviceStatus,
+            scheme: newEnrolleePayload.scheme,
+          })
+        );
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns info about the referring hcp', async (done) => {
+      try {
+        const { data } = res.body;
+        expect(data.referringHcp).toEqual(
+          expect.objectContaining({
+            id: referringHcp.id,
+            code: referringHcp.code,
+            name: referringHcp.name,
+          })
+        );
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns info about the receving hcp', async (done) => {
+      try {
+        const { data } = res.body;
+        expect(data.receivingHcp).toEqual(
+          expect.objectContaining({
+            id: receivingHcp.id,
+            code: receivingHcp.code,
+            name: receivingHcp.name,
+          })
+        );
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+  });
+  describe('approveReferalCode', () => {
+    let token, res;
+    const responses = [];
+
+    beforeAll(async () => {
+      await TestService.resetDB();
+      const { primaryHcps, secondaryHcps } = await _HcpService.seedHcps({
+        numPrimary: 1,
+        numSecondary: 3,
+      });
+      const { principals } = getEnrollees({ numOfPrincipals: 1 });
+      const [seededPrincipal] = await TestService.seedEnrollees(
+        principals.map((p) => ({ ...p, hcpId: primaryHcps[0].id }))
+      );
+      const { sampleStaffs } = getSampleStaffs(1);
+      const data = await TestService.getToken(
+        sampleStaffs[0],
+        ROLES.SUPERADMIN
+      );
+      token = data.token;
+      const { userId } = Jwt.decode(token);
+      const refcodes = SampleReferalCodes.getTestSeed({
+        enrollees: [seededPrincipal].repreatElement(6),
+        secondaryHcps,
+        operatorId: userId,
+      });
+      const seededRefcodes = await _RefcodeService.seedBulk(refcodes);
+      res = await RefcodeApi.verifyRefcode(seededRefcodes[0].code, token);
     });
     it('ensures the generated code matches the required format', async (done) => {
       try {
@@ -127,7 +327,7 @@ describe('RefcodeController', () => {
     });
     it(
       'it catches errors thrown in the try block',
-      TestService.testCatchBlock(RefcodeController.generateNewCode)
+      TestService.testCatchBlock(RefcodeController.verifyReferalCode)
     );
   });
   describe('verifyReferalCode', () => {
