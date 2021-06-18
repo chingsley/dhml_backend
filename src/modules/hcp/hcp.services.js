@@ -40,10 +40,8 @@ export default class HcpService extends AppService {
         trnx
       );
       const { specialtyIds } = this.body;
-      const promiseArr = specialtyIds.map((specialtyId) =>
-        db.HcpSpecialty.create({ hcpId: hcp.id, specialtyId }, trnx)
-      );
-      await Promise.all(promiseArr);
+      await this.validateIdArr('Specialty', specialtyIds);
+      await hcp.addSpecialties(specialtyIds, trnx);
       const defaultPass = await this.createDefaultPassword(
         { hcpId: hcp.id },
         trnx
