@@ -15,7 +15,13 @@ require('../../../src/prototypes/array.extensions').extendArray();
 
 describe('RefcodeController', () => {
   describe.only('createRequestForRefcodeCTRL (for existing Enrollee)', () => {
-    let token, res, seededEnrollee, referringHcp, receivingHcp;
+    let token,
+      res,
+      seededEnrollee,
+      referringHcp,
+      receivingHcp,
+      payload,
+      speciality;
     beforeAll(async () => {
       await TestService.resetDB();
       const {
@@ -27,13 +33,15 @@ describe('RefcodeController', () => {
       });
       referringHcp = primaryHcp;
       receivingHcp = secondaryHcp;
+
       const { principals } = getEnrollees({ numOfPrincipals: 1 });
       [seededEnrollee] = await TestService.seedAfrshipPrincipals(
         principals,
         primaryHcp
       );
-      const speciality = await _SpecialityService.seedOne();
-      const payload = SampleReferalCodes.generateSampleRefcodeRequest({
+      speciality = await _SpecialityService.seedOne();
+      await receivingHcp.addSpecialties([speciality.id]);
+      payload = SampleReferalCodes.generateSampleRefcodeRequest({
         enrolleeIdNo: seededEnrollee.enrolleeIdNo,
         specialtyId: speciality.id,
         referringHcpId: primaryHcp.id,
@@ -116,6 +124,39 @@ describe('RefcodeController', () => {
         done(e);
       }
     });
+    it('returns 404 error if the receiving hcp does not offer the specified specialtyId', async (done) => {
+      try {
+        await receivingHcp.removeSpecialties([speciality.id]);
+        res = await RefcodeApi.requestForCode(payload, token);
+        const {
+          errors: [error],
+        } = res.body;
+        expect(res.status).toBe(404);
+        expect(error).toMatch(/does not have/i);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    /**
+     * next test case must be the last test (except test for catch block), because id deletes
+     * records from the table, making such records unavailable for further tests
+     */
+    it('returns 404 error if the specialtyId is not found', async (done) => {
+      try {
+        await receivingHcp.removeSpecialties([speciality.id]);
+        await _SpecialityService.deleteSpecialites([speciality.id]);
+        res = await RefcodeApi.requestForCode(payload, token);
+        const {
+          errors: [error],
+        } = res.body;
+        expect(res.status).toBe(404);
+        expect(error).toMatch(/No Specialty found/i);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
     it(
       'it catches errors thrown in the try block',
       TestService.testCatchBlock(RefcodeController.createRequestForRefcodeCTRL)
@@ -148,6 +189,7 @@ describe('RefcodeController', () => {
         serviceNumber: 'N/12345',
       };
       const speciality = await _SpecialityService.seedOne();
+      await receivingHcp.addSpecialties([speciality.id]);
       const codePayload = SampleReferalCodes.generateSampleRefcodeRequest({
         specialtyId: speciality.id,
         referringHcpId: primaryHcp.id,

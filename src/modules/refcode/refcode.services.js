@@ -23,9 +23,13 @@ export default class RefcodeService extends AppService {
   async createRequestForReferalCodeSVC(payload) {
     const { enrolleeIdNo, referringHcpId, receivingHcpId, specialtyId } =
       payload;
+    // await this.validateId('Specialty', specialtyId);
     await this.validateId('HealthCareProvider', referringHcpId);
-    await this.validateId('HealthCareProvider', receivingHcpId);
-    await this.validateId('Specialty', specialtyId);
+    const receivingHcp = await this.validateId(
+      'HealthCareProvider',
+      receivingHcpId
+    );
+    await receivingHcp.validateSpecialtyId(specialtyId);
     const enrollee = await this.findOneRecord({
       where: { enrolleeIdNo },
       modelName: 'Enrollee',
