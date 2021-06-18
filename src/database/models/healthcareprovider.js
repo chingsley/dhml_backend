@@ -115,5 +115,17 @@ module.exports = (sequelize, DataTypes) => {
     }
     return found;
   };
+  HealthCareProvider.prototype.addSpecialties = function (
+    arrOfSpecialtyIds,
+    transaction = {}
+  ) {
+    const promiseArr = arrOfSpecialtyIds.map((specialtyId) =>
+      this.sequelize.models.HcpSpecialty.create(
+        { hcpId: this.id, specialtyId },
+        transaction
+      )
+    );
+    return Promise.all(promiseArr);
+  };
   return HealthCareProvider;
 };

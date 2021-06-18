@@ -54,15 +54,9 @@ export default class AppService {
       errorIfNotFound: `No ${modelName} matches the id of ${id}`,
     });
   }
-
-  // async valueExists({ field, value, table }) {
-  //   return await this.findOneRecord({
-  //     modelName: table,
-  //     where: { [field]: value },
-  //     isRequired: true,
-  //     errorIfNotFound: `No ${modelName} matches the id of ${id}`,
-  //   });
-  // }
+  validateIdArr(modelName, idArr) {
+    return Promise.all(idArr.map((id) => this.validateId(modelName, id)));
+  }
 
   async findOneRecord(options = {}) {
     const {
