@@ -26,6 +26,12 @@ class _SpecialityService extends TestService {
   static findOneWhere(condition) {
     return db.Speciality.findOne({ where: condition });
   }
+
+  static async deleteSpecialites(specialtyIds) {
+    await db.HcpSpecialty.destroy({ where: { specialtyId: specialtyIds } });
+    await db.ReferalCode.destroy({ where: { specialtyId: specialtyIds } });
+    await db.Specialty.destroy({ where: { id: specialtyIds } });
+  }
 }
 
 export default _SpecialityService;
