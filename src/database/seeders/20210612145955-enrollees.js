@@ -3,8 +3,8 @@ const faker = require('faker');
 const { months, days, moment } = require('../../utils/timers');
 dotenv.config();
 const db = require('../models');
-const SampleReferalCodes = require('../../shared/samples/refcode.samples');
 const { randInt } = require('../../utils/helpers');
+const generateSampleRequestForRefcodesForSeed = require('../../shared/samples/refcodeRequest.samples');
 const armOfService = ['NAVY', 'ARMY', 'AIR FORCE', 'TRI-SERVICE'];
 const serviceStatus = ['retired', 'serving', undefined];
 const { log } = console;
@@ -69,9 +69,8 @@ if (process.env.SEED_WITH === 'LIVE_DATA') {
         };
       });
       await queryInterface.bulkInsert('Enrollees', dependantsWithPrincipalId);
-      const usersCount = await db.User.count();
-      const referalCodes = await SampleReferalCodes.getSeed(usersCount);
-      // await queryInterface.bulkInsert('ReferalCodes', referalCodes);
+      const codeRequests = await generateSampleRequestForRefcodesForSeed(1000);
+      await queryInterface.bulkInsert('ReferalCodes', codeRequests);
     },
 
     // eslint-disable-next-line no-unused-vars
@@ -104,9 +103,10 @@ if (process.env.SEED_WITH === 'LIVE_DATA') {
           'Enrollees',
           dependants.map((d) => ({ ...d, ...createdAt(d) }))
         );
-        const usersCount = await db.User.count();
-        const referalCodes = await SampleReferalCodes.getSeed(usersCount);
-        // await queryInterface.bulkInsert('ReferalCodes', referalCodes);
+        const codeRequests = await generateSampleRequestForRefcodesForSeed(
+          1000
+        );
+        await queryInterface.bulkInsert('ReferalCodes', codeRequests);
       } catch (e) {
         log(e.message);
       }
