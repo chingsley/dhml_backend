@@ -96,6 +96,18 @@ module.exports = {
           onDelete: 'RESTRICT',
           onUpdate: 'CASCADE',
         },
+        dateDeclined: {
+          type: Sequelize.DATE,
+        },
+        declinedById: {
+          type: Sequelize.INTEGER,
+          references: {
+            model: 'Users',
+            key: 'id',
+          },
+          onDelete: 'RESTRICT',
+          onUpdate: 'CASCADE',
+        },
         createdAt: {
           allowNull: false,
           type: Sequelize.DATE,

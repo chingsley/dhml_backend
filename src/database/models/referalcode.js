@@ -88,6 +88,18 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'RESTRICT',
         onUpdate: 'CASCADE',
       },
+      dateDeclined: {
+        type: DataTypes.DATE,
+      },
+      declinedById: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: 'Users',
+          key: 'id',
+        },
+        onDelete: 'RESTRICT',
+        onUpdate: 'CASCADE',
+      },
     },
     {}
   );
