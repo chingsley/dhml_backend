@@ -31,17 +31,7 @@ router.post(
   RefcodeMiddleware.validateRequestForRefcode,
   RefcodeController.createRequestForRefcodeCTRL
 );
-// router.post(
-//   '/',
-//   AuthMiddleware.authorize([
-//     ...allowedRoles,
-//     HOD_MEDICAL,
-//     VERIFIER,
-//     ENROLMENT_OFFICER,
-//   ]),
-//   RefcodeMiddleware.validateNewRefcode,
-// RefcodeController.generateNewCode
-// );
+
 router.get(
   '/',
   AuthMiddleware.authorize([
