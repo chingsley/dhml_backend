@@ -25,7 +25,12 @@ export function generateSearchQuery(searchItem, searchableFields) {
 
 export function getCapitationFilters(reqQuery) {
   const { limit, offset } = getPaginationParameters(reqQuery);
-  const { searchItem, hcpCode, hcpName, date = days.today } = {
+  const {
+    searchItem,
+    hcpCode,
+    hcpName,
+    date = days.today,
+  } = {
     ...reqQuery,
     date: reqQuery.date
       ? moment(reqQuery.date).format('YYYY-MM-DD')
@@ -48,6 +53,7 @@ export const tableAlias = {
   e: 'e',
   r: 'r',
   h: 'h',
+  sub: 'sub',
 };
 
 export const yearly = (year) => firstDayOfYear(year);
