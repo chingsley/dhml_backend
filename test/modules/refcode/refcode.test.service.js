@@ -1,4 +1,8 @@
 import db from '../../../src/database/models';
+import { states } from '../../../src/shared/constants/lists.constants';
+import { randInt, _random } from '../../../src/utils/helpers';
+
+const faker = require('faker');
 
 import TestService from '../app/app.test.service';
 
@@ -27,6 +31,40 @@ class _RefcodeService extends TestService {
       ],
     });
     return seededRefcode;
+  }
+
+  static seedSampleCodeRequests({
+    enrollees,
+    specialties,
+    referringHcps,
+    receivingHcps,
+  }) {
+    return this.seedBulk(
+      enrollees.map((enrollee) => ({
+        enrolleeId: enrollee.id,
+        specialtyId: _random(specialties).id,
+        referringHcpId: _random(referringHcps).id,
+        receivingHcpId: _random(receivingHcps).id,
+        reasonForReferral: faker.lorem.text(),
+        diagnosis: faker.lorem.words(),
+        clinicalFindings: faker.lorem.text(),
+        requestState: _random(states).toLowerCase(),
+      }))
+    );
+  }
+
+  static flagCodeRequests(seededCodeRequests, flaggedById) {
+    return Promise.all(
+      seededCodeRequests
+        .slice(0, 3)
+        .map((scr) =>
+          scr.update({
+            dateFlagged: new Date(),
+            flaggedById,
+            flaggReason: faker.lorem.text(),
+          })
+        )
+    );
   }
 
   static decoratePayload(payload) {

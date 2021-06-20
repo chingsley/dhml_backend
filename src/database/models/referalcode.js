@@ -57,12 +57,15 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'RESTRICT',
         onUpdate: 'CASCADE',
       },
-      dateFlagged: {
-        type: DataTypes.DATE,
+      requestState: {
+        type: DataTypes.STRING,
       },
       requesterEmail: {
         // requester could be user or hcp so we can't use requesterId, as it will be referencing either hchp or user
         type: DataTypes.STRING,
+      },
+      dateFlagged: {
+        type: DataTypes.DATE,
       },
       flaggedById: {
         type: DataTypes.INTEGER,

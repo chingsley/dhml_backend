@@ -20,7 +20,7 @@ class _SpecialityService extends TestService {
   }
 
   static seedBulk(specialities) {
-    return db.Speciality.bulkCreate(specialities);
+    return Promise.all(specialities.map((sp) => db.Specialty.create(sp)));
   }
 
   static findOneWhere(condition) {

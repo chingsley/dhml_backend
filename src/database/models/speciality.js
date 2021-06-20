@@ -3,12 +3,12 @@ module.exports = (sequelize, DataTypes) => {
   const Specialty = sequelize.define(
     'Specialty',
     {
-      // id: {
-      //   type: DataTypes.UUID,
-      //   primaryKey: true,
-      //   defaultValue: DataTypes.UUIDV4,
-      //   allowNull: false,
-      // },
+      id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
+      },
       name: {
         type: DataTypes.STRING,
         allowNull: false,

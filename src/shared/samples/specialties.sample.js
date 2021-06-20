@@ -36,4 +36,4 @@ const sampleSpecialities = [
   { name: 'MAXILLO-FACIAL SURGEON', code: '2B' },
 ].map((specialty) => ({ ...specialty, id: uuidv4() }));
 
-export default sampleSpecialities;
+module.exports = sampleSpecialities;
