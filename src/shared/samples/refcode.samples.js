@@ -1,7 +1,5 @@
 const faker = require('faker');
 const { days, moment } = require('../../utils/timers');
-const { MAX_USER_COUNT } = require('../constants/seeders.constants');
-const db = require('../../database/models');
 const {
   specialistCodes,
   stateCodes,
