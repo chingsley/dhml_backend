@@ -38,6 +38,8 @@ export default class RefcodeService extends AppService {
     const refcode = await this.ReferalCodeModel.create({
       ...this.body,
       enrolleeId: enrollee.id,
+      requestState: this.operator.userLocation,
+      requestedBy: this.operator.subjectId,
     });
 
     await refcode.reloadAfterCreate();

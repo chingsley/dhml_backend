@@ -68,8 +68,10 @@ module.exports = {
         requestState: {
           type: Sequelize.STRING,
         },
-        requesterEmail: {
-          // requester could be user or hcp so we can't use requesterId, as it will be referencing either hchp or user
+        requestedBy: {
+          // could be user or hcp so we can't use requesterId, as it will be referencing either hchp or user
+          // for a user, requestedBy = user.staffInfo.email
+          // for hcp, requestedBy = hcp.code
           type: Sequelize.STRING,
         },
         dateFlagged: {

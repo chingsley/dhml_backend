@@ -13,6 +13,7 @@ export const states = [
   'Edo',
   'Ekiti',
   'Enugu',
+  'FCT - Abuja',
   'Gombe',
   'Imo',
   'Jigawa',
