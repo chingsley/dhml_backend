@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { Op } from 'sequelize';
 import AppService from '../app/app.service';
 import db from '../../database/models';
@@ -19,27 +20,53 @@ export default class RefcodeService extends AppService {
     this.ReferalCodeModel = db.ReferalCode;
     this.operator = operator;
   }
-  async generateReferalCode() {
-    const operatorId = this.operator.id;
-    const { stateOfGeneration } = this.body;
-    const { enrolleeId, destinationHcpId, specialist } = this.body;
-    const enrollee = await this.validateId('Enrollee', enrolleeId);
-    await this.validateId('HealthCareProvider', destinationHcpId);
-    const proxyCode = await this.getProxyCode();
-    const stateCode = stateCodes[stateOfGeneration.toLowerCase()];
-    const specialistCode = specialistCodes[specialist.toLowerCase()];
-    const code = await this.getReferalCode(enrollee, stateCode, specialistCode);
+  async createRequestForReferalCodeSVC(payload) {
+    const { enrolleeIdNo, referringHcpId, receivingHcpId, specialtyId } =
+      payload;
+    // await this.validateId('Specialty', specialtyId);
+    await this.validateId('HealthCareProvider', referringHcpId);
+    const receivingHcp = await this.validateId(
+      'HealthCareProvider',
+      receivingHcpId
+    );
+    await receivingHcp.validateSpecialtyId(specialtyId);
+    const enrollee = await this.findOneRecord({
+      where: { enrolleeIdNo },
+      modelName: 'Enrollee',
+      errorIfNotFound: 'Invalid enrollee Id No. Record not found',
+    });
     const refcode = await this.ReferalCodeModel.create({
       ...this.body,
-      code,
-      proxyCode,
-      operatorId,
-      specialistCode,
+      enrolleeId: enrollee.id,
+      requestState: this.operator.userLocation,
+      requestedBy: this.operator.subjectId,
     });
 
     await refcode.reloadAfterCreate();
     return refcode;
   }
+
+  // async generateReferalCode() {
+  //   const operatorId = this.operator.id;
+  //   const { stateOfGeneration } = this.body;
+  //   const { enrolleeId, receivingHcpId, specialist } = this.body;
+  //   const enrollee = await this.validateId('Enrollee', enrolleeId);
+  //   await this.validateId('HealthCareProvider', receivingHcpId);
+  //   const proxyCode = await this.getProxyCode();
+  //   const stateCode = stateCodes[stateOfGeneration.toLowerCase()];
+  //   const specialistCode = specialistCodes[specialist.toLowerCase()];
+  //   const code = await this.getReferalCode(enrollee, stateCode, specialistCode);
+  //   const refcode = await this.ReferalCodeModel.create({
+  //     ...this.body,
+  //     code,
+  //     proxyCode,
+  //     operatorId,
+  //     specialistCode,
+  //   });
+
+  //   await refcode.reloadAfterCreate();
+  //   return refcode;
+  // }
 
   async verifyRefcode() {
     const { referalCode: code } = this.query;
@@ -95,9 +122,13 @@ export default class RefcodeService extends AppService {
       ...this.query,
       pageSize: undefined,
       page: undefined,
+      operator: this.operator,
     });
     const count = nonPaginatedRows.length;
-    const rows = await this.executeQuery(fetchAllRefcodes, this.query);
+    const rows = await this.executeQuery(fetchAllRefcodes, {
+      ...this.query,
+      operator: this.operator,
+    });
     return { count, rows };
   }
 

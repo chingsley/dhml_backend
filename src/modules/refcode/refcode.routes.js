@@ -12,6 +12,7 @@ const {
   ENROLMENT_OFFICER,
   MD,
   DEPT_USER,
+  HCP,
 } = roles;
 
 const allowedRoles = [ADMIN, SUPERADMIN, MD];
@@ -23,19 +24,26 @@ router.post(
   AuthMiddleware.authorize([
     ...allowedRoles,
     HOD_MEDICAL,
+    roles.TIER_1_MEDICAL,
+    roles.TIER_2_MEDICAL,
     VERIFIER,
     ENROLMENT_OFFICER,
+    HCP,
   ]),
-  RefcodeMiddleware.validateNewRefcode,
-  RefcodeController.generateNewCode
+  RefcodeMiddleware.validateRequestForRefcode,
+  RefcodeController.createRequestForRefcodeCTRL
 );
+
 router.get(
   '/',
   AuthMiddleware.authorize([
     ...allowedRoles,
     HOD_MEDICAL,
+    roles.TIER_1_MEDICAL,
+    roles.TIER_2_MEDICAL,
     VERIFIER,
     ENROLMENT_OFFICER,
+    HCP,
   ]),
   RefcodeMiddleware.validateRefcodeQuery,
   RefcodeController.getReferalCodes

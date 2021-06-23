@@ -84,4 +84,5 @@ export const enrolleeSearchableFields = [
   { name: 'enrolmentType', type: 'custom' },
   { name: 'gender', type: 'string' },
   { name: 'enrolleeIdNo', type: 'string' },
+  { name: 'phoneNumber', type: 'string' },
 ];

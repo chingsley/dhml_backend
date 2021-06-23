@@ -16,6 +16,23 @@ export function randInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+/**
+ *
+ * @param {array} arr an array of items
+ * @returns a random item from the array
+ */
+export const _random = (arr) => arr[randInt(0, arr.length - 1)];
+
+export function getRandomIntArr(min, max, count) {
+  let n = 0;
+  const arrOfRandomIntegers = [];
+  while (n < count) {
+    arrOfRandomIntegers.push(randInt(min, max));
+    n += 1;
+  }
+  return arrOfRandomIntegers;
+}
+
 export const zeroPadding = (id, maxLength = 6) => {
   if (Number(id).toString().length < maxLength) {
     return '0'.repeat(maxLength - Number(id).toString().length) + Number(id);

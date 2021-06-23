@@ -1,28 +1,42 @@
 import Response from '../../utils/Response';
 import { validateSchema } from '../../validators/joi/config';
 import {
-  getRefCodeSchema,
   codeVerificationSchema,
   flagUpdateSchema,
   schemaRefcodeIdArr,
   refcodeQuerySchema,
   schemaEnrolleeIdNo,
+  schemaCodeRequestForNewEnrollee,
+  schemaCodeRequestForExistingEnrollee,
 } from '../../validators/joi/schemas/refcode.schema';
 
 export default class RefcodeMiddleware {
-  static async validateNewRefcode(req, res, next) {
+  static async validateRequestForRefcode(req, res, next) {
     try {
-      const referalCodeSchema = getRefCodeSchema({ withRequiredFields: true });
-      const { joiFormatted } = await validateSchema(
-        referalCodeSchema,
-        req.body
-      );
+      const { enrolleeIdNo, enrolmentType } = req.body;
+      const refcodeSchema = enrolleeIdNo
+        ? schemaCodeRequestForExistingEnrollee
+        : schemaCodeRequestForNewEnrollee(enrolmentType);
+      const { joiFormatted } = await validateSchema(refcodeSchema, req.body);
       req.body = joiFormatted;
       return next();
     } catch (error) {
-      Response.handleError('validateNewRefcode', error, req, res, next);
+      Response.handleError('validateRequestForRefcode', error, req, res, next);
     }
   }
+  // static async validateNewRefcode(req, res, next) {
+  //   try {
+  //     const referalCodeSchema = getRefCodeSchema({ withRequiredFields: true });
+  //     const { joiFormatted } = await validateSchema(
+  //       referalCodeSchema,
+  //       req.body
+  //     );
+  //     req.body = joiFormatted;
+  //     return next();
+  //   } catch (error) {
+  //     Response.handleError('validateNewRefcode', error, req, res, next);
+  //   }
+  // }
 
   static async validateRefcode(req, res, next) {
     try {

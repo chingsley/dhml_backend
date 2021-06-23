@@ -28,8 +28,9 @@ export default class _RefcodeSamples {
     const payload = {
       data: {
         ...SampleReferalCodes.getTestPayloads(1)[0],
-        enrolleeId: seededAfrshipPrincipals[0].id,
-        destinationHcpId: secondaryHcps[0].id,
+        enrolleeIdNo: seededAfrshipPrincipals[0].enrolleeIdNo,
+        referringHcpId: primaryHcps[0].id,
+        receivingHcpId: secondaryHcps[0].id,
       },
       remove(field) {
         return Object.entries(this.data).reduce((acc, entry) => {
@@ -59,4 +60,6 @@ export default class _RefcodeSamples {
       payload,
     };
   }
+
+  static async;
 }

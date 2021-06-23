@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 import AppService from '../app/app.service';
 import db from '../../database/models';
-import { months, moment } from '../../utils/timers';
+import { months, moment, dateInWords } from '../../utils/timers';
 import { Op } from 'sequelize';
 import { downloadPaymentAdvice } from '../../utils/pdf/generatePaymentAdvicePdf';
 import send_email_report from '../../utils/pdf/sendPaymentAdvice';
@@ -43,9 +43,9 @@ export default class AccountService extends AppService {
         },
       ],
     });
-    const dateInWords = moment(date).format('MMMM YYYY');
+
     this.rejectIf(hcpCapitations.length < 1, {
-      withError: `There's no approved capitation for ${dateInWords}`,
+      withError: `There's no approved capitation for ${dateInWords(date)}`,
     });
     return this.groupByState(hcpCapitations);
   }
@@ -127,9 +127,10 @@ export default class AccountService extends AppService {
         attributes: { exclude: ['createdAt', 'updatedAt'] },
       },
     });
-    const dateInWords = moment(date).format('MMMM YYYY');
     this.throwErrorIf(data.count === 0, {
-      withMessage: `No records found for the selected month, please confirm that the capitation for ${dateInWords} has been approved.`,
+      withMessage: `No records found for the selected month, please confirm that the capitation for ${dateInWords(
+        date
+      )} has been approved.`,
     });
     return {
       ...data,
@@ -156,9 +157,10 @@ export default class AccountService extends AppService {
         },
       ],
     });
-    const dateInWords = moment(date).format('MMMM YYYY');
     this.throwErrorIf(data.count === 0, {
-      withMessage: `No records found for the selected month. Please confirm that the capitation for ${dateInWords} has been paid.`,
+      withMessage: `No records found for the selected month. Please confirm that the capitation for ${dateInWords(
+        date
+      )} has been paid.`,
     });
     return {
       ...data,

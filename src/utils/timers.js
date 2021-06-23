@@ -31,6 +31,8 @@ const nextMonth = (dateArr) =>
 const firstDayOfYear = (date) =>
   moment(date).clone().startOf('year').format('YYYY-MM-DD');
 
+const dateInWords = (date) => moment(date).format('MMMM YYYY');
+
 module.exports = {
   moment,
   days,
@@ -39,4 +41,5 @@ module.exports = {
   dateOnly,
   nextMonth,
   firstDayOfYear,
+  dateInWords,
 };

@@ -1,6 +1,6 @@
 'use strict';
 
-const { throwError } = require('../../shared/helpers');
+const { throwError, rejectIf } = require('../../shared/helpers');
 
 module.exports = (sequelize, DataTypes) => {
   const HealthCareProvider = sequelize.define(
@@ -85,12 +85,17 @@ module.exports = (sequelize, DataTypes) => {
       as: 'password',
     });
     HealthCareProvider.hasMany(models.ReferalCode, {
-      foreignKey: 'destinationHcpId',
+      foreignKey: 'receivingHcpId',
       as: 'referalCodes',
     });
     HealthCareProvider.hasMany(models.HcpMonthlyCapitation, {
       foreignKey: 'hcpId',
       as: 'hcpMonthlyCapSum',
+    });
+    HealthCareProvider.belongsToMany(models.Specialty, {
+      through: 'HcpSpecialties',
+      foreignKey: 'hcpId',
+      as: 'specialties',
     });
   };
   HealthCareProvider.findOneWhere = async function (condition, options) {
@@ -110,5 +115,42 @@ module.exports = (sequelize, DataTypes) => {
     }
     return found;
   };
+  HealthCareProvider.prototype.addSpecialties = function (
+    arrOfSpecialtyIds,
+    transaction = {}
+  ) {
+    const promiseArr = arrOfSpecialtyIds.map((specialtyId) =>
+      this.sequelize.models.HcpSpecialty.create(
+        { hcpId: this.id, specialtyId },
+        transaction
+      )
+    );
+    return Promise.all(promiseArr);
+  };
+  HealthCareProvider.prototype.validateSpecialtyId = async function (
+    specialtyId
+  ) {
+    await this.reload({
+      include: { model: this.sequelize.models.Specialty, as: 'specialties' },
+    });
+    const specialty = await this.sequelize.models.Specialty.findOne({
+      where: { id: specialtyId },
+    });
+    rejectIf(!specialty, {
+      withError: `No Specialty found for the id ${specialtyId}`,
+      status: 404,
+    });
+    rejectIf(!this.specialties.map((sp) => sp.id).includes(specialtyId), {
+      withError: `The Receiving HCP: ${this.name} does not have a specialist for ${specialty.name}`,
+      status: 404,
+    });
+  };
+
+  HealthCareProvider.prototype.removeSpecialties = function (specialtyIdArr) {
+    return this.sequelize.models.HcpSpecialty.destroy({
+      where: { specialtyId: specialtyIdArr, hcpId: this.id },
+    });
+  };
+
   return HealthCareProvider;
 };

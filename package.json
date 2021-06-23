@@ -45,6 +45,7 @@
     "test:refcodeController": "jest test/modules/refcode/refcode.controller.spec.js --detectOpenHandles --verbose --watch",
     "test:reportsController": "jest test/modules/reports/reports.controller.spec.js --detectOpenHandles --verbose --watch",
     "test:statsController": "jest test/modules/stats/stats.controller.spec.js --detectOpenHandles --verbose --watch",
+    "test:accountsController": "jest test/modules/accounts/accounts.controller.spec.js --detectOpenHandles --verbose --watch",
     "temp": "jest test/modules/hcp/hcp.temp.spec.js --detectOpenHandles --verbose --watch",
     "-------------------------": "-----------------------------",
     "test:userMiddleware": "jest test/modules/user/user.middleware.spec.js --detectOpenHandles --verbose --watch",
