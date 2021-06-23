@@ -234,7 +234,9 @@ describe('StaffController', () => {
                 searchValue
               );
             } else {
-              expect(staff[searchFiled]).toBe(searchValue);
+              expect(staff[searchFiled].toString()).toMatch(
+                searchValue.toString()
+              );
             }
           }
         }

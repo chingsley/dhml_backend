@@ -122,9 +122,13 @@ export default class RefcodeService extends AppService {
       ...this.query,
       pageSize: undefined,
       page: undefined,
+      operator: this.operator,
     });
     const count = nonPaginatedRows.length;
-    const rows = await this.executeQuery(fetchAllRefcodes, this.query);
+    const rows = await this.executeQuery(fetchAllRefcodes, {
+      ...this.query,
+      operator: this.operator,
+    });
     return { count, rows };
   }
 

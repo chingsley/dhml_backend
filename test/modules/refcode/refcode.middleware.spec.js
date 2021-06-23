@@ -9,7 +9,7 @@ import _RefcodeService from './refcode.test.service';
 import SampleReferalCodes from '../../../src/shared/samples/refcode.samples';
 
 describe('RefcodeMiddleware', () => {
-  describe.only('validateRequestForRefcode (for existing Enrollee)', () => {
+  describe('validateRequestForRefcode (for existing Enrollee)', () => {
     let token, res, payload;
 
     beforeAll(async () => {
@@ -23,10 +23,7 @@ describe('RefcodeMiddleware', () => {
         })
       );
       const { sampleStaffs } = getSampleStaffs(1);
-      const data = await TestService.getToken(
-        sampleStaffs[0],
-        ROLES.SUPERADMIN
-      );
+      const data = await TestService.getToken(sampleStaffs[0], ROLES.MD);
       token = data.token;
     });
     it('rejects incomplete data', async (done) => {
@@ -48,7 +45,7 @@ describe('RefcodeMiddleware', () => {
       TestService.testCatchBlock(RefcodeMiddleware.validateRequestForRefcode)
     );
   });
-  describe.only('validateRequestForRefcode (for New Enrollee)', () => {
+  describe('validateRequestForRefcode (for New Enrollee)', () => {
     let token, res, payload;
 
     beforeAll(async () => {
@@ -75,10 +72,7 @@ describe('RefcodeMiddleware', () => {
         enrolleeIdNo: undefined,
       });
       const { sampleStaffs } = getSampleStaffs(1);
-      const data = await TestService.getToken(
-        sampleStaffs[0],
-        ROLES.SUPERADMIN
-      );
+      const data = await TestService.getToken(sampleStaffs[0], ROLES.MD);
       token = data.token;
     });
     it('validates new enrollee data during code request', async (done) => {
@@ -97,7 +91,7 @@ describe('RefcodeMiddleware', () => {
       }
     });
   });
-  describe('validateRefcode', () => {
+  describe.skip('validateRefcode', () => {
     let token;
 
     beforeAll(async () => {
@@ -127,7 +121,7 @@ describe('RefcodeMiddleware', () => {
       TestService.testCatchBlock(RefcodeMiddleware.validateRefcode)
     );
   });
-  describe('validateFlagStatus', () => {
+  describe.skip('validateFlagStatus', () => {
     let token;
 
     beforeAll(async () => {
@@ -175,7 +169,7 @@ describe('RefcodeMiddleware', () => {
       TestService.testCatchBlock(RefcodeMiddleware.validateFlagStatus)
     );
   });
-  describe('validateRefcodeIdArr', () => {
+  describe.skip('validateRefcodeIdArr', () => {
     let token;
 
     beforeAll(async () => {
@@ -208,7 +202,7 @@ describe('RefcodeMiddleware', () => {
       TestService.testCatchBlock(RefcodeMiddleware.validateRefcodeIdArr)
     );
   });
-  describe('validateRefcodeQuery', () => {
+  describe.skip('validateRefcodeQuery', () => {
     let token;
 
     beforeAll(async () => {
@@ -252,7 +246,7 @@ describe('RefcodeMiddleware', () => {
       TestService.testCatchBlock(RefcodeMiddleware.validateRefcodeQuery)
     );
   });
-  describe('getEnrolleeCodeHistory', () => {
+  describe.skip('getEnrolleeCodeHistory', () => {
     let token;
 
     beforeAll(async () => {

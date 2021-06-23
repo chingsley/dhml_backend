@@ -49,10 +49,7 @@ describe('RefcodeController', () => {
         receivingHcpId: secondaryHcp.id,
       });
       const { sampleStaffs } = getSampleStaffs(1);
-      const data = await TestService.getToken(
-        sampleStaffs[0],
-        ROLES.SUPERADMIN
-      );
+      const data = await TestService.getToken(sampleStaffs[0], ROLES.MD);
       token = data.token;
       res = await RefcodeApi.requestForCode(payload, token);
     });
@@ -197,10 +194,7 @@ describe('RefcodeController', () => {
         receivingHcpId: secondaryHcp.id,
       });
       const { sampleStaffs } = getSampleStaffs(1);
-      const data = await TestService.getToken(
-        sampleStaffs[0],
-        ROLES.SUPERADMIN
-      );
+      const data = await TestService.getToken(sampleStaffs[0], ROLES.MD);
       token = data.token;
       res = await RefcodeApi.requestForCode(
         { ...newEnrolleePayload, ...codePayload },
@@ -331,10 +325,7 @@ describe('RefcodeController', () => {
         referringHcps,
         receivingHcps,
       });
-      const data = await TestService.getToken(
-        sampleStaffs[0],
-        ROLES.SUPERADMIN
-      );
+      const data = await TestService.getToken(sampleStaffs[0], ROLES.MD);
       token = data.token;
       const { userId } = Jwt.decode(token);
       operatorId = userId;
