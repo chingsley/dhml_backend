@@ -1,6 +1,6 @@
 import { Joi } from '../config';
 import helpers from './helpers.schemas';
-import SharedFields from '../SharedFields';
+import SharedFields from '../sharedFields';
 
 const sharedFields = new SharedFields({ Joi, helpers });
 
