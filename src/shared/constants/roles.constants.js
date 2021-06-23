@@ -14,4 +14,6 @@ module.exports = {
   BASIC: 'basic',
   MD: 'md',
   HCP: 'hcp',
+  TIER_1_MEDICAL: 'tier 1 medical',
+  TIER_2_MEDICAL: 'tier 2 medical',
 };

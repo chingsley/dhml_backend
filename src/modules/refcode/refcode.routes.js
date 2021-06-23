@@ -24,6 +24,8 @@ router.post(
   AuthMiddleware.authorize([
     ...allowedRoles,
     HOD_MEDICAL,
+    roles.TIER_1_MEDICAL,
+    roles.TIER_2_MEDICAL,
     VERIFIER,
     ENROLMENT_OFFICER,
     HCP,
@@ -37,8 +39,11 @@ router.get(
   AuthMiddleware.authorize([
     ...allowedRoles,
     HOD_MEDICAL,
+    roles.TIER_1_MEDICAL,
+    roles.TIER_2_MEDICAL,
     VERIFIER,
     ENROLMENT_OFFICER,
+    HCP,
   ]),
   RefcodeMiddleware.validateRefcodeQuery,
   RefcodeController.getReferalCodes
