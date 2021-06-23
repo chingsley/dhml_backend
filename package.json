@@ -28,8 +28,6 @@
     "db:reset:staging": "npm run db:migrate:undo:staging && npm run db:migrate:staging",
     "seed:staging": "npm run db:reset:staging && sequelize db:seed:all --env staging",
     "---------------------": "-----------------------------",
-    "db:migrate:prod": "sequelize db:migrate --env production",
-    "seed:prod": "sequelize db:seed:all --env production",
     "-----------------------": "-----------------------------",
     "db:reset:test": "sequelize db:migrate:undo:all --env test && sequelize db:migrate --env test",
     "test:watchAll": "cross-env NODE_ENV=test jest --detectOpenHandles --watchAll",
