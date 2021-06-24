@@ -1,4 +1,8 @@
+/* eslint-disable indent */
 'use strict';
+
+const { isExpired } = require('../../utils/helpers');
+
 module.exports = (sequelize, DataTypes) => {
   const ReferalCode = sequelize.define(
     'ReferalCode',
@@ -104,6 +108,39 @@ module.exports = (sequelize, DataTypes) => {
         },
         onDelete: 'RESTRICT',
         onUpdate: 'CASCADE',
+      },
+      expiresAt: {
+        type: DataTypes.DATE,
+      },
+      dateClaimed: {
+        type: DataTypes.DATE,
+      },
+      status: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          switch (true) {
+            case this.dateDeclined !== null:
+              return 'DECLINED';
+            case this.dateFlagged !== null:
+              return 'FLAGGED';
+            case this.dateApproved !== null:
+              return 'APPROVED';
+            default:
+              return 'PENDING';
+          }
+        },
+      },
+      hasExpired: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return this.expiresAt === null ? false : isExpired(this.expiresAt);
+        },
+      },
+      isClaimed: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return !!this.dateClaimed;
+        },
       },
     },
     {}

@@ -54,6 +54,8 @@ router.get(
   AuthMiddleware.authorize([
     ...allowedRoles,
     HOD_MEDICAL,
+    roles.TIER_1_MEDICAL,
+    roles.TIER_2_MEDICAL,
     VERIFIER,
     ENROLMENT_OFFICER,
   ]),
@@ -63,25 +65,35 @@ router.get(
 
 router.get(
   '/history',
-  AuthMiddleware.authorize([SUPERADMIN, ADMIN, ENROLMENT_OFFICER, VERIFIER]),
+  AuthMiddleware.authorize([
+    SUPERADMIN,
+    ADMIN,
+    ENROLMENT_OFFICER,
+    VERIFIER,
+    HOD_MEDICAL,
+    roles.TIER_1_MEDICAL,
+    roles.TIER_2_MEDICAL,
+  ]),
   RefcodeMiddleware.validateFetchCodeHistory,
   RefcodeController.getEnrolleeCodeHistory
 );
 router.patch(
-  '/:refcodeId/flag',
+  '/:refcodeId',
   AuthMiddleware.authorize([
     ...allowedRoles,
     HOD_MEDICAL,
+    roles.TIER_1_MEDICAL,
+    roles.TIER_2_MEDICAL,
     VERIFIER,
     ENROLMENT_OFFICER,
     DEPT_USER,
   ]),
-  RefcodeMiddleware.validateFlagStatus,
-  RefcodeController.changeFlagStatus
+  RefcodeMiddleware.validateCodeStatusUpdate,
+  RefcodeController.updageCodeRequestStatus
 );
 router.delete(
   '/',
-  AuthMiddleware.authorize([...allowedRoles]),
+  AuthMiddleware.authorize([MD, roles.TIER_1_MEDICAL, roles.TIER_2_MEDICAL]),
   RefcodeMiddleware.validateRefcodeIdArr,
   RefcodeController.deleteRefcode
 );

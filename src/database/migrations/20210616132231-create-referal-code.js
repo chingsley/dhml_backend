@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 'use strict';
+
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable(
@@ -112,6 +113,12 @@ module.exports = {
           },
           onDelete: 'RESTRICT',
           onUpdate: 'CASCADE',
+        },
+        expiresAt: {
+          type: Sequelize.DATE,
+        },
+        dateClaimed: {
+          type: Sequelize.DATE,
         },
         createdAt: {
           allowNull: false,
