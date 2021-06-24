@@ -9,6 +9,7 @@ import {
 } from '../../shared/constants/statecodes.constants';
 import { fetchAllRefcodes } from '../../database/scripts/refcode.scripts';
 import { refcodeSearchableFields } from '../../shared/attributes/refcode.attributes';
+import errors from '../../shared/constants/errors.constants';
 
 export default class RefcodeService extends AppService {
   constructor({ body, files, query, params, user: operator }) {
@@ -70,13 +71,19 @@ export default class RefcodeService extends AppService {
 
   async verifyRefcode() {
     const { referalCode: code } = this.query;
-    return await this.findOneRecord({
+    const refcode = await this.findOneRecord({
       modelName: 'ReferalCode',
       where: { code },
       include: [
         {
           model: db.HealthCareProvider,
-          as: 'destinationHcp',
+          as: 'referringHcp',
+          attributes: ['id', 'name', 'code'],
+        },
+        {
+          model: db.HealthCareProvider,
+          as: 'receivingHcp',
+          attributes: ['id', 'name', 'code'],
         },
         {
           model: db.Enrollee,
@@ -92,15 +99,24 @@ export default class RefcodeService extends AppService {
             {
               model: db.HealthCareProvider,
               as: 'hcp',
+              attributes: ['id', 'name', 'code'],
             },
           ],
         },
       ],
       errorIfNotFound: 'Invalid code. No record found',
     });
+
+    this.rejectIf(refcode.isClaimed, {
+      withError: errors.claimedRefcode(refcode.expiresAt),
+    });
+    this.rejectIf(refcode.hasExpired, {
+      withError: errors.expiredRefcode(refcode.expiresAt),
+    });
+    return refcode;
   }
 
-  async setCodeFlagStatus() {
+  async updateRefcodeStatus() {
     const { refcodeId } = this.params;
     const { flag, flagReason } = this.body;
     const refcode = await this.findOneRecord({
@@ -148,24 +164,22 @@ export default class RefcodeService extends AppService {
       include: [
         {
           model: db.HealthCareProvider,
-          as: 'destinationHcp',
-          attributes: ['name', 'code'],
+          as: 'referringHcp',
+          attributes: ['id', 'name', 'code'],
+        },
+        {
+          model: db.HealthCareProvider,
+          as: 'receivingHcp',
+          attributes: ['id', 'name', 'code'],
         },
         {
           model: db.User,
-          as: 'generatedBy',
+          as: 'approvedBy',
           attributes: ['id', 'staffId', 'username'],
           include: {
             model: db.Staff,
             as: 'staffInfo',
-            attributes: [
-              'id',
-              'staffIdNo',
-              'email',
-              'surname',
-              'firstName',
-              'middleName',
-            ],
+            attributes: ['id', 'staffIdNo', 'email', 'surname', 'firstName'],
           },
         },
       ],

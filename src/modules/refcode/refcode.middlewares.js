@@ -2,7 +2,7 @@ import Response from '../../utils/Response';
 import { validateSchema } from '../../validators/joi/config';
 import {
   codeVerificationSchema,
-  flagUpdateSchema,
+  codeStatusUpdateSchema,
   schemaRefcodeIdArr,
   refcodeQuerySchema,
   schemaEnrolleeIdNo,
@@ -50,9 +50,9 @@ export default class RefcodeMiddleware {
       Response.handleError('validateRefcode', error, req, res, next);
     }
   }
-  static async validateFlagStatus(req, res, next) {
+  static async validateCodeStatusUpdate(req, res, next) {
     try {
-      const { joiFormatted } = await validateSchema(flagUpdateSchema, {
+      const { joiFormatted } = await validateSchema(codeStatusUpdateSchema, {
         ...req.body,
         ...req.params,
       });
