@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       code: {
         type: DataTypes.STRING,
-        unique: true,
+        allowNull: false,
       },
     },
     {}
@@ -27,6 +27,10 @@ module.exports = (sequelize, DataTypes) => {
       through: 'HcpSpecialties',
       foreignKey: 'specialtyId',
       as: 'hcps',
+    });
+    Specialty.hasMany(models.ReferalCode, {
+      foreignKey: 'specialtyId',
+      as: 'referalCodes',
     });
   };
   return Specialty;

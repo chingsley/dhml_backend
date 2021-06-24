@@ -56,7 +56,7 @@ export default class RefcodeMiddleware {
         ...req.body,
         ...req.params,
       });
-      req.query = joiFormatted;
+      req.body = joiFormatted;
       return next();
     } catch (error) {
       Response.handleError('validateFlagStatus', error, req, res, next);

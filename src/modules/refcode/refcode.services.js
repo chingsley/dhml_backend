@@ -3,13 +3,12 @@ import { Op } from 'sequelize';
 import AppService from '../app/app.service';
 import db from '../../database/models';
 import codeFactory from './refcode.factory';
-import {
-  stateCodes,
-  specialistCodes,
-} from '../../shared/constants/statecodes.constants';
+import { stateCodes } from '../../shared/constants/statecodes.constants';
 import { fetchAllRefcodes } from '../../database/scripts/refcode.scripts';
 import { refcodeSearchableFields } from '../../shared/attributes/refcode.attributes';
 import errors from '../../shared/constants/errors.constants';
+import { CODE_STATUS } from '../../shared/constants/lists.constants';
+import { months } from '../../utils/timers';
 
 export default class RefcodeService extends AppService {
   constructor({ body, files, query, params, user: operator }) {
@@ -46,28 +45,6 @@ export default class RefcodeService extends AppService {
     await refcode.reloadAfterCreate();
     return refcode;
   }
-
-  // async generateReferalCode() {
-  //   const operatorId = this.operator.id;
-  //   const { stateOfGeneration } = this.body;
-  //   const { enrolleeId, receivingHcpId, specialist } = this.body;
-  //   const enrollee = await this.validateId('Enrollee', enrolleeId);
-  //   await this.validateId('HealthCareProvider', receivingHcpId);
-  //   const proxyCode = await this.getProxyCode();
-  //   const stateCode = stateCodes[stateOfGeneration.toLowerCase()];
-  //   const specialistCode = specialistCodes[specialist.toLowerCase()];
-  //   const code = await this.getReferalCode(enrollee, stateCode, specialistCode);
-  //   const refcode = await this.ReferalCodeModel.create({
-  //     ...this.body,
-  //     code,
-  //     proxyCode,
-  //     operatorId,
-  //     specialistCode,
-  //   });
-
-  //   await refcode.reloadAfterCreate();
-  //   return refcode;
-  // }
 
   async verifyRefcode() {
     const { referalCode: code } = this.query;
@@ -118,13 +95,64 @@ export default class RefcodeService extends AppService {
 
   async updateRefcodeStatus() {
     const { refcodeId } = this.params;
-    const { flag, flagReason } = this.body;
-    const refcode = await this.findOneRecord({
-      modelName: 'ReferalCode',
-      where: { id: refcodeId },
-      errorIfNotFound: `no referal code matches the id of ${refcodeId}`,
-    });
-    await refcode.update({ isFlagged: flag, flagReason });
+    const operatorId = this.operator.id;
+    const { status, stateOfGeneration, flagReason, declineReason } = this.body;
+
+    const refcode = await db.ReferalCode.findById(refcodeId);
+    // if code isExpired, then reject update
+    // if code isClaimed, then reject update
+    // if code is declined,then reject update  (we should not be able to perform any operation on a declined code)
+
+    let updates = {
+      dateDeclined: null,
+      declinedById: null,
+      dateFlagged: null,
+      flaggedById: null,
+      dateApproved: null,
+      approvedById: null,
+    };
+
+    // if a code had been generated on previous approval, it will not be deleted
+    // on subsequent 'decline' or 'fagging', the request will be marked as flagged
+    // or 'declined' but the generated code will not be removed from the record
+    if (status === CODE_STATUS.DECLINED) {
+      //??? (not decided:) we should be able to decline a flagged code without clearing the flag details
+      updates = {
+        ...updates,
+        dateDeclined: new Date(),
+        declinedById: operatorId,
+        declineReason,
+      };
+    } else if (status === CODE_STATUS.FLAGGED) {
+      updates = {
+        ...updates,
+        dateFlagged: new Date(),
+        flaggedById: operatorId,
+        flagReason,
+      };
+    } else if (status === CODE_STATUS.APPROVED) {
+      // if code is genrated, then flagged, then approved again, then:
+      // ---- we should not generate a new code, but use the existing code
+      // ---- we should not generate a new expiresAt date, but use the existing date
+      // ---- we should set the approvedById to the id of the  new approver
+      const code =
+        refcode.code ||
+        (await this.generateReferalCode({
+          enrolleeServiceStatus: refcode.enrollee.serviceStatus,
+          stateCode: stateCodes[stateOfGeneration.toLowerCase()],
+          specialty: refcode.specialty,
+        }));
+      const expiresAt = refcode.expiresAt || months.setFuture(3);
+      updates = {
+        ...updates,
+        dateApproved: new Date(),
+        approvedById: operatorId,
+        code,
+        expiresAt,
+        stateOfGeneration: refcode.stateOfGeneration || stateOfGeneration,
+      };
+    }
+    await refcode.update(updates);
     return refcode;
   }
 
