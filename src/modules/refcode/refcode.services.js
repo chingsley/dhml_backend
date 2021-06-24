@@ -10,6 +10,8 @@ import {
 import { fetchAllRefcodes } from '../../database/scripts/refcode.scripts';
 import { refcodeSearchableFields } from '../../shared/attributes/refcode.attributes';
 import errors from '../../shared/constants/errors.constants';
+import { CODE_STATUS } from '../../shared/constants/lists.constants';
+import { months } from '../../utils/timers';
 
 export default class RefcodeService extends AppService {
   constructor({ body, files, query, params, user: operator }) {
@@ -118,14 +120,62 @@ export default class RefcodeService extends AppService {
 
   async updateRefcodeStatus() {
     const { refcodeId } = this.params;
-    const { flag, flagReason } = this.body;
+    const operatorId = this.operator.id;
+    const { status, stateOfGeneration, flagReason } = this.body;
+
     const refcode = await this.findOneRecord({
       modelName: 'ReferalCode',
       where: { id: refcodeId },
       errorIfNotFound: `no referal code matches the id of ${refcodeId}`,
     });
-    await refcode.update({ isFlagged: flag, flagReason });
-    return refcode;
+
+    // if code isExpired, then reject update
+    // if code isClaimed, then reject update
+
+    let updates = {
+      dateDeclined: null,
+      declinedById: null,
+      dateFlagged: null,
+      flaggedById: null,
+      dateApproved: null,
+      approvedById: null,
+    };
+    if (status === CODE_STATUS.DECLINED) {
+      updates = {
+        ...updates,
+        dateDeclined: new Date(),
+        declinedById: operatorId,
+      };
+    } else if (status === CODE_STATUS.FLAGGED) {
+      updates = {
+        ...updates,
+        dateFlagged: new Date(),
+        flaggedById: operatorId,
+        flagReason,
+      };
+    } else if (status === CODE_STATUS.APPROVED) {
+      // if code is genrated, then flagged, then approved again, then:
+      // ---- we should not generate a new code, but use the existing code
+      // ---- we should use the old expiration date if it exists, otherwise recompute another one
+      // ---- we should set the approvedById to the id of the  new approver
+
+      // there maybe other non-status-related fields during update, e.g specialty
+      // how do we handle such update. For. If specialty or receiving hcp is changed, we need to validate
+      // that the specialty and is in the receiving hcp list of specialties
+      const code =
+        refcode.code ||
+        (await this.generateRefcode(refcodeId, stateOfGeneration));
+      const expiresAt = refcode.expiresAt || months.setFuture(3);
+      updates = {
+        ...updates,
+        dateApproved: new Date(),
+        approvedById: operatorId,
+        code,
+        expiresAt,
+      };
+    }
+    await refcode.update(updates);
+    // return refcode;
   }
 
   async handleCodeDelete() {

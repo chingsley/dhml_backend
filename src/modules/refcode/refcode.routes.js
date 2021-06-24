@@ -78,7 +78,7 @@ router.get(
   RefcodeController.getEnrolleeCodeHistory
 );
 router.patch(
-  '/:refcodeId',
+  '/:refcodeId/status',
   AuthMiddleware.authorize([
     ...allowedRoles,
     HOD_MEDICAL,
@@ -89,7 +89,7 @@ router.patch(
     DEPT_USER,
   ]),
   RefcodeMiddleware.validateCodeStatusUpdate,
-  RefcodeController.updageCodeRequestStatus
+  RefcodeController.updateCodeRequestStatus
 );
 router.delete(
   '/',

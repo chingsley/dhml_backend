@@ -55,6 +55,11 @@ module.exports = {
           type: Sequelize.TEXT,
         },
         stateOfGeneration: {
+          /**
+           * This (unlike the 'requestState'), is in code generation
+           * during request approval. It is used to get the state code
+           * which is used in generating the referal code
+           */
           type: Sequelize.STRING,
         },
         specialtyId: {
@@ -67,6 +72,13 @@ module.exports = {
           onUpdate: 'CASCADE',
         },
         requestState: {
+          /**
+           * this is the state/location of the user/hcp that made
+           * the request for referal code. It is used to filter the
+           * list of codes so that lower-level users can see only the
+           * code requests in their state/location.
+           * (HCPs see only the code requests related to the hcp)
+           */
           type: Sequelize.STRING,
         },
         requestedBy: {
