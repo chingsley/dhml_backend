@@ -1,4 +1,5 @@
 import { Op } from 'sequelize';
+import { SERVICE_STATUS } from '../../shared/constants/lists.constants';
 import { days, moment } from '../../utils/timers';
 // import NanoId from '../../utils/NanoId';
 
@@ -7,7 +8,7 @@ const codeFactory = {
     const date = moment().format('DDMMYY');
     const n = await this.getCodeSerialNo(specialty.id);
     const serviceStatus = enrolleeServiceStatus
-      ? enrolleeServiceStatus === 'serving'
+      ? enrolleeServiceStatus === SERVICE_STATUS.SERVING
         ? 'S'
         : 'R'
       : 'AD';

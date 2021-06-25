@@ -55,15 +55,20 @@ class _RefcodeService extends TestService {
 
   static flagCodeRequests(seededCodeRequests, flaggedById) {
     return Promise.all(
-      seededCodeRequests
-        .slice(0, 3)
-        .map((scr) =>
-          scr.update({
-            dateFlagged: new Date(),
-            flaggedById,
-            flaggReason: faker.lorem.text(),
-          })
-        )
+      seededCodeRequests.slice(0, 3).map((scr) =>
+        scr.update({
+          dateFlagged: new Date(),
+          flaggedById,
+          flaggReason: faker.lorem.text(),
+        })
+      )
+    );
+  }
+
+  static resetApprovedCodeRequest(refcodeId) {
+    return db.ReferalCode.update(
+      { code: null, dateApproved: null, approvedById: null, expiredAt: null },
+      { where: { id: refcodeId } }
     );
   }
 
