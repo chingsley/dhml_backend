@@ -24,7 +24,7 @@ class _SpecialityService extends TestService {
   }
 
   static findOneWhere(condition) {
-    return db.Speciality.findOne({ where: condition });
+    return db.Specialty.findOne({ where: condition });
   }
 
   static async deleteSpecialites(specialtyIds) {

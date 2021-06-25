@@ -136,7 +136,7 @@ module.exports = (sequelize, DataTypes) => {
       hasExpired: {
         type: DataTypes.VIRTUAL,
         get() {
-          return this.expiresAt === null ? false : isExpired(this.expiresAt);
+          return !this.expiresAt ? false : isExpired(this.expiresAt);
         },
       },
       isClaimed: {
