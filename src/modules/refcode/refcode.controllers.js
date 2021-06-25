@@ -35,7 +35,7 @@ export default class RefcodeController {
       Response.handleError('verifyReferalCode', error, req, res, next);
     }
   }
-  static async updageCodeRequestStatus(req, res, next) {
+  static async updateCodeRequestStatus(req, res, next) {
     try {
       const refcodeService = new RefcodeService(req);
       const data = await refcodeService.updateRefcodeStatus();
@@ -43,7 +43,7 @@ export default class RefcodeController {
         .status(200)
         .json({ message: 'code status updated successfully', data });
     } catch (error) {
-      Response.handleError('updageCodeRequestStatus', error, req, res, next);
+      Response.handleError('updateCodeRequestStatus', error, req, res, next);
     }
   }
   static async deleteRefcode(req, res, next) {

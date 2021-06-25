@@ -11,6 +11,7 @@ const sharedFields = new SharedFields({ Joi, helpers });
 
 export const validSpecialists = Object.keys(specialistCodes);
 export const validStates = Object.keys(stateCodes);
+
 export const VALID_REF_CODE =
   /^[A-Z]{2,3}\/\d{6}\/022\/(\d)+([A-Z])*-[1-9][0-9]*\/(S|R|AD)$/;
 
@@ -93,12 +94,26 @@ export const codeStatusUpdateSchema = Joi.object({
     .trim()
     .valid(...Object.values(CODE_STATUS))
     .required(),
+  declineReason: Joi.when('status', {
+    is: CODE_STATUS.DECLINED,
+    then: Joi.string().trim().required(),
+    otherwise: Joi.forbidden(),
+  }),
   flagReason: Joi.when('status', {
     is: CODE_STATUS.FLAGGED,
     then: Joi.string().trim().required(),
     otherwise: Joi.forbidden(),
   }),
-});
+  stateOfGeneration: Joi.when('status', {
+    is: CODE_STATUS.APPROVED,
+    then: Joi.string()
+      .trim()
+      .lowercase()
+      .valid(...validStates)
+      .required(),
+    otherwise: Joi.forbidden(),
+  }),
+}).unknown();
 
 export const schemaRefcodeIdArr = Joi.object({
   refcodeIds: Joi.array()

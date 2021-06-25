@@ -1,46 +1,46 @@
 import { Op } from 'sequelize';
 import { days, moment } from '../../utils/timers';
-import NanoId from '../../utils/NanoId';
+// import NanoId from '../../utils/NanoId';
 
 const codeFactory = {
-  async getReferalCode(enrollee, stateCode, specialistCode) {
+  async generateReferalCode({ enrolleeServiceStatus, stateCode, specialty }) {
     const date = moment().format('DDMMYY');
-    const n = await this.getCodeSerialNo(specialistCode);
-    const serviceStatus = enrollee.serviceStatus
-      ? enrollee.serviceStatus === 'serving'
+    const n = await this.getCodeSerialNo(specialty.id);
+    const serviceStatus = enrolleeServiceStatus
+      ? enrolleeServiceStatus === 'serving'
         ? 'S'
         : 'R'
       : 'AD';
-    return `${stateCode}/${date}/022/${specialistCode}-${n}/${serviceStatus}`;
+    return `${stateCode}/${date}/022/${specialty.code}-${n}/${serviceStatus}`;
   },
 
   /**
-   * get count of code generated today (using createdAt);
+   * get count of same-specialty code requests approved today (using dateApproved);
    * return count+1;
    */
-  async getCodeSerialNo(specialistCode) {
+  async getCodeSerialNo(specialtyId) {
     const today12Midnight = new Date(days.today);
     const copy = new Date(days.today);
     const tomorrow12Midnight = new Date(copy.setDate(copy.getDate() + 1));
     const currentCount = await this.ReferalCodeModel.count({
       where: {
-        createdAt: {
+        dateApproved: {
           [Op.between]: [today12Midnight, tomorrow12Midnight],
         },
-        specialistCode,
+        specialtyId,
       },
     });
     return currentCount + 1;
   },
 
-  async getProxyCode() {
-    return NanoId.getValue({
-      length: 8,
-      model: this.ReferalCodeModel,
-      fields: ['proxyCode'],
-      checkDuplicates: true,
-    });
-  },
+  // async getProxyCode() {
+  //   return NanoId.getValue({
+  //     length: 8,
+  //     model: this.ReferalCodeModel,
+  //     fields: ['proxyCode'],
+  //     checkDuplicates: true,
+  //   });
+  // },
 };
 
 export default codeFactory;

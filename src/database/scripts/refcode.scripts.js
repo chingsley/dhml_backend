@@ -58,9 +58,9 @@ SELECT
   refhcp.name "referringHcp", refhcp."code" "referringHcpCode",
   recvhcp.name "receivingHcp", recvhcp."code" "receivingHcpCode",
   s.name "specialty",
-  CASE WHEN r."dateFlagged" IS NOT NULL THEN 'FLAGGED'
+  CASE WHEN r."dateDeclined" IS NOT NULL THEN 'DECLINED'
+      WHEN r."dateFlagged" IS NOT NULL THEN 'FLAGGED'      
       WHEN r."dateApproved" IS NOT NULL THEN 'APPROVED'
-      WHEN r."dateDeclined" IS NOT NULL THEN 'DECLINED'
       ELSE 'PENDING'
   END AS status
 FROM "ReferalCodes" r

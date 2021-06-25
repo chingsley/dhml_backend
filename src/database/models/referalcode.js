@@ -55,7 +55,7 @@ module.exports = (sequelize, DataTypes) => {
       specialtyId: {
         type: DataTypes.UUID,
         references: {
-          model: 'Specialists',
+          model: 'Specialties',
           key: 'id',
         },
         onDelete: 'RESTRICT',
@@ -109,6 +109,9 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'RESTRICT',
         onUpdate: 'CASCADE',
       },
+      declineReason: {
+        type: DataTypes.TEXT,
+      },
       expiresAt: {
         type: DataTypes.DATE,
       },
@@ -158,6 +161,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'receivingHcpId',
       as: 'receivingHcp',
     });
+    ReferalCode.belongsTo(models.Specialty, {
+      foreignKey: 'specialtyId',
+      as: 'specialty',
+    });
     ReferalCode.belongsTo(models.User, {
       foreignKey: 'approvedById',
       as: 'approvedBy',
@@ -165,6 +172,26 @@ module.exports = (sequelize, DataTypes) => {
     ReferalCode.belongsTo(models.User, {
       foreignKey: 'flaggedById',
       as: 'flaggedBy',
+    });
+    ReferalCode.belongsTo(models.User, {
+      foreignKey: 'declinedById',
+      as: 'declinedBy',
+    });
+  };
+  ReferalCode.findById = function (refcodeId) {
+    return this.findOne({
+      where: { id: refcodeId },
+      include: [
+        {
+          model: this.sequelize.models.Enrollee,
+          as: 'enrollee',
+        },
+        {
+          model: this.sequelize.models.Specialty,
+          as: 'specialty',
+        },
+      ],
+      errorIfNotFound: `no referal code matches the id of ${refcodeId}`,
     });
   };
   ReferalCode.prototype.reloadAfterCreate = async function () {
@@ -193,6 +220,10 @@ module.exports = (sequelize, DataTypes) => {
           model: this.sequelize.models.HealthCareProvider,
           as: 'receivingHcp',
           attributes: ['id', 'code', 'name'],
+        },
+        {
+          model: this.sequelize.models.Specialty,
+          as: 'specialty',
         },
         {
           model: this.sequelize.models.User,
