@@ -1,6 +1,6 @@
 import db from '../../../src/database/models';
 import { states } from '../../../src/shared/constants/lists.constants';
-import { randInt, _random } from '../../../src/utils/helpers';
+import { _random } from '../../../src/utils/helpers';
 
 const faker = require('faker');
 
@@ -65,11 +65,21 @@ class _RefcodeService extends TestService {
     );
   }
 
-  static resetApprovedCodeRequest(refcodeId) {
-    return db.ReferalCode.update(
-      { code: null, dateApproved: null, approvedById: null, expiredAt: null },
-      { where: { id: refcodeId } }
-    );
+  static resetAllStatusUpdate(refcodeId) {
+    const intialValues = {
+      dateDeclined: null,
+      declinedById: null,
+      dateFlagged: null,
+      flaggedById: null,
+      dateApproved: null,
+      approvedById: null,
+      flagReason: null,
+      declineReason: null,
+      expiresAt: null,
+      dateClaimed: null,
+      code: null,
+    };
+    return db.ReferalCode.update(intialValues, { where: { id: refcodeId } });
   }
 
   static decoratePayload(payload) {
