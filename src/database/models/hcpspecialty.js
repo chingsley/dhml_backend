@@ -10,7 +10,12 @@ module.exports = (sequelize, DataTypes) => {
   );
   // eslint-disable-next-line no-unused-vars
   HcpSpecialty.associate = function (models) {
-    // associations can be defined here
+    HcpSpecialty.belongsTo(models.Specialty, {
+      foreignKey: 'specialtyId',
+    });
+    HcpSpecialty.belongsTo(models.HealthCareProvider, {
+      foreignKey: 'hcpId',
+    });
   };
   return HcpSpecialty;
 };
