@@ -18,7 +18,7 @@ import {
   SERVICE_STATUS,
 } from '../../../src/shared/constants/lists.constants';
 import { stateCodes } from '../../../src/shared/constants/statecodes.constants';
-import { moment } from '../../../src/utils/timers';
+import { moment, months } from '../../../src/utils/timers';
 require('../../../src/prototypes/array.extensions').extendArray();
 
 const validStates = Object.keys(stateCodes);
@@ -606,7 +606,7 @@ describe('RefcodeController', () => {
         const refcode = seededCodeRequests.find(
           (refcode) => refcode.enrolleeId === afrshipEnrollee.id
         );
-        await _RefcodeService.resetApprovedCodeRequest(refcode.id);
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
         res = await RefcodeApi.updateRequestStatus(refcode.id, payload, token);
         const { data } = res.body;
         const encodedServiceCode = data.code
@@ -629,7 +629,7 @@ describe('RefcodeController', () => {
         const refcode = seededCodeRequests.find(
           (refcode) => refcode.enrolleeId === enrollee.id
         );
-        await _RefcodeService.resetApprovedCodeRequest(refcode.id);
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
         res = await RefcodeApi.updateRequestStatus(refcode.id, payload, token);
         const { data } = res.body;
         const encodedServiceCode = data.code
@@ -652,7 +652,7 @@ describe('RefcodeController', () => {
         const refcode = seededCodeRequests.find(
           (refcode) => refcode.enrolleeId === afrshipEnrollee.id
         );
-        await _RefcodeService.resetApprovedCodeRequest(refcode.id);
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
         res = await RefcodeApi.updateRequestStatus(refcode.id, payload, token);
         const { data } = res.body;
         const encodedServiceCode = data.code
@@ -660,6 +660,80 @@ describe('RefcodeController', () => {
           .match(/[A-Z]{1,2}/)[0];
         expect(encodedServiceCode).toBe('R');
         await afrshipEnrollee.update({ serviceStatus: originalServiceStatus });
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('will not approve an expired code', async (done) => {
+      try {
+        const { APPROVED } = CODE_STATUS;
+        const stateOfGeneration = _random(validStates);
+        const payload = { status: APPROVED, stateOfGeneration };
+        const refcode = seededCodeRequests[1];
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
+        await refcode.update({ expiresAt: months.setPast(2) });
+        const res = await RefcodeApi.updateRequestStatus(
+          refcode.id,
+          payload,
+          token
+        );
+        const {
+          errors: [error],
+        } = res.body;
+        const expectedError = 'Action not allowed because the code has expired';
+        expect(res.status).toBe(403);
+        expect(error).toBe(expectedError);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('will not approve a "claimed" code', async (done) => {
+      try {
+        const { APPROVED } = CODE_STATUS;
+        const stateOfGeneration = _random(validStates);
+        const payload = { status: APPROVED, stateOfGeneration };
+        const refcode = seededCodeRequests[1];
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
+        await refcode.update({ dateClaimed: months.setPast(2) });
+        const res = await RefcodeApi.updateRequestStatus(
+          refcode.id,
+          payload,
+          token
+        );
+        const {
+          errors: [error],
+        } = res.body;
+        const expectedError =
+          'Action not allowed because the code has been Claimed';
+        expect(res.status).toBe(403);
+        expect(error).toBe(expectedError);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('will not approve an already "declined" code', async (done) => {
+      try {
+        const { APPROVED } = CODE_STATUS;
+        const stateOfGeneration = _random(validStates);
+        const payload = { status: APPROVED, stateOfGeneration };
+        const refcode = seededCodeRequests[1];
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
+        await refcode.update({ dateDeclined: months.setPast(2) });
+        const res = await RefcodeApi.updateRequestStatus(
+          refcode.id,
+          payload,
+          token
+        );
+        const {
+          errors: [error],
+        } = res.body;
+        const expectedError =
+          'Action not allowed because the code has already been declined';
+        expect(res.status).toBe(403);
+        expect(error).toBe(expectedError);
         done();
       } catch (e) {
         done(e);
@@ -810,6 +884,80 @@ describe('RefcodeController', () => {
         done(e);
       }
     });
+    it('will not flag an expired code', async (done) => {
+      try {
+        const { FLAGGED } = CODE_STATUS;
+        const flagReason = faker.lorem.text();
+        const payload = { status: FLAGGED, flagReason };
+        const refcode = seededCodeRequests[1];
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
+        await refcode.update({ expiresAt: months.setPast(2) });
+        const res = await RefcodeApi.updateRequestStatus(
+          refcode.id,
+          payload,
+          token
+        );
+        const {
+          errors: [error],
+        } = res.body;
+        const expectedError = 'Action not allowed because the code has expired';
+        expect(res.status).toBe(403);
+        expect(error).toBe(expectedError);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('will not flag a "claimed" code', async (done) => {
+      try {
+        const { FLAGGED } = CODE_STATUS;
+        const flagReason = faker.lorem.text();
+        const payload = { status: FLAGGED, flagReason };
+        const refcode = seededCodeRequests[1];
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
+        await refcode.update({ dateClaimed: months.setPast(2) });
+        const res = await RefcodeApi.updateRequestStatus(
+          refcode.id,
+          payload,
+          token
+        );
+        const {
+          errors: [error],
+        } = res.body;
+        const expectedError =
+          'Action not allowed because the code has been Claimed';
+        expect(res.status).toBe(403);
+        expect(error).toBe(expectedError);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('will not flag an already "declined" code', async (done) => {
+      try {
+        const { FLAGGED } = CODE_STATUS;
+        const flagReason = faker.lorem.text();
+        const payload = { status: FLAGGED, flagReason };
+        const refcode = seededCodeRequests[1];
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
+        await refcode.update({ dateDeclined: months.setPast(2) });
+        const res = await RefcodeApi.updateRequestStatus(
+          refcode.id,
+          payload,
+          token
+        );
+        const {
+          errors: [error],
+        } = res.body;
+        const expectedError =
+          'Action not allowed because the code has already been declined';
+        expect(res.status).toBe(403);
+        expect(error).toBe(expectedError);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
   });
   describe('updateCodeRequestStatus (Decline a code request)', () => {
     let token,
@@ -946,6 +1094,80 @@ describe('RefcodeController', () => {
         expect(data2.status).toBe(DECLINED);
         expect(data1.code).toEqual(data2.code);
         expect(data1.expiresAt).toEqual(data2.expiresAt);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('will not decline an expired code', async (done) => {
+      try {
+        const { DECLINED } = CODE_STATUS;
+        const declineReason = faker.lorem.text();
+        const payload = { status: DECLINED, declineReason };
+        const refcode = seededCodeRequests[1];
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
+        await refcode.update({ expiresAt: months.setPast(2) });
+        const res = await RefcodeApi.updateRequestStatus(
+          refcode.id,
+          payload,
+          token
+        );
+        const {
+          errors: [error],
+        } = res.body;
+        const expectedError = 'Action not allowed because the code has expired';
+        expect(res.status).toBe(403);
+        expect(error).toBe(expectedError);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('will not decline a "claimed" code', async (done) => {
+      try {
+        const { DECLINED } = CODE_STATUS;
+        const declineReason = faker.lorem.text();
+        const payload = { status: DECLINED, declineReason };
+        const refcode = seededCodeRequests[1];
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
+        await refcode.update({ dateClaimed: months.setPast(2) });
+        const res = await RefcodeApi.updateRequestStatus(
+          refcode.id,
+          payload,
+          token
+        );
+        const {
+          errors: [error],
+        } = res.body;
+        const expectedError =
+          'Action not allowed because the code has been Claimed';
+        expect(res.status).toBe(403);
+        expect(error).toBe(expectedError);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('will not decline an already "declined" code', async (done) => {
+      try {
+        const { DECLINED } = CODE_STATUS;
+        const declineReason = faker.lorem.text();
+        const payload = { status: DECLINED, declineReason };
+        const refcode = seededCodeRequests[1];
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
+        await refcode.update({ dateDeclined: months.setPast(2) });
+        const res = await RefcodeApi.updateRequestStatus(
+          refcode.id,
+          payload,
+          token
+        );
+        const {
+          errors: [error],
+        } = res.body;
+        const expectedError =
+          'Action not allowed because the code has already been declined';
+        expect(res.status).toBe(403);
+        expect(error).toBe(expectedError);
         done();
       } catch (e) {
         done(e);

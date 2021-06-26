@@ -1,6 +1,7 @@
 /* eslint-disable indent */
 'use strict';
 
+const { rejectIf } = require('../../shared/helpers');
 const { isExpired } = require('../../utils/helpers');
 
 module.exports = (sequelize, DataTypes) => {
@@ -133,7 +134,7 @@ module.exports = (sequelize, DataTypes) => {
           }
         },
       },
-      hasExpired: {
+      isExpired: {
         type: DataTypes.VIRTUAL,
         get() {
           return !this.expiresAt ? false : isExpired(this.expiresAt);
@@ -246,6 +247,25 @@ module.exports = (sequelize, DataTypes) => {
           },
         },
       ],
+    });
+  };
+  ReferalCode.prototype.rejectIfCodeIsExpired = function () {
+    rejectIf(this.expiresAt && isExpired(this.expiresAt), {
+      withError: 'Action not allowed because the code has expired',
+      status: 403,
+    });
+  };
+  ReferalCode.prototype.rejectIfCodeIsClaimed = function () {
+    rejectIf(!!this.dateClaimed, {
+      withError: 'Action not allowed because the code has been Claimed',
+      status: 403,
+    });
+  };
+  ReferalCode.prototype.rejectIfCodeIsDeclined = function () {
+    rejectIf(!!this.dateDeclined, {
+      withError:
+        'Action not allowed because the code has already been declined',
+      status: 403,
     });
   };
   return ReferalCode;

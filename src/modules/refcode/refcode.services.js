@@ -100,8 +100,11 @@ export default class RefcodeService extends AppService {
 
     const refcode = await db.ReferalCode.findById(refcodeId);
     // if code isExpired, then reject update
+    refcode.rejectIfCodeIsExpired();
     // if code isClaimed, then reject update
+    refcode.rejectIfCodeIsClaimed();
     // if code is declined,then reject update  (we should not be able to perform any operation on a declined code)
+    refcode.rejectIfCodeIsDeclined();
 
     let updates = {
       dateDeclined: null,
