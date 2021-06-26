@@ -81,10 +81,6 @@ class SharedFields {
       receivingHcpId: this.Joi.number().min(1).required(),
       reasonForReferral: this.Joi.string().trim().required(),
       diagnosis: this.Joi.string().trim().required(),
-      // diagnosisStatus: this.Joi.string()
-      // .trim()
-      // .valid('provisional', 'final')
-      // .required(),
       clinicalFindings: this.Joi.string().trim().required(),
       specialtyId: this.Joi.string()
         .guid({

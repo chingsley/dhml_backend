@@ -35,6 +35,17 @@ export default class RefcodeController {
       Response.handleError('verifyReferalCode', error, req, res, next);
     }
   }
+  static async updateCodeRequestDetails(req, res, next) {
+    try {
+      const refcodeService = new RefcodeService(req);
+      const data = await refcodeService.updateCodeRequestDetailsSV();
+      return res
+        .status(200)
+        .json({ message: 'code request updated successfully', data });
+    } catch (error) {
+      Response.handleError('updateCodeRequestDetails', error, req, res, next);
+    }
+  }
   static async updateCodeRequestStatus(req, res, next) {
     try {
       const refcodeService = new RefcodeService(req);

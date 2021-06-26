@@ -23,7 +23,6 @@ export default class RefcodeService extends AppService {
   async createRequestForReferalCodeSVC(payload) {
     const { enrolleeIdNo, referringHcpId, receivingHcpId, specialtyId } =
       payload;
-    // await this.validateId('Specialty', specialtyId);
     await this.validateId('HealthCareProvider', referringHcpId);
     const receivingHcp = await this.validateId(
       'HealthCareProvider',
@@ -35,15 +34,12 @@ export default class RefcodeService extends AppService {
       modelName: 'Enrollee',
       errorIfNotFound: 'Invalid enrollee Id No. Record not found',
     });
-    const refcode = await this.ReferalCodeModel.create({
+    return db.ReferalCode.createAndReload({
       ...this.body,
       enrolleeId: enrollee.id,
       requestState: this.operator.userLocation,
       requestedBy: this.operator.subjectId,
     });
-
-    await refcode.reloadAfterCreate();
-    return refcode;
   }
 
   async verifyRefcode() {
@@ -93,17 +89,36 @@ export default class RefcodeService extends AppService {
     return refcode;
   }
 
+  async updateCodeRequestDetailsSV() {
+    const { refcodeId } = this.params;
+    const { receivingHcpId: newReceivingHcpId, specialtyId: newSpecialtyId } =
+      this.body;
+
+    const refcode = await db.ReferalCode.findById(refcodeId);
+    refcode.rejectIfCodeIsExpired();
+    refcode.rejectIfCodeIsClaimed();
+    refcode.rejectIfCodeIsDeclined();
+    refcode.rejectIfCodeIsApproved();
+
+    if (newReceivingHcpId || newSpecialtyId) {
+      const specialtyId = newSpecialtyId || refcode.specialtyId;
+      const receivingHcp = newReceivingHcpId
+        ? await this.validateId('HealthCareProvider', newReceivingHcpId)
+        : refcode.receivingHcp;
+      await receivingHcp.validateSpecialtyId(specialtyId);
+    }
+
+    return refcode.updateAndReload(this.body);
+  }
+
   async updateRefcodeStatus() {
     const { refcodeId } = this.params;
     const operatorId = this.operator.id;
     const { status, stateOfGeneration, flagReason, declineReason } = this.body;
 
     const refcode = await db.ReferalCode.findById(refcodeId);
-    // if code isExpired, then reject update
     refcode.rejectIfCodeIsExpired();
-    // if code isClaimed, then reject update
     refcode.rejectIfCodeIsClaimed();
-    // if code is declined,then reject update  (we should not be able to perform any operation on a declined code)
     refcode.rejectIfCodeIsDeclined();
 
     let updates = {
@@ -157,8 +172,7 @@ export default class RefcodeService extends AppService {
         stateOfGeneration: refcode.stateOfGeneration || stateOfGeneration,
       };
     }
-    await refcode.update(updates);
-    return refcode;
+    return refcode.updateAndReload(updates);
   }
 
   async handleCodeDelete() {
