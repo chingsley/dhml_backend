@@ -2,7 +2,7 @@ import {
   specialistCodes,
   stateCodes,
 } from '../../../shared/constants/statecodes.constants';
-import { Joi, stringValidate, validateIntegerId } from '../config';
+import { Joi } from '../config';
 import helpers from './helpers.schemas';
 import SharedFields from '../sharedFields';
 import { CODE_STATUS } from '../../../shared/constants/lists.constants';
@@ -15,29 +15,15 @@ const validStates = Object.keys(stateCodes);
 export const VALID_REF_CODE =
   /^[A-Z]{2,3}\/\d{6}\/022\/(\d)+[A-Z]-[1-9][0-9]*\/(S|R|AD)$/;
 
-export const getRefCodeSchema = ({ withRequiredFields = true }) => {
-  return Joi.object({
-    enrolleeId: validateIntegerId(withRequiredFields),
-    receivingHcpId: validateIntegerId(withRequiredFields),
-    reasonForReferral: stringValidate(withRequiredFields),
-    diagnosis: stringValidate(withRequiredFields),
-    diagnosisStatus: Joi.string()
-      .trim()
-      .valid('provisional', 'final')
-      .required(),
-    clinicalFindings: stringValidate(withRequiredFields),
-    specialist: Joi.string()
-      .trim()
-      .lowercase()
-      .valid(...validSpecialists)
-      .required(),
-    stateOfGeneration: Joi.string()
-      .trim()
-      .lowercase()
-      .valid(...validStates)
-      .required(),
-  });
-};
+export const shcemaPatchCodeRequest = Joi.object({
+  receivingHcpId: Joi.number().min(1),
+  reasonForReferral: Joi.string().trim(),
+  diagnosis: Joi.string().trim(),
+  clinicalFindings: Joi.string().trim(),
+  specialtyId: Joi.string().guid({
+    version: ['uuidv4', 'uuidv5'],
+  }),
+});
 
 export const schemaCodeRequestForNewEnrollee = (enrolmentType) => {
   return Joi.object({
@@ -89,7 +75,6 @@ export const codeVerificationSchema = Joi.object({
 });
 
 export const codeStatusUpdateSchema = Joi.object({
-  refcodeId: Joi.number().integer().min(1).required(), // in params
   status: Joi.string()
     .trim()
     .uppercase()

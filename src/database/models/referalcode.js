@@ -191,11 +191,25 @@ module.exports = (sequelize, DataTypes) => {
           model: this.sequelize.models.Specialty,
           as: 'specialty',
         },
+        {
+          model: this.sequelize.models.HealthCareProvider,
+          as: 'receivingHcp',
+        },
       ],
       errorIfNotFound: `no referal code matches the id of ${refcodeId}`,
     });
   };
-  ReferalCode.prototype.reloadAfterCreate = async function () {
+  ReferalCode.prototype.updateAndReload = async function (changes) {
+    await this.update(changes);
+    await this.reloadWithAssociations();
+    return this;
+  };
+  ReferalCode.createAndReload = async function (requestDetails) {
+    const refcode = await this.create(requestDetails);
+    await refcode.reloadWithAssociations();
+    return refcode;
+  };
+  ReferalCode.prototype.reloadWithAssociations = async function () {
     await this.reload({
       include: [
         {
@@ -246,6 +260,16 @@ module.exports = (sequelize, DataTypes) => {
             attributes: ['id', 'firstName', 'surname', 'staffIdNo'],
           },
         },
+        {
+          model: this.sequelize.models.User,
+          as: 'declinedBy',
+          attributes: ['id', 'username'],
+          include: {
+            model: this.sequelize.models.Staff,
+            as: 'staffInfo',
+            attributes: ['id', 'firstName', 'surname', 'staffIdNo'],
+          },
+        },
       ],
     });
   };
@@ -265,6 +289,12 @@ module.exports = (sequelize, DataTypes) => {
     rejectIf(!!this.dateDeclined, {
       withError:
         'Action not allowed because the code has already been declined',
+      status: 403,
+    });
+  };
+  ReferalCode.prototype.rejectIfCodeIsApproved = function () {
+    rejectIf(!!this.dateApproved, {
+      withError: 'Action not allowed because the code has been approved',
       status: 403,
     });
   };

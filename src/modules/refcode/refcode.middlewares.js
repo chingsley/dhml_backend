@@ -8,6 +8,7 @@ import {
   schemaEnrolleeIdNo,
   schemaCodeRequestForNewEnrollee,
   schemaCodeRequestForExistingEnrollee,
+  shcemaPatchCodeRequest,
 } from '../../validators/joi/schemas/refcode.schema';
 
 export default class RefcodeMiddleware {
@@ -24,19 +25,18 @@ export default class RefcodeMiddleware {
       Response.handleError('validateRequestForRefcode', error, req, res, next);
     }
   }
-  // static async validateNewRefcode(req, res, next) {
-  //   try {
-  //     const referalCodeSchema = getRefCodeSchema({ withRequiredFields: true });
-  //     const { joiFormatted } = await validateSchema(
-  //       referalCodeSchema,
-  //       req.body
-  //     );
-  //     req.body = joiFormatted;
-  //     return next();
-  //   } catch (error) {
-  //     Response.handleError('validateNewRefcode', error, req, res, next);
-  //   }
-  // }
+  static async validateCodeDetailsUpdate(req, res, next) {
+    try {
+      const { joiFormatted } = await validateSchema(
+        shcemaPatchCodeRequest,
+        req.body
+      );
+      req.body = joiFormatted;
+      return next();
+    } catch (error) {
+      Response.handleError('validateNewRefcode', error, req, res, next);
+    }
+  }
 
   static async validateRefcode(req, res, next) {
     try {
@@ -52,10 +52,10 @@ export default class RefcodeMiddleware {
   }
   static async validateCodeStatusUpdate(req, res, next) {
     try {
-      const { joiFormatted } = await validateSchema(codeStatusUpdateSchema, {
-        ...req.body,
-        ...req.params,
-      });
+      const { joiFormatted } = await validateSchema(
+        codeStatusUpdateSchema,
+        req.body
+      );
       req.body = joiFormatted;
       return next();
     } catch (error) {

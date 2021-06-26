@@ -1,5 +1,6 @@
 import express from 'express';
 import roles from '../../shared/constants/roles.constants';
+import AppMiddleware from '../app/app.middleware';
 import AuthMiddleware from '../auth/auth.middleware';
 import RefcodeMiddleware from '../refcode/refcode.middlewares';
 import RefcodeController from './refcode.controllers';
@@ -78,6 +79,21 @@ router.get(
   RefcodeController.getEnrolleeCodeHistory
 );
 router.patch(
+  '/:refcodeId',
+  AuthMiddleware.authorize([
+    ...allowedRoles,
+    HOD_MEDICAL,
+    roles.TIER_1_MEDICAL,
+    roles.TIER_2_MEDICAL,
+    VERIFIER,
+    ENROLMENT_OFFICER,
+    DEPT_USER,
+  ]),
+  AppMiddleware.validateIdParams,
+  RefcodeMiddleware.validateCodeDetailsUpdate,
+  RefcodeController.updateCodeRequestDetails
+);
+router.patch(
   '/:refcodeId/status',
   AuthMiddleware.authorize([
     ...allowedRoles,
@@ -88,6 +104,7 @@ router.patch(
     ENROLMENT_OFFICER,
     DEPT_USER,
   ]),
+  AppMiddleware.validateIdParams,
   RefcodeMiddleware.validateCodeStatusUpdate,
   RefcodeController.updateCodeRequestStatus
 );
