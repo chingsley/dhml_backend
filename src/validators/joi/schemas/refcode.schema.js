@@ -92,6 +92,7 @@ export const codeStatusUpdateSchema = Joi.object({
   refcodeId: Joi.number().integer().min(1).required(), // in params
   status: Joi.string()
     .trim()
+    .uppercase()
     .valid(...Object.values(CODE_STATUS))
     .required(),
   declineReason: Joi.when('status', {
