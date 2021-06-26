@@ -111,13 +111,12 @@ export default class RefcodeService extends AppService {
       dateApproved: null,
       approvedById: null,
       flagReason: null,
+      declineReason: null,
     };
 
-    // if a code had been generated on previous approval, it will not be deleted
-    // on subsequent 'decline' or 'fagging', the request will be marked as flagged
-    // or 'declined' but the generated code will not be removed from the record
     if (status === CODE_STATUS.DECLINED) {
-      //??? (not decided:) we should be able to decline a flagged code without clearing the flag details
+      // we can decline an approved code as long it has not been claimed..
+      //  - but without deleting the code, or changing the expiration date
       updates = {
         ...updates,
         dateDeclined: new Date(),
@@ -125,6 +124,8 @@ export default class RefcodeService extends AppService {
         declineReason,
       };
     } else if (status === CODE_STATUS.FLAGGED) {
+      // we can flag an approved code as long it has not been claimed..
+      //  - but without deleting the code, or changing the expiration date
       updates = {
         ...updates,
         dateFlagged: new Date(),
@@ -132,10 +133,10 @@ export default class RefcodeService extends AppService {
         flagReason,
       };
     } else if (status === CODE_STATUS.APPROVED) {
-      // if code is genrated, then flagged, then approved again, then:
-      // ---- we should not generate a new code, but use the existing code
-      // ---- we should not generate a new expiresAt date, but use the existing date
-      // ---- we should set the approvedById to the id of the  new approver
+      // if request is approved (i.e code generated), then flagged, then approved again, then:
+      // ---- we do not generate a new code, but use the existing code
+      // ---- we do not generate a new expiresAt date, but use the existing date
+      // ---- we  set the approvedById to the id of the  new approver
       const code =
         refcode.code ||
         (await this.generateReferalCode({
