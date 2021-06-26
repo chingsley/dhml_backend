@@ -49,7 +49,7 @@ module.exports = {
         },
       ]);
     } catch (error) {
-      log('migrting Staffs: ', error.errors);
+      log('migrating Staffs: ', error.errors);
     }
 
     try {
@@ -69,7 +69,7 @@ module.exports = {
         },
       ]);
     } catch (error) {
-      log('migrting Users: ', error.errors);
+      log('migrating Users: ', error.errors);
     }
   },
 

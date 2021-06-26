@@ -14,8 +14,15 @@ export const AUTH004 = 'AUTH004';
 export const AUTH001 = 'AUTH001';
 export const AUTH002 = 'AUTH002';
 
+const expiredRefcode = (dateExpired) =>
+  `The code is expired. Expired on ${dateExpired}`;
+const claimedRefcode = (dateExpired) =>
+  `The code has been claimed. Claimed on ${dateExpired}`;
+
 export default {
   ACCOUNT_NOT_FOUND_ERROR,
   AUTH003,
   DEFAULT_PWD_EXPIRED,
+  expiredRefcode,
+  claimedRefcode,
 };

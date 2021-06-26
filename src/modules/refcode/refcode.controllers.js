@@ -35,15 +35,26 @@ export default class RefcodeController {
       Response.handleError('verifyReferalCode', error, req, res, next);
     }
   }
-  static async changeFlagStatus(req, res, next) {
+  static async updateCodeRequestDetails(req, res, next) {
     try {
       const refcodeService = new RefcodeService(req);
-      const data = await refcodeService.setCodeFlagStatus();
+      const data = await refcodeService.updateCodeRequestDetailsSV();
       return res
         .status(200)
-        .json({ message: 'referal code updated successfully', data });
+        .json({ message: 'code request updated successfully', data });
     } catch (error) {
-      Response.handleError('changeFlagStatus', error, req, res, next);
+      Response.handleError('updateCodeRequestDetails', error, req, res, next);
+    }
+  }
+  static async updateCodeRequestStatus(req, res, next) {
+    try {
+      const refcodeService = new RefcodeService(req);
+      const data = await refcodeService.updateRefcodeStatus();
+      return res
+        .status(200)
+        .json({ message: 'code status updated successfully', data });
+    } catch (error) {
+      Response.handleError('updateCodeRequestStatus', error, req, res, next);
     }
   }
   static async deleteRefcode(req, res, next) {

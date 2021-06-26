@@ -1,4 +1,5 @@
 /* eslint-disable jest/expect-expect */
+import faker from 'faker';
 import getSampleStaffs from '../../../src/shared/samples/staff.samples';
 import TestService from '../app/app.test.service';
 import ROLES from '../../../src/shared/constants/roles.constants';
@@ -12,7 +13,15 @@ import SampleReferalCodes from '../../../src/shared/samples/refcode.samples';
 import _RefcodeService from './refcode.test.service';
 import _SpecialityService from '../speciality/speciality.test.services';
 import { _random } from '../../../src/utils/helpers';
+import {
+  CODE_STATUS,
+  SERVICE_STATUS,
+} from '../../../src/shared/constants/lists.constants';
+import { stateCodes } from '../../../src/shared/constants/statecodes.constants';
+import { moment, months } from '../../../src/utils/timers';
 require('../../../src/prototypes/array.extensions').extendArray();
+
+const validStates = Object.keys(stateCodes);
 
 describe('RefcodeController', () => {
   describe('createRequestForRefcodeCTRL (for existing Enrollee)', () => {
@@ -417,36 +426,105 @@ describe('RefcodeController', () => {
       TestService.testCatchBlock(RefcodeController.getReferalCodes)
     );
   });
-  describe.skip('approveReferalCode', () => {
-    let token, res;
-    const responses = [];
+  describe('updateCodeRequestStatus (Approve code request)', () => {
+    let token,
+      res,
+      seededEnrollees,
+      referringHcps,
+      receivingHcps,
+      seededCodeRequests,
+      operatorId,
+      payload,
+      refcodeId;
 
     beforeAll(async () => {
       await TestService.resetDB();
       const { primaryHcps, secondaryHcps } = await _HcpService.seedHcps({
-        numPrimary: 1,
+        numPrimary: 2,
         numSecondary: 3,
       });
-      const { principals } = getEnrollees({ numOfPrincipals: 1 });
-      const [seededPrincipal] = await TestService.seedEnrollees(
-        principals.map((p) => ({ ...p, hcpId: primaryHcps[0].id }))
+      referringHcps = primaryHcps;
+      receivingHcps = secondaryHcps;
+      const { sampleStaffs } = getSampleStaffs(5);
+      await TestService.seedStaffs(sampleStaffs);
+      const { principals, dependants } = getEnrollees({
+        numOfPrincipals: 5,
+        sameSchemeDepPerPrincipal: 2,
+        vcshipDepPerPrincipal: 2,
+      });
+      const preparedPrincipals = principals.map((p, i) => {
+        if (p.scheme.toUpperCase() === 'DSSHIP') {
+          p.staffNumber = sampleStaffs[i].staffIdNo;
+        }
+        return { ...p, hcpId: primaryHcps[0].id };
+      });
+      const seededPrincipals = await TestService.seedEnrollees(
+        preparedPrincipals
       );
-      const { sampleStaffs } = getSampleStaffs(1);
-      const data = await TestService.getToken(
-        sampleStaffs[0],
-        ROLES.SUPERADMIN
+      const depsWithPrincipalId = dependants.map((d) => {
+        for (let p of seededPrincipals) {
+          const regexPrincipalEnrolleeIdNo = new RegExp(`${p.enrolleeIdNo}-`);
+          if (d.enrolleeIdNo.match(regexPrincipalEnrolleeIdNo)) {
+            return {
+              ...d,
+              principalId: p.id,
+              hcpId: p.hcpId,
+            };
+          }
+        }
+      });
+      const seededDeps = await TestService.seedEnrollees(depsWithPrincipalId);
+      seededEnrollees = [...seededPrincipals, ...seededDeps];
+      const sampleSpecialties = _SpecialityService.getSamples();
+      const seededSpecialties = await _SpecialityService.seedBulk(
+        sampleSpecialties.map((sp) => ({ ...sp, id: undefined }))
       );
+      seededCodeRequests = await _RefcodeService.seedSampleCodeRequests({
+        enrollees: seededEnrollees,
+        specialties: seededSpecialties,
+        referringHcps,
+        receivingHcps,
+      });
+      const data = await TestService.getToken(sampleStaffs[0], ROLES.MD);
       token = data.token;
       const { userId } = Jwt.decode(token);
-      const refcodes = SampleReferalCodes.getTestSeed({
-        enrollees: [seededPrincipal].repreatElement(6),
-        secondaryHcps,
-        operatorId: userId,
-      });
-      const seededRefcodes = await _RefcodeService.seedBulk(refcodes);
-      res = await RefcodeApi.verifyRefcode(seededRefcodes[0].code, token);
+      operatorId = userId;
+      refcodeId = seededCodeRequests[0].id;
+      payload = {
+        status: CODE_STATUS.APPROVED,
+        stateOfGeneration: _random(validStates),
+      };
+      res = await RefcodeApi.updateRequestStatus(refcodeId, payload, token);
     });
-    it('ensures the generated code matches the required format', async (done) => {
+    it('it returns status 200 on successful approval', async (done) => {
+      try {
+        expect(res.status).toBe(200);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('sets the dateApproved to today"s date', async (done) => {
+      try {
+        const { data } = res.body;
+        const todaysDate = moment().format('DDMMYY');
+        const dateApproved = moment(data.dateApproved).format('DDMMYY');
+        expect(dateApproved).toEqual(todaysDate);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('saves the id of the user that approved the code', async (done) => {
+      try {
+        const { data } = res.body;
+        expect(data.approvedById).toBe(operatorId);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('generates a valid code for the request', async (done) => {
       try {
         const { data } = res.body;
         expect(data.code).toMatch(VALID_REF_CODE);
@@ -455,29 +533,39 @@ describe('RefcodeController', () => {
         done(e);
       }
     });
-    it('generates a proxy code for the referal code', async (done) => {
+    it('ensures the generated code has the correct state code', async (done) => {
       try {
         const { data } = res.body;
-        expect(data.proxyCode).toBeTruthy();
+        const inputStateCode =
+          stateCodes[payload.stateOfGeneration.toLowerCase()];
+        const outputStateCode = data.code
+          .match(/^[A-Z]{2,3}\//)[0]
+          .match(/[A-Z]{2,3}/)[0];
+        expect(inputStateCode).toEqual(outputStateCode);
         done();
       } catch (e) {
         done(e);
       }
     });
-    it('sets the default "flag" status of the code to "false"', async (done) => {
+    it('encodes the todays date in the referal code', async (done) => {
       try {
         const { data } = res.body;
-        expect(data.isFlagged).toBe(false);
+        const todaysDate = moment().format('DDMMYY');
+        const dateInCode = data.code.match(/\d{6}/)[0];
+        expect(todaysDate).toBe(dateInCode);
         done();
       } catch (e) {
         done(e);
       }
     });
-    it('saves the id of the user that generated the code', async (done) => {
+    it('encodes the correct specialty code', async (done) => {
       try {
         const { data } = res.body;
-        const { userId } = Jwt.decode(token);
-        expect(data.operatorId).toBe(userId);
+        const encodedSpecialtyCode = data.code.match(/(\d)+[A-Z]/)[0];
+        const specialty = await _SpecialityService.findOneWhere({
+          id: data.specialtyId,
+        });
+        expect(encodedSpecialtyCode).toBe(specialty.code);
         done();
       } catch (e) {
         done(e);
@@ -487,25 +575,165 @@ describe('RefcodeController', () => {
       try {
         const { data } = res.body;
         expect(data).toHaveProperty('enrollee');
-        expect(data).toHaveProperty('destinationHcp');
-        expect(data).toHaveProperty('generatedBy');
-        expect(data.enrollee).toHaveProperty('hcp');
-        expect(data.generatedBy).toHaveProperty('staffInfo');
+        expect(data).toHaveProperty('specialty');
         done();
       } catch (e) {
         done(e);
       }
     });
-    it('creates multiple codes for the same enrollee', async (done) => {
+    it('genrates "incremented" referal code for same specialty requests approved in same day', async (done) => {
       try {
-        responses.forEach(({ res }, i) => {
-          const { data } = res.body;
-          // console.log(res.body);
-          expect(data.code).toMatch(VALID_REF_CODE);
-          const matched = data.code.match(/\b(\d)*[A-Z]-(\d)*\b/);
-          const codeSerialNumber = matched[0].split('-')[1];
-          expect(Number(codeSerialNumber)).toEqual(i + 1);
+        const refcodeId = seededCodeRequests[1].id;
+        await seededCodeRequests[1].update({
+          specialtyId: seededCodeRequests[0].specialtyId,
         });
+        res = await RefcodeApi.updateRequestStatus(refcodeId, payload, token);
+        const { data } = res.body;
+        const count = data.code.match(/-\d+\//)[0].match(/\d+/)[0];
+        expect(Number(count)).toEqual(2);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('encodes "S" in the code for serving enrollees', async (done) => {
+      try {
+        const afrshipEnrollee = seededEnrollees.find(
+          (enrollee) => enrollee.scheme.toLowerCase() === 'afrship'
+        );
+        const originalServiceStatus = afrshipEnrollee.serviceStatus;
+        await afrshipEnrollee.update({ serviceStatus: SERVICE_STATUS.SERVING });
+        const refcode = seededCodeRequests.find(
+          (refcode) => refcode.enrolleeId === afrshipEnrollee.id
+        );
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
+        res = await RefcodeApi.updateRequestStatus(refcode.id, payload, token);
+        const { data } = res.body;
+        const encodedServiceCode = data.code
+          .match(/\/[A-Z]{1,2}/)[0]
+          .match(/[A-Z]{1,2}/)[0];
+        expect(encodedServiceCode).toBe('S');
+        await afrshipEnrollee.update({ serviceStatus: originalServiceStatus });
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('encodes "AD" in the code for non-afrship enrollees', async (done) => {
+      try {
+        const enrollee = seededEnrollees.find(
+          (enrollee) => enrollee.scheme.toLowerCase() !== 'afrship'
+        );
+        const originalServiceStatus = enrollee.serviceStatus;
+        await enrollee.update({ serviceStatus: null });
+        const refcode = seededCodeRequests.find(
+          (refcode) => refcode.enrolleeId === enrollee.id
+        );
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
+        res = await RefcodeApi.updateRequestStatus(refcode.id, payload, token);
+        const { data } = res.body;
+        const encodedServiceCode = data.code
+          .match(/\/[A-Z]{1,2}/)[0]
+          .match(/[A-Z]{1,2}/)[0];
+        expect(encodedServiceCode).toBe('AD');
+        await enrollee.update({ serviceStatus: originalServiceStatus });
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('encodes "R" in the code for retired enrollees', async (done) => {
+      try {
+        const afrshipEnrollee = seededEnrollees.find(
+          (enrollee) => enrollee.scheme.toLowerCase() === 'afrship'
+        );
+        const originalServiceStatus = afrshipEnrollee.serviceStatus;
+        await afrshipEnrollee.update({ serviceStatus: SERVICE_STATUS.RETIRED });
+        const refcode = seededCodeRequests.find(
+          (refcode) => refcode.enrolleeId === afrshipEnrollee.id
+        );
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
+        res = await RefcodeApi.updateRequestStatus(refcode.id, payload, token);
+        const { data } = res.body;
+        const encodedServiceCode = data.code
+          .match(/\/[A-Z]{1,2}/)[0]
+          .match(/[A-Z]{1,2}/)[0];
+        expect(encodedServiceCode).toBe('R');
+        await afrshipEnrollee.update({ serviceStatus: originalServiceStatus });
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('will not approve an expired code', async (done) => {
+      try {
+        const { APPROVED } = CODE_STATUS;
+        const stateOfGeneration = _random(validStates);
+        const payload = { status: APPROVED, stateOfGeneration };
+        const refcode = seededCodeRequests[1];
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
+        await refcode.update({ expiresAt: months.setPast(2) });
+        const res = await RefcodeApi.updateRequestStatus(
+          refcode.id,
+          payload,
+          token
+        );
+        const {
+          errors: [error],
+        } = res.body;
+        const expectedError = 'Action not allowed because the code has expired';
+        expect(res.status).toBe(403);
+        expect(error).toBe(expectedError);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('will not approve a "claimed" code', async (done) => {
+      try {
+        const { APPROVED } = CODE_STATUS;
+        const stateOfGeneration = _random(validStates);
+        const payload = { status: APPROVED, stateOfGeneration };
+        const refcode = seededCodeRequests[1];
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
+        await refcode.update({ dateClaimed: months.setPast(2) });
+        const res = await RefcodeApi.updateRequestStatus(
+          refcode.id,
+          payload,
+          token
+        );
+        const {
+          errors: [error],
+        } = res.body;
+        const expectedError =
+          'Action not allowed because the code has been Claimed';
+        expect(res.status).toBe(403);
+        expect(error).toBe(expectedError);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('will not approve an already "declined" code', async (done) => {
+      try {
+        const { APPROVED } = CODE_STATUS;
+        const stateOfGeneration = _random(validStates);
+        const payload = { status: APPROVED, stateOfGeneration };
+        const refcode = seededCodeRequests[1];
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
+        await refcode.update({ dateDeclined: months.setPast(2) });
+        const res = await RefcodeApi.updateRequestStatus(
+          refcode.id,
+          payload,
+          token
+        );
+        const {
+          errors: [error],
+        } = res.body;
+        const expectedError =
+          'Action not allowed because the code has already been declined';
+        expect(res.status).toBe(403);
+        expect(error).toBe(expectedError);
         done();
       } catch (e) {
         done(e);
@@ -513,8 +741,438 @@ describe('RefcodeController', () => {
     });
     it(
       'it catches errors thrown in the try block',
-      TestService.testCatchBlock(RefcodeController.verifyReferalCode)
+      TestService.testCatchBlock(RefcodeController.updateCodeRequestStatus)
     );
+  });
+  describe('updateCodeRequestStatus (Flagging a code request)', () => {
+    let token,
+      res,
+      seededEnrollees,
+      referringHcps,
+      receivingHcps,
+      seededCodeRequests,
+      operatorId,
+      payload,
+      refcodeId;
+
+    beforeAll(async () => {
+      await TestService.resetDB();
+      const { primaryHcps, secondaryHcps } = await _HcpService.seedHcps({
+        numPrimary: 2,
+        numSecondary: 3,
+      });
+      referringHcps = primaryHcps;
+      receivingHcps = secondaryHcps;
+      const { sampleStaffs } = getSampleStaffs(5);
+      await TestService.seedStaffs(sampleStaffs);
+      const { principals, dependants } = getEnrollees({
+        numOfPrincipals: 5,
+        sameSchemeDepPerPrincipal: 2,
+        vcshipDepPerPrincipal: 2,
+      });
+      const preparedPrincipals = principals.map((p, i) => {
+        if (p.scheme.toUpperCase() === 'DSSHIP') {
+          p.staffNumber = sampleStaffs[i].staffIdNo;
+        }
+        return { ...p, hcpId: primaryHcps[0].id };
+      });
+      const seededPrincipals = await TestService.seedEnrollees(
+        preparedPrincipals
+      );
+      const depsWithPrincipalId = dependants.map((d) => {
+        for (let p of seededPrincipals) {
+          const regexPrincipalEnrolleeIdNo = new RegExp(`${p.enrolleeIdNo}-`);
+          if (d.enrolleeIdNo.match(regexPrincipalEnrolleeIdNo)) {
+            return {
+              ...d,
+              principalId: p.id,
+              hcpId: p.hcpId,
+            };
+          }
+        }
+      });
+      const seededDeps = await TestService.seedEnrollees(depsWithPrincipalId);
+      seededEnrollees = [...seededPrincipals, ...seededDeps];
+      const sampleSpecialties = _SpecialityService.getSamples();
+      const seededSpecialties = await _SpecialityService.seedBulk(
+        sampleSpecialties.map((sp) => ({ ...sp, id: undefined }))
+      );
+      seededCodeRequests = await _RefcodeService.seedSampleCodeRequests({
+        enrollees: seededEnrollees,
+        specialties: seededSpecialties,
+        referringHcps,
+        receivingHcps,
+      });
+      const data = await TestService.getToken(sampleStaffs[0], ROLES.MD);
+      token = data.token;
+      const { userId } = Jwt.decode(token);
+      operatorId = userId;
+      refcodeId = seededCodeRequests[0].id;
+      payload = {
+        status: CODE_STATUS.FLAGGED,
+        flagReason: faker.lorem.text(),
+      };
+      res = await RefcodeApi.updateRequestStatus(refcodeId, payload, token);
+    });
+    it('returns status 200 on successful request', async (done) => {
+      try {
+        expect(res.status).toBe(200);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('marks the correct refcode request as FLAGGED', async (done) => {
+      try {
+        const { data } = res.body;
+        expect(data.id).toBe(refcodeId);
+        expect(data.status).toBe(CODE_STATUS.FLAGGED);
+        expect(data.flagReason).toMatch(payload.flagReason);
+        expect(data.dateApproved).toBe(null);
+        expect(data.dateDeclined).toBe(null);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('correctly records the dateFlaged as current date', async (done) => {
+      try {
+        const { data } = res.body;
+        const todaysDate = moment().format('DDMMYY');
+        const dateFlagged = moment(data.dateFlagged).format('DDMMYY');
+        expect(dateFlagged).toEqual(todaysDate);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('saves the id of the user that flagged the code', async (done) => {
+      try {
+        const { data } = res.body;
+        expect(data.flaggedById).toBe(operatorId);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('can flag a previously approved code without changing the code or the expiry date', async (done) => {
+      try {
+        const { APPROVED, FLAGGED } = CODE_STATUS;
+        const stateOfGeneration = _random(validStates);
+        const flagReason = faker.lorem.text();
+        const payload1 = { status: APPROVED, stateOfGeneration };
+        const payload2 = { status: FLAGGED, flagReason };
+        const refcodeId = seededCodeRequests[1].id;
+        const res1 = await RefcodeApi.updateRequestStatus(
+          refcodeId,
+          payload1,
+          token
+        );
+        const res2 = await RefcodeApi.updateRequestStatus(
+          refcodeId,
+          payload2,
+          token
+        );
+        const { data: data1 } = res1.body;
+        const { data: data2 } = res2.body;
+        expect(data1.status).toBe(APPROVED);
+        expect(data2.status).toBe(FLAGGED);
+        expect(data1.code).toEqual(data2.code);
+        expect(data1.expiresAt).toEqual(data2.expiresAt);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('will not flag an expired code', async (done) => {
+      try {
+        const { FLAGGED } = CODE_STATUS;
+        const flagReason = faker.lorem.text();
+        const payload = { status: FLAGGED, flagReason };
+        const refcode = seededCodeRequests[1];
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
+        await refcode.update({ expiresAt: months.setPast(2) });
+        const res = await RefcodeApi.updateRequestStatus(
+          refcode.id,
+          payload,
+          token
+        );
+        const {
+          errors: [error],
+        } = res.body;
+        const expectedError = 'Action not allowed because the code has expired';
+        expect(res.status).toBe(403);
+        expect(error).toBe(expectedError);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('will not flag a "claimed" code', async (done) => {
+      try {
+        const { FLAGGED } = CODE_STATUS;
+        const flagReason = faker.lorem.text();
+        const payload = { status: FLAGGED, flagReason };
+        const refcode = seededCodeRequests[1];
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
+        await refcode.update({ dateClaimed: months.setPast(2) });
+        const res = await RefcodeApi.updateRequestStatus(
+          refcode.id,
+          payload,
+          token
+        );
+        const {
+          errors: [error],
+        } = res.body;
+        const expectedError =
+          'Action not allowed because the code has been Claimed';
+        expect(res.status).toBe(403);
+        expect(error).toBe(expectedError);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('will not flag an already "declined" code', async (done) => {
+      try {
+        const { FLAGGED } = CODE_STATUS;
+        const flagReason = faker.lorem.text();
+        const payload = { status: FLAGGED, flagReason };
+        const refcode = seededCodeRequests[1];
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
+        await refcode.update({ dateDeclined: months.setPast(2) });
+        const res = await RefcodeApi.updateRequestStatus(
+          refcode.id,
+          payload,
+          token
+        );
+        const {
+          errors: [error],
+        } = res.body;
+        const expectedError =
+          'Action not allowed because the code has already been declined';
+        expect(res.status).toBe(403);
+        expect(error).toBe(expectedError);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+  });
+  describe('updateCodeRequestStatus (Decline a code request)', () => {
+    let token,
+      res,
+      seededEnrollees,
+      referringHcps,
+      receivingHcps,
+      seededCodeRequests,
+      operatorId,
+      payload,
+      refcodeId;
+
+    beforeAll(async () => {
+      await TestService.resetDB();
+      const { primaryHcps, secondaryHcps } = await _HcpService.seedHcps({
+        numPrimary: 2,
+        numSecondary: 3,
+      });
+      referringHcps = primaryHcps;
+      receivingHcps = secondaryHcps;
+      const { sampleStaffs } = getSampleStaffs(5);
+      await TestService.seedStaffs(sampleStaffs);
+      const { principals, dependants } = getEnrollees({
+        numOfPrincipals: 5,
+        sameSchemeDepPerPrincipal: 2,
+        vcshipDepPerPrincipal: 2,
+      });
+      const preparedPrincipals = principals.map((p, i) => {
+        if (p.scheme.toUpperCase() === 'DSSHIP') {
+          p.staffNumber = sampleStaffs[i].staffIdNo;
+        }
+        return { ...p, hcpId: primaryHcps[0].id };
+      });
+      const seededPrincipals = await TestService.seedEnrollees(
+        preparedPrincipals
+      );
+      const depsWithPrincipalId = dependants.map((d) => {
+        for (let p of seededPrincipals) {
+          const regexPrincipalEnrolleeIdNo = new RegExp(`${p.enrolleeIdNo}-`);
+          if (d.enrolleeIdNo.match(regexPrincipalEnrolleeIdNo)) {
+            return {
+              ...d,
+              principalId: p.id,
+              hcpId: p.hcpId,
+            };
+          }
+        }
+      });
+      const seededDeps = await TestService.seedEnrollees(depsWithPrincipalId);
+      seededEnrollees = [...seededPrincipals, ...seededDeps];
+      const sampleSpecialties = _SpecialityService.getSamples();
+      const seededSpecialties = await _SpecialityService.seedBulk(
+        sampleSpecialties.map((sp) => ({ ...sp, id: undefined }))
+      );
+      seededCodeRequests = await _RefcodeService.seedSampleCodeRequests({
+        enrollees: seededEnrollees,
+        specialties: seededSpecialties,
+        referringHcps,
+        receivingHcps,
+      });
+      const data = await TestService.getToken(sampleStaffs[0], ROLES.MD);
+      token = data.token;
+      const { userId } = Jwt.decode(token);
+      operatorId = userId;
+      refcodeId = seededCodeRequests[0].id;
+      payload = {
+        status: CODE_STATUS.DECLINED,
+        declineReason: faker.lorem.text(),
+      };
+      res = await RefcodeApi.updateRequestStatus(refcodeId, payload, token);
+    });
+    it('returns status 200 on successful request', async (done) => {
+      try {
+        expect(res.status).toBe(200);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('marks the correct refcode request as DECLINED', async (done) => {
+      try {
+        const { data } = res.body;
+        expect(data.id).toBe(refcodeId);
+        expect(data.status).toBe(CODE_STATUS.DECLINED);
+        expect(data.declineReason).toMatch(payload.declineReason);
+        expect(data.dateApproved).toBe(null);
+        expect(data.dateFlagged).toBe(null);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('correctly records the dateDeclined as current date', async (done) => {
+      try {
+        const { data } = res.body;
+        const todaysDate = moment().format('DDMMYY');
+        const dateDeclined = moment(data.dateDeclined).format('DDMMYY');
+        expect(dateDeclined).toEqual(todaysDate);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('saves the id of the user that declined the code', async (done) => {
+      try {
+        const { data } = res.body;
+        expect(data.declinedById).toBe(operatorId);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('can decline a previously approved code without changing the code or the expiry date', async (done) => {
+      try {
+        const { APPROVED, DECLINED } = CODE_STATUS;
+        const stateOfGeneration = _random(validStates);
+        const declineReason = faker.lorem.text();
+        const payload1 = { status: APPROVED, stateOfGeneration };
+        const payload2 = { status: DECLINED, declineReason };
+        const refcodeId = seededCodeRequests[1].id;
+        const res1 = await RefcodeApi.updateRequestStatus(
+          refcodeId,
+          payload1,
+          token
+        );
+        const res2 = await RefcodeApi.updateRequestStatus(
+          refcodeId,
+          payload2,
+          token
+        );
+        const { data: data1 } = res1.body;
+        const { data: data2 } = res2.body;
+        expect(data1.status).toBe(APPROVED);
+        expect(data2.status).toBe(DECLINED);
+        expect(data1.code).toEqual(data2.code);
+        expect(data1.expiresAt).toEqual(data2.expiresAt);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('will not decline an expired code', async (done) => {
+      try {
+        const { DECLINED } = CODE_STATUS;
+        const declineReason = faker.lorem.text();
+        const payload = { status: DECLINED, declineReason };
+        const refcode = seededCodeRequests[1];
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
+        await refcode.update({ expiresAt: months.setPast(2) });
+        const res = await RefcodeApi.updateRequestStatus(
+          refcode.id,
+          payload,
+          token
+        );
+        const {
+          errors: [error],
+        } = res.body;
+        const expectedError = 'Action not allowed because the code has expired';
+        expect(res.status).toBe(403);
+        expect(error).toBe(expectedError);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('will not decline a "claimed" code', async (done) => {
+      try {
+        const { DECLINED } = CODE_STATUS;
+        const declineReason = faker.lorem.text();
+        const payload = { status: DECLINED, declineReason };
+        const refcode = seededCodeRequests[1];
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
+        await refcode.update({ dateClaimed: months.setPast(2) });
+        const res = await RefcodeApi.updateRequestStatus(
+          refcode.id,
+          payload,
+          token
+        );
+        const {
+          errors: [error],
+        } = res.body;
+        const expectedError =
+          'Action not allowed because the code has been Claimed';
+        expect(res.status).toBe(403);
+        expect(error).toBe(expectedError);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('will not decline an already "declined" code', async (done) => {
+      try {
+        const { DECLINED } = CODE_STATUS;
+        const declineReason = faker.lorem.text();
+        const payload = { status: DECLINED, declineReason };
+        const refcode = seededCodeRequests[1];
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
+        await refcode.update({ dateDeclined: months.setPast(2) });
+        const res = await RefcodeApi.updateRequestStatus(
+          refcode.id,
+          payload,
+          token
+        );
+        const {
+          errors: [error],
+        } = res.body;
+        const expectedError =
+          'Action not allowed because the code has already been declined';
+        expect(res.status).toBe(403);
+        expect(error).toBe(expectedError);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
   });
   describe.skip('verifyReferalCode', () => {
     let token, res;
@@ -598,7 +1256,7 @@ describe('RefcodeController', () => {
       TestService.testCatchBlock(RefcodeController.verifyReferalCode)
     );
   });
-  describe.skip('changeFlagStatus (flag/approve referal code)', () => {
+  describe.skip('updateCodeRequestInputDetails', () => {
     let token, refcode1, refcode2;
 
     beforeAll(async () => {

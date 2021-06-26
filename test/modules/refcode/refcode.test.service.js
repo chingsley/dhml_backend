@@ -1,6 +1,6 @@
 import db from '../../../src/database/models';
 import { states } from '../../../src/shared/constants/lists.constants';
-import { randInt, _random } from '../../../src/utils/helpers';
+import { _random } from '../../../src/utils/helpers';
 
 const faker = require('faker');
 
@@ -55,16 +55,31 @@ class _RefcodeService extends TestService {
 
   static flagCodeRequests(seededCodeRequests, flaggedById) {
     return Promise.all(
-      seededCodeRequests
-        .slice(0, 3)
-        .map((scr) =>
-          scr.update({
-            dateFlagged: new Date(),
-            flaggedById,
-            flaggReason: faker.lorem.text(),
-          })
-        )
+      seededCodeRequests.slice(0, 3).map((scr) =>
+        scr.update({
+          dateFlagged: new Date(),
+          flaggedById,
+          flaggReason: faker.lorem.text(),
+        })
+      )
     );
+  }
+
+  static resetAllStatusUpdate(refcodeId) {
+    const intialValues = {
+      dateDeclined: null,
+      declinedById: null,
+      dateFlagged: null,
+      flaggedById: null,
+      dateApproved: null,
+      approvedById: null,
+      flagReason: null,
+      declineReason: null,
+      expiresAt: null,
+      dateClaimed: null,
+      code: null,
+    };
+    return db.ReferalCode.update(intialValues, { where: { id: refcodeId } });
   }
 
   static decoratePayload(payload) {

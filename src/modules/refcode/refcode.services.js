@@ -3,12 +3,12 @@ import { Op } from 'sequelize';
 import AppService from '../app/app.service';
 import db from '../../database/models';
 import codeFactory from './refcode.factory';
-import {
-  stateCodes,
-  specialistCodes,
-} from '../../shared/constants/statecodes.constants';
+import { stateCodes } from '../../shared/constants/statecodes.constants';
 import { fetchAllRefcodes } from '../../database/scripts/refcode.scripts';
 import { refcodeSearchableFields } from '../../shared/attributes/refcode.attributes';
+import errors from '../../shared/constants/errors.constants';
+import { CODE_STATUS } from '../../shared/constants/lists.constants';
+import { months } from '../../utils/timers';
 
 export default class RefcodeService extends AppService {
   constructor({ body, files, query, params, user: operator }) {
@@ -23,7 +23,6 @@ export default class RefcodeService extends AppService {
   async createRequestForReferalCodeSVC(payload) {
     const { enrolleeIdNo, referringHcpId, receivingHcpId, specialtyId } =
       payload;
-    // await this.validateId('Specialty', specialtyId);
     await this.validateId('HealthCareProvider', referringHcpId);
     const receivingHcp = await this.validateId(
       'HealthCareProvider',
@@ -35,48 +34,29 @@ export default class RefcodeService extends AppService {
       modelName: 'Enrollee',
       errorIfNotFound: 'Invalid enrollee Id No. Record not found',
     });
-    const refcode = await this.ReferalCodeModel.create({
+    return db.ReferalCode.createAndReload({
       ...this.body,
       enrolleeId: enrollee.id,
       requestState: this.operator.userLocation,
       requestedBy: this.operator.subjectId,
     });
-
-    await refcode.reloadAfterCreate();
-    return refcode;
   }
-
-  // async generateReferalCode() {
-  //   const operatorId = this.operator.id;
-  //   const { stateOfGeneration } = this.body;
-  //   const { enrolleeId, receivingHcpId, specialist } = this.body;
-  //   const enrollee = await this.validateId('Enrollee', enrolleeId);
-  //   await this.validateId('HealthCareProvider', receivingHcpId);
-  //   const proxyCode = await this.getProxyCode();
-  //   const stateCode = stateCodes[stateOfGeneration.toLowerCase()];
-  //   const specialistCode = specialistCodes[specialist.toLowerCase()];
-  //   const code = await this.getReferalCode(enrollee, stateCode, specialistCode);
-  //   const refcode = await this.ReferalCodeModel.create({
-  //     ...this.body,
-  //     code,
-  //     proxyCode,
-  //     operatorId,
-  //     specialistCode,
-  //   });
-
-  //   await refcode.reloadAfterCreate();
-  //   return refcode;
-  // }
 
   async verifyRefcode() {
     const { referalCode: code } = this.query;
-    return await this.findOneRecord({
+    const refcode = await this.findOneRecord({
       modelName: 'ReferalCode',
       where: { code },
       include: [
         {
           model: db.HealthCareProvider,
-          as: 'destinationHcp',
+          as: 'referringHcp',
+          attributes: ['id', 'name', 'code'],
+        },
+        {
+          model: db.HealthCareProvider,
+          as: 'receivingHcp',
+          attributes: ['id', 'name', 'code'],
         },
         {
           model: db.Enrollee,
@@ -92,24 +72,107 @@ export default class RefcodeService extends AppService {
             {
               model: db.HealthCareProvider,
               as: 'hcp',
+              attributes: ['id', 'name', 'code'],
             },
           ],
         },
       ],
       errorIfNotFound: 'Invalid code. No record found',
     });
+
+    this.rejectIf(refcode.isClaimed, {
+      withError: errors.claimedRefcode(refcode.expiresAt),
+    });
+    this.rejectIf(refcode.hasExpired, {
+      withError: errors.expiredRefcode(refcode.expiresAt),
+    });
+    return refcode;
   }
 
-  async setCodeFlagStatus() {
+  async updateCodeRequestDetailsSV() {
     const { refcodeId } = this.params;
-    const { flag, flagReason } = this.body;
-    const refcode = await this.findOneRecord({
-      modelName: 'ReferalCode',
-      where: { id: refcodeId },
-      errorIfNotFound: `no referal code matches the id of ${refcodeId}`,
-    });
-    await refcode.update({ isFlagged: flag, flagReason });
-    return refcode;
+    const { receivingHcpId: newReceivingHcpId, specialtyId: newSpecialtyId } =
+      this.body;
+
+    const refcode = await db.ReferalCode.findById(refcodeId);
+    refcode.rejectIfCodeIsExpired();
+    refcode.rejectIfCodeIsClaimed();
+    refcode.rejectIfCodeIsDeclined();
+    refcode.rejectIfCodeIsApproved();
+
+    if (newReceivingHcpId || newSpecialtyId) {
+      const specialtyId = newSpecialtyId || refcode.specialtyId;
+      const receivingHcp = newReceivingHcpId
+        ? await this.validateId('HealthCareProvider', newReceivingHcpId)
+        : refcode.receivingHcp;
+      await receivingHcp.validateSpecialtyId(specialtyId);
+    }
+
+    return refcode.updateAndReload(this.body);
+  }
+
+  async updateRefcodeStatus() {
+    const { refcodeId } = this.params;
+    const operatorId = this.operator.id;
+    const { status, stateOfGeneration, flagReason, declineReason } = this.body;
+
+    const refcode = await db.ReferalCode.findById(refcodeId);
+    refcode.rejectIfCodeIsExpired();
+    refcode.rejectIfCodeIsClaimed();
+    refcode.rejectIfCodeIsDeclined();
+
+    let updates = {
+      dateDeclined: null,
+      declinedById: null,
+      dateFlagged: null,
+      flaggedById: null,
+      dateApproved: null,
+      approvedById: null,
+      flagReason: null,
+      declineReason: null,
+    };
+
+    if (status === CODE_STATUS.DECLINED) {
+      // we can decline an approved code as long it has not been claimed..
+      //  - but without deleting the code, or changing the expiration date
+      updates = {
+        ...updates,
+        dateDeclined: new Date(),
+        declinedById: operatorId,
+        declineReason,
+      };
+    } else if (status === CODE_STATUS.FLAGGED) {
+      // we can flag an approved code as long it has not been claimed..
+      //  - but without deleting the code, or changing the expiration date
+      updates = {
+        ...updates,
+        dateFlagged: new Date(),
+        flaggedById: operatorId,
+        flagReason,
+      };
+    } else if (status === CODE_STATUS.APPROVED) {
+      // if request is approved (i.e code generated), then flagged, then approved again, then:
+      // ---- we do not generate a new code, but use the existing code
+      // ---- we do not generate a new expiresAt date, but use the existing date
+      // ---- we  set the approvedById to the id of the  new approver
+      const code =
+        refcode.code ||
+        (await this.generateReferalCode({
+          enrolleeServiceStatus: refcode.enrollee.serviceStatus,
+          stateCode: stateCodes[stateOfGeneration.toLowerCase()],
+          specialty: refcode.specialty,
+        }));
+      const expiresAt = refcode.expiresAt || months.setFuture(3);
+      updates = {
+        ...updates,
+        dateApproved: new Date(),
+        approvedById: operatorId,
+        code,
+        expiresAt,
+        stateOfGeneration: refcode.stateOfGeneration || stateOfGeneration,
+      };
+    }
+    return refcode.updateAndReload(updates);
   }
 
   async handleCodeDelete() {
@@ -148,24 +211,22 @@ export default class RefcodeService extends AppService {
       include: [
         {
           model: db.HealthCareProvider,
-          as: 'destinationHcp',
-          attributes: ['name', 'code'],
+          as: 'referringHcp',
+          attributes: ['id', 'name', 'code'],
+        },
+        {
+          model: db.HealthCareProvider,
+          as: 'receivingHcp',
+          attributes: ['id', 'name', 'code'],
         },
         {
           model: db.User,
-          as: 'generatedBy',
+          as: 'approvedBy',
           attributes: ['id', 'staffId', 'username'],
           include: {
             model: db.Staff,
             as: 'staffInfo',
-            attributes: [
-              'id',
-              'staffIdNo',
-              'email',
-              'surname',
-              'firstName',
-              'middleName',
-            ],
+            attributes: ['id', 'staffIdNo', 'email', 'surname', 'firstName'],
           },
         },
       ],

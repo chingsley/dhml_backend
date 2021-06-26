@@ -1,4 +1,9 @@
+/* eslint-disable indent */
 'use strict';
+
+const { rejectIf } = require('../../shared/helpers');
+const { isExpired } = require('../../utils/helpers');
+
 module.exports = (sequelize, DataTypes) => {
   const ReferalCode = sequelize.define(
     'ReferalCode',
@@ -51,7 +56,7 @@ module.exports = (sequelize, DataTypes) => {
       specialtyId: {
         type: DataTypes.UUID,
         references: {
-          model: 'Specialists',
+          model: 'Specialties',
           key: 'id',
         },
         onDelete: 'RESTRICT',
@@ -105,6 +110,42 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'RESTRICT',
         onUpdate: 'CASCADE',
       },
+      declineReason: {
+        type: DataTypes.TEXT,
+      },
+      expiresAt: {
+        type: DataTypes.DATE,
+      },
+      dateClaimed: {
+        type: DataTypes.DATE,
+      },
+      status: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          switch (true) {
+            case this.dateDeclined !== null:
+              return 'DECLINED';
+            case this.dateFlagged !== null:
+              return 'FLAGGED';
+            case this.dateApproved !== null:
+              return 'APPROVED';
+            default:
+              return 'PENDING';
+          }
+        },
+      },
+      isExpired: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return !this.expiresAt ? false : isExpired(this.expiresAt);
+        },
+      },
+      isClaimed: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return !!this.dateClaimed;
+        },
+      },
     },
     {}
   );
@@ -121,6 +162,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'receivingHcpId',
       as: 'receivingHcp',
     });
+    ReferalCode.belongsTo(models.Specialty, {
+      foreignKey: 'specialtyId',
+      as: 'specialty',
+    });
     ReferalCode.belongsTo(models.User, {
       foreignKey: 'approvedById',
       as: 'approvedBy',
@@ -129,8 +174,42 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'flaggedById',
       as: 'flaggedBy',
     });
+    ReferalCode.belongsTo(models.User, {
+      foreignKey: 'declinedById',
+      as: 'declinedBy',
+    });
   };
-  ReferalCode.prototype.reloadAfterCreate = async function () {
+  ReferalCode.findById = function (refcodeId) {
+    return this.findOne({
+      where: { id: refcodeId },
+      include: [
+        {
+          model: this.sequelize.models.Enrollee,
+          as: 'enrollee',
+        },
+        {
+          model: this.sequelize.models.Specialty,
+          as: 'specialty',
+        },
+        {
+          model: this.sequelize.models.HealthCareProvider,
+          as: 'receivingHcp',
+        },
+      ],
+      errorIfNotFound: `no referal code matches the id of ${refcodeId}`,
+    });
+  };
+  ReferalCode.prototype.updateAndReload = async function (changes) {
+    await this.update(changes);
+    await this.reloadWithAssociations();
+    return this;
+  };
+  ReferalCode.createAndReload = async function (requestDetails) {
+    const refcode = await this.create(requestDetails);
+    await refcode.reloadWithAssociations();
+    return refcode;
+  };
+  ReferalCode.prototype.reloadWithAssociations = async function () {
     await this.reload({
       include: [
         {
@@ -158,6 +237,10 @@ module.exports = (sequelize, DataTypes) => {
           attributes: ['id', 'code', 'name'],
         },
         {
+          model: this.sequelize.models.Specialty,
+          as: 'specialty',
+        },
+        {
           model: this.sequelize.models.User,
           as: 'flaggedBy',
           attributes: ['id', 'username'],
@@ -177,7 +260,42 @@ module.exports = (sequelize, DataTypes) => {
             attributes: ['id', 'firstName', 'surname', 'staffIdNo'],
           },
         },
+        {
+          model: this.sequelize.models.User,
+          as: 'declinedBy',
+          attributes: ['id', 'username'],
+          include: {
+            model: this.sequelize.models.Staff,
+            as: 'staffInfo',
+            attributes: ['id', 'firstName', 'surname', 'staffIdNo'],
+          },
+        },
       ],
+    });
+  };
+  ReferalCode.prototype.rejectIfCodeIsExpired = function () {
+    rejectIf(this.expiresAt && isExpired(this.expiresAt), {
+      withError: 'Action not allowed because the code has expired',
+      status: 403,
+    });
+  };
+  ReferalCode.prototype.rejectIfCodeIsClaimed = function () {
+    rejectIf(!!this.dateClaimed, {
+      withError: 'Action not allowed because the code has been Claimed',
+      status: 403,
+    });
+  };
+  ReferalCode.prototype.rejectIfCodeIsDeclined = function () {
+    rejectIf(!!this.dateDeclined, {
+      withError:
+        'Action not allowed because the code has already been declined',
+      status: 403,
+    });
+  };
+  ReferalCode.prototype.rejectIfCodeIsApproved = function () {
+    rejectIf(!!this.dateApproved, {
+      withError: 'Action not allowed because the code has been approved',
+      status: 403,
     });
   };
   return ReferalCode;

@@ -62,3 +62,19 @@ export const AUDIT_STATUS = {
   flagged: 'flagged',
   pending: 'pending',
 };
+
+export const CODE_STATUS = {
+  DECLINED: 'DECLINED',
+  FLAGGED: 'FLAGGED',
+  APPROVED: 'APPROVED',
+};
+
+export const SERVICE_STATUS = {
+  SERVING: 'serving',
+  RETIRED: 'retired',
+};
+
+export const SERVICE_STATUS_CODE = {
+  serving: 'S',
+  retired: 'R',
+};

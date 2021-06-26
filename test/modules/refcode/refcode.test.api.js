@@ -16,9 +16,9 @@ class RefcodeApi {
       .get(`/api/v1/refcodes/verify?referalCode=${code}`)
       .set('authorization', token);
   }
-  static changeFlagStatus(refcodeId, payload, token) {
+  static updateRequestStatus(refcodeId, payload, token) {
     return app
-      .patch(`/api/v1/refcodes/${refcodeId}/flag`)
+      .patch(`/api/v1/refcodes/${refcodeId}/status`)
       .send(payload)
       .set('authorization', token);
   }
