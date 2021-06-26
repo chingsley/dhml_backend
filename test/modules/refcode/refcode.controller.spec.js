@@ -1,4 +1,5 @@
 /* eslint-disable jest/expect-expect */
+import faker from 'faker';
 import getSampleStaffs from '../../../src/shared/samples/staff.samples';
 import TestService from '../app/app.test.service';
 import ROLES from '../../../src/shared/constants/roles.constants';
@@ -17,7 +18,7 @@ import {
   SERVICE_STATUS,
 } from '../../../src/shared/constants/lists.constants';
 import { stateCodes } from '../../../src/shared/constants/statecodes.constants';
-import { days, moment } from '../../../src/utils/timers';
+import { moment } from '../../../src/utils/timers';
 require('../../../src/prototypes/array.extensions').extendArray();
 
 const validStates = Object.keys(stateCodes);
@@ -503,7 +504,7 @@ describe('RefcodeController', () => {
         done(e);
       }
     });
-    it('sets the dateApproved to today approvedById', async (done) => {
+    it('sets the dateApproved to today"s date', async (done) => {
       try {
         const { data } = res.body;
         const todaysDate = moment().format('DDMMYY');
@@ -668,6 +669,147 @@ describe('RefcodeController', () => {
       'it catches errors thrown in the try block',
       TestService.testCatchBlock(RefcodeController.updateCodeRequestStatus)
     );
+  });
+  describe('flag a request', () => {
+    let token,
+      res,
+      seededEnrollees,
+      referringHcps,
+      receivingHcps,
+      seededCodeRequests,
+      operatorId,
+      payload,
+      refcodeId;
+
+    beforeAll(async () => {
+      await TestService.resetDB();
+      const { primaryHcps, secondaryHcps } = await _HcpService.seedHcps({
+        numPrimary: 2,
+        numSecondary: 3,
+      });
+      referringHcps = primaryHcps;
+      receivingHcps = secondaryHcps;
+      const { sampleStaffs } = getSampleStaffs(5);
+      await TestService.seedStaffs(sampleStaffs);
+      const { principals, dependants } = getEnrollees({
+        numOfPrincipals: 5,
+        sameSchemeDepPerPrincipal: 2,
+        vcshipDepPerPrincipal: 2,
+      });
+      const preparedPrincipals = principals.map((p, i) => {
+        if (p.scheme.toUpperCase() === 'DSSHIP') {
+          p.staffNumber = sampleStaffs[i].staffIdNo;
+        }
+        return { ...p, hcpId: primaryHcps[0].id };
+      });
+      const seededPrincipals = await TestService.seedEnrollees(
+        preparedPrincipals
+      );
+      const depsWithPrincipalId = dependants.map((d) => {
+        for (let p of seededPrincipals) {
+          const regexPrincipalEnrolleeIdNo = new RegExp(`${p.enrolleeIdNo}-`);
+          if (d.enrolleeIdNo.match(regexPrincipalEnrolleeIdNo)) {
+            return {
+              ...d,
+              principalId: p.id,
+              hcpId: p.hcpId,
+            };
+          }
+        }
+      });
+      const seededDeps = await TestService.seedEnrollees(depsWithPrincipalId);
+      seededEnrollees = [...seededPrincipals, ...seededDeps];
+      const sampleSpecialties = _SpecialityService.getSamples();
+      const seededSpecialties = await _SpecialityService.seedBulk(
+        sampleSpecialties.map((sp) => ({ ...sp, id: undefined }))
+      );
+      seededCodeRequests = await _RefcodeService.seedSampleCodeRequests({
+        enrollees: seededEnrollees,
+        specialties: seededSpecialties,
+        referringHcps,
+        receivingHcps,
+      });
+      const data = await TestService.getToken(sampleStaffs[0], ROLES.MD);
+      token = data.token;
+      const { userId } = Jwt.decode(token);
+      operatorId = userId;
+      refcodeId = seededCodeRequests[0].id;
+      payload = {
+        status: CODE_STATUS.FLAGGED,
+        flagReason: faker.lorem.text(),
+      };
+      res = await RefcodeApi.updateRequestStatus(refcodeId, payload, token);
+    });
+    it('returns status 200 on successful request', async (done) => {
+      try {
+        expect(res.status).toBe(200);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('marks the correct refcode request as FLAGGED', async (done) => {
+      try {
+        const { data } = res.body;
+        expect(data.id).toBe(refcodeId);
+        expect(data.status).toBe(CODE_STATUS.FLAGGED);
+        expect(data.flagReason).toMatch(payload.flagReason);
+        expect(data.dateApproved).toBe(null);
+        expect(data.dateDeclined).toBe(null);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('correctly records the dateFlaged as current date', async (done) => {
+      try {
+        const { data } = res.body;
+        const todaysDate = moment().format('DDMMYY');
+        const dateFlagged = moment(data.dateFlagged).format('DDMMYY');
+        expect(dateFlagged).toEqual(todaysDate);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('saves the id of the user that flagged the code', async (done) => {
+      try {
+        const { data } = res.body;
+        expect(data.flaggedById).toBe(operatorId);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('can flag a previously approved code without changing the code or the expiry date', async (done) => {
+      try {
+        const { APPROVED, FLAGGED } = CODE_STATUS;
+        const stateOfGeneration = _random(validStates);
+        const flagReason = faker.lorem.text();
+        const payload1 = { status: APPROVED, stateOfGeneration };
+        const payload2 = { status: FLAGGED, flagReason };
+        const refcodeId = seededCodeRequests[1].id;
+        const res1 = await RefcodeApi.updateRequestStatus(
+          refcodeId,
+          payload1,
+          token
+        );
+        const res2 = await RefcodeApi.updateRequestStatus(
+          refcodeId,
+          payload2,
+          token
+        );
+        const { data: data1 } = res1.body;
+        const { data: data2 } = res2.body;
+        expect(data1.status).toBe(APPROVED);
+        expect(data2.status).toBe(FLAGGED);
+        expect(data1.code).toEqual(data2.code);
+        expect(data1.expiresAt).toEqual(data2.expiresAt);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
   });
   describe.skip('verifyReferalCode', () => {
     let token, res;

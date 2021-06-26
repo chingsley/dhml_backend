@@ -110,6 +110,7 @@ export default class RefcodeService extends AppService {
       flaggedById: null,
       dateApproved: null,
       approvedById: null,
+      flagReason: null,
     };
 
     // if a code had been generated on previous approval, it will not be deleted
