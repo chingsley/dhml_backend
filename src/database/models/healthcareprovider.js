@@ -92,6 +92,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'hcpId',
       as: 'hcpMonthlyCapSum',
     });
+    HealthCareProvider.hasMany(models.HcpSpecialty, {
+      foreignKey: 'hcpId',
+      as: 'hcpSpecialties',
+    });
     HealthCareProvider.belongsToMany(models.Specialty, {
       through: 'HcpSpecialties',
       foreignKey: 'hcpId',

@@ -32,6 +32,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'specialtyId',
       as: 'referalCodes',
     });
+    Specialty.hasMany(models.HcpSpecialty, {
+      foreignKey: 'specialtyId',
+      // as: 'hcps',
+    });
   };
   return Specialty;
 };
