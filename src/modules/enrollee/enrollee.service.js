@@ -19,19 +19,25 @@ const { log } = console;
 export default class EnrolleeService extends AppService {
   constructor({ body, files, query, params }) {
     super({ body, files, query, params });
-    this.enrolleeData = body;
     this.files = files;
     this.query = query;
     this.params = params;
   }
-  async enrolPrincipal() {
-    const enrolleeData = this.enrolleeData;
+  async registerNewEnrollee(enrolleeData) {
+    const { enrolmentType } = enrolleeData;
+    const enrollee = enrolmentType.match(/principal/i)
+      ? await this.enrolPrincipal(enrolleeData)
+      : await this.enrolDependant(enrolleeData);
+    return enrollee;
+  }
+
+  async enrolPrincipal(enrolleeData) {
     const files = this.files;
     await this.ensureValidStaffNumber(enrolleeData.staffNumber);
     await this.ensureValidHcpId(enrolleeData.hcpId);
     await this.validateUnique(['serviceNumber', 'staffNumber'], {
       model: db.Enrollee,
-      reqBody: this.enrolleeData,
+      reqBody: enrolleeData,
       resourceType: 'Principal',
     });
 
@@ -80,8 +86,8 @@ export default class EnrolleeService extends AppService {
     }
   }
 
-  async enrolDependant() {
-    const dependantData = this.enrolleeData;
+  async enrolDependant(enrolleeData) {
+    const dependantData = enrolleeData;
     const files = this.files;
     await this.ensureValidHcpId(dependantData.hcpId);
     const { principalId: principalEnrolleeIdNo } = dependantData;

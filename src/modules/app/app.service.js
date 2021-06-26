@@ -54,6 +54,9 @@ export default class AppService {
       errorIfNotFound: `No ${modelName} matches the id of ${id}`,
     });
   }
+  validateIdArr(modelName, idArr) {
+    return Promise.all(idArr.map((id) => this.validateId(modelName, id)));
+  }
 
   async findOneRecord(options = {}) {
     const {
@@ -353,6 +356,15 @@ export default class AppService {
   get noTimeStamps() {
     return {
       attributes: { exclude: ['createdAt', 'updatedAt'] },
+    };
+  }
+
+  specialtyModel(db) {
+    return {
+      model: db.Specialty,
+      as: 'specialties',
+      attributes: ['id', 'name'],
+      through: { attributes: [] },
     };
   }
 }

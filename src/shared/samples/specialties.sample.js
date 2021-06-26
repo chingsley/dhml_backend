@@ -1,0 +1,38 @@
+import { v4 as uuidv4 } from 'uuid';
+
+const sampleSpecialities = [
+  { name: 'GENERAL SURGEON', code: '1A' },
+  { name: 'ORTHOPAEDIC SURGEON', code: '1B' },
+  { name: 'ORTORHINOLARYNGOLOGIST', code: '1C' },
+  { name: 'OPHTHALMOLOGIST', code: '1D' },
+  { name: 'DENTAL SURGEON', code: '2A' },
+  { name: 'DENTIST', code: '2A' },
+  { name: 'MAXILLO-FACIAL SURGEON', code: '2B' },
+  { name: 'OBSTETRICIAN', code: '3A' },
+  { name: 'GYNAECOLOGIST', code: '3B' },
+  { name: 'FAMILY PHYSICIAN', code: '4A' },
+  { name: 'DERMATOLOGIST', code: '4A' },
+  { name: 'CARDIOLOGIST', code: '4A' },
+  { name: 'ENDOCRINOLOGIST', code: '4A' },
+  { name: 'GASTROENTEROLOGIST', code: '4A' },
+  { name: 'NEPHROLOGIST', code: '4A' },
+  { name: 'UROLOGIST', code: '4A' },
+  { name: 'PULMONOLOGIST', code: '4A' },
+  { name: 'NEUROLOGIST', code: '4A' },
+  { name: 'ONCOLOGIST', code: '4A' },
+  { name: 'PSYCHIATRIST', code: '4B' },
+  { name: 'PAEDIATRICIAN', code: '5A' },
+  { name: 'NEONATOLOGIST', code: '5A' },
+  { name: 'CHEMICAL PATHOLOGIST', code: '6A' },
+  { name: 'MICROBIOLOGIST', code: '6B' },
+  { name: 'HISTOPATHOLOGIST', code: '6C' },
+  { name: 'HAEMATOLOGIST', code: '6D' },
+  { name: 'RADIOLOGIST', code: '7A' },
+  { name: 'PHYSIOTHERAPIST', code: '8A' },
+  { name: 'PHARMACIST', code: '9A' },
+  { name: 'NURSES', code: '10A' },
+  { name: 'RADIOGRAPHER', code: '11A' },
+  { name: 'MEDICAL LABORATORY', code: '12A' },
+].map((specialty) => ({ ...specialty, id: uuidv4() }));
+
+module.exports = sampleSpecialities;

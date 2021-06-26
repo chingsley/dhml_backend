@@ -3,7 +3,6 @@ const faker = require('faker');
 const { months, days, moment } = require('../../utils/timers');
 dotenv.config();
 const db = require('../models');
-const SampleReferalCodes = require('../../shared/samples/refcode.samples');
 const { randInt } = require('../../utils/helpers');
 const armOfService = ['NAVY', 'ARMY', 'AIR FORCE', 'TRI-SERVICE'];
 const serviceStatus = ['retired', 'serving', undefined];
@@ -69,14 +68,10 @@ if (process.env.SEED_WITH === 'LIVE_DATA') {
         };
       });
       await queryInterface.bulkInsert('Enrollees', dependantsWithPrincipalId);
-      const usersCount = await db.User.count();
-      const referalCodes = await SampleReferalCodes.getSeed(usersCount);
-      // await queryInterface.bulkInsert('ReferalCodes', referalCodes);
     },
 
     // eslint-disable-next-line no-unused-vars
     down: async (queryInterface, Sequelize) => {
-      // await queryInterface.bulkDelete('ReferalCodes', null, {});
       await queryInterface.bulkDelete('Enrollees', null, {});
     },
   };
@@ -104,9 +99,6 @@ if (process.env.SEED_WITH === 'LIVE_DATA') {
           'Enrollees',
           dependants.map((d) => ({ ...d, ...createdAt(d) }))
         );
-        const usersCount = await db.User.count();
-        const referalCodes = await SampleReferalCodes.getSeed(usersCount);
-        // await queryInterface.bulkInsert('ReferalCodes', referalCodes);
       } catch (e) {
         log(e.message);
       }
@@ -114,7 +106,6 @@ if (process.env.SEED_WITH === 'LIVE_DATA') {
 
     // eslint-disable-next-line no-unused-vars
     down: async (queryInterface, Sequelize) => {
-      // await queryInterface.bulkDelete('ReferalCodes', null, {});
       await queryInterface.bulkDelete('Enrollees', null, {});
     },
   };

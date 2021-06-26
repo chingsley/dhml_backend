@@ -11,7 +11,8 @@ const {
   lorem,
   internet,
 } = faker;
-const { zeroPadding, getRandomInt } = require('../../utils/helpers');
+const { zeroPadding, getRandomInt, _random } = require('../../utils/helpers');
+const { states } = require('../constants/lists.constants');
 const { MAX_STAFF_COUNT } = require('../constants/seeders.constants');
 const { designations } = require('./designations.sample');
 const genders = ['female', 'male'];
@@ -61,7 +62,7 @@ function getSampleStaffs(count = MAX_STAFF_COUNT) {
       designation: random.arrayElement(designations),
       departmentOrUnit: `${commerce.department()} Unit`,
       deployment: address.state(),
-      location: address.state(),
+      location: _random(states),
       jobSchedule: name.jobTitle(),
       dateOfConfirmation: date.past(),
       salaryPerAnnum: finance.amount(),

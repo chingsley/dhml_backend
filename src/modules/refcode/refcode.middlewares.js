@@ -1,20 +1,34 @@
 import Response from '../../utils/Response';
 import { validateSchema } from '../../validators/joi/config';
 import {
-  getRefCodeSchema,
   codeVerificationSchema,
-  flagUpdateSchema,
+  codeStatusUpdateSchema,
   schemaRefcodeIdArr,
   refcodeQuerySchema,
   schemaEnrolleeIdNo,
+  schemaCodeRequestForNewEnrollee,
+  schemaCodeRequestForExistingEnrollee,
+  shcemaPatchCodeRequest,
 } from '../../validators/joi/schemas/refcode.schema';
 
 export default class RefcodeMiddleware {
-  static async validateNewRefcode(req, res, next) {
+  static async validateRequestForRefcode(req, res, next) {
     try {
-      const referalCodeSchema = getRefCodeSchema({ withRequiredFields: true });
+      const { enrolleeIdNo, enrolmentType } = req.body;
+      const refcodeSchema = enrolleeIdNo
+        ? schemaCodeRequestForExistingEnrollee
+        : schemaCodeRequestForNewEnrollee(enrolmentType);
+      const { joiFormatted } = await validateSchema(refcodeSchema, req.body);
+      req.body = joiFormatted;
+      return next();
+    } catch (error) {
+      Response.handleError('validateRequestForRefcode', error, req, res, next);
+    }
+  }
+  static async validateCodeDetailsUpdate(req, res, next) {
+    try {
       const { joiFormatted } = await validateSchema(
-        referalCodeSchema,
+        shcemaPatchCodeRequest,
         req.body
       );
       req.body = joiFormatted;
@@ -36,13 +50,13 @@ export default class RefcodeMiddleware {
       Response.handleError('validateRefcode', error, req, res, next);
     }
   }
-  static async validateFlagStatus(req, res, next) {
+  static async validateCodeStatusUpdate(req, res, next) {
     try {
-      const { joiFormatted } = await validateSchema(flagUpdateSchema, {
-        ...req.body,
-        ...req.params,
-      });
-      req.query = joiFormatted;
+      const { joiFormatted } = await validateSchema(
+        codeStatusUpdateSchema,
+        req.body
+      );
+      req.body = joiFormatted;
       return next();
     } catch (error) {
       Response.handleError('validateFlagStatus', error, req, res, next);
