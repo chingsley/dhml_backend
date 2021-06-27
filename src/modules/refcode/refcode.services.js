@@ -41,7 +41,7 @@ export default class RefcodeService extends AppService {
     });
   }
 
-  verifyRefcode() {
+  getOneRefcodeSv() {
     const { referalCode: code, refcodeId: id } = this.query;
     const field = id ? 'id' : 'code';
     const value = id || code;
@@ -50,21 +50,26 @@ export default class RefcodeService extends AppService {
       modelName: 'ReferalCode',
       where: { [field]: value },
       include: [
-        {
+        ...['referringHcp', 'receivingHcp'].map((item) => ({
           model: db.HealthCareProvider,
-          as: 'referringHcp',
+          as: item,
           attributes: ['id', 'name', 'code'],
-        },
-        {
-          model: db.HealthCareProvider,
-          as: 'receivingHcp',
-          attributes: ['id', 'name', 'code'],
-        },
+        })),
         {
           model: db.Specialty,
           as: 'specialty',
           attributes: ['id', 'name'],
         },
+        ...['declinedBy', 'flaggedBy', 'approvedBy'].map((item) => ({
+          model: db.User,
+          as: item,
+          attributes: ['id', 'username'],
+          include: {
+            model: db.Staff,
+            as: 'staffInfo',
+            attributes: ['id', 'firstName', 'surname', 'staffIdNo'],
+          },
+        })),
         {
           model: db.Enrollee,
           as: 'enrollee',

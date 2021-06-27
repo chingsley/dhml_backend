@@ -26,13 +26,13 @@ export default class RefcodeController {
     }
   }
 
-  static async verifyReferalCode(req, res, next) {
+  static async getOneRefcodeCtr(req, res, next) {
     try {
       const refcodeService = new RefcodeService(req);
-      const data = await refcodeService.verifyRefcode();
+      const data = await refcodeService.getOneRefcodeSv();
       return res.status(200).json({ message: 'verified', data });
     } catch (error) {
-      Response.handleError('verifyReferalCode', error, req, res, next);
+      Response.handleError('getOneRefcodeCtr', error, req, res, next);
     }
   }
   static async updateCodeRequestDetails(req, res, next) {
