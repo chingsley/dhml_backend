@@ -176,8 +176,16 @@ export default class RefcodeService extends AppService {
   }
 
   async handleCodeDelete() {
-    const { refcodeIds } = this.body;
-    await db.ReferalCode.destroy({ where: { id: refcodeIds } });
+    const { refcodeId } = this.params;
+
+    const refcode = await db.ReferalCode.findById(refcodeId);
+    refcode.rejectIfCodeIsExpired();
+    refcode.rejectIfCodeIsClaimed();
+    refcode.rejectIfCodeIsDeclined();
+    refcode.rejectIfCodeIsApproved();
+
+    await refcode.destroy();
+    return true;
   }
 
   async getRefcodes() {

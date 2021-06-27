@@ -179,8 +179,8 @@ module.exports = (sequelize, DataTypes) => {
       as: 'declinedBy',
     });
   };
-  ReferalCode.findById = function (refcodeId) {
-    return this.findOne({
+  ReferalCode.findById = async function (refcodeId) {
+    const refcode = await this.findOne({
       where: { id: refcodeId },
       include: [
         {
@@ -196,8 +196,10 @@ module.exports = (sequelize, DataTypes) => {
           as: 'receivingHcp',
         },
       ],
-      errorIfNotFound: `no referal code matches the id of ${refcodeId}`,
     });
+    const errorIfNotFound = `no referal code matches the id of ${refcodeId}`;
+    rejectIf(!refcode, { withError: errorIfNotFound });
+    return refcode;
   };
   ReferalCode.prototype.updateAndReload = async function (changes) {
     await this.update(changes);
