@@ -109,9 +109,9 @@ router.patch(
   RefcodeController.updateCodeRequestStatus
 );
 router.delete(
-  '/',
+  '/:refcodeId',
   AuthMiddleware.authorize([MD, roles.TIER_1_MEDICAL, roles.TIER_2_MEDICAL]),
-  RefcodeMiddleware.validateRefcodeIdArr,
+  AppMiddleware.validateIdParams,
   RefcodeController.deleteRefcode
 );
 

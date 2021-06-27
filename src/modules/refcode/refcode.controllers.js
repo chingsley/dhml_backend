@@ -61,7 +61,9 @@ export default class RefcodeController {
     try {
       const refcodeService = new RefcodeService(req);
       await refcodeService.handleCodeDelete();
-      return res.status(200).json({ message: 'deleted' });
+      return res
+        .status(200)
+        .json({ message: 'The code request has been deleted successfully' });
     } catch (error) {
       Response.handleError('deleteRefcode', error, req, res, next);
     }
