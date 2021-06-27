@@ -70,9 +70,10 @@ export const schemaCodeRequestForExistingEnrollee = Joi.object({
   //   .required(),
 }).unknown();
 
-export const codeVerificationSchema = Joi.object({
-  referalCode: Joi.string().regex(VALID_REF_CODE).required(),
-});
+export const querySchemaGetOneRefcode = Joi.object({
+  referalCode: Joi.string().regex(VALID_REF_CODE),
+  refcodeId: Joi.number().integer().min(1),
+}).or('referalCode', 'refcodeId');
 
 export const codeStatusUpdateSchema = Joi.object({
   status: Joi.string()
