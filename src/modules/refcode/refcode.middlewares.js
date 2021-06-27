@@ -1,7 +1,7 @@
 import Response from '../../utils/Response';
 import { validateSchema } from '../../validators/joi/config';
 import {
-  codeVerificationSchema,
+  querySchemaGetOneRefcode,
   codeStatusUpdateSchema,
   schemaRefcodeIdArr,
   refcodeQuerySchema,
@@ -38,16 +38,16 @@ export default class RefcodeMiddleware {
     }
   }
 
-  static async validateRefcode(req, res, next) {
+  static async validateGetOneRefcode(req, res, next) {
     try {
       const { joiFormatted } = await validateSchema(
-        codeVerificationSchema,
+        querySchemaGetOneRefcode,
         req.query
       );
       req.query = joiFormatted;
       return next();
     } catch (error) {
-      Response.handleError('validateRefcode', error, req, res, next);
+      Response.handleError('validateGetOneRefcode', error, req, res, next);
     }
   }
   static async validateCodeStatusUpdate(req, res, next) {

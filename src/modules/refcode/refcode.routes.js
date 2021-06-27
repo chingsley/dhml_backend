@@ -51,7 +51,7 @@ router.get(
 );
 
 router.get(
-  '/verify',
+  '/get-one',
   AuthMiddleware.authorize([
     ...allowedRoles,
     HOD_MEDICAL,
@@ -60,7 +60,7 @@ router.get(
     VERIFIER,
     ENROLMENT_OFFICER,
   ]),
-  RefcodeMiddleware.validateRefcode,
+  RefcodeMiddleware.validateGetOneRefcode,
   RefcodeController.verifyReferalCode
 );
 

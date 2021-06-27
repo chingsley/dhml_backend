@@ -91,7 +91,7 @@ describe('RefcodeMiddleware', () => {
       }
     });
   });
-  describe.skip('validateRefcode', () => {
+  describe.skip('validateGetOneRefcode', () => {
     let token;
 
     beforeAll(async () => {
@@ -118,7 +118,7 @@ describe('RefcodeMiddleware', () => {
     });
     it(
       'it catches errors thrown in the try block',
-      TestService.testCatchBlock(RefcodeMiddleware.validateRefcode)
+      TestService.testCatchBlock(RefcodeMiddleware.validateGetOneRefcode)
     );
   });
   describe.skip('validateFlagStatus', () => {
