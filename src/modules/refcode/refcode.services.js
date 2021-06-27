@@ -6,7 +6,6 @@ import codeFactory from './refcode.factory';
 import { stateCodes } from '../../shared/constants/statecodes.constants';
 import { fetchAllRefcodes } from '../../database/scripts/refcode.scripts';
 import { refcodeSearchableFields } from '../../shared/attributes/refcode.attributes';
-import errors from '../../shared/constants/errors.constants';
 import { CODE_STATUS } from '../../shared/constants/lists.constants';
 import { months } from '../../utils/timers';
 
@@ -42,11 +41,14 @@ export default class RefcodeService extends AppService {
     });
   }
 
-  async verifyRefcode() {
-    const { referalCode: code } = this.query;
-    const refcode = await this.findOneRecord({
+  verifyRefcode() {
+    const { referalCode: code, refcodeId: id } = this.query;
+    const field = id ? 'id' : 'code';
+    const value = id || code;
+
+    return this.findOneRecord({
       modelName: 'ReferalCode',
-      where: { code },
+      where: { [field]: value },
       include: [
         {
           model: db.HealthCareProvider,
@@ -59,13 +61,18 @@ export default class RefcodeService extends AppService {
           attributes: ['id', 'name', 'code'],
         },
         {
+          model: db.Specialty,
+          as: 'specialty',
+          attributes: ['id', 'name'],
+        },
+        {
           model: db.Enrollee,
           as: 'enrollee',
           include: [
             {
               model: db.ReferalCode,
               as: 'referalCodes',
-              where: { code: { [Op.not]: code } },
+              where: { [field]: { [Op.not]: value } },
               order: [['createdAt', 'DESC']],
               limit: 5,
             },
@@ -77,16 +84,8 @@ export default class RefcodeService extends AppService {
           ],
         },
       ],
-      errorIfNotFound: 'Invalid code. No record found',
+      errorIfNotFound: `No code request found for ${field}: ${value}`,
     });
-
-    this.rejectIf(refcode.isClaimed, {
-      withError: errors.claimedRefcode(refcode.expiresAt),
-    });
-    this.rejectIf(refcode.hasExpired, {
-      withError: errors.expiredRefcode(refcode.expiresAt),
-    });
-    return refcode;
   }
 
   async updateCodeRequestDetailsSV() {
