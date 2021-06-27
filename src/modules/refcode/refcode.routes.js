@@ -61,7 +61,7 @@ router.get(
     ENROLMENT_OFFICER,
   ]),
   RefcodeMiddleware.validateGetOneRefcode,
-  RefcodeController.verifyReferalCode
+  RefcodeController.getOneRefcodeCtr
 );
 
 router.get(
