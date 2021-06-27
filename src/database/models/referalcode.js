@@ -228,16 +228,11 @@ module.exports = (sequelize, DataTypes) => {
             'scheme',
           ],
         },
-        {
+        ...['referringHcp', 'receivingHcp'].map((item) => ({
           model: this.sequelize.models.HealthCareProvider,
-          as: 'referringHcp',
-          attributes: ['id', 'code', 'name'],
-        },
-        {
-          model: this.sequelize.models.HealthCareProvider,
-          as: 'receivingHcp',
-          attributes: ['id', 'code', 'name'],
-        },
+          as: item,
+          attributes: ['id', 'name', 'code'],
+        })),
         {
           model: this.sequelize.models.Specialty,
           as: 'specialty',
