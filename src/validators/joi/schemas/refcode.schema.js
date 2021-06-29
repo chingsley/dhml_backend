@@ -28,46 +28,14 @@ export const shcemaPatchCodeRequest = Joi.object({
 export const schemaCodeRequestForNewEnrollee = (enrolmentType) => {
   return Joi.object({
     ...sharedFields.newEnrolleeFields(enrolmentType),
+    bloodGroup: Joi.string().trim(),
     ...sharedFields.refcodeRequestFields(validStates),
-    // receivingHcpId: Joi.number().min(1).required(),
-    // reasonForReferral: Joi.string().trim().required(),
-    // diagnosis: Joi.string().trim().required(),
-    // diagnosisStatus: Joi.string()
-    //   .trim()
-    //   .valid('provisional', 'final')
-    //   .required(),
-    // clinicalFindings: Joi.string().trim().required(),
-    // specialtyId: Joi.string()
-    //   .guid({
-    //     version: ['uuidv4', 'uuidv5'],
-    //   })
-    //   .required(),
-    // stateOfGeneration: Joi.string()
-    //   .trim()
-    //   .lowercase()
-    //   .valid(...validStates)
-    //   .required(),
   });
 };
 
 export const schemaCodeRequestForExistingEnrollee = Joi.object({
   enrolleeIdNo: Joi.string().trim().required(),
   ...sharedFields.refcodeRequestFields(validStates),
-  // receivingHcpId: Joi.number().min(1).required(),
-  // reasonForReferral: Joi.string().trim().required(),
-  // diagnosis: Joi.string().trim().required(),
-  // diagnosisStatus: Joi.string().trim().valid('provisional', 'final').required(),
-  // clinicalFindings: Joi.string().trim().required(),
-  // specialtyId: Joi.string()
-  //   .guid({
-  //     version: ['uuidv4', 'uuidv5'],
-  //   })
-  //   .required(),
-  // stateOfGeneration: Joi.string()
-  //   .trim()
-  //   .lowercase()
-  //   .valid(...validStates)
-  //   .required(),
 }).unknown();
 
 export const querySchemaGetOneRefcode = Joi.object({

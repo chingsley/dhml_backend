@@ -54,7 +54,7 @@ FROM
 SELECT 
   r.id, r.code, r."dateDeclined", r."dateFlagged", r."dateApproved", r."declinedById",
   r."flaggedById", r."approvedById", r.diagnosis, r."clinicalFindings", r."requestState", r."requestedBy",
-  e."enrolleeIdNo", e.rank, e.surname||' '||e."firstName" "name", e.scheme,
+  e."enrolleeIdNo", e.rank, e.surname||' '||e."firstName" "name", e.scheme, e.gender,
   refhcp.name "referringHcp", refhcp."code" "referringHcpCode",
   recvhcp.name "receivingHcp", recvhcp."code" "receivingHcpCode",
   s.name "specialty",
