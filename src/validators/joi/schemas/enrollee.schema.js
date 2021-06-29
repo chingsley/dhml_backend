@@ -44,6 +44,7 @@ export const patchEnrolleeSchema = Joi.object({
   deathCertificate: Joi.any(),
   letterOfNok: Joi.any(),
   dependants: Joi.array().items(Joi.object()),
+  nin: Joi.string().trim(),
 });
 
 export const enrolleeQuerySchema = Joi.object({

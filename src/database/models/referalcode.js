@@ -228,50 +228,25 @@ module.exports = (sequelize, DataTypes) => {
             'scheme',
           ],
         },
-        {
+        ...['referringHcp', 'receivingHcp'].map((item) => ({
           model: this.sequelize.models.HealthCareProvider,
-          as: 'referringHcp',
-          attributes: ['id', 'code', 'name'],
-        },
-        {
-          model: this.sequelize.models.HealthCareProvider,
-          as: 'receivingHcp',
-          attributes: ['id', 'code', 'name'],
-        },
+          as: item,
+          attributes: ['id', 'name', 'code'],
+        })),
         {
           model: this.sequelize.models.Specialty,
           as: 'specialty',
         },
-        {
+        ...['declinedBy', 'flaggedBy', 'approvedBy'].map((item) => ({
           model: this.sequelize.models.User,
-          as: 'flaggedBy',
+          as: item,
           attributes: ['id', 'username'],
           include: {
             model: this.sequelize.models.Staff,
             as: 'staffInfo',
             attributes: ['id', 'firstName', 'surname', 'staffIdNo'],
           },
-        },
-        {
-          model: this.sequelize.models.User,
-          as: 'approvedBy',
-          attributes: ['id', 'username'],
-          include: {
-            model: this.sequelize.models.Staff,
-            as: 'staffInfo',
-            attributes: ['id', 'firstName', 'surname', 'staffIdNo'],
-          },
-        },
-        {
-          model: this.sequelize.models.User,
-          as: 'declinedBy',
-          attributes: ['id', 'username'],
-          include: {
-            model: this.sequelize.models.Staff,
-            as: 'staffInfo',
-            attributes: ['id', 'firstName', 'surname', 'staffIdNo'],
-          },
-        },
+        })),
       ],
     });
   };
