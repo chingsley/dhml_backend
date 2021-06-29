@@ -72,6 +72,7 @@ class SharedFields {
       idCard: this.Joi.any(),
       deathCertificate: this.Joi.any(),
       letterOfNok: this.Joi.any(),
+      nin: this.Joi.string().trim(),
     };
   }
 
