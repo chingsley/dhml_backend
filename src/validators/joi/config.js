@@ -12,7 +12,7 @@ export const validateSchema = async (schema, payload, subject = '') => {
     newPassword: `New password must be a minimum of 8 characters long, must contain a lowercase, an uppercase, a number and a special character`,
     dateOfBirth: 'date of birth cannot be in the future',
     accountNumber: `Invalid account number. Account number cannot contain letters`,
-    referalCode: `Invalid Referal Code. Please check the code and try again.`,
+    referalCode: `Invalid Referal Code, please check the code and try again. REFC001`,
   };
   try {
     const joiFormatted = await schema.validateAsync(payload);
