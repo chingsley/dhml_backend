@@ -2,7 +2,7 @@ export const SERVICE_CATEGORIES = [
   'general services',
   'e.n.t/maxilofacial surgery',
   'gynaecology',
-  'internal medicine:',
+  'internal medicine',
   'orthopaedics',
   'general surgery',
   'endoscopic procedures',
