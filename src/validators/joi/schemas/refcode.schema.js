@@ -40,7 +40,9 @@ export const schemaCodeRequestForExistingEnrollee = Joi.object({
 
 export const querySchemaGetOneRefcode = Joi.object({
   referalCode: Joi.string().regex(VALID_REF_CODE),
-  refcodeId: Joi.number().integer().min(1),
+  refcodeId: Joi.string().guid({
+    version: ['uuidv4', 'uuidv5'],
+  }),
 }).or('referalCode', 'refcodeId');
 
 export const codeStatusUpdateSchema = Joi.object({
