@@ -1,5 +1,8 @@
 import express from 'express';
-import roles from '../../shared/constants/roles.constants';
+import roles, {
+  TIER_1_MEDICAL,
+  TIER_2_MEDICAL,
+} from '../../shared/constants/roles.constants';
 import AuthMiddleware from '../auth/auth.middleware';
 import ClaimsController from './claims.controllers';
 import ClaimsMiddleware from './claims.middlewares';
@@ -10,7 +13,7 @@ const router = express.Router();
 
 router.post(
   '/',
-  AuthMiddleware.authorize([HCP]),
+  AuthMiddleware.authorize([HCP, TIER_1_MEDICAL, TIER_2_MEDICAL]),
   ClaimsMiddleware.validateNewClaim,
   ClaimsController.AddNewClaim
 );

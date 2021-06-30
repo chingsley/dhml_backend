@@ -39,6 +39,12 @@ module.exports = {
         amount: {
           type: Sequelize.DECIMAL,
         },
+        preparedBy: {
+          // could be user or hcp so we can't use preparerId, as it will be referencing either hchp or user
+          // for a user, preparedBy = user.staffInfo.staffIdNo
+          // for hcp, preparedBy = hcp.code
+          type: Sequelize.STRING,
+        },
         createdAt: {
           allowNull: false,
           type: Sequelize.DATE,

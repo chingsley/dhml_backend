@@ -13,19 +13,27 @@ export default class ClaimsService extends AppService {
   }
 
   async addNewClaimSvc() {
-    const { unit, pricePerUnit, referalCode } = this.body;
+    const { claims, referalCode } = this.body;
     const refcode = await this.$getRefcode(referalCode);
     if (this.operator.userType === 'hcp') {
       const hcpId = this.operator.id;
       this.$validateRefcodeOwnership(refcode, hcpId);
     }
-    /**
-     * there are some considerations to be made
-     * when computing amount, ask Chi to remind you
-     */
-    this.body.amount = unit * pricePerUnit;
-    this.body.refcodeId = refcode.id;
-    return db.Claim.create(this.body);
+
+    const preparedClaims = claims.map((claim) => {
+      /**
+       * there are some considerations to be made
+       * when computing amount, ask Chi to remind you
+       */
+      const { unit, pricePerUnit } = claim;
+      return {
+        ...claim,
+        amount: unit * pricePerUnit,
+        refcodeId: refcode.id,
+        preparedBy: this.operator.subjectId,
+      };
+    });
+    return db.Claim.bulkCreate(preparedClaims);
   }
 
   $getRefcode(referalCode) {
