@@ -20,7 +20,15 @@ export default class AppMiddleware {
         summaryId: Joi.number().integer().min(1),
         capitationId: Joi.number().integer().min(1),
         voucherId: Joi.number().integer().min(1),
-        refcodeId: Joi.number().integer().min(1),
+        specialtyId: Joi.string().guid({
+          version: ['uuidv4', 'uuidv5'],
+        }),
+        refcodeId: Joi.string().guid({
+          version: ['uuidv4', 'uuidv5'],
+        }),
+        claimId: Joi.string().guid({
+          version: ['uuidv4', 'uuidv5'],
+        }),
       });
       const { joiFormatted } = await validateSchema(
         paramsSchema,

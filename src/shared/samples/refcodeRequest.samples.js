@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 const faker = require('faker');
 const { getRandomInt, _random } = require('../../utils/helpers');
 const db = require('../../database/models');
@@ -18,6 +19,7 @@ async function generateSampleRequestForRefcodesForSeed(numOfEnrollees = 1000) {
   return seededEnrollees.map((enrollee) => {
     const randomNum = getRandomInt(hcpSpecialties.length - 1, { min: 0 });
     return {
+      id: uuidv4(),
       enrolleeId: enrollee.id,
       referringHcpId: enrollee.hcp.id,
       receivingHcpId: hcpSpecialties[randomNum].hcpId,

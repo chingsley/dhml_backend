@@ -8,6 +8,12 @@ module.exports = (sequelize, DataTypes) => {
   const ReferalCode = sequelize.define(
     'ReferalCode',
     {
+      id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
+      },
       code: {
         type: DataTypes.STRING,
       },
@@ -177,6 +183,10 @@ module.exports = (sequelize, DataTypes) => {
     ReferalCode.belongsTo(models.User, {
       foreignKey: 'declinedById',
       as: 'declinedBy',
+    });
+    ReferalCode.hasMany(models.Claim, {
+      foreignKey: 'refcodeId',
+      as: 'claims',
     });
   };
   ReferalCode.findById = async function (refcodeId) {

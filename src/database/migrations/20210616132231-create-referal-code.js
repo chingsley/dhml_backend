@@ -7,10 +7,10 @@ module.exports = {
       'ReferalCodes',
       {
         id: {
-          allowNull: false,
-          autoIncrement: true,
+          type: Sequelize.UUID,
           primaryKey: true,
-          type: Sequelize.INTEGER,
+          defaultValue: Sequelize.UUIDV4,
+          allowNull: false,
         },
         code: {
           type: Sequelize.STRING,
