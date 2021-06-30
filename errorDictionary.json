@@ -3,5 +3,8 @@
   "LGN003": "incorrect password",
   "PRT001": "password reset token is not a valid uuid",
   "PRT002": "password reset token not found",
-  "PRT003": "password reset token has expired"
+  "PRT003": "password reset token has expired",
+  "REFC001": "Referal code has invalid format",
+  "REFC002": "Referal code not found in the db",
+  "REFC003": "Referal code found but belong to a different Receiving Hcp"
 }

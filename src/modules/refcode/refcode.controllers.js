@@ -22,7 +22,13 @@ export default class RefcodeController {
         data,
       });
     } catch (error) {
-      Response.handleError('generateNewCode', error, req, res, next);
+      Response.handleError(
+        'createRequestForRefcodeCTRL',
+        error,
+        req,
+        res,
+        next
+      );
     }
   }
 
