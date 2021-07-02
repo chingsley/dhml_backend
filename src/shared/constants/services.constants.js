@@ -17,4 +17,5 @@ export const SERVICE_CATEGORIES = [
   'neurosurgery',
   'radiology',
   'laboratory',
+  'drug',
 ];

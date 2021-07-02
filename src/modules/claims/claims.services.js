@@ -15,10 +15,7 @@ export default class ClaimsService extends AppService {
   async addNewClaimSvc() {
     const { claims, referalCode } = this.body;
     const refcode = await this.$getRefcode(referalCode);
-    if (this.operator.userType === 'hcp') {
-      const hcpId = this.operator.id;
-      this.$validateRefcodeOwnership(refcode, hcpId);
-    }
+    this.$validateHcpRefcodeOwnership(this.operator, refcode);
 
     const preparedClaims = claims.map((claim) => {
       /**
@@ -36,6 +33,25 @@ export default class ClaimsService extends AppService {
     return db.Claim.bulkCreate(preparedClaims);
   }
 
+  async updateByIdParam() {
+    const { claimId } = this.params;
+    const claim = await this.$getClaimById(claimId);
+    const refcode = claim.referalCode;
+    refcode.rejectIfCodeIsExpired();
+    refcode.rejectIfCodeIsClaimed();
+    refcode.rejectIfCodeIsDeclined();
+    this.$validateHcpRefcodeOwnership(this.operator, refcode);
+
+    const changes = this.body;
+
+    const { unit, pricePerUnit } = changes;
+    if (unit || pricePerUnit) {
+      changes.amount = unit * pricePerUnit;
+    }
+    await claim.update(changes);
+    return claim;
+  }
+
   $getRefcode(referalCode) {
     return this.findOneRecord({
       modelName: 'ReferalCode',
@@ -48,15 +64,32 @@ export default class ClaimsService extends AppService {
   /**
    * Ensures the hcp making the claim is the receivingHcp
    * associated with the referal code specified req.body
+   *
+   * will skip the validation if operator is not a 'hcp' user...
+   *  ...because state officers can prepare claims onbehalf of hcp's
+   *
    * @param {string} refcode Referal code
    * @param {integer} hcpId hcp id
    */
-  $validateRefcodeOwnership(refcode, hcpId) {
-    this.rejectIf(refcode.receivingHcpId !== hcpId, {
-      withError:
-        'Invalid Referal Code, please check the code and try again. REFC003',
-      status: 401,
-    });
+  $validateHcpRefcodeOwnership(operator, refcode) {
+    if (operator.userType === 'hcp') {
+      const hcpId = operator.id;
+      this.rejectIf(refcode.receivingHcpId !== hcpId, {
+        withError:
+          'Invalid Referal Code, please check the code and try again. REFC003',
+        status: 401,
+      });
+    }
+
     return true;
+  }
+
+  $getClaimById(claimId) {
+    return this.findOneRecord({
+      modelName: 'Claim',
+      where: { id: claimId },
+      include: { model: db.ReferalCode, as: 'referalCode' },
+      errorIfNotFound: `No claim matches the id of ${claimId}`,
+    });
   }
 }
