@@ -16,6 +16,9 @@ export default class ClaimsService extends AppService {
     const { claims, referalCode } = this.body;
     const refcode = await this.$getRefcode(referalCode);
     this.$validateHcpRefcodeOwnership(this.operator, refcode);
+    refcode.rejectIfCodeIsExpired();
+    refcode.rejectIfCodeIsClaimed();
+    refcode.rejectIfCodeIsDeclined();
 
     const preparedClaims = claims.map((claim) => {
       /**
@@ -37,10 +40,10 @@ export default class ClaimsService extends AppService {
     const { claimId } = this.params;
     const claim = await this.$getClaimById(claimId);
     const refcode = claim.referalCode;
+    this.$validateHcpRefcodeOwnership(this.operator, refcode);
     refcode.rejectIfCodeIsExpired();
     refcode.rejectIfCodeIsClaimed();
     refcode.rejectIfCodeIsDeclined();
-    this.$validateHcpRefcodeOwnership(this.operator, refcode);
 
     const changes = this.body;
 
@@ -49,6 +52,19 @@ export default class ClaimsService extends AppService {
       changes.amount = unit * pricePerUnit;
     }
     await claim.update(changes);
+    return claim;
+  }
+
+  async deleteByIdParam() {
+    const { claimId } = this.params;
+    const claim = await this.$getClaimById(claimId);
+    const refcode = claim.referalCode;
+    this.$validateHcpRefcodeOwnership(this.operator, refcode);
+    refcode.rejectIfCodeIsExpired();
+    refcode.rejectIfCodeIsClaimed();
+    refcode.rejectIfCodeIsDeclined();
+
+    await claim.destroy();
     return claim;
   }
 
