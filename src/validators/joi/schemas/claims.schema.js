@@ -1,3 +1,4 @@
+import { SERVICE_CATEGORIES } from '../../../shared/constants/services.constants';
 import { Joi } from '../config';
 import { VALID_REF_CODE } from './refcode.schema';
 
@@ -30,4 +31,34 @@ export const newClaimSchema = Joi.object({
       pricePerUnit: Joi.number().min(0).required(),
     })
   ),
+});
+
+export const schemaClaimUpdateByIdParam = Joi.object({
+  category: Joi.string()
+    .trim()
+    .lowercase()
+    .valid(...SERVICE_CATEGORIES)
+    .required(),
+  serviceName: Joi.when('category', {
+    is: 'drug',
+    then: Joi.forbidden(),
+    otherwise: Joi.string().trim(),
+  }),
+  drugDosageForm: Joi.when('category', {
+    is: 'drug',
+    then: Joi.string().trim(),
+    otherwise: Joi.forbidden(),
+  }),
+  drugStrength: Joi.when('category', {
+    is: 'drug',
+    then: Joi.string().trim(),
+    otherwise: Joi.forbidden(),
+  }),
+  drugPresentation: Joi.when('category', {
+    is: 'drug',
+    then: Joi.string().trim(),
+    otherwise: Joi.forbidden(),
+  }),
+  unit: Joi.number().integer().min(1),
+  pricePerUnit: Joi.number().min(0),
 });

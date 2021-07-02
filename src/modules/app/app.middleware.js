@@ -12,6 +12,9 @@ const cypher = new Cypher(AES_KEY, IV_KEY);
 export default class AppMiddleware {
   static async validateIdParams(req, res, next) {
     try {
+      const uuidSchema = Joi.string().guid({
+        version: ['uuidv4', 'uuidv5'],
+      });
       const paramsSchema = Joi.object({
         hcpId: Joi.number().integer().min(1),
         staffId: Joi.number().integer().min(1),
@@ -20,15 +23,9 @@ export default class AppMiddleware {
         summaryId: Joi.number().integer().min(1),
         capitationId: Joi.number().integer().min(1),
         voucherId: Joi.number().integer().min(1),
-        specialtyId: Joi.string().guid({
-          version: ['uuidv4', 'uuidv5'],
-        }),
-        refcodeId: Joi.string().guid({
-          version: ['uuidv4', 'uuidv5'],
-        }),
-        claimId: Joi.string().guid({
-          version: ['uuidv4', 'uuidv5'],
-        }),
+        specialtyId: uuidSchema,
+        refcodeId: uuidSchema,
+        claimId: uuidSchema,
       });
       const { joiFormatted } = await validateSchema(
         paramsSchema,
