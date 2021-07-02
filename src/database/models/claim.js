@@ -12,6 +12,12 @@ module.exports = (sequelize, DataTypes) => {
       refcodeId: {
         type: DataTypes.UUID,
         allowNull: false,
+        references: {
+          model: 'ReferalCodes',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
       },
       category: {
         type: DataTypes.STRING,

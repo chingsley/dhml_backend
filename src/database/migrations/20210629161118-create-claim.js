@@ -14,6 +14,12 @@ module.exports = {
         refcodeId: {
           type: Sequelize.UUID,
           allowNull: false,
+          references: {
+            model: 'ReferalCodes',
+            key: 'id',
+          },
+          onUpdate: 'CASCADE',
+          onDelete: 'CASCADE',
         },
         category: {
           type: Sequelize.STRING,

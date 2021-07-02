@@ -27,4 +27,11 @@ router.patch(
   ClaimsController.UpdateClaimByIdParam
 );
 
+router.delete(
+  '/:claimId',
+  AuthMiddleware.authorize([HCP, TIER_1_MEDICAL, TIER_2_MEDICAL]),
+  AppMiddleware.validateIdParams,
+  ClaimsController.deleteClaimByIdParam
+);
+
 export default router;

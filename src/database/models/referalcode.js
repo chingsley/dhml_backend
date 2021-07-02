@@ -187,6 +187,7 @@ module.exports = (sequelize, DataTypes) => {
     ReferalCode.hasMany(models.Claim, {
       foreignKey: 'refcodeId',
       as: 'claims',
+      onDelete: 'CASCADE',
     });
   };
   ReferalCode.findById = async function (refcodeId) {
