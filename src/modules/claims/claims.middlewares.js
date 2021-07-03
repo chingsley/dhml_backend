@@ -34,4 +34,16 @@ export default class ClaimsMiddleware {
       );
     }
   }
+  static async validateBulkUpdate(req, res, next) {
+    try {
+      const { joiFormatted } = await validateSchema(
+        schemaBulkClaimUpdate,
+        req.body
+      );
+      req.body = joiFormatted;
+      return next();
+    } catch (error) {
+      Response.handleError('validateBulkUpdate', error, req, res, next);
+    }
+  }
 }

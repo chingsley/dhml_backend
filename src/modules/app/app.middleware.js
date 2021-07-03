@@ -1,4 +1,4 @@
-import { Joi, validateSchema } from '../../validators/joi/config';
+import { Joi, validateSchema, uuidSchema } from '../../validators/joi/config';
 import Cypher from '../../utils/Cypher';
 import { isEmptyObject } from '../../utils/helpers';
 import Response from '../../utils/Response';
@@ -12,9 +12,6 @@ const cypher = new Cypher(AES_KEY, IV_KEY);
 export default class AppMiddleware {
   static async validateIdParams(req, res, next) {
     try {
-      const uuidSchema = Joi.string().guid({
-        version: ['uuidv4', 'uuidv5'],
-      });
       const paramsSchema = Joi.object({
         hcpId: Joi.number().integer().min(1),
         staffId: Joi.number().integer().min(1),

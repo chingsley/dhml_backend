@@ -57,3 +57,7 @@ export function validateEmail(withRequiredFields) {
     ? Joi.string().email().trim().required()
     : Joi.string().email().trim();
 }
+
+export const uuidSchema = Joi.string().guid({
+  version: ['uuidv4', 'uuidv5'],
+});

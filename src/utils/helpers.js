@@ -1,3 +1,7 @@
+import {
+  SERVICE_STATUS,
+  SERVICE_STATUS_CODE,
+} from '../shared/constants/lists.constants';
 import { Joi } from '../validators/joi/config';
 
 export const setMinutes = (x) => new Date(Date.now() + Number(x) * 60 * 1000);
@@ -14,6 +18,11 @@ export function getRandomInt(max, options = {}) {
 // // range from min to max (both inclusive)
 export function randInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+// // range of real numbers from min to max (both inclusive)
+export function randNum(min, max) {
+  return Math.random() * (max - min + 1) + min;
 }
 
 /**
@@ -107,4 +116,12 @@ export function isValidDate(date) {
   const dateSchema = Joi.date().format('YYYY-MM-DD').required();
   const result = dateSchema.validate(`${date}`);
   return !result.error;
+}
+
+export function getServiceStatusCode(enrolleeServiceStatus) {
+  return enrolleeServiceStatus
+    ? enrolleeServiceStatus === SERVICE_STATUS.SERVING
+      ? SERVICE_STATUS_CODE.SERVING
+      : SERVICE_STATUS_CODE.RETIRED
+    : SERVICE_STATUS_CODE.AD;
 }
