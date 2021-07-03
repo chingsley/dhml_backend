@@ -2,6 +2,7 @@
 // to lower case before export
 export const stateCodes = {
   'abuja federal capital territory': 'FCT',
+  'fct - abuja': 'FCT',
   abia: 'AB',
   adamawa: 'AD',
   'akwa ibom': 'AK',

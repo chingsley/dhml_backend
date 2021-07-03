@@ -20,6 +20,13 @@ router.post(
 );
 
 router.patch(
+  '/',
+  AuthMiddleware.authorize([HCP, TIER_1_MEDICAL, TIER_2_MEDICAL]),
+  ClaimsMiddleware.validateBulkUpdate,
+  ClaimsController.UpdateClaimByIdParam
+);
+
+router.patch(
   '/:claimId',
   AuthMiddleware.authorize([HCP, TIER_1_MEDICAL, TIER_2_MEDICAL]),
   AppMiddleware.validateIdParams,
