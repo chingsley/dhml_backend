@@ -22,8 +22,8 @@ router.post(
 router.patch(
   '/',
   AuthMiddleware.authorize([HCP, TIER_1_MEDICAL, TIER_2_MEDICAL]),
-  ClaimsMiddleware.validateBulkUpdate,
-  ClaimsController.UpdateClaimByIdParam
+  ClaimsMiddleware.validateBulkClaimProcessing,
+  ClaimsController.processBulkClaims
 );
 
 router.patch(
@@ -31,7 +31,7 @@ router.patch(
   AuthMiddleware.authorize([HCP, TIER_1_MEDICAL, TIER_2_MEDICAL]),
   AppMiddleware.validateIdParams,
   ClaimsMiddleware.validatePatchUpdateByIdParam,
-  ClaimsController.UpdateClaimByIdParam
+  ClaimsController.updateClaimByIdParam
 );
 
 router.delete(

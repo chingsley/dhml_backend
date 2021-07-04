@@ -14,7 +14,7 @@ export default class ClaimsController {
       Response.handleError('AddNewClaim', error, req, res, next);
     }
   }
-  static async UpdateClaimByIdParam(req, res, next) {
+  static async updateClaimByIdParam(req, res, next) {
     try {
       const claimsService = new ClaimsService(req);
       const data = await claimsService.updateByIdParam();
@@ -23,7 +23,19 @@ export default class ClaimsController {
         data,
       });
     } catch (error) {
-      Response.handleError('UpdateClaimByIdParam', error, req, res, next);
+      Response.handleError('updateClaimByIdParam', error, req, res, next);
+    }
+  }
+  static async processBulkClaims(req, res, next) {
+    try {
+      const claimsService = new ClaimsService(req);
+      const data = await claimsService.handleBulkClaimProcessing();
+      return res.status(200).json({
+        message: 'Claim successfully updated',
+        data,
+      });
+    } catch (error) {
+      Response.handleError('processBulkClaims', error, req, res, next);
     }
   }
   static async deleteClaimByIdParam(req, res, next) {

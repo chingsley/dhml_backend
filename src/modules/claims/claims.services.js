@@ -10,29 +10,19 @@ export default class ClaimsService extends AppService {
     this.params = params;
     this.ReferalCodeModel = db.ReferalCode;
     this.operator = operator;
+    this.refcode = null;
   }
 
   async addNewClaimSvc() {
     const { claims, referalCode } = this.body;
     const refcode = await this.$getRefcode(referalCode);
-    this.$validateHcpRefcodeOwnership(this.operator, refcode);
-    refcode.rejectIfCodeIsExpired();
-    refcode.rejectIfCodeIsClaimed();
-    refcode.rejectIfCodeIsDeclined();
+    this.$handleRefcodeValidation(this.operator, refcode);
 
-    const preparedClaims = claims.map((claim) => {
-      /**
-       * there are some considerations to be made
-       * when computing amount, ask Chi to remind you
-       */
-      // const { unit, pricePerUnit } = claim;
-      return {
-        ...claim,
-        // amount: unit * pricePerUnit,
-        refcodeId: refcode.id,
-        preparedBy: this.operator.subjectId,
-      };
-    });
+    const preparedClaims = claims.map((claim) => ({
+      ...claim,
+      refcodeId: refcode.id,
+      preparedBy: this.operator.subjectId,
+    }));
     return db.Claim.bulkCreate(preparedClaims);
   }
 
@@ -40,10 +30,7 @@ export default class ClaimsService extends AppService {
     const { claimId } = this.params;
     const claim = await this.$getClaimById(claimId);
     const refcode = claim.referalCode;
-    this.$validateHcpRefcodeOwnership(this.operator, refcode);
-    refcode.rejectIfCodeIsExpired();
-    refcode.rejectIfCodeIsClaimed();
-    refcode.rejectIfCodeIsDeclined();
+    this.$handleRefcodeValidation(this.operator, refcode);
 
     const changes = this.body;
 
@@ -59,13 +46,81 @@ export default class ClaimsService extends AppService {
     const { claimId } = this.params;
     const claim = await this.$getClaimById(claimId);
     const refcode = claim.referalCode;
-    this.$validateHcpRefcodeOwnership(this.operator, refcode);
-    refcode.rejectIfCodeIsExpired();
-    refcode.rejectIfCodeIsClaimed();
-    refcode.rejectIfCodeIsDeclined();
+    this.$handleRefcodeValidation(this.operator, refcode);
 
     await claim.destroy();
     return claim;
+  }
+
+  async handleBulkClaimProcessing() {
+    const {
+      remove: arrOfClaimIds,
+      update: arrOfUpdates,
+      create: arrOfNewClaims,
+      referalCode,
+    } = this.body;
+
+    const refcode = await this.$getRefcode(referalCode);
+    this.$handleRefcodeValidation(this.operator, refcode);
+    this.refcode = refcode;
+
+    const t = await db.sequelize.transaction();
+    try {
+      await this.$handleBulkDelete(arrOfClaimIds, t);
+      await this.$hanldBulkUpdate(arrOfUpdates, t);
+      await this.$handleBulkAddtions(arrOfNewClaims, t);
+      await t.commit();
+      return true;
+    } catch (error) {
+      await t.rollback();
+      throw error;
+    }
+  }
+
+  async $handleBulkDelete(arrOfClaimIds, t) {
+    const claims = await this.$checkClaimIdsAssociationToRefcode(
+      arrOfClaimIds,
+      this.refcode
+    );
+    if (claims.length > 0) {
+      await db.Claim.destroy({ where: { id: arrOfClaimIds }, transaction: t });
+    }
+    return true;
+  }
+  async $hanldBulkUpdate(arrOfUpdates, t) {
+    const arrOfClaimIds = arrOfUpdates.map((claim) => claim.id);
+    const claims = await this.$checkClaimIdsAssociationToRefcode(
+      arrOfClaimIds,
+      this.refcode
+    );
+    for (const claim of claims) {
+      const changes = arrOfUpdates.find((clm) => clm.id === claim.id);
+      delete changes.id;
+      await claim.update(changes, { transaction: t });
+    }
+    return true;
+  }
+  async $handleBulkAddtions(arrOfNewClaims, t) {
+    const preparedClaims = arrOfNewClaims.map((claim) => ({
+      ...claim,
+      refcodeId: this.refcode.id,
+      preparedBy: this.operator.subjectId,
+    }));
+    await db.Claim.bulkCreate(preparedClaims, { transaction: t });
+    return true;
+  }
+
+  async $checkClaimIdsAssociationToRefcode(arrOfClaimIds, refcode) {
+    const claims = await db.Claim.findAll({
+      where: { id: arrOfClaimIds },
+      include: { model: db.ReferalCode, as: 'referalCode' },
+    });
+    for (const claim of claims) {
+      this.rejectIf(claim.refcodeId !== refcode.id, {
+        withError: `Error: ${claim.id} is not associated to the code: ${this.refcode.code}`,
+      });
+    }
+    return claims;
   }
 
   $getRefcode(referalCode) {
@@ -75,6 +130,14 @@ export default class ClaimsService extends AppService {
       errorIfNotFound:
         'Invalid Referal Code, please check the code and try again. REFC002',
     });
+  }
+
+  $handleRefcodeValidation(operator, refcode) {
+    this.$validateHcpRefcodeOwnership(operator, refcode);
+    refcode.rejectIfCodeIsExpired();
+    refcode.rejectIfCodeIsClaimed();
+    refcode.rejectIfCodeIsDeclined();
+    return true;
   }
 
   /**
