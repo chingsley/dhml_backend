@@ -1,5 +1,5 @@
 import { Op } from 'sequelize';
-import { SERVICE_STATUS } from '../../shared/constants/lists.constants';
+import { getServiceStatusCode } from '../../utils/helpers';
 import { days, moment } from '../../utils/timers';
 // import NanoId from '../../utils/NanoId';
 
@@ -7,11 +7,7 @@ const codeFactory = {
   async generateReferalCode({ enrolleeServiceStatus, stateCode, specialty }) {
     const date = moment().format('DDMMYY');
     const n = await this.getCodeSerialNo(specialty.id);
-    const serviceStatus = enrolleeServiceStatus
-      ? enrolleeServiceStatus === SERVICE_STATUS.SERVING
-        ? 'S'
-        : 'R'
-      : 'AD';
+    const serviceStatus = getServiceStatusCode(enrolleeServiceStatus);
     return `${stateCode}/${date}/022/${specialty.code}-${n}/${serviceStatus}`;
   },
 

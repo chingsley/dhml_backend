@@ -7,10 +7,10 @@ module.exports = {
       'ReferalCodes',
       {
         id: {
-          allowNull: false,
-          autoIncrement: true,
+          type: Sequelize.UUID,
           primaryKey: true,
-          type: Sequelize.INTEGER,
+          defaultValue: Sequelize.UUIDV4,
+          allowNull: false,
         },
         code: {
           type: Sequelize.STRING,
@@ -83,7 +83,7 @@ module.exports = {
         },
         requestedBy: {
           // could be user or hcp so we can't use requesterId, as it will be referencing either hchp or user
-          // for a user, requestedBy = user.staffInfo.email
+          // for a user, requestedBy = user.staffInfo.staffIdNo
           // for hcp, requestedBy = hcp.code
           type: Sequelize.STRING,
         },
@@ -132,8 +132,17 @@ module.exports = {
         expiresAt: {
           type: Sequelize.DATE,
         },
-        dateClaimed: {
+        claimsVerifiedOn: {
           type: Sequelize.DATE,
+        },
+        claimsVerifierId: {
+          type: Sequelize.INTEGER,
+          references: {
+            model: 'Users',
+            key: 'id',
+          },
+          onDelete: 'RESTRICT',
+          onUpdate: 'CASCADE',
         },
         createdAt: {
           allowNull: false,

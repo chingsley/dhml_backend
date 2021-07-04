@@ -155,6 +155,7 @@ export default class RefcodeService extends AppService {
         flagReason,
       };
     } else if (status === CODE_STATUS.APPROVED) {
+      refcode.rejectIfCodeIsApproved();
       // if request is approved (i.e code generated), then flagged, then approved again, then:
       // ---- we do not generate a new code, but use the existing code
       // ---- we do not generate a new expiresAt date, but use the existing date
@@ -177,6 +178,17 @@ export default class RefcodeService extends AppService {
       };
     }
     return refcode.updateAndReload(updates);
+  }
+
+  async verifyClaimsSVC() {
+    const { refcodeId } = this.params;
+    const refcode = await db.ReferalCode.findById(refcodeId);
+    refcode.rejectIfNotApproved();
+    refcode.rejectIfClaimsNotFound();
+    return refcode.updateAndReload({
+      claimsVerifiedOn: new Date(),
+      claimsVerifierId: this.operator.id,
+    });
   }
 
   async handleCodeDelete() {

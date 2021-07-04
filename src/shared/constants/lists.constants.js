@@ -75,6 +75,7 @@ export const SERVICE_STATUS = {
 };
 
 export const SERVICE_STATUS_CODE = {
-  serving: 'S',
-  retired: 'R',
+  SERVING: 'S',
+  RETIRED: 'R',
+  AD: 'AD',
 };
