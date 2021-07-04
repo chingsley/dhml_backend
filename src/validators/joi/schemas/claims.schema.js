@@ -9,6 +9,11 @@ const newClaimReqBody = {
     then: Joi.forbidden(),
     otherwise: Joi.string().trim().required(),
   }),
+  drugName: Joi.when('category', {
+    is: 'drug',
+    then: Joi.string().trim().required(),
+    otherwise: Joi.forbidden(),
+  }),
   drugDosageForm: Joi.when('category', {
     is: 'drug',
     then: Joi.string().trim(),
@@ -43,6 +48,11 @@ const claimUpdateReqBody = {
     is: 'drug',
     then: Joi.forbidden(),
     otherwise: Joi.string().trim(),
+  }),
+  drugName: Joi.when('category', {
+    is: 'drug',
+    then: Joi.string().trim(),
+    otherwise: Joi.forbidden(),
   }),
   drugDosageForm: Joi.when('category', {
     is: 'drug',

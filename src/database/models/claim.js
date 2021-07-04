@@ -25,6 +25,9 @@ module.exports = (sequelize, DataTypes) => {
       serviceName: {
         type: DataTypes.STRING,
       },
+      drugName: {
+        type: DataTypes.STRING,
+      },
       drugDosageForm: {
         type: DataTypes.STRING,
       },
@@ -40,14 +43,23 @@ module.exports = (sequelize, DataTypes) => {
       pricePerUnit: {
         type: DataTypes.DECIMAL,
       },
-      amount: {
-        type: DataTypes.DECIMAL,
-      },
+      // amount: {
+      //   type: DataTypes.DECIMAL,
+      // },
       preparedBy: {
         // could be user or hcp so we can't use preparerId, as it will be referencing either hchp or user
         // for a user, preparedBy = user.staffInfo.staffIdNo
         // for hcp, preparedBy = hcp.code
         type: DataTypes.STRING,
+      },
+      verifierId: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: 'Users',
+          key: 'id',
+        },
+        onDelete: 'RESTRICT',
+        onUpdate: 'CASCADE',
       },
     },
     {}

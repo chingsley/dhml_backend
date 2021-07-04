@@ -25,10 +25,10 @@ export default class ClaimsService extends AppService {
        * there are some considerations to be made
        * when computing amount, ask Chi to remind you
        */
-      const { unit, pricePerUnit } = claim;
+      // const { unit, pricePerUnit } = claim;
       return {
         ...claim,
-        amount: unit * pricePerUnit,
+        // amount: unit * pricePerUnit,
         refcodeId: refcode.id,
         preparedBy: this.operator.subjectId,
       };
@@ -47,10 +47,10 @@ export default class ClaimsService extends AppService {
 
     const changes = this.body;
 
-    const { unit, pricePerUnit } = changes;
-    if (unit || pricePerUnit) {
-      changes.amount = unit * pricePerUnit;
-    }
+    // const { unit, pricePerUnit } = changes;
+    // if (unit || pricePerUnit) {
+    //   changes.amount = unit * pricePerUnit;
+    // }
     await claim.update(changes);
     return claim;
   }
