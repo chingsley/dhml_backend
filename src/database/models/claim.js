@@ -52,15 +52,6 @@ module.exports = (sequelize, DataTypes) => {
         // for hcp, preparedBy = hcp.code
         type: DataTypes.STRING,
       },
-      verifierId: {
-        type: DataTypes.INTEGER,
-        references: {
-          model: 'Users',
-          key: 'id',
-        },
-        onDelete: 'RESTRICT',
-        onUpdate: 'CASCADE',
-      },
     },
     {}
   );

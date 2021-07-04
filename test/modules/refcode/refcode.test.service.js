@@ -76,7 +76,7 @@ class _RefcodeService extends TestService {
       flagReason: null,
       declineReason: null,
       expiresAt: null,
-      dateClaimed: null,
+      claimsVerifiedOn: null,
       code: null,
     };
     return db.ReferalCode.update(intialValues, { where: { id: refcodeId } });
