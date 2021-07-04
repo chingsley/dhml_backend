@@ -180,6 +180,17 @@ export default class RefcodeService extends AppService {
     return refcode.updateAndReload(updates);
   }
 
+  async verifyClaimsSVC() {
+    const { refcodeId } = this.params;
+    const refcode = await db.ReferalCode.findById(refcodeId);
+    refcode.rejectIfNotApproved();
+    refcode.rejectIfClaimsNotFound();
+    return refcode.updateAndReload({
+      claimsVerifiedOn: new Date(),
+      claimsVerifierId: this.operator.id,
+    });
+  }
+
   async handleCodeDelete() {
     const { refcodeId } = this.params;
 
