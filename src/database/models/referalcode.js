@@ -122,8 +122,17 @@ module.exports = (sequelize, DataTypes) => {
       expiresAt: {
         type: DataTypes.DATE,
       },
-      dateClaimed: {
+      claimsVerifiedOn: {
         type: DataTypes.DATE,
+      },
+      claimsVerifierId: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: 'Users',
+          key: 'id',
+        },
+        onDelete: 'RESTRICT',
+        onUpdate: 'CASCADE',
       },
       status: {
         type: DataTypes.VIRTUAL,
@@ -149,7 +158,7 @@ module.exports = (sequelize, DataTypes) => {
       isClaimed: {
         type: DataTypes.VIRTUAL,
         get() {
-          return !!this.dateClaimed;
+          return !!this.claimsVerifiedOn;
         },
       },
     },
@@ -268,8 +277,8 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
   ReferalCode.prototype.rejectIfCodeIsClaimed = function () {
-    rejectIf(!!this.dateClaimed, {
-      withError: 'Action not allowed because the code has been Claimed',
+    rejectIf(!!this.claimsVerifiedOn, {
+      withError: 'Action not allowed because the code has verified claims',
       status: 403,
     });
   };

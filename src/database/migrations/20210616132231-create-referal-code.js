@@ -132,8 +132,17 @@ module.exports = {
         expiresAt: {
           type: Sequelize.DATE,
         },
-        dateClaimed: {
+        claimsVerifiedOn: {
           type: Sequelize.DATE,
+        },
+        claimsVerifierId: {
+          type: Sequelize.INTEGER,
+          references: {
+            model: 'Users',
+            key: 'id',
+          },
+          onDelete: 'RESTRICT',
+          onUpdate: 'CASCADE',
         },
         createdAt: {
           allowNull: false,

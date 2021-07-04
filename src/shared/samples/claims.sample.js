@@ -12,9 +12,8 @@ const drugs = require('../../../drugs.json').map((drug) => ({
 }));
 
 class Claims {
-  constructor(refcodes, verifierIds) {
+  constructor(refcodes) {
     this.refcodes = refcodes;
-    this.verifierIds = verifierIds;
   }
 
   getDrugClaim({ refcode = _random(this.refcodes) } = {}) {
@@ -30,7 +29,6 @@ class Claims {
       unit: randInt(1, 10),
       pricePerUnit: Number(drug.pricePerUnit.replace(/,/g, '')),
       preparedBy: refcode.receivingHcp.code,
-      verifierId: refcode.approvedById,
     };
   }
 
@@ -45,7 +43,6 @@ class Claims {
       unit: randInt(1, 10),
       pricePerUnit: service.pricePerUnit,
       preparedBy: refcode.receivingHcp.code,
-      verifierId: refcode.approvedById,
     };
   }
 

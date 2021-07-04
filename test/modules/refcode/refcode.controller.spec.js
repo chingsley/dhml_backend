@@ -696,7 +696,7 @@ describe('RefcodeController', () => {
         const payload = { status: APPROVED, stateOfGeneration };
         const refcode = seededCodeRequests[1];
         await _RefcodeService.resetAllStatusUpdate(refcode.id);
-        await refcode.update({ dateClaimed: months.setPast(2) });
+        await refcode.update({ claimsVerifiedOn: months.setPast(2) });
         const res = await RefcodeApi.updateRequestStatus(
           refcode.id,
           payload,
@@ -706,7 +706,7 @@ describe('RefcodeController', () => {
           errors: [error],
         } = res.body;
         const expectedError =
-          'Action not allowed because the code has been Claimed';
+          'Action not allowed because the code has verified claims';
         expect(res.status).toBe(403);
         expect(error).toBe(expectedError);
         done();
@@ -915,7 +915,7 @@ describe('RefcodeController', () => {
         const payload = { status: FLAGGED, flagReason };
         const refcode = seededCodeRequests[1];
         await _RefcodeService.resetAllStatusUpdate(refcode.id);
-        await refcode.update({ dateClaimed: months.setPast(2) });
+        await refcode.update({ claimsVerifiedOn: months.setPast(2) });
         const res = await RefcodeApi.updateRequestStatus(
           refcode.id,
           payload,
@@ -925,7 +925,7 @@ describe('RefcodeController', () => {
           errors: [error],
         } = res.body;
         const expectedError =
-          'Action not allowed because the code has been Claimed';
+          'Action not allowed because the code has verified claims';
         expect(res.status).toBe(403);
         expect(error).toBe(expectedError);
         done();
@@ -1130,7 +1130,7 @@ describe('RefcodeController', () => {
         const payload = { status: DECLINED, declineReason };
         const refcode = seededCodeRequests[1];
         await _RefcodeService.resetAllStatusUpdate(refcode.id);
-        await refcode.update({ dateClaimed: months.setPast(2) });
+        await refcode.update({ claimsVerifiedOn: months.setPast(2) });
         const res = await RefcodeApi.updateRequestStatus(
           refcode.id,
           payload,
@@ -1140,7 +1140,7 @@ describe('RefcodeController', () => {
           errors: [error],
         } = res.body;
         const expectedError =
-          'Action not allowed because the code has been Claimed';
+          'Action not allowed because the code has verified claims';
         expect(res.status).toBe(403);
         expect(error).toBe(expectedError);
         done();
