@@ -74,13 +74,16 @@ const claimUpdateReqBody = {
 };
 export const schemaClaimUpdateByIdParam = Joi.object(claimUpdateReqBody);
 
-export const schemaBulkClaimUpdate = Joi.object({
-  delete: Joi.array().items(uuidSchema),
-  update: Joi.array().items(
-    Joi.object({
-      claimId: uuidSchema,
-      ...claimUpdateReqBody,
-    })
-  ),
+export const schemaBulkClaimProcessing = Joi.object({
+  referalCode: Joi.string().regex(VALID_REF_CODE),
+  remove: Joi.array().items(uuidSchema).unique(),
+  update: Joi.array()
+    .items(
+      Joi.object({
+        id: uuidSchema.required(), // id is the claim id
+        ...claimUpdateReqBody,
+      })
+    )
+    .unique((a, b) => a.id === b.id),
   create: Joi.array().items(newClaimReqBody),
 });

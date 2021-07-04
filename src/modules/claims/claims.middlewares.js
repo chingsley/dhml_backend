@@ -2,6 +2,7 @@ import Response from '../../utils/Response';
 import { validateSchema } from '../../validators/joi/config';
 import {
   newClaimSchema,
+  schemaBulkClaimProcessing,
   schemaClaimUpdateByIdParam,
 } from '../../validators/joi/schemas/claims.schema';
 import {} from '../../validators/joi/schemas/refcode.schema';
@@ -34,16 +35,22 @@ export default class ClaimsMiddleware {
       );
     }
   }
-  static async validateBulkUpdate(req, res, next) {
+  static async validateBulkClaimProcessing(req, res, next) {
     try {
       const { joiFormatted } = await validateSchema(
-        schemaBulkClaimUpdate,
+        schemaBulkClaimProcessing,
         req.body
       );
       req.body = joiFormatted;
       return next();
     } catch (error) {
-      Response.handleError('validateBulkUpdate', error, req, res, next);
+      Response.handleError(
+        'validateBulkClaimProcessing',
+        error,
+        req,
+        res,
+        next
+      );
     }
   }
 }
