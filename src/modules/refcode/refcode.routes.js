@@ -108,6 +108,17 @@ router.patch(
   RefcodeMiddleware.validateCodeStatusUpdate,
   RefcodeController.updateCodeRequestStatus
 );
+router.patch(
+  '/:refcodeId/verify-claims',
+  AuthMiddleware.authorize([
+    MD,
+    HOD_MEDICAL,
+    roles.TIER_1_MEDICAL,
+    roles.TIER_2_MEDICAL,
+  ]),
+  AppMiddleware.validateIdParams,
+  RefcodeController.verifyClaims
+);
 router.delete(
   '/:refcodeId',
   AuthMiddleware.authorize([MD, roles.TIER_1_MEDICAL, roles.TIER_2_MEDICAL]),

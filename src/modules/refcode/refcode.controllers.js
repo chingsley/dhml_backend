@@ -63,6 +63,15 @@ export default class RefcodeController {
       Response.handleError('updateCodeRequestStatus', error, req, res, next);
     }
   }
+  static async verifyClaims(req, res, next) {
+    try {
+      const refcodeService = new RefcodeService(req);
+      const data = await refcodeService.verifyClaimsSVC();
+      return res.status(200).json({ message: 'Claims verified', data });
+    } catch (error) {
+      Response.handleError('verifyClaims', error, req, res, next);
+    }
+  }
   static async deleteRefcode(req, res, next) {
     try {
       const refcodeService = new RefcodeService(req);

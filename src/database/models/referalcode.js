@@ -215,6 +215,10 @@ module.exports = (sequelize, DataTypes) => {
           model: this.sequelize.models.HealthCareProvider,
           as: 'receivingHcp',
         },
+        {
+          model: this.sequelize.models.Claim,
+          as: 'claims',
+        },
       ],
     });
     const errorIfNotFound = `no referal code matches the id of ${refcodeId}`;
@@ -267,6 +271,10 @@ module.exports = (sequelize, DataTypes) => {
             attributes: ['id', 'firstName', 'surname', 'staffIdNo'],
           },
         })),
+        {
+          model: this.sequelize.models.Claim,
+          as: 'claims',
+        },
       ],
     });
   };
@@ -292,6 +300,18 @@ module.exports = (sequelize, DataTypes) => {
   ReferalCode.prototype.rejectIfCodeIsApproved = function () {
     rejectIf(!!this.dateApproved, {
       withError: 'Action not allowed because the code has been approved',
+      status: 403,
+    });
+  };
+  ReferalCode.prototype.rejectIfNotApproved = function () {
+    rejectIf(!this.dateApproved, {
+      withError: 'Action not allowed because the code has NOT been approved',
+      status: 403,
+    });
+  };
+  ReferalCode.prototype.rejectIfClaimsNotFound = function () {
+    rejectIf(!this.claims || this.claims.length === 0, {
+      withError: 'No Claims found for the referal code',
       status: 403,
     });
   };
