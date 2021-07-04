@@ -22,13 +22,13 @@ module.exports = {
       });
 
       const codeRequests = refcodeSample.getBulkSamples({
-        pending: 500,
-        approved: 500,
+        numPending: 500,
+        numApproved: 500,
       });
       // const codeRequests = await generateSampleRequestForRefcodesForSeed(1000);
       await queryInterface.bulkInsert('ReferalCodes', codeRequests);
     } catch (e) {
-      log(e.message);
+      log(e);
     }
   },
 

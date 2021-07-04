@@ -27,6 +27,9 @@ module.exports = {
         serviceName: {
           type: Sequelize.STRING,
         },
+        drugName: {
+          type: Sequelize.STRING,
+        },
         drugDosageForm: {
           type: Sequelize.STRING,
         },
@@ -42,14 +45,23 @@ module.exports = {
         pricePerUnit: {
           type: Sequelize.DECIMAL,
         },
-        amount: {
-          type: Sequelize.DECIMAL,
-        },
+        // amount: {
+        //   type: Sequelize.DECIMAL,
+        // },
         preparedBy: {
           // could be user or hcp so we can't use preparerId, as it will be referencing either hchp or user
           // for a user, preparedBy = user.staffInfo.staffIdNo
           // for hcp, preparedBy = hcp.code
           type: Sequelize.STRING,
+        },
+        verifierId: {
+          type: Sequelize.INTEGER,
+          references: {
+            model: 'Users',
+            key: 'id',
+          },
+          onDelete: 'RESTRICT',
+          onUpdate: 'CASCADE',
         },
         createdAt: {
           allowNull: false,

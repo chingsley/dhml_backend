@@ -9,32 +9,6 @@ const {
 const { moment, days } = require('../../utils/timers');
 const { states } = require('../constants/lists.constants');
 
-{
-  // const refcodePool = [];
-  // const getDummyRefcode = ({
-  //   stateCode,
-  //   specialtyCode,
-  //   enrolleeServiceStatus,
-  // }) => {
-  //   const date = moment().format('DDMMYY');
-  //   const serviceStatus = getServiceStatusCode(enrolleeServiceStatus);
-  //   const similarCodes = refcodePool.filter((_code) => {
-  //     const _stateCode = _code.match(/[A-Z]+\//)[0].match(/[A-Z]+/)[0];
-  //     const _date = _code.match(/\d{6}/)[0];
-  //     const _specialtyCode = _code.match(/\d+[A-Z]/)[0];
-  //     return (
-  //       stateCode === _stateCode &&
-  //       specialtyCode === _specialtyCode &&
-  //       date === _date
-  //     );
-  //   });
-  //   const codeTypeCount = similarCodes.length + 1;
-  //   const code = `${stateCode}/${date}/022/${specialtyCode}-${codeTypeCount}/${serviceStatus}`;
-  //   refcodePool.push(code);
-  //   return code;
-  // };
-}
-
 class RefcodeSample {
   constructor({ enrollees, specialties, hcpSpecialties, users } = {}) {
     this.enrollees = enrollees;
@@ -84,6 +58,7 @@ class RefcodeSample {
       code,
       dateApproved,
       approvedById,
+      stateOfGeneration,
     };
   }
 
@@ -108,17 +83,17 @@ class RefcodeSample {
     return code;
   }
 
-  getBulkSamples({ pending, approved } = {}) {
-    if (pending + approved > this.enrollees.length) {
+  getBulkSamples({ numPending, numApproved } = {}) {
+    if (numPending + numApproved > this.enrollees.length) {
       throw new Error(
-        `pending(${pending}) + approved(${approved}) cannot be greater than no. of enrollees(${this.enrollees.lenght})`
+        `numPending(${numPending}) + numApproved(${numApproved}) cannot be greater than no. of enrollees(${this.enrollees.lenght})`
       );
     }
     const pendingRequests = [];
     const approvedRequests = [];
     let count = 0;
-    const endCount = pending + approved;
-    while (count < pending) {
+    const endCount = numPending + numApproved;
+    while (count < numPending) {
       pendingRequests.push(this.getOne(this.enrollees[count]));
       count++;
     }
