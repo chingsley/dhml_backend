@@ -117,6 +117,7 @@ router.patch(
     roles.TIER_2_MEDICAL,
   ]),
   AppMiddleware.validateIdParams,
+  RefcodeMiddleware.validateClaimsVerification,
   RefcodeController.verifyClaims
 );
 router.delete(

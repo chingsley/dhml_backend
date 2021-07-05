@@ -182,12 +182,15 @@ export default class RefcodeService extends AppService {
 
   async verifyClaimsSVC() {
     const { refcodeId } = this.params;
+    const { remarks } = this.body;
     const refcode = await db.ReferalCode.findById(refcodeId);
     refcode.rejectIfNotApproved();
     refcode.rejectIfClaimsNotFound();
+    refcode.rejectIfCodeIsClaimed('Claims have already been verified');
     return refcode.updateAndReload({
       claimsVerifiedOn: new Date(),
       claimsVerifierId: this.operator.id,
+      remarksOnClaims: remarks,
     });
   }
 
