@@ -24,15 +24,19 @@ class Cloudinary {
     }
   }
 
-  static async uploadImage(image, folderName = null) {
+  static getMainFolder() {
+    return process.env.NODE_ENV === 'production' ? 'dhml' : 'dhml_testing';
+  }
+
+  static async uploadImage(image, subFolder = null) {
     try {
-      // const { image } = reqFiles;
+      const mainFolder = this.getMainFolder();
       const fileName = `${image.name.replace('.', '_')}_${moment().format(
         'YYYYMMDDHHmmss'
       )}`;
-      const path = folderName
-        ? `dhml/${folderName}/${fileName}`
-        : `dhml/${fileName}`;
+      const path = subFolder
+        ? `${mainFolder}/${subFolder}/${fileName}`
+        : `${mainFolder}/${fileName}`;
       const imageUrl = await Cloudinary.uploadToCloudinary(image, path);
 
       return imageUrl;
@@ -46,8 +50,10 @@ class Cloudinary {
       const fileName = `${file.name.replace('.', '_')}_${moment().format(
         'YYYYMMDDHHmmss'
       )}`;
-      const path = `dhml/${field}`;
-      return this.uploadToCloudinary(file, `${path}/${fileName}`);
+      const mainFolder = this.getMainFolder();
+      const subFolder = field;
+      const path = `${mainFolder}/${subFolder}/${fileName}`;
+      return this.uploadToCloudinary(file, path);
     });
 
     const result = await Promise.all(promiseArr);
