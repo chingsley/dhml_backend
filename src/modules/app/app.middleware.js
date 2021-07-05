@@ -1,4 +1,4 @@
-import { Joi, validateSchema } from '../../validators/joi/config';
+import { Joi, validateSchema, uuidSchema } from '../../validators/joi/config';
 import Cypher from '../../utils/Cypher';
 import { isEmptyObject } from '../../utils/helpers';
 import Response from '../../utils/Response';
@@ -20,7 +20,9 @@ export default class AppMiddleware {
         summaryId: Joi.number().integer().min(1),
         capitationId: Joi.number().integer().min(1),
         voucherId: Joi.number().integer().min(1),
-        refcodeId: Joi.number().integer().min(1),
+        specialtyId: uuidSchema,
+        refcodeId: uuidSchema,
+        claimId: uuidSchema,
       });
       const { joiFormatted } = await validateSchema(
         paramsSchema,

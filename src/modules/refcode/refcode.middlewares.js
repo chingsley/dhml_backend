@@ -1,7 +1,7 @@
 import Response from '../../utils/Response';
 import { validateSchema } from '../../validators/joi/config';
 import {
-  codeVerificationSchema,
+  querySchemaGetOneRefcode,
   codeStatusUpdateSchema,
   schemaRefcodeIdArr,
   refcodeQuerySchema,
@@ -9,6 +9,8 @@ import {
   schemaCodeRequestForNewEnrollee,
   schemaCodeRequestForExistingEnrollee,
   shcemaPatchCodeRequest,
+  claimsVerificationSchema,
+  claimsDocUploadSchema,
 } from '../../validators/joi/schemas/refcode.schema';
 
 export default class RefcodeMiddleware {
@@ -38,16 +40,16 @@ export default class RefcodeMiddleware {
     }
   }
 
-  static async validateRefcode(req, res, next) {
+  static async validateGetOneRefcode(req, res, next) {
     try {
       const { joiFormatted } = await validateSchema(
-        codeVerificationSchema,
+        querySchemaGetOneRefcode,
         req.query
       );
       req.query = joiFormatted;
       return next();
     } catch (error) {
-      Response.handleError('validateRefcode', error, req, res, next);
+      Response.handleError('validateGetOneRefcode', error, req, res, next);
     }
   }
   static async validateCodeStatusUpdate(req, res, next) {
@@ -96,6 +98,26 @@ export default class RefcodeMiddleware {
       return next();
     } catch (error) {
       Response.handleError('validateFetchCodeHistory', error, req, res, next);
+    }
+  }
+  static async validateClaimsVerification(req, res, next) {
+    try {
+      const { joiFormatted } = await validateSchema(
+        claimsVerificationSchema,
+        req.body
+      );
+      req.query = joiFormatted;
+      return next();
+    } catch (error) {
+      Response.handleError('validateClaimsVerification', error, req, res, next);
+    }
+  }
+  static async validateClaimsDocUpload(req, res, next) {
+    try {
+      await validateSchema(claimsDocUploadSchema, req.files);
+      return next();
+    } catch (error) {
+      Response.handleError('validateClaimsDocUpload', error, req, res, next);
     }
   }
 }

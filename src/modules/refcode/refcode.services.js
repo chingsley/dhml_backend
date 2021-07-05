@@ -6,9 +6,10 @@ import codeFactory from './refcode.factory';
 import { stateCodes } from '../../shared/constants/statecodes.constants';
 import { fetchAllRefcodes } from '../../database/scripts/refcode.scripts';
 import { refcodeSearchableFields } from '../../shared/attributes/refcode.attributes';
-import errors from '../../shared/constants/errors.constants';
 import { CODE_STATUS } from '../../shared/constants/lists.constants';
 import { months } from '../../utils/timers';
+import Cloudinary from '../../utils/Cloudinary';
+import { CLAIMS_SUPPORT_DOCS } from '../../shared/constants/strings.constants';
 
 export default class RefcodeService extends AppService {
   constructor({ body, files, query, params, user: operator }) {
@@ -42,22 +43,35 @@ export default class RefcodeService extends AppService {
     });
   }
 
-  async verifyRefcode() {
-    const { referalCode: code } = this.query;
-    const refcode = await this.findOneRecord({
+  getOneRefcodeSv() {
+    const { referalCode: code, refcodeId: id } = this.query;
+    const field = id ? 'id' : 'code';
+    const value = id || code;
+
+    return this.findOneRecord({
       modelName: 'ReferalCode',
-      where: { code },
+      where: { [field]: value },
       include: [
-        {
+        ...['referringHcp', 'receivingHcp'].map((item) => ({
           model: db.HealthCareProvider,
-          as: 'referringHcp',
+          as: item,
           attributes: ['id', 'name', 'code'],
-        },
+        })),
         {
-          model: db.HealthCareProvider,
-          as: 'receivingHcp',
-          attributes: ['id', 'name', 'code'],
+          model: db.Specialty,
+          as: 'specialty',
+          attributes: ['id', 'name'],
         },
+        ...['declinedBy', 'flaggedBy', 'approvedBy'].map((item) => ({
+          model: db.User,
+          as: item,
+          attributes: ['id', 'username'],
+          include: {
+            model: db.Staff,
+            as: 'staffInfo',
+            attributes: ['id', 'firstName', 'surname', 'staffIdNo'],
+          },
+        })),
         {
           model: db.Enrollee,
           as: 'enrollee',
@@ -65,7 +79,7 @@ export default class RefcodeService extends AppService {
             {
               model: db.ReferalCode,
               as: 'referalCodes',
-              where: { code: { [Op.not]: code } },
+              where: { [field]: { [Op.not]: value } },
               order: [['createdAt', 'DESC']],
               limit: 5,
             },
@@ -77,16 +91,8 @@ export default class RefcodeService extends AppService {
           ],
         },
       ],
-      errorIfNotFound: 'Invalid code. No record found',
+      errorIfNotFound: `No code request found for ${field}: ${value}`,
     });
-
-    this.rejectIf(refcode.isClaimed, {
-      withError: errors.claimedRefcode(refcode.expiresAt),
-    });
-    this.rejectIf(refcode.hasExpired, {
-      withError: errors.expiredRefcode(refcode.expiresAt),
-    });
-    return refcode;
   }
 
   async updateCodeRequestDetailsSV() {
@@ -151,6 +157,7 @@ export default class RefcodeService extends AppService {
         flagReason,
       };
     } else if (status === CODE_STATUS.APPROVED) {
+      refcode.rejectIfCodeIsApproved();
       // if request is approved (i.e code generated), then flagged, then approved again, then:
       // ---- we do not generate a new code, but use the existing code
       // ---- we do not generate a new expiresAt date, but use the existing date
@@ -173,6 +180,31 @@ export default class RefcodeService extends AppService {
       };
     }
     return refcode.updateAndReload(updates);
+  }
+
+  async verifyClaimsSVC() {
+    const { refcodeId } = this.params;
+    const { remarks } = this.body;
+    const refcode = await db.ReferalCode.findById(refcodeId);
+    refcode.rejectIfNotApproved();
+    refcode.rejectIfClaimsNotFound();
+    refcode.rejectIfCodeIsClaimed('Claims have already been verified');
+    return refcode.updateAndReload({
+      claimsVerifiedOn: new Date(),
+      claimsVerifierId: this.operator.id,
+      remarksOnClaims: remarks,
+    });
+  }
+
+  async uploadClaimsSupportingDocSVC() {
+    const { image } = this.files;
+    const { refcodeId } = this.params;
+    const cloudFolder = CLAIMS_SUPPORT_DOCS;
+    const refcode = await db.ReferalCode.findById(refcodeId);
+    const uploadedImgUrl = await Cloudinary.uploadImage(image, cloudFolder);
+    await refcode.updateAndReload({ claimsSupportingDocument: uploadedImgUrl });
+
+    return refcode;
   }
 
   async handleCodeDelete() {

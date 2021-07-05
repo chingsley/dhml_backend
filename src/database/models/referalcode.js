@@ -8,6 +8,12 @@ module.exports = (sequelize, DataTypes) => {
   const ReferalCode = sequelize.define(
     'ReferalCode',
     {
+      id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
+      },
       code: {
         type: DataTypes.STRING,
       },
@@ -67,7 +73,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       requestedBy: {
         // could be user or hcp so we can't use requesterId, as it will be referencing either hchp or user
-        // for a user, requestedBy = user.staffInfo.email
+        // for a user, requestedBy = user.staffInfo.staffIdNo
         // for hcp, requestedBy = hcp.code
         type: DataTypes.STRING,
       },
@@ -116,8 +122,23 @@ module.exports = (sequelize, DataTypes) => {
       expiresAt: {
         type: DataTypes.DATE,
       },
-      dateClaimed: {
+      claimsVerifiedOn: {
         type: DataTypes.DATE,
+      },
+      claimsVerifierId: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: 'Users',
+          key: 'id',
+        },
+        onDelete: 'RESTRICT',
+        onUpdate: 'CASCADE',
+      },
+      remarksOnClaims: {
+        type: DataTypes.TEXT,
+      },
+      claimsSupportingDocument: {
+        type: DataTypes.TEXT,
       },
       status: {
         type: DataTypes.VIRTUAL,
@@ -143,7 +164,7 @@ module.exports = (sequelize, DataTypes) => {
       isClaimed: {
         type: DataTypes.VIRTUAL,
         get() {
-          return !!this.dateClaimed;
+          return !!this.claimsVerifiedOn;
         },
       },
     },
@@ -178,6 +199,11 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'declinedById',
       as: 'declinedBy',
     });
+    ReferalCode.hasMany(models.Claim, {
+      foreignKey: 'refcodeId',
+      as: 'claims',
+      onDelete: 'CASCADE',
+    });
   };
   ReferalCode.findById = async function (refcodeId) {
     const refcode = await this.findOne({
@@ -194,6 +220,10 @@ module.exports = (sequelize, DataTypes) => {
         {
           model: this.sequelize.models.HealthCareProvider,
           as: 'receivingHcp',
+        },
+        {
+          model: this.sequelize.models.Claim,
+          as: 'claims',
         },
       ],
     });
@@ -228,75 +258,70 @@ module.exports = (sequelize, DataTypes) => {
             'scheme',
           ],
         },
-        {
+        ...['referringHcp', 'receivingHcp'].map((item) => ({
           model: this.sequelize.models.HealthCareProvider,
-          as: 'referringHcp',
-          attributes: ['id', 'code', 'name'],
-        },
-        {
-          model: this.sequelize.models.HealthCareProvider,
-          as: 'receivingHcp',
-          attributes: ['id', 'code', 'name'],
-        },
+          as: item,
+          attributes: ['id', 'name', 'code'],
+        })),
         {
           model: this.sequelize.models.Specialty,
           as: 'specialty',
         },
-        {
+        ...['declinedBy', 'flaggedBy', 'approvedBy'].map((item) => ({
           model: this.sequelize.models.User,
-          as: 'flaggedBy',
+          as: item,
           attributes: ['id', 'username'],
           include: {
             model: this.sequelize.models.Staff,
             as: 'staffInfo',
             attributes: ['id', 'firstName', 'surname', 'staffIdNo'],
           },
-        },
+        })),
         {
-          model: this.sequelize.models.User,
-          as: 'approvedBy',
-          attributes: ['id', 'username'],
-          include: {
-            model: this.sequelize.models.Staff,
-            as: 'staffInfo',
-            attributes: ['id', 'firstName', 'surname', 'staffIdNo'],
-          },
-        },
-        {
-          model: this.sequelize.models.User,
-          as: 'declinedBy',
-          attributes: ['id', 'username'],
-          include: {
-            model: this.sequelize.models.Staff,
-            as: 'staffInfo',
-            attributes: ['id', 'firstName', 'surname', 'staffIdNo'],
-          },
+          model: this.sequelize.models.Claim,
+          as: 'claims',
         },
       ],
     });
   };
-  ReferalCode.prototype.rejectIfCodeIsExpired = function () {
+  ReferalCode.prototype.rejectIfCodeIsExpired = function (errorMsg) {
     rejectIf(this.expiresAt && isExpired(this.expiresAt), {
-      withError: 'Action not allowed because the code has expired',
+      withError: errorMsg || 'Action not allowed because the code has expired',
       status: 403,
     });
   };
-  ReferalCode.prototype.rejectIfCodeIsClaimed = function () {
-    rejectIf(!!this.dateClaimed, {
-      withError: 'Action not allowed because the code has been Claimed',
+  ReferalCode.prototype.rejectIfCodeIsClaimed = function (errorMsg) {
+    rejectIf(!!this.claimsVerifiedOn, {
+      withError:
+        errorMsg || 'Action not allowed because the code has verified claims',
       status: 403,
     });
   };
-  ReferalCode.prototype.rejectIfCodeIsDeclined = function () {
+  ReferalCode.prototype.rejectIfCodeIsDeclined = function (errorMsg) {
     rejectIf(!!this.dateDeclined, {
       withError:
+        errorMsg ||
         'Action not allowed because the code has already been declined',
       status: 403,
     });
   };
-  ReferalCode.prototype.rejectIfCodeIsApproved = function () {
+  ReferalCode.prototype.rejectIfCodeIsApproved = function (errorMsg) {
     rejectIf(!!this.dateApproved, {
-      withError: 'Action not allowed because the code has been approved',
+      withError:
+        errorMsg || 'Action not allowed because the code has been approved',
+      status: 403,
+    });
+  };
+  ReferalCode.prototype.rejectIfNotApproved = function (errorMsg) {
+    rejectIf(!this.dateApproved, {
+      withError:
+        errorMsg || 'Action not allowed because the code has NOT been approved',
+      status: 403,
+    });
+  };
+  ReferalCode.prototype.rejectIfClaimsNotFound = function (errorMsg) {
+    rejectIf(!this.claims || this.claims.length === 0, {
+      withError: errorMsg || 'No Claims found for the referal code',
       status: 403,
     });
   };

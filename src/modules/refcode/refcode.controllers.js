@@ -22,17 +22,23 @@ export default class RefcodeController {
         data,
       });
     } catch (error) {
-      Response.handleError('generateNewCode', error, req, res, next);
+      Response.handleError(
+        'createRequestForRefcodeCTRL',
+        error,
+        req,
+        res,
+        next
+      );
     }
   }
 
-  static async verifyReferalCode(req, res, next) {
+  static async getOneRefcodeCtr(req, res, next) {
     try {
       const refcodeService = new RefcodeService(req);
-      const data = await refcodeService.verifyRefcode();
+      const data = await refcodeService.getOneRefcodeSv();
       return res.status(200).json({ message: 'verified', data });
     } catch (error) {
-      Response.handleError('verifyReferalCode', error, req, res, next);
+      Response.handleError('getOneRefcodeCtr', error, req, res, next);
     }
   }
   static async updateCodeRequestDetails(req, res, next) {
@@ -55,6 +61,15 @@ export default class RefcodeController {
         .json({ message: 'code status updated successfully', data });
     } catch (error) {
       Response.handleError('updateCodeRequestStatus', error, req, res, next);
+    }
+  }
+  static async verifyClaims(req, res, next) {
+    try {
+      const refcodeService = new RefcodeService(req);
+      const data = await refcodeService.verifyClaimsSVC();
+      return res.status(200).json({ message: 'Claims verified', data });
+    } catch (error) {
+      Response.handleError('verifyClaims', error, req, res, next);
     }
   }
   static async deleteRefcode(req, res, next) {
@@ -85,6 +100,15 @@ export default class RefcodeController {
       return res.status(200).json({ data });
     } catch (error) {
       Response.handleError('getEnrolleeCodeHistory', error, req, res, next);
+    }
+  }
+  static async uploadClaimsSupportingDoc(req, res, next) {
+    try {
+      const refcodeService = new RefcodeService(req);
+      const data = await refcodeService.uploadClaimsSupportingDocSVC();
+      return res.status(200).json({ data });
+    } catch (error) {
+      Response.handleError('uploadClaimsSupportingDoc', error, req, res, next);
     }
   }
 }

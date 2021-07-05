@@ -152,6 +152,9 @@ module.exports = (sequelize, DataTypes) => {
       letterOfNok: {
         type: DataTypes.STRING,
       },
+      nin: {
+        type: DataTypes.STRING,
+      },
       isVerified: {
         type: DataTypes.BOOLEAN,
         allowNull: false,

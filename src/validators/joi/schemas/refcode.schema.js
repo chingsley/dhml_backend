@@ -28,51 +28,22 @@ export const shcemaPatchCodeRequest = Joi.object({
 export const schemaCodeRequestForNewEnrollee = (enrolmentType) => {
   return Joi.object({
     ...sharedFields.newEnrolleeFields(enrolmentType),
+    bloodGroup: Joi.string().trim(),
     ...sharedFields.refcodeRequestFields(validStates),
-    // receivingHcpId: Joi.number().min(1).required(),
-    // reasonForReferral: Joi.string().trim().required(),
-    // diagnosis: Joi.string().trim().required(),
-    // diagnosisStatus: Joi.string()
-    //   .trim()
-    //   .valid('provisional', 'final')
-    //   .required(),
-    // clinicalFindings: Joi.string().trim().required(),
-    // specialtyId: Joi.string()
-    //   .guid({
-    //     version: ['uuidv4', 'uuidv5'],
-    //   })
-    //   .required(),
-    // stateOfGeneration: Joi.string()
-    //   .trim()
-    //   .lowercase()
-    //   .valid(...validStates)
-    //   .required(),
   });
 };
 
 export const schemaCodeRequestForExistingEnrollee = Joi.object({
   enrolleeIdNo: Joi.string().trim().required(),
   ...sharedFields.refcodeRequestFields(validStates),
-  // receivingHcpId: Joi.number().min(1).required(),
-  // reasonForReferral: Joi.string().trim().required(),
-  // diagnosis: Joi.string().trim().required(),
-  // diagnosisStatus: Joi.string().trim().valid('provisional', 'final').required(),
-  // clinicalFindings: Joi.string().trim().required(),
-  // specialtyId: Joi.string()
-  //   .guid({
-  //     version: ['uuidv4', 'uuidv5'],
-  //   })
-  //   .required(),
-  // stateOfGeneration: Joi.string()
-  //   .trim()
-  //   .lowercase()
-  //   .valid(...validStates)
-  //   .required(),
 }).unknown();
 
-export const codeVerificationSchema = Joi.object({
-  referalCode: Joi.string().regex(VALID_REF_CODE).required(),
-});
+export const querySchemaGetOneRefcode = Joi.object({
+  referalCode: Joi.string().regex(VALID_REF_CODE),
+  refcodeId: Joi.string().guid({
+    version: ['uuidv4', 'uuidv5'],
+  }),
+}).or('referalCode', 'refcodeId');
 
 export const codeStatusUpdateSchema = Joi.object({
   status: Joi.string()
@@ -122,4 +93,12 @@ export const schemaEnrolleeIdNo = Joi.object({
   pageSize: Joi.number().integer().min(1),
   searchField: Joi.string().trim(),
   searchValue: Joi.string().trim(),
+});
+
+export const claimsVerificationSchema = Joi.object({
+  remarks: Joi.string().trim().required(),
+});
+
+export const claimsDocUploadSchema = Joi.object({
+  image: Joi.any().required(),
 });

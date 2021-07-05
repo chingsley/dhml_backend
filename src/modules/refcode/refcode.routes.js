@@ -51,7 +51,7 @@ router.get(
 );
 
 router.get(
-  '/verify',
+  '/get-one',
   AuthMiddleware.authorize([
     ...allowedRoles,
     HOD_MEDICAL,
@@ -60,8 +60,8 @@ router.get(
     VERIFIER,
     ENROLMENT_OFFICER,
   ]),
-  RefcodeMiddleware.validateRefcode,
-  RefcodeController.verifyReferalCode
+  RefcodeMiddleware.validateGetOneRefcode,
+  RefcodeController.getOneRefcodeCtr
 );
 
 router.get(
@@ -115,4 +115,34 @@ router.delete(
   RefcodeController.deleteRefcode
 );
 
+/**
+ * ROUTES RELATED TO THE CLAIMS ASSOCIATED TO A GIVEN REFERAL CODE
+ */
+router.patch(
+  '/:refcodeId/verify-claims',
+  AuthMiddleware.authorize([
+    MD,
+    HOD_MEDICAL,
+    roles.TIER_1_MEDICAL,
+    roles.TIER_2_MEDICAL,
+  ]),
+  AppMiddleware.validateIdParams,
+  RefcodeMiddleware.validateClaimsVerification,
+  RefcodeController.verifyClaims
+);
+
+router.patch(
+  '/:refcodeId/claims-supporting-document',
+  AuthMiddleware.authorize([
+    MD,
+    HOD_MEDICAL,
+    roles.TIER_1_MEDICAL,
+    roles.TIER_2_MEDICAL,
+  ]),
+  AppMiddleware.validateIdParams,
+  RefcodeMiddleware.validateClaimsDocUpload,
+  RefcodeController.uploadClaimsSupportingDoc
+);
 export default router;
+// const uploadedImages = files ? await Cloudinary.bulkUpload(files) : {};
+// const uploadedImages = files ? await Cloudinary.uploadImage(files) : {};

@@ -84,7 +84,7 @@ export default class AuthMiddleware {
         req.userType = userType;
         req.user.userType = userType;
         req.user.userLocation = this.getUserLocation(req.user, userType);
-        req.user.subjectId = user ? user.staffInfo.email : hcp.code;
+        req.user.subjectId = user ? user.staffInfo.staffIdNo : hcp.code;
         return next();
       } catch (error) {
         return Response.handleError('authorize', error, req, res, next);
