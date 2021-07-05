@@ -144,6 +144,12 @@ module.exports = {
           onDelete: 'RESTRICT',
           onUpdate: 'CASCADE',
         },
+        remarksOnClaims: {
+          type: Sequelize.TEXT,
+        },
+        claimsSupportingDocument: {
+          type: Sequelize.TEXT,
+        },
         createdAt: {
           allowNull: false,
           type: Sequelize.DATE,
