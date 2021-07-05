@@ -108,6 +108,16 @@ router.patch(
   RefcodeMiddleware.validateCodeStatusUpdate,
   RefcodeController.updateCodeRequestStatus
 );
+router.delete(
+  '/:refcodeId',
+  AuthMiddleware.authorize([MD, roles.TIER_1_MEDICAL, roles.TIER_2_MEDICAL]),
+  AppMiddleware.validateIdParams,
+  RefcodeController.deleteRefcode
+);
+
+/**
+ * ROUTES RELATED TO THE CLAIMS ASSOCIATED TO A GIVEN REFERAL CODE
+ */
 router.patch(
   '/:refcodeId/verify-claims',
   AuthMiddleware.authorize([
@@ -120,11 +130,19 @@ router.patch(
   RefcodeMiddleware.validateClaimsVerification,
   RefcodeController.verifyClaims
 );
-router.delete(
-  '/:refcodeId',
-  AuthMiddleware.authorize([MD, roles.TIER_1_MEDICAL, roles.TIER_2_MEDICAL]),
-  AppMiddleware.validateIdParams,
-  RefcodeController.deleteRefcode
-);
 
+router.patch(
+  '/:refcodeId/claims-supporting-document',
+  AuthMiddleware.authorize([
+    MD,
+    HOD_MEDICAL,
+    roles.TIER_1_MEDICAL,
+    roles.TIER_2_MEDICAL,
+  ]),
+  AppMiddleware.validateIdParams,
+  RefcodeMiddleware.validateClaimsDocUpload,
+  RefcodeController.uploadClaimsSupportingDoc
+);
 export default router;
+// const uploadedImages = files ? await Cloudinary.bulkUpload(files) : {};
+// const uploadedImages = files ? await Cloudinary.uploadImage(files) : {};

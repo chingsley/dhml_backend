@@ -10,6 +10,7 @@ import {
   schemaCodeRequestForExistingEnrollee,
   shcemaPatchCodeRequest,
   claimsVerificationSchema,
+  claimsDocUploadSchema,
 } from '../../validators/joi/schemas/refcode.schema';
 
 export default class RefcodeMiddleware {
@@ -109,6 +110,14 @@ export default class RefcodeMiddleware {
       return next();
     } catch (error) {
       Response.handleError('validateClaimsVerification', error, req, res, next);
+    }
+  }
+  static async validateClaimsDocUpload(req, res, next) {
+    try {
+      await validateSchema(claimsDocUploadSchema, req.files);
+      return next();
+    } catch (error) {
+      Response.handleError('validateClaimsDocUpload', error, req, res, next);
     }
   }
 }

@@ -8,6 +8,8 @@ import { fetchAllRefcodes } from '../../database/scripts/refcode.scripts';
 import { refcodeSearchableFields } from '../../shared/attributes/refcode.attributes';
 import { CODE_STATUS } from '../../shared/constants/lists.constants';
 import { months } from '../../utils/timers';
+import Cloudinary from '../../utils/Cloudinary';
+import { CLAIMS_SUPPORT_DOCS } from '../../shared/constants/strings.constants';
 
 export default class RefcodeService extends AppService {
   constructor({ body, files, query, params, user: operator }) {
@@ -192,6 +194,17 @@ export default class RefcodeService extends AppService {
       claimsVerifierId: this.operator.id,
       remarksOnClaims: remarks,
     });
+  }
+
+  async uploadClaimsSupportingDocSVC() {
+    const { image } = this.files;
+    const { refcodeId } = this.params;
+    const cloudFolder = CLAIMS_SUPPORT_DOCS;
+    const refcode = await db.ReferalCode.findById(refcodeId);
+    const uploadedImgUrl = await Cloudinary.uploadImage(image, cloudFolder);
+    await refcode.updateAndReload({ claimsSupportingDocument: uploadedImgUrl });
+
+    return refcode;
   }
 
   async handleCodeDelete() {
