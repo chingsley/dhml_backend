@@ -24,16 +24,16 @@ class Cloudinary {
     }
   }
 
-  static async uploadImage(reqFiles) {
+  static async uploadImage(image, folderName = null) {
     try {
-      const { image } = reqFiles;
+      // const { image } = reqFiles;
       const fileName = `${image.name.replace('.', '_')}_${moment().format(
         'YYYYMMDDHHmmss'
       )}`;
-      const imageUrl = await Cloudinary.uploadToCloudinary(
-        image,
-        `dhml/${fileName}`
-      );
+      const path = folderName
+        ? `dhml/${folderName}/${fileName}`
+        : `dhml/${fileName}`;
+      const imageUrl = await Cloudinary.uploadToCloudinary(image, path);
 
       return imageUrl;
     } catch (error) {
