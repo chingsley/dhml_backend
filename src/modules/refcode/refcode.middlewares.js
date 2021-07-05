@@ -9,6 +9,8 @@ import {
   schemaCodeRequestForNewEnrollee,
   schemaCodeRequestForExistingEnrollee,
   shcemaPatchCodeRequest,
+  claimsVerificationSchema,
+  claimsDocUploadSchema,
 } from '../../validators/joi/schemas/refcode.schema';
 
 export default class RefcodeMiddleware {
@@ -96,6 +98,26 @@ export default class RefcodeMiddleware {
       return next();
     } catch (error) {
       Response.handleError('validateFetchCodeHistory', error, req, res, next);
+    }
+  }
+  static async validateClaimsVerification(req, res, next) {
+    try {
+      const { joiFormatted } = await validateSchema(
+        claimsVerificationSchema,
+        req.body
+      );
+      req.query = joiFormatted;
+      return next();
+    } catch (error) {
+      Response.handleError('validateClaimsVerification', error, req, res, next);
+    }
+  }
+  static async validateClaimsDocUpload(req, res, next) {
+    try {
+      await validateSchema(claimsDocUploadSchema, req.files);
+      return next();
+    } catch (error) {
+      Response.handleError('validateClaimsDocUpload', error, req, res, next);
     }
   }
 }

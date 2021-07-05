@@ -134,6 +134,12 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'RESTRICT',
         onUpdate: 'CASCADE',
       },
+      remarksOnClaims: {
+        type: DataTypes.TEXT,
+      },
+      claimsSupportingDocument: {
+        type: DataTypes.TEXT,
+      },
       status: {
         type: DataTypes.VIRTUAL,
         get() {
@@ -278,40 +284,44 @@ module.exports = (sequelize, DataTypes) => {
       ],
     });
   };
-  ReferalCode.prototype.rejectIfCodeIsExpired = function () {
+  ReferalCode.prototype.rejectIfCodeIsExpired = function (errorMsg) {
     rejectIf(this.expiresAt && isExpired(this.expiresAt), {
-      withError: 'Action not allowed because the code has expired',
+      withError: errorMsg || 'Action not allowed because the code has expired',
       status: 403,
     });
   };
-  ReferalCode.prototype.rejectIfCodeIsClaimed = function () {
+  ReferalCode.prototype.rejectIfCodeIsClaimed = function (errorMsg) {
     rejectIf(!!this.claimsVerifiedOn, {
-      withError: 'Action not allowed because the code has verified claims',
+      withError:
+        errorMsg || 'Action not allowed because the code has verified claims',
       status: 403,
     });
   };
-  ReferalCode.prototype.rejectIfCodeIsDeclined = function () {
+  ReferalCode.prototype.rejectIfCodeIsDeclined = function (errorMsg) {
     rejectIf(!!this.dateDeclined, {
       withError:
+        errorMsg ||
         'Action not allowed because the code has already been declined',
       status: 403,
     });
   };
-  ReferalCode.prototype.rejectIfCodeIsApproved = function () {
+  ReferalCode.prototype.rejectIfCodeIsApproved = function (errorMsg) {
     rejectIf(!!this.dateApproved, {
-      withError: 'Action not allowed because the code has been approved',
+      withError:
+        errorMsg || 'Action not allowed because the code has been approved',
       status: 403,
     });
   };
-  ReferalCode.prototype.rejectIfNotApproved = function () {
+  ReferalCode.prototype.rejectIfNotApproved = function (errorMsg) {
     rejectIf(!this.dateApproved, {
-      withError: 'Action not allowed because the code has NOT been approved',
+      withError:
+        errorMsg || 'Action not allowed because the code has NOT been approved',
       status: 403,
     });
   };
-  ReferalCode.prototype.rejectIfClaimsNotFound = function () {
+  ReferalCode.prototype.rejectIfClaimsNotFound = function (errorMsg) {
     rejectIf(!this.claims || this.claims.length === 0, {
-      withError: 'No Claims found for the referal code',
+      withError: errorMsg || 'No Claims found for the referal code',
       status: 403,
     });
   };

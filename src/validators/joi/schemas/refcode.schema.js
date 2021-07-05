@@ -94,3 +94,11 @@ export const schemaEnrolleeIdNo = Joi.object({
   searchField: Joi.string().trim(),
   searchValue: Joi.string().trim(),
 });
+
+export const claimsVerificationSchema = Joi.object({
+  remarks: Joi.string().trim().required(),
+});
+
+export const claimsDocUploadSchema = Joi.object({
+  image: Joi.any().required(),
+});

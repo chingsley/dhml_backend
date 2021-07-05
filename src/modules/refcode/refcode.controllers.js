@@ -102,4 +102,13 @@ export default class RefcodeController {
       Response.handleError('getEnrolleeCodeHistory', error, req, res, next);
     }
   }
+  static async uploadClaimsSupportingDoc(req, res, next) {
+    try {
+      const refcodeService = new RefcodeService(req);
+      const data = await refcodeService.uploadClaimsSupportingDocSVC();
+      return res.status(200).json({ data });
+    } catch (error) {
+      Response.handleError('uploadClaimsSupportingDoc', error, req, res, next);
+    }
+  }
 }
