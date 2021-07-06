@@ -1,3 +1,4 @@
+import { rejectIf } from '../../shared/helpers';
 import Response from '../../utils/Response';
 import { validateSchema } from '../../validators/joi/config';
 import {
@@ -114,6 +115,9 @@ export default class RefcodeMiddleware {
   }
   static async validateClaimsDocUpload(req, res, next) {
     try {
+      rejectIf(!req.files, {
+        withError: 'Please upload a scanned document as image',
+      });
       await validateSchema(claimsDocUploadSchema, req.files);
       return next();
     } catch (error) {

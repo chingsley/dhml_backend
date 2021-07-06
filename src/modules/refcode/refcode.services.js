@@ -101,10 +101,12 @@ export default class RefcodeService extends AppService {
       this.body;
 
     const refcode = await db.ReferalCode.findById(refcodeId);
-    refcode.rejectIfCodeIsExpired();
-    refcode.rejectIfCodeIsClaimed();
-    refcode.rejectIfCodeIsDeclined();
-    refcode.rejectIfCodeIsApproved();
+    this.authorizeRefcodeRecevingHcp(this.operator, refcode);
+    // refcode.rejectIfCodeIsExpired();
+    // refcode.rejectIfCodeIsClaimed();
+    // refcode.rejectIfCodeIsDeclined();
+    // refcode.rejectIfCodeIsApproved();
+    refcode.reject(['expired', 'claimed', 'declined', 'approved']);
 
     if (newReceivingHcpId || newSpecialtyId) {
       const specialtyId = newSpecialtyId || refcode.specialtyId;
@@ -123,9 +125,10 @@ export default class RefcodeService extends AppService {
     const { status, stateOfGeneration, flagReason, declineReason } = this.body;
 
     const refcode = await db.ReferalCode.findById(refcodeId);
-    refcode.rejectIfCodeIsExpired();
-    refcode.rejectIfCodeIsClaimed();
-    refcode.rejectIfCodeIsDeclined();
+    // refcode.rejectIfCodeIsExpired();
+    // refcode.rejectIfCodeIsClaimed();
+    // refcode.rejectIfCodeIsDeclined();
+    refcode.reject(['expired', 'claimed', 'declined']);
 
     let updates = {
       dateDeclined: null,
@@ -199,10 +202,24 @@ export default class RefcodeService extends AppService {
   async uploadClaimsSupportingDocSVC() {
     const { image } = this.files;
     const { refcodeId } = this.params;
-    const cloudFolder = CLAIMS_SUPPORT_DOCS;
+    const cloudSubFolder = CLAIMS_SUPPORT_DOCS;
     const refcode = await db.ReferalCode.findById(refcodeId);
-    const uploadedImgUrl = await Cloudinary.uploadImage(image, cloudFolder);
+    this.authorizeRefcodeRecevingHcp(this.operator, refcode, {
+      withError: 'Invalid refcodeId, belongs to a different Receiving Hcp',
+    });
+    const uploadedImgUrl = await Cloudinary.uploadImage(image, cloudSubFolder);
     await refcode.updateAndReload({ claimsSupportingDocument: uploadedImgUrl });
+
+    return refcode;
+  }
+
+  async deleteClaimsSupportDocSVC() {
+    const { refcodeId } = this.params;
+    const refcode = await db.ReferalCode.findById(refcodeId);
+    this.authorizeRefcodeRecevingHcp(this.operator, refcode, {
+      withError: 'Invalid refcodeId, belongs to a different Receiving Hcp',
+    });
+    await refcode.updateAndReload({ claimsSupportingDocument: null });
 
     return refcode;
   }
@@ -211,10 +228,11 @@ export default class RefcodeService extends AppService {
     const { refcodeId } = this.params;
 
     const refcode = await db.ReferalCode.findById(refcodeId);
-    refcode.rejectIfCodeIsExpired();
-    refcode.rejectIfCodeIsClaimed();
-    refcode.rejectIfCodeIsDeclined();
-    refcode.rejectIfCodeIsApproved();
+    // refcode.rejectIfCodeIsExpired();
+    // refcode.rejectIfCodeIsClaimed();
+    // refcode.rejectIfCodeIsDeclined();
+    // refcode.rejectIfCodeIsApproved();
+    refcode.reject(['expired', 'claimed', 'declined', 'approved']);
 
     await refcode.destroy();
     return true;
