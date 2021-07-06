@@ -367,4 +367,28 @@ export default class AppService {
       through: { attributes: [] },
     };
   }
+
+  /**
+   * Ensures the hcp making the claim is the receivingHcp
+   * associated with the referal code specified req.body
+   *
+   * will skip the validation if operator is not a 'hcp' user...
+   *  ...because state officers can prepare claims onbehalf of hcp's
+   *
+   * @param {object} operator app current user
+   * @param {object} refcode the referal code
+   */
+  authorizeRefcodeRecevingHcp(operator, refcode, { withError } = {}) {
+    if (operator.userType === 'hcp') {
+      const hcpId = operator.id;
+      this.rejectIf(refcode.receivingHcpId !== hcpId, {
+        withError:
+          withError ||
+          'Invalid Referal Code, please check the code and try again. REFC003',
+        status: 401,
+      });
+    }
+
+    return true;
+  }
 }

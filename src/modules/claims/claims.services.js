@@ -133,33 +133,10 @@ export default class ClaimsService extends AppService {
   }
 
   $handleRefcodeValidation(operator, refcode) {
-    this.$validateHcpRefcodeOwnership(operator, refcode);
+    this.authorizeRefcodeRecevingHcp(operator, refcode);
     refcode.rejectIfCodeIsExpired();
     refcode.rejectIfCodeIsClaimed();
     refcode.rejectIfCodeIsDeclined();
-    return true;
-  }
-
-  /**
-   * Ensures the hcp making the claim is the receivingHcp
-   * associated with the referal code specified req.body
-   *
-   * will skip the validation if operator is not a 'hcp' user...
-   *  ...because state officers can prepare claims onbehalf of hcp's
-   *
-   * @param {string} refcode Referal code
-   * @param {integer} hcpId hcp id
-   */
-  $validateHcpRefcodeOwnership(operator, refcode) {
-    if (operator.userType === 'hcp') {
-      const hcpId = operator.id;
-      this.rejectIf(refcode.receivingHcpId !== hcpId, {
-        withError:
-          'Invalid Referal Code, please check the code and try again. REFC003',
-        status: 401,
-      });
-    }
-
     return true;
   }
 

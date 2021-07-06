@@ -325,5 +325,12 @@ module.exports = (sequelize, DataTypes) => {
       status: 403,
     });
   };
+
+  ReferalCode.prototype.reject = function (arr) {
+    if (arr.includes('expired')) this.rejectIfCodeIsExpired();
+    if (arr.includes('claimed')) this.rejectIfCodeIsClaimed();
+    if (arr.includes('declined')) this.rejectIfCodeIsDeclined();
+    if (arr.includes('approved')) this.rejectIfCodeIsApproved();
+  };
   return ReferalCode;
 };
