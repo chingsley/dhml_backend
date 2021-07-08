@@ -1,9 +1,13 @@
 import Response from '../../utils/Response';
-import { validateSchema } from '../../validators/joi/config';
+import {
+  checkSqlInjectionAttack,
+  validateSchema,
+} from '../../validators/joi/config';
 import {
   newClaimSchema,
   schemaBulkClaimProcessing,
   schemaClaimUpdateByIdParam,
+  schemaClaimsSearchQuery,
 } from '../../validators/joi/schemas/claims.schema';
 import {} from '../../validators/joi/schemas/refcode.schema';
 
@@ -51,6 +55,16 @@ export default class ClaimsMiddleware {
         res,
         next
       );
+    }
+  }
+  static async validateClaimsSearchQuery(req, res, next) {
+    try {
+      const { searchItem } = req.query;
+      checkSqlInjectionAttack(searchItem);
+      await validateSchema(schemaClaimsSearchQuery, req.query);
+      return next();
+    } catch (error) {
+      Response.handleError('validateClaimsSearchQuery', error, req, res, next);
     }
   }
 }

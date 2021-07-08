@@ -1,5 +1,6 @@
 import AppService from '../app/app.service';
 import db from '../../database/models';
+import claimsScripts from '../../database/scripts/claims.scripts';
 
 export default class ClaimsService extends AppService {
   constructor({ body, files, query, params, user: operator }) {
@@ -26,18 +27,29 @@ export default class ClaimsService extends AppService {
     return db.Claim.bulkCreate(preparedClaims);
   }
 
+  async getClaimsSvc() {
+    const nonPaginatedRows = await this.executeQuery(claimsScripts.getClaims, {
+      ...this.query,
+      pageSize: undefined,
+      page: undefined,
+    });
+    const count = nonPaginatedRows.length;
+    const rows = await this.executeQuery(claimsScripts.getClaims, this.query);
+    // const [total] = await this.executeQuery(getCapitationTotals, this.query);
+    // const { date = months.currentMonth } = this.query;
+    // const monthlyCapitationSum =
+    //   await db.GeneralMonthlyCapitation.updateAndFindOne({
+    //     where: { month: new Date(months.firstDay(date)) },
+    //   });
+    return { count, rows };
+  }
+
   async updateByIdParam() {
     const { claimId } = this.params;
     const claim = await this.$getClaimById(claimId);
     const refcode = claim.referalCode;
     this.$handleRefcodeValidation(this.operator, refcode);
-
     const changes = this.body;
-
-    // const { unit, pricePerUnit } = changes;
-    // if (unit || pricePerUnit) {
-    //   changes.amount = unit * pricePerUnit;
-    // }
     await claim.update(changes);
     return claim;
   }
