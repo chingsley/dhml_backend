@@ -111,4 +111,13 @@ export default class RefcodeController {
       Response.handleError('uploadClaimsSupportingDoc', error, req, res, next);
     }
   }
+  static async deleteClaimsSupportDoc(req, res, next) {
+    try {
+      const refcodeService = new RefcodeService(req);
+      const data = await refcodeService.deleteClaimsSupportDocSVC();
+      return res.status(200).json({ data });
+    } catch (error) {
+      Response.handleError('deleteClaimsSupportDoc', error, req, res, next);
+    }
+  }
 }

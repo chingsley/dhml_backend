@@ -87,3 +87,11 @@ export const schemaBulkClaimProcessing = Joi.object({
     .unique((a, b) => a.id === b.id),
   create: Joi.array().items(newClaimReqBody),
 });
+
+export const schemaClaimsSearchQuery = Joi.object({
+  searchItem: Joi.string(),
+  state: Joi.string(),
+  receivingHcpCode: Joi.string(),
+  date: Joi.date().format('YYYY-MM-DD'),
+  isVerified: Joi.bool(),
+});
