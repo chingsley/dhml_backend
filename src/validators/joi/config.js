@@ -1,7 +1,7 @@
 /* eslint-disable quotes */
 import JoiBase from '@hapi/joi';
 import JoiDate from '@hapi/joi-date';
-import { throwError } from '../../shared/helpers';
+import { rejectIf, throwError } from '../../shared/helpers';
 
 export const Joi = JoiBase.extend(JoiDate);
 
@@ -61,3 +61,12 @@ export function validateEmail(withRequiredFields) {
 export const uuidSchema = Joi.string().guid({
   version: ['uuidv4', 'uuidv5'],
 });
+
+export const checkSqlInjectionAttack = (value) => {
+  const invalidCharacterPatterns = /--|;|'|"/gi;
+  rejectIf(value && value.match(invalidCharacterPatterns), {
+    // eslint-disable-next-line quotes
+    withError: `Search items cannot contain such special characters as (--, ;, ', or ") are not allowed`,
+  });
+  return true;
+};
