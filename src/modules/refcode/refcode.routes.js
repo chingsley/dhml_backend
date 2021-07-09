@@ -134,6 +134,7 @@ router.patch(
 router.patch(
   '/:refcodeId/claims-supporting-document',
   AuthMiddleware.authorize([
+    HCP,
     MD,
     HOD_MEDICAL,
     roles.TIER_1_MEDICAL,
@@ -143,6 +144,16 @@ router.patch(
   RefcodeMiddleware.validateClaimsDocUpload,
   RefcodeController.uploadClaimsSupportingDoc
 );
+router.delete(
+  '/:refcodeId/claims-supporting-document',
+  AuthMiddleware.authorize([
+    HCP,
+    MD,
+    HOD_MEDICAL,
+    roles.TIER_1_MEDICAL,
+    roles.TIER_2_MEDICAL,
+  ]),
+  AppMiddleware.validateIdParams,
+  RefcodeController.deleteClaimsSupportDoc
+);
 export default router;
-// const uploadedImages = files ? await Cloudinary.bulkUpload(files) : {};
-// const uploadedImages = files ? await Cloudinary.uploadImage(files) : {};

@@ -1,5 +1,6 @@
 import AppService from '../app/app.service';
 import db from '../../database/models';
+import claimsScripts from '../../database/scripts/claims.scripts';
 
 export default class ClaimsService extends AppService {
   constructor({ body, files, query, params, user: operator }) {
@@ -26,18 +27,29 @@ export default class ClaimsService extends AppService {
     return db.Claim.bulkCreate(preparedClaims);
   }
 
+  async getClaimsSvc() {
+    const nonPaginatedRows = await this.executeQuery(claimsScripts.getClaims, {
+      ...this.query,
+      pageSize: undefined,
+      page: undefined,
+    });
+    const count = nonPaginatedRows.length;
+    const rows = await this.executeQuery(claimsScripts.getClaims, this.query);
+    // const [total] = await this.executeQuery(getCapitationTotals, this.query);
+    // const { date = months.currentMonth } = this.query;
+    // const monthlyCapitationSum =
+    //   await db.GeneralMonthlyCapitation.updateAndFindOne({
+    //     where: { month: new Date(months.firstDay(date)) },
+    //   });
+    return { count, rows };
+  }
+
   async updateByIdParam() {
     const { claimId } = this.params;
     const claim = await this.$getClaimById(claimId);
     const refcode = claim.referalCode;
     this.$handleRefcodeValidation(this.operator, refcode);
-
     const changes = this.body;
-
-    // const { unit, pricePerUnit } = changes;
-    // if (unit || pricePerUnit) {
-    //   changes.amount = unit * pricePerUnit;
-    // }
     await claim.update(changes);
     return claim;
   }
@@ -133,33 +145,10 @@ export default class ClaimsService extends AppService {
   }
 
   $handleRefcodeValidation(operator, refcode) {
-    this.$validateHcpRefcodeOwnership(operator, refcode);
+    this.authorizeRefcodeRecevingHcp(operator, refcode);
     refcode.rejectIfCodeIsExpired();
     refcode.rejectIfCodeIsClaimed();
     refcode.rejectIfCodeIsDeclined();
-    return true;
-  }
-
-  /**
-   * Ensures the hcp making the claim is the receivingHcp
-   * associated with the referal code specified req.body
-   *
-   * will skip the validation if operator is not a 'hcp' user...
-   *  ...because state officers can prepare claims onbehalf of hcp's
-   *
-   * @param {string} refcode Referal code
-   * @param {integer} hcpId hcp id
-   */
-  $validateHcpRefcodeOwnership(operator, refcode) {
-    if (operator.userType === 'hcp') {
-      const hcpId = operator.id;
-      this.rejectIf(refcode.receivingHcpId !== hcpId, {
-        withError:
-          'Invalid Referal Code, please check the code and try again. REFC003',
-        status: 401,
-      });
-    }
-
     return true;
   }
 

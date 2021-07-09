@@ -6,5 +6,6 @@
   "PRT003": "password reset token has expired",
   "REFC001": "Referal code has invalid format",
   "REFC002": "Referal code not found in the db",
-  "REFC003": "Referal code found but belong to a different Receiving Hcp"
+  "REFC003": "Referal code found but belong to a different Receiving Hcp",
+  "REFC004": "Referal code found by refcodeId but belongs to a different Receiving Hcp"
 }

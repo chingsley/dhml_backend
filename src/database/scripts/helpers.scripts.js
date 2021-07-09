@@ -1,4 +1,4 @@
-import { days, moment, firstDayOfYear } from '../../utils/timers';
+import { days, moment, firstDayOfYear, months } from '../../utils/timers';
 
 export const CONTROL_HCPs = ['XX/0000/P', 'XX/0001/P', 'XX/0002/P']
   .map((code) => `'${code}'`)
@@ -57,3 +57,64 @@ export const tableAlias = {
 };
 
 export const yearly = (year) => firstDayOfYear(year);
+
+export function getClaimsFilters(reqQuery) {
+  const {
+    searchItem,
+    state,
+    receivingHcpCode,
+    date,
+    isVerified = null,
+  } = {
+    ...reqQuery,
+    date: reqQuery.date
+      ? moment(reqQuery.date).format('YYYY-MM-DD')
+      : undefined,
+  };
+
+  const fallback = 'sub."id" IS NOT NULL';
+  const generalSearch =
+    searchItem &&
+    [
+      { table: 'sub', field: 'code' },
+      { table: 'sub', field: 'diagnosis' },
+      { table: 'refhcp', field: 'name' },
+      { table: 'refhcp', field: 'code' },
+      { table: 'rechcp', field: 'name' },
+      { table: 'rechcp', field: 'code' },
+    ]
+      .map(
+        ({ table, field }) =>
+          `LOWER(${table}."${field}") LIKE '%${searchItem?.toLowerCase()}%'`
+      )
+      .join(' OR ');
+  const filterByState = `LOWER(rechcp."state") = '${state?.toLowerCase()}'`;
+  const filterByRecevingHcpCode = `LOWER(rechcp."code") = '${receivingHcpCode?.toLowerCase()}'`;
+  const filterByDate = `DATE_TRUNC('month', sub."claimsVerifiedOn") = '${months?.firstDay(
+    date
+  )}'`;
+  // const shouldFilterByVerifiedStatus = isVerified ?? false;
+  const filterByVerifiedStatus = (isVerifiedStatus) =>
+    isVerifiedStatus === true
+      ? 'sub."claimsVerifiedOn" IS NOT NULL'
+      : 'sub."claimsVerifiedOn" IS NULL';
+
+  let searchQuery = fallback;
+  if (receivingHcpCode) {
+    searchQuery = searchQuery + ' AND ' + filterByRecevingHcpCode;
+  }
+  if (state) {
+    searchQuery = searchQuery + ' AND ' + filterByState;
+  }
+  if (date) {
+    searchQuery = searchQuery + ' AND ' + filterByDate;
+  }
+  if (searchItem) {
+    searchQuery = searchQuery + ' AND ' + generalSearch;
+  }
+  if (isVerified !== null) {
+    const status = JSON.parse(String(isVerified).toLowerCase());
+    searchQuery = searchQuery + ' AND ' + filterByVerifiedStatus(status);
+  }
+  return { filter: searchQuery };
+}

@@ -14,6 +14,17 @@ export default class ClaimsController {
       Response.handleError('AddNewClaim', error, req, res, next);
     }
   }
+  static async getClaims(req, res, next) {
+    try {
+      const claimsService = new ClaimsService(req);
+      const data = await claimsService.getClaimsSvc();
+      return res.status(200).json({
+        data,
+      });
+    } catch (error) {
+      Response.handleError('getClaims', error, req, res, next);
+    }
+  }
   static async updateClaimByIdParam(req, res, next) {
     try {
       const claimsService = new ClaimsService(req);

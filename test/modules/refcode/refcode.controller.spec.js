@@ -118,6 +118,7 @@ describe('RefcodeController', () => {
     });
     it('returns info about the receving hcp', async (done) => {
       try {
+        // console.log(res.body);
         const { data } = res.body;
         expect(data.receivingHcp).toEqual(
           expect.objectContaining({
