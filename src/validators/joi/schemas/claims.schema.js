@@ -94,4 +94,6 @@ export const schemaClaimsSearchQuery = Joi.object({
   receivingHcpCode: Joi.string(),
   date: Joi.date().format('YYYY-MM-DD'),
   isVerified: Joi.bool(),
+  pageSize: Joi.number().integer().min(1),
+  page: Joi.number().integer().min(0),
 });

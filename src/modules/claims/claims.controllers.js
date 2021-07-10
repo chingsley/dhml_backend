@@ -25,6 +25,7 @@ export default class ClaimsController {
       Response.handleError('getClaims', error, req, res, next);
     }
   }
+
   static async updateClaimByIdParam(req, res, next) {
     try {
       const claimsService = new ClaimsService(req);

@@ -35,13 +35,11 @@ export default class ClaimsService extends AppService {
     });
     const count = nonPaginatedRows.length;
     const rows = await this.executeQuery(claimsScripts.getClaims, this.query);
-    // const [total] = await this.executeQuery(getCapitationTotals, this.query);
-    // const { date = months.currentMonth } = this.query;
-    // const monthlyCapitationSum =
-    //   await db.GeneralMonthlyCapitation.updateAndFindOne({
-    //     where: { month: new Date(months.firstDay(date)) },
-    //   });
-    return { count, rows };
+    const total = nonPaginatedRows.reduce((acc, record) => {
+      acc += Number(record.amount);
+      return acc;
+    }, 0);
+    return { count, rows, total };
   }
 
   async updateByIdParam() {
