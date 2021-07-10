@@ -25,17 +25,7 @@ export default class ClaimsController {
       Response.handleError('getClaims', error, req, res, next);
     }
   }
-  static async getSingleClaimById(req, res, next) {
-    try {
-      const claimsService = new ClaimsService(req);
-      const data = await claimsService.getSingleClaimByIdSvc();
-      return res.status(200).json({
-        data,
-      });
-    } catch (error) {
-      Response.handleError('getSingleClaimById', error, req, res, next);
-    }
-  }
+
   static async updateClaimByIdParam(req, res, next) {
     try {
       const claimsService = new ClaimsService(req);

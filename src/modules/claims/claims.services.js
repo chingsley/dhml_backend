@@ -41,14 +41,6 @@ export default class ClaimsService extends AppService {
     }, 0);
     return { count, rows, total };
   }
-  async getSingleClaimByIdSvc() {
-    const claim = await db.Claim.findOne({
-      where: { id: this.params.claimId },
-      include: { model: db.ReferalCode, as: 'referalCode' },
-    });
-    claim.referalCode = await claim.referalCode.reloadWithAssociations();
-    return claim;
-  }
 
   async updateByIdParam() {
     const { claimId } = this.params;
