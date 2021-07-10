@@ -22,6 +22,12 @@ router.get(
   ClaimsMiddleware.validateClaimsSearchQuery,
   ClaimsController.getClaims
 );
+router.get(
+  '/:claimId',
+  AuthMiddleware.authorize([MD, HCP, TIER_1_MEDICAL, TIER_2_MEDICAL]),
+  AppMiddleware.validateIdParams,
+  ClaimsController.getSingleClaimById
+);
 
 router.patch(
   '/',
