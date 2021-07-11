@@ -64,9 +64,9 @@ export default class ClaimsService extends AppService {
 
   async handleBulkClaimProcessing() {
     const {
-      remove: arrOfClaimIds,
-      update: arrOfUpdates,
-      create: arrOfNewClaims,
+      remove: arrOfClaimIds = [],
+      update: arrOfUpdates = [],
+      create: arrOfNewClaims = [],
       referalCode,
     } = this.body;
 
