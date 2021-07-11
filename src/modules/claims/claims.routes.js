@@ -25,7 +25,7 @@ router.get(
 
 router.patch(
   '/',
-  AuthMiddleware.authorize([HCP, TIER_1_MEDICAL, TIER_2_MEDICAL]),
+  AuthMiddleware.authorize([MD, HCP, TIER_1_MEDICAL, TIER_2_MEDICAL]),
   ClaimsMiddleware.validateBulkClaimProcessing,
   ClaimsController.processBulkClaims
 );
