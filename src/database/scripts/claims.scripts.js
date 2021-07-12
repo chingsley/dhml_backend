@@ -1,3 +1,4 @@
+import { days, months } from '../../utils/timers';
 import { getClaimsFilters, getPaginationParameters } from './helpers.scripts';
 
 // eslint-disable-next-line no-unused-vars
@@ -32,5 +33,32 @@ OFFSET ${offset}
   return query;
 };
 
-const claimsScripts = { getClaims };
+// eslint-disable-next-line no-unused-vars
+const getClaimsByHcp = (__, ___, reqQuery = {}) => {
+  const { date = days.today } = {
+    ...reqQuery,
+    date: reqQuery.date ? months.firstDay(reqQuery.date) : undefined,
+  };
+  const query = `
+SELECT h.id "hcpId", h.code "hcpCode", h.name "hcpName", h.state,
+    COUNT(DISTINCT r.code) as "totalClaims", SUM(c.unit * c."pricePerUnit") as amount,
+    DATE_TRUNC('month', MAX (r."claimsVerifiedOn")) "monthVerified",
+    CASE WHEN DATE_TRUNC('month', MAX (r."claimsVerifiedOn")) < ${date} THEN TRUE     
+            ELSE FALSE
+    END AS "isOverdue"
+FROM "ReferalCodes" r
+JOIN "Claims" c
+    ON r.id = c."refcodeId"
+        AND r."selectedForPayment"  IS NULL
+        AND DATE_TRUNC('month', r."claimsVerifiedOn") <= ${date}
+JOIN "HealthCareProviders" h
+    ON h.id = r."receivingHcpId"
+GROUP BY h.id, h.code, h.name, h.state
+ORDER BY amount DESC
+    `;
+
+  return query;
+};
+
+const claimsScripts = { getClaims, getClaimsByHcp };
 export default claimsScripts;
