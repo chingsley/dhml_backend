@@ -20,10 +20,13 @@ module.exports = {
         hcpSpecialties,
         users,
       });
-
+      const numPending = Math.floor(enrollees.length / 4);
+      const numApproved = Math.floor(enrollees.length / 4);
+      const numVerified = Math.floor(enrollees.length / 2);
       const codeRequests = refcodeSample.getBulkSamples({
-        numPending: 500,
-        numApproved: 500,
+        numPending,
+        numApproved,
+        numVerified,
       });
       // const codeRequests = await generateSampleRequestForRefcodesForSeed(1000);
       await queryInterface.bulkInsert('ReferalCodes', codeRequests);
