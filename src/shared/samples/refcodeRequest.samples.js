@@ -6,7 +6,7 @@ const {
   getServiceStatusCode,
   randInt,
 } = require('../../utils/helpers');
-const { moment, days } = require('../../utils/timers');
+const { moment, days, months } = require('../../utils/timers');
 const { states } = require('../constants/lists.constants');
 
 class RefcodeSample {
@@ -62,6 +62,18 @@ class RefcodeSample {
     };
   }
 
+  getOneVerified({
+    enrollee = _random(this.enrollees),
+    dateVerified = months.setPast(randInt(1, 2)),
+    claimsVerifierId = _random(this.userIds),
+  }) {
+    return {
+      ...this.getOneApproved({ enrollee }),
+      claimsVerifiedOn: dateVerified,
+      claimsVerifierId,
+    };
+  }
+
   getDummyCode({
     stateCode,
     specialtyCode,
@@ -83,26 +95,39 @@ class RefcodeSample {
     return code;
   }
 
-  getBulkSamples({ numPending, numApproved } = {}) {
-    if (numPending + numApproved > this.enrollees.length) {
+  getBulkSamples({ numPending = 0, numApproved = 0, numVerified = 0 } = {}) {
+    if (numPending + numApproved + numVerified > this.enrollees.length) {
       throw new Error(
         `numPending(${numPending}) + numApproved(${numApproved}) cannot be greater than no. of enrollees(${this.enrollees.lenght})`
       );
     }
     const pendingRequests = [];
     const approvedRequests = [];
+    const verifiedRequests = [];
     let count = 0;
-    const endCount = numPending + numApproved;
+    const endCount = numPending + numApproved + numVerified;
+    // generate pending codes
     while (count < numPending) {
       pendingRequests.push(this.getOne(this.enrollees[count]));
       count++;
     }
-    while (count < endCount) {
-      approvedRequests.push(this.getOneApproved(this.enrollees[count]));
+
+    // generate approved codes
+    while (count < numPending + numApproved) {
+      approvedRequests.push(
+        this.getOneApproved({ enrollee: this.enrollees[count] })
+      );
       count++;
     }
 
-    return [...pendingRequests, ...approvedRequests];
+    // generate verified codes
+    while (count < endCount) {
+      verifiedRequests.push(
+        this.getOneVerified({ enrollee: this.enrollees[count] })
+      );
+      count++;
+    }
+    return [...pendingRequests, ...approvedRequests, ...verifiedRequests];
   }
 }
 

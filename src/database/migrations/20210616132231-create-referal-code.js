@@ -150,6 +150,9 @@ module.exports = {
         claimsSupportingDocument: {
           type: Sequelize.TEXT,
         },
+        selectedForPayment: {
+          type: Sequelize.DATE,
+        },
         createdAt: {
           allowNull: false,
           type: Sequelize.DATE,
