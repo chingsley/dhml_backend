@@ -129,7 +129,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       bloodGroup: {
         type: DataTypes.STRING,
-        allowNull: false,
       },
       significantMedicalHistory: {
         type: DataTypes.STRING,

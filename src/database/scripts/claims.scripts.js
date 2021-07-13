@@ -40,6 +40,7 @@ export const getClaims = (__, ___, reqQuery = {}) => {
 
 // eslint-disable-next-line no-unused-vars
 const getClaimsByHcp = (__, ___, reqQuery = {}) => {
+  const { limit, offset } = getPaginationParameters(reqQuery);
   const { date = days.today } = {
     ...reqQuery,
     date: reqQuery.date ? months.firstDay(reqQuery.date) : undefined,
@@ -48,20 +49,22 @@ const getClaimsByHcp = (__, ___, reqQuery = {}) => {
 SELECT h.id "hcpId", h.code "hcpCode", h.name "hcpName", h.state,
     COUNT(DISTINCT r.code) as "totalClaims", SUM(c.unit * c."pricePerUnit") as amount,
     DATE_TRUNC('month', MAX (r."claimsVerifiedOn")) "monthVerified",
-    CASE WHEN DATE_TRUNC('month', MAX (r."claimsVerifiedOn")) < ${date} THEN TRUE     
+    CASE WHEN DATE_TRUNC('month', MAX (r."claimsVerifiedOn")) < '${date}' THEN TRUE     
             ELSE FALSE
     END AS "isOverdue"
 FROM "ReferalCodes" r
 JOIN "Claims" c
     ON r.id = c."refcodeId"
-        AND r."selectedForPayment"  IS NULL
-        AND DATE_TRUNC('month', r."claimsVerifiedOn") <= ${date}
+        AND r."selectedForPayment" IS NULL
+        AND DATE_TRUNC('month', r."claimsVerifiedOn") <= '${date}'
 JOIN "HealthCareProviders" h
     ON h.id = r."receivingHcpId"
 GROUP BY h.id, h.code, h.name, h.state
-ORDER BY amount DESC
+ORDER BY h.state ASC, amount DESC
+LIMIT ${limit}
+OFFSET ${offset}
     `;
-
+  //   console.log(query);
   return query;
 };
 
