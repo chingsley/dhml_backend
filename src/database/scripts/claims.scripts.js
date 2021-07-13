@@ -41,7 +41,7 @@ export const getClaims = (__, ___, reqQuery = {}) => {
 // eslint-disable-next-line no-unused-vars
 const getClaimsByHcp = (__, ___, reqQuery = {}) => {
   const { limit, offset } = getPaginationParameters(reqQuery);
-  const { date = days.today } = {
+  const { date = months.firstDay(days.today) } = {
     ...reqQuery,
     date: reqQuery.date ? months.firstDay(reqQuery.date) : undefined,
   };
