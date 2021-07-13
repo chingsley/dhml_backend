@@ -7,27 +7,32 @@ export const getClaims = (__, ___, reqQuery = {}) => {
   const { limit, offset } = getPaginationParameters(reqQuery);
 
   const query = `
-SELECT  sub.id, sub.code, sub.diagnosis, sub."numOfClaims", sub.amount, sub."claimsVerifiedOn",
-        refhcp.name "referringHcpName", refhcp.code "referringHcpCode", rechcp.name "receivingHcpName",
-        rechcp.code "receivingHcpCode", rechcp.state, e.scheme
-FROM (
-    SELECT r.*,
-        COUNT(c.id) as "numOfClaims", SUM(c.unit * c."pricePerUnit") as amount
-    FROM "ReferalCodes" r
-    JOIN "Claims" c
-    ON r.id = c."refcodeId"
-    GROUP BY r.id, r.code, r.diagnosis,r."referringHcpId", r."receivingHcpId", r."enrolleeId"	
-) sub
-JOIN "HealthCareProviders" refhcp
-    ON refhcp.id = sub."referringHcpId"
-JOIN "HealthCareProviders" rechcp
-    ON rechcp.id = sub."receivingHcpId"
-JOIN "Enrollees" e
-    ON e.id = sub."enrolleeId"
-WHERE ${filter}
-ORDER BY sub."numOfClaims" DESC
-LIMIT ${limit}
-OFFSET ${offset}
+  SELECT  sub.id, sub.code, sub.diagnosis, sub."numOfClaims", sub.amount, sub."claimsVerifiedOn",
+          refhcp.name "referringHcpName", refhcp.code "referringHcpCode", rechcp.name "receivingHcpName",
+          rechcp.code "receivingHcpCode", rechcp.state, e.scheme,
+          (s."firstName" || ' ' || s.surname) "verifiedBy", s."staffIdNo" "verifierStaffNumber"
+  FROM (
+      SELECT r.*,
+          COUNT(c.id) as "numOfClaims", SUM(c.unit * c."pricePerUnit") as amount
+      FROM "ReferalCodes" r
+      JOIN "Claims" c
+      ON r.id = c."refcodeId"
+      GROUP BY r.id, r.code, r.diagnosis,r."referringHcpId", r."receivingHcpId", r."enrolleeId"
+  ) sub
+  JOIN "HealthCareProviders" refhcp
+      ON refhcp.id = sub."referringHcpId"
+  JOIN "HealthCareProviders" rechcp
+      ON rechcp.id = sub."receivingHcpId"
+  JOIN "Enrollees" e
+      ON e.id = sub."enrolleeId"
+  LEFT JOIN "Users" u
+      ON u.id = sub."claimsVerifierId"
+  LEFT JOIN "Staffs" s
+      ON s.id = u."staffId"
+  WHERE ${filter}
+  ORDER BY sub."numOfClaims" DESC
+  LIMIT ${limit}
+  OFFSET ${offset}
   `;
   // console.log(query);
   return query;
