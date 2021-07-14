@@ -7,6 +7,7 @@ import {
   MD,
   SUPERADMIN,
   VERIFIER,
+  HCP,
 } from '../../shared/constants/roles.constants';
 import AppMiddleware from '../app/app.middleware';
 import AuthMiddleware from '../auth/auth.middleware';
@@ -37,6 +38,7 @@ router.get(
     HOD_MEDICAL,
     HOD_VHS,
     VERIFIER,
+    HCP,
   ]),
   EnrolleeMiddleware.validateQuery,
   EnrolleeController.getEnrollees
