@@ -59,6 +59,7 @@ router.get(
     roles.TIER_2_MEDICAL,
     VERIFIER,
     ENROLMENT_OFFICER,
+    HCP,
   ]),
   RefcodeMiddleware.validateGetOneRefcode,
   RefcodeController.getOneRefcodeCtr
@@ -88,6 +89,7 @@ router.patch(
     VERIFIER,
     ENROLMENT_OFFICER,
     DEPT_USER,
+    HCP,
   ]),
   AppMiddleware.validateIdParams,
   RefcodeMiddleware.validateCodeDetailsUpdate,
