@@ -34,7 +34,7 @@ export const getClaims = (__, ___, reqQuery = {}) => {
   LIMIT ${limit}
   OFFSET ${offset}
   `;
-  // console.log(query);
+  //   console.log(query);
   return query;
 };
 

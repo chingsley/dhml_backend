@@ -28,13 +28,19 @@ export default class ClaimsService extends AppService {
   }
 
   async getClaimsSvc() {
-    const nonPaginatedRows = await this.executeQuery(claimsScripts.getClaims, {
+    const { operator } = this;
+    const script = claimsScripts.getClaims;
+    const nonPaginatedRows = await this.executeQuery(script, {
       ...this.query,
       pageSize: undefined,
       page: undefined,
+      operator,
     });
     const count = nonPaginatedRows.length;
-    const rows = await this.executeQuery(claimsScripts.getClaims, this.query);
+    const rows = await this.executeQuery(script, {
+      ...this.query,
+      operator,
+    });
     const total = nonPaginatedRows.reduce((acc, record) => {
       acc += Number(record.amount);
       return acc;
