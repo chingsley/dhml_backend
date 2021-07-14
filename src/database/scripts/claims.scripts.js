@@ -48,8 +48,8 @@ const getClaimsByHcp = (__, ___, reqQuery = {}) => {
   const query = `
 SELECT h.id "hcpId", h.code "hcpCode", h.name "hcpName", h.state,
     COUNT(DISTINCT r.code) as "totalClaims", SUM(c.unit * c."pricePerUnit") as amount,
-    DATE_TRUNC('month', MAX (r."claimsVerifiedOn")) "monthVerified",
-    CASE WHEN DATE_TRUNC('month', MAX (r."claimsVerifiedOn")) < '${date}' THEN TRUE     
+    DATE_TRUNC('month', MIN (r."claimsVerifiedOn")) "monthVerified",
+    CASE WHEN DATE_TRUNC('month', MIN (r."claimsVerifiedOn")) < '${date}' THEN TRUE     
             ELSE FALSE
     END AS "isOverdue"
 FROM "ReferalCodes" r
