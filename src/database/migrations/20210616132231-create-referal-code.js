@@ -150,7 +150,10 @@ module.exports = {
         claimsSupportingDocument: {
           type: Sequelize.TEXT,
         },
-        selectedForPayment: {
+        auditRequestDate: {
+          type: Sequelize.DATE,
+        },
+        datePaid: {
           type: Sequelize.DATE,
         },
         createdAt: {

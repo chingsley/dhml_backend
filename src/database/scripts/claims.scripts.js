@@ -55,7 +55,7 @@ SELECT h.id "hcpId", h.code "hcpCode", h.name "hcpName", h.state,
 FROM "ReferalCodes" r
 JOIN "Claims" c
     ON r.id = c."refcodeId"
-        AND r."selectedForPayment" IS NULL
+        AND r."auditRequestDate" IS NULL
         AND DATE_TRUNC('month', r."claimsVerifiedOn") <= '${date}'
 JOIN "HealthCareProviders" h
     ON h.id = r."receivingHcpId"
