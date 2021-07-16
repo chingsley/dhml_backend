@@ -150,9 +150,6 @@ module.exports = {
         claimsSupportingDocument: {
           type: Sequelize.TEXT,
         },
-        auditRequestDate: {
-          type: Sequelize.DATE,
-        },
         datePaid: {
           type: Sequelize.DATE,
         },
