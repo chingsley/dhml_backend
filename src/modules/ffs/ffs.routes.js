@@ -11,10 +11,10 @@ import FFSController from './ffs.controller';
 const router = express.Router();
 
 router.get(
-  '/claims-sum-by-hcp',
+  '/monthly-payments',
   AuthMiddleware.authorize([MD, HOD_ACCOUNT, ACCOUNT_OFFICER]),
   FFSMiddleware.validateQuery,
-  FFSController.getClaimsSumByHcp
+  FFSController.getFFSMonthlyPayments
 );
 
 export default router;

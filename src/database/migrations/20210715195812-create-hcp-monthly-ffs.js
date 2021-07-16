@@ -37,8 +37,8 @@ module.exports = {
         earliestClaimsVerificationDate: {
           type: Sequelize.DATE,
         },
-        isSelectedForPayment: {
-          type: Sequelize.BOOLEAN,
+        auditRequestDate: {
+          type: Sequelize.DATE,
         },
         createdAt: {
           allowNull: false,

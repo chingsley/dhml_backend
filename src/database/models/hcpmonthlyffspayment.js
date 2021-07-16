@@ -1,4 +1,7 @@
 'use strict';
+
+const { days, months } = require('../../utils/timers');
+
 module.exports = (sequelize, DataTypes) => {
   const HcpMonthlyFFSPayment = sequelize.define(
     'HcpMonthlyFFSPayment',
@@ -11,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       mfpId: {
         type: DataTypes.UUID,
+        allowNull: false,
         references: {
           model: 'MonthlyFFSPayments',
           key: 'id',
@@ -20,6 +24,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       hcpId: {
         type: DataTypes.INTEGER,
+        allowNull: false,
         references: {
           model: 'HealthCareProviders',
           key: 'id',
@@ -29,15 +34,31 @@ module.exports = (sequelize, DataTypes) => {
       },
       totalClaims: {
         type: DataTypes.INTEGER,
+        allowNull: false,
       },
       amount: {
         type: DataTypes.DECIMAL,
+        allowNull: false,
       },
       earliestClaimsVerificationDate: {
         type: DataTypes.DATE,
+        allowNull: false,
       },
-      isSelectedForPayment: {
-        type: DataTypes.BOOLEAN,
+      auditRequestDate: {
+        type: DataTypes.DATE,
+      },
+      selectedForPayment: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return this.auditRequestDate !== null;
+        },
+      },
+      isOverdue: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          const currentMonth = months.firstDay(days.today);
+          return this.earliestClaimsVerificationDate < new Date(currentMonth);
+        },
       },
     },
     {}
@@ -52,5 +73,18 @@ module.exports = (sequelize, DataTypes) => {
       as: 'hcp',
     });
   };
+  HcpMonthlyFFSPayment.updateCurrentMonthRecords = async function (
+    records,
+    mfpId,
+    t
+  ) {
+    await this.destroy({ where: { mfpId }, transaction: t });
+    await this.bulkCreate(
+      records.map((row) => ({ ...row, mfpId })),
+      { transaction: t }
+    );
+    return true;
+  };
+
   return HcpMonthlyFFSPayment;
 };

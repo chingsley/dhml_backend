@@ -1,4 +1,7 @@
 'use strict';
+
+const { AUDIT_STATUS } = require('../../shared/constants/lists.constants');
+
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable(
@@ -24,6 +27,7 @@ module.exports = {
         },
         auditStatus: {
           type: Sequelize.STRING,
+          defaultValue: AUDIT_STATUS.pending,
         },
         flagReason: {
           type: Sequelize.TEXT,

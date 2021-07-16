@@ -1,4 +1,5 @@
 import AppService from '../app/app.service';
+import db from '../../database/models';
 import claimsScripts from '../../database/scripts/claims.scripts';
 
 export default class FFSService extends AppService {
@@ -10,19 +11,36 @@ export default class FFSService extends AppService {
     this.params = params;
   }
 
-  async getClaimsSumByHcpSvc() {
+  async getFFSMonthlyPaymentsSvc() {
+    const t = await db.sequelize.transaction();
+    try {
+      const { rows, totals } = await this.fetchFFSMonthlyPaymentByHcps();
+      const { id: mfpId } = await db.MonthlyFFSPayment.updateCurrentMonthRecord(
+        totals,
+        t
+      );
+      await db.HcpMonthlyFFSPayment.updateCurrentMonthRecords(rows, mfpId, t);
+      await t.commit();
+      return db.MonthlyFFSPayment.findAndCountAll({
+        ...this.paginate,
+      });
+    } catch (error) {
+      await t.rollback();
+      throw error;
+    }
+  }
+
+  async fetchFFSMonthlyPaymentByHcps() {
     const script = claimsScripts.getClaimsByHcp;
-    const nonPaginatedRows = await this.executeQuery(script, {
-      ...this.query,
-      pageSize: undefined,
-      page: undefined,
-    });
-    const count = nonPaginatedRows.length;
-    const rows = await this.executeQuery(script, this.query);
-    const total = nonPaginatedRows.reduce((acc, record) => {
-      acc += Number(record.amount);
-      return acc;
-    }, 0);
-    return { count, rows, total };
+    const rows = await this.executeQuery(script, {});
+    const totals = rows.reduce(
+      (acc, record) => {
+        acc.amount += Number(record.amount);
+        acc.claims += Number(record.totalClaims);
+        return acc;
+      },
+      { amount: 0, claims: 0 }
+    );
+    return { rows, totals };
   }
 }
