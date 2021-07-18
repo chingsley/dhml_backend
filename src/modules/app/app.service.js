@@ -6,6 +6,7 @@ import { isBoolean, isValidDate } from '../../utils/helpers';
 import NodeMailer from '../../utils/NodeMailer';
 import { passwordMsgTemplate } from '../../utils/templates/forPassword';
 import NanoId from '../../utils/NanoId';
+import appHelpers from './app.helpers';
 
 export default class AppService {
   constructor({ body, files, query }) {
@@ -392,3 +393,5 @@ export default class AppService {
     return true;
   }
 }
+
+Object.assign(AppService.prototype, appHelpers);

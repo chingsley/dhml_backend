@@ -13,4 +13,15 @@ export default class FFSController {
       Response.handleError('getFFSMonthlyPayments', error, req, res, next);
     }
   }
+  static async getFFSMonthlyHcpBreakdown(req, res, next) {
+    try {
+      const ffsService = new FFSService(req);
+      const data = await ffsService.getFFSMonthlyHcpBreakdownSvc();
+      return res.status(200).json({
+        data,
+      });
+    } catch (error) {
+      Response.handleError('getFFSMonthlyHcpBreakdown', error, req, res, next);
+    }
+  }
 }

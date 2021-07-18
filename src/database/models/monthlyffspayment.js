@@ -21,9 +21,12 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      amount: {
+      actualAmount: {
         type: DataTypes.DECIMAL,
         allowNull: false,
+      },
+      selectedAmount: {
+        type: DataTypes.DECIMAL,
       },
       dateAudited: {
         type: DataTypes.DATE,
@@ -76,7 +79,7 @@ module.exports = (sequelize, DataTypes) => {
     if (ffsSumForCurrentMonth) {
       await ffsSumForCurrentMonth.update(
         {
-          amount: totals.amount,
+          actualAmount: totals.amount,
           totalClaims: totals.claims,
         },
         { transaction: t }
@@ -85,7 +88,7 @@ module.exports = (sequelize, DataTypes) => {
       ffsSumForCurrentMonth = await this.create(
         {
           month: currentMonth,
-          amount: totals.amount,
+          actualAmount: totals.amount,
           totalClaims: totals.claims,
         },
         { transaction: t }

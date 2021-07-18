@@ -19,7 +19,10 @@ module.exports = {
         totalClaims: {
           type: Sequelize.INTEGER,
         },
-        amount: {
+        actualAmount: {
+          type: Sequelize.DECIMAL,
+        },
+        selectedAmount: {
           type: Sequelize.DECIMAL,
         },
         dateAudited: {
