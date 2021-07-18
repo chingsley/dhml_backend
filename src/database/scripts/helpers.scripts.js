@@ -1,8 +1,8 @@
 import { days, moment, firstDayOfYear, months } from '../../utils/timers';
-
-export const CONTROL_HCPs = ['XX/0000/P', 'XX/0001/P', 'XX/0002/P']
-  .map((code) => `'${code}'`)
-  .join(', ');
+export const CONTROL_HCPs_ARRAY = ['XX/0000/P', 'XX/0001/P', 'XX/0002/P'];
+export const CONTROL_HCPs = CONTROL_HCPs_ARRAY.map((code) => `'${code}'`).join(
+  ', '
+);
 
 export function getPaginationParameters(reqQuery = {}) {
   const { page, pageSize } = reqQuery;

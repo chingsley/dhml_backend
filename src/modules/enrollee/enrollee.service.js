@@ -199,11 +199,13 @@ export default class EnrolleeService extends AppService {
     });
   }
 
-  getById() {
-    return db.Enrollee.findAll({
+  async getById() {
+    const enrollee = await this.findOneRecord({
+      modelName: 'Enrollee',
       where: {
         id: this.params.enrolleeId,
       },
+      errorIfNotFound: `no Enrollee found for id ${this.params.enrolleeId}`,
       include: [
         {
           model: db.HealthCareProvider,
@@ -219,6 +221,15 @@ export default class EnrolleeService extends AppService {
         },
       ],
     });
+    this.rejectIf(
+      this.operator.userType === 'hcp' && enrollee.hcpId !== this.operator.id,
+      {
+        withError: 'Access Denied. AUTH004',
+        errorCode: 'AUTH004',
+        status: 401,
+      }
+    );
+    return enrollee;
   }
 
   async updateEnrolleeData() {
