@@ -53,8 +53,18 @@ export default class FFSService extends AppService {
       count: monthlySum.hcpMonthlyFFSPayments.length,
       data: this.groupFFSByHcpState(monthlySum.hcpMonthlyFFSPayments),
       totalActualAmount: monthlySum.actualAmount,
+      totalSelectedAmount: monthlySum.selectedAmount,
       monthlySumData: monthlySum,
     };
+  }
+
+  async requestAuditSVC() {
+    // expect path PATCH /monthly-ffs/:mfpId
+    // expect an array of the hcp's that have been selected
+    // const returnedRecords = update HcpMonthlyFSSPayments, set auditRequestDate = new Date() where: hcpIds
+    // const selectedAmount = reduce to sum individual amounts of the returnedRecords
+    // update MonthlyFFSPayments, set selectedAmount = selectedAmount where id: mfpId
+    // return
   }
 
   async fetchFFSMonthlyPaymentByHcps() {

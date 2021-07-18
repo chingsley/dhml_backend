@@ -184,11 +184,12 @@ export default class AppService {
     }
   }
 
-  rejectIf(condition, { withError, status = 400 }) {
+  rejectIf(condition, { withError, status = 400, errorCode }) {
     if (condition) {
       this.throwError({
         status: status,
         error: [withError],
+        errorCode,
       });
     }
   }

@@ -45,7 +45,7 @@ router.get(
 );
 router.get(
   '/:enrolleeId',
-  AuthMiddleware.authorize([...allowedRoles, ENROLMENT_OFFICER, VERIFIER]),
+  AuthMiddleware.authorize([...allowedRoles, ENROLMENT_OFFICER, VERIFIER, HCP]),
   AppMiddleware.validateIdParams,
   EnrolleeController.getByEnrolleeId
 );
