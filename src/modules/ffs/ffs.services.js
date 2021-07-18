@@ -1,6 +1,7 @@
 import AppService from '../app/app.service';
 import db from '../../database/models';
 import claimsScripts from '../../database/scripts/claims.scripts';
+import ffsHelpers from './ffs.helpers';
 
 export default class FFSService extends AppService {
   constructor({ body, files, query, params }) {
@@ -22,12 +23,38 @@ export default class FFSService extends AppService {
       await db.HcpMonthlyFFSPayment.updateCurrentMonthRecords(rows, mfpId, t);
       await t.commit();
       return db.MonthlyFFSPayment.findAndCountAll({
-        ...this.paginate,
+        ...this.paginate(),
       });
     } catch (error) {
       await t.rollback();
       throw error;
     }
+  }
+  async getFFSMonthlyHcpBreakdownSvc() {
+    const { mfpId } = this.params;
+    const monthlySum = await this.findOneRecord({
+      modelName: 'MonthlyFFSPayment',
+      where: { id: mfpId },
+      errorIfNotFound: `No record found for the mfpId: ${mfpId}`,
+      include: {
+        model: db.HcpMonthlyFFSPayment,
+        as: 'hcpMonthlyFFSPayments',
+        ...this.canFilterBySelectedRecords(this.query),
+        required: false,
+        include: {
+          model: db.HealthCareProvider,
+          as: 'hcp',
+          attributes: ['code', 'name', 'state'],
+        },
+      },
+    });
+
+    return {
+      count: monthlySum.hcpMonthlyFFSPayments.length,
+      data: this.groupFFSByHcpState(monthlySum.hcpMonthlyFFSPayments),
+      totalActualAmount: monthlySum.actualAmount,
+      monthlySumData: monthlySum,
+    };
   }
 
   async fetchFFSMonthlyPaymentByHcps() {
@@ -44,3 +71,5 @@ export default class FFSService extends AppService {
     return { rows, totals };
   }
 }
+
+Object.assign(FFSService.prototype, ffsHelpers);
