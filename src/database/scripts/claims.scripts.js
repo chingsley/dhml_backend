@@ -46,19 +46,19 @@ const getClaimsByHcp = (__, ___, reqQuery = {}) => {
     date: reqQuery.date ? months.firstDay(reqQuery.date) : undefined,
   };
   const query = `
-SELECT h.id "hcpId", h.code "hcpCode", h.name "hcpName", h.state,
-    COUNT(DISTINCT r.code) as "totalClaims", SUM(c.unit * c."pricePerUnit") as amount,
-    DATE_TRUNC('month', MIN (r."claimsVerifiedOn")) "monthVerified",
-    CASE WHEN DATE_TRUNC('month', MIN (r."claimsVerifiedOn")) < '${date}' THEN TRUE     
-            ELSE FALSE
-    END AS "isOverdue"
+  SELECT h.id "hcpId", h.code "hcpCode", h.name "hcpName", h.state,
+  COUNT(DISTINCT r.code) as "totalClaims", SUM(c.unit * c."pricePerUnit") as amount,
+  DATE_TRUNC('month', MIN (r."claimsVerifiedOn")) "earliestClaimsVerificationDate",
+  CASE WHEN DATE_TRUNC('month', MIN (r."claimsVerifiedOn")) < '${date}' THEN TRUE     
+          ELSE FALSE
+  END AS "isOverdue"
 FROM "ReferalCodes" r
 JOIN "Claims" c
-    ON r.id = c."refcodeId"
-        AND r."selectedForPayment" IS NULL
-        AND DATE_TRUNC('month', r."claimsVerifiedOn") <= '${date}'
+  ON r.id = c."refcodeId"
+      AND r."datePaid" IS NULL
+      AND DATE_TRUNC('month', r."claimsVerifiedOn") <= '${date}'
 JOIN "HealthCareProviders" h
-    ON h.id = r."receivingHcpId"
+  ON h.id = r."receivingHcpId"
 GROUP BY h.id, h.code, h.name, h.state
 ORDER BY h.state ASC, amount DESC
 LIMIT ${limit}

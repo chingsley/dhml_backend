@@ -1,6 +1,7 @@
 import express from 'express';
 import AuthMiddleware from '../auth/auth.middleware';
 import FFSMiddleware from './ffs.middleware';
+import AppMiddleware from '../app/app.middleware';
 import {
   ACCOUNT_OFFICER,
   MD,
@@ -11,10 +12,17 @@ import FFSController from './ffs.controller';
 const router = express.Router();
 
 router.get(
-  '/claims-sum-by-hcp',
+  '/monthly-payments',
   AuthMiddleware.authorize([MD, HOD_ACCOUNT, ACCOUNT_OFFICER]),
   FFSMiddleware.validateQuery,
-  FFSController.getClaimsSumByHcp
+  FFSController.getFFSMonthlyPayments
+);
+router.get(
+  '/monthly-payments/:mfpId',
+  AuthMiddleware.authorize([MD, HOD_ACCOUNT, ACCOUNT_OFFICER]),
+  FFSMiddleware.validateQuery,
+  AppMiddleware.validateIdParams,
+  FFSController.getFFSMonthlyHcpBreakdown
 );
 
 export default router;

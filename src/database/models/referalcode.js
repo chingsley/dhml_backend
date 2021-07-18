@@ -140,7 +140,7 @@ module.exports = (sequelize, DataTypes) => {
       claimsSupportingDocument: {
         type: DataTypes.TEXT,
       },
-      selectedForPayment: {
+      datePaid: {
         type: DataTypes.DATE,
       },
       status: {
