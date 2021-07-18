@@ -12,6 +12,7 @@ import { hcpSearchableFields } from '../../shared/attributes/hcp.attribtes';
 import { throwError } from '../../shared/helpers';
 import { HCP } from '../../shared/constants/roles.constants';
 import { months, moment } from '../../utils/timers';
+import { CONTROL_HCPs_ARRAY } from '../../database/scripts/helpers.scripts';
 
 const { sequelize } = db;
 
@@ -124,6 +125,10 @@ export default class HcpService extends AppService {
   async downloadEnrollees() {
     const { hcpId } = this.params;
     const { date = moment().format('YYYY-MM-DD') } = this.query;
+    const controlHcps = await db.HealthCareProvider.findAll({
+      where: { code: { [Op.in]: CONTROL_HCPs_ARRAY } },
+    });
+    const controlHcpIds = controlHcps.map((hcp) => hcp.id);
     const data = await db.Enrollee.findAndCountAll({
       where: {
         hcpId,
@@ -150,6 +155,7 @@ export default class HcpService extends AppService {
         model: db.Enrollee,
         as: 'dependants',
         where: {
+          hcpId: { [Op.notIn]: controlHcpIds },
           isVerified: true,
           dateVerified: {
             [Op.lte]: new Date(
