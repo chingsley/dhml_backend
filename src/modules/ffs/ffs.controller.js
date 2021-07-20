@@ -32,7 +32,18 @@ export default class FFSController {
         data,
       });
     } catch (error) {
-      Response.handleError('getFFSMonthlyHcpBreakdown', error, req, res, next);
+      Response.handleError('requestAudit', error, req, res, next);
+    }
+  }
+  static async getPaymentAdvice(req, res, next) {
+    try {
+      const ffsService = new FFSService(req);
+      const data = await ffsService.getPaymentAdviceSvc();
+      return res.status(200).json({
+        data,
+      });
+    } catch (error) {
+      Response.handleError('getPaymentAdvice', error, req, res, next);
     }
   }
 }
