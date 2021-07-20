@@ -25,4 +25,12 @@ router.get(
   FFSController.getFFSMonthlyHcpBreakdown
 );
 
+router.patch(
+  '/monthly-payments/:mfpId/request-audit',
+  AuthMiddleware.authorize([MD, HOD_ACCOUNT, ACCOUNT_OFFICER]),
+  AppMiddleware.validateIdParams,
+  FFSMiddleware.validateAuditRequest,
+  FFSController.requestAudit
+);
+
 export default router;

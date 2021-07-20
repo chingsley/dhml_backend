@@ -15,26 +15,18 @@ export default class FFSService extends AppService {
   }
 
   async getFFSMonthlyPaymentsSvc() {
-    const t = await db.sequelize.transaction();
-    try {
-      const { rows, totals } = await this.fetchFFSMonthlyPaymentByHcps();
-      const { id: mfpId } = await db.MonthlyFFSPayment.updateCurrentMonthRecord(
-        totals,
-        t
-      );
-      await db.HcpMonthlyFFSPayment.updateCurrentMonthRecords(rows, mfpId, t);
-      await t.commit();
-      return db.MonthlyFFSPayment.findAndCountAll({
-        ...this.paginate(),
-      });
-    } catch (error) {
-      await t.rollback();
-      throw error;
-    }
+    const { rows, totals } = await this.fetchFFSMonthlyPaymentByHcps();
+    const { id: mfpId } = await db.MonthlyFFSPayment.updateCurrentMonthRecord(
+      totals
+    );
+    db.HcpMonthlyFFSPayment.updateCurrentMonthRecords(rows, mfpId);
+    return db.MonthlyFFSPayment.findAndCountAll({
+      ...this.paginate(),
+    });
   }
   async getFFSMonthlyHcpBreakdownSvc() {
     const { mfpId } = this.params;
-    const { selectedAmount } = await this.handlePreselection(mfpId);
+    // const { totalSelectedAmt } = await this.handlePreselection(mfpId);
     const monthlySum = await this.findOneRecord({
       modelName: 'MonthlyFFSPayment',
       where: { id: mfpId },
@@ -55,18 +47,41 @@ export default class FFSService extends AppService {
     return {
       count: monthlySum.hcpMonthlyFFSPayments.length,
       data: this.groupFFSByHcpState(monthlySum.hcpMonthlyFFSPayments),
-      totalActualAmount: monthlySum.actualAmount,
-      totalSelectedAmount: selectedAmount,
+      totalActualAmt: monthlySum.totalActualAmt,
+      totalActualClaims: monthlySum.totalActualClaims,
+      totalSelectedAmt: monthlySum.totalSelectedAmt,
+      totalSelectedClaims: monthlySum.totalSelectedClaims,
     };
   }
 
-  async requestAuditSVC() {
-    // expect path PATCH /monthly-ffs/:mfpId
-    // expect an array of the hcp's that have been selected
-    // const returnedRecords = update HcpMonthlyFSSPayments, set auditRequestDate = new Date() where: hcpIds
-    // const selectedAmount = reduce to sum individual amounts of the returnedRecords
-    // update MonthlyFFSPayments, set selectedAmount = selectedAmount where id: mfpId
-    // return
+  async requestAuditSvc() {
+    const { mfpId } = this.params;
+    const { selectedHcpIds } = this.body;
+
+    const [_, updatedRecords] = await db.HcpMonthlyFFSPayment.update(
+      { auditRequestDate: new Date() },
+      { where: { mfpId, hcpId: selectedHcpIds }, returning: true }
+    );
+    const totals = updatedRecords.reduce(
+      (acc, record) => {
+        acc.selectedAmt += Number(record.amount);
+        acc.selectedClaims += Number(record.totalClaims);
+        return acc;
+      },
+      {
+        selectedAmt: 0,
+        selectedClaims: 0,
+      }
+    );
+    const [__, data] = await db.MonthlyFFSPayment.update(
+      {
+        totalSelectedAmt: totals.selectedAmt,
+        totalSelectedClaims: totals.selectedClaims,
+        auditRequestDate: new Date(),
+      },
+      { where: { id: mfpId }, returning: true }
+    );
+    return data[0];
   }
 
   async fetchFFSMonthlyPaymentByHcps() {
@@ -98,13 +113,19 @@ export default class FFSService extends AppService {
         returning: true,
       }
     );
-    const selectedAmount = updatedRecords.reduce((acc, record) => {
+    const totalSelectedAmt = updatedRecords.reduce((acc, record) => {
       acc += Number(record.amount);
       return acc;
     }, 0);
-    db.MonthlyFFSPayment.update({ selectedAmount }, { where: { id: mfpId } });
+    db.MonthlyFFSPayment.update({ totalSelectedAmt }, { where: { id: mfpId } });
 
-    return { selectedAmount, updatedRecords };
+    return { totalSelectedAmt, updatedRecords };
+  }
+
+  $fetchAllByMfpId(mfpId) {
+    return db.HcpMonthlyFFSPayment.findAll({
+      where: { mfpId },
+    });
   }
 }
 

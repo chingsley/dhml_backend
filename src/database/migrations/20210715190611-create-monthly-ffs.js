@@ -16,14 +16,20 @@ module.exports = {
         month: {
           type: Sequelize.DATE,
         },
-        totalClaims: {
+        totalActualClaims: {
           type: Sequelize.INTEGER,
         },
-        actualAmount: {
+        totalSelectedClaims: {
+          type: Sequelize.INTEGER,
+        },
+        totalActualAmt: {
           type: Sequelize.DECIMAL,
         },
-        selectedAmount: {
+        totalSelectedAmt: {
           type: Sequelize.DECIMAL,
+        },
+        auditRequestDate: {
+          type: Sequelize.DATE,
         },
         dateAudited: {
           type: Sequelize.DATE,
