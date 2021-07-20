@@ -1,6 +1,6 @@
 'use strict';
 
-const { days, months } = require('../../utils/timers');
+const { firstDayOfLastMonth } = require('../../utils/timers');
 
 module.exports = (sequelize, DataTypes) => {
   const HcpMonthlyFFSPayment = sequelize.define(
@@ -56,8 +56,9 @@ module.exports = (sequelize, DataTypes) => {
       isOverdue: {
         type: DataTypes.VIRTUAL,
         get() {
-          const currentMonth = months.firstDay(days.today);
-          return this.earliestClaimsVerificationDate < new Date(currentMonth);
+          return (
+            this.earliestClaimsVerificationDate < new Date(firstDayOfLastMonth)
+          );
         },
       },
     },
