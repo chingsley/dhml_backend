@@ -3,7 +3,7 @@ import { Op } from 'sequelize';
 import db from '../../database/models';
 import claimsScripts from '../../database/scripts/claims.scripts';
 import ffsHelpers from './ffs.helpers';
-import { firstDayOfLastMonth } from '../../utils/timers';
+import { firstDayOfLastMonth, months } from '../../utils/timers';
 
 export default class FFSService extends AppService {
   constructor({ body, files, query, params }) {
@@ -15,7 +15,7 @@ export default class FFSService extends AppService {
   }
 
   async getFFSMonthlyPaymentsSvc() {
-    const { rows, totals } = await this.fetchFFSMonthlyPaymentByHcps();
+    const { rows, totals } = await this.$fetchFFSMonthlyPaymentByHcps();
     const { id: mfpId } = await db.MonthlyFFSPayment.updateCurrentMonthRecord(
       totals
     );
@@ -84,7 +84,31 @@ export default class FFSService extends AppService {
     return data[0];
   }
 
-  async fetchFFSMonthlyPaymentByHcps() {
+  async getPaymentAdviceSvc() {
+    const { date = new Date() } = this.query;
+    const month = new Date(months.firstDay(date));
+
+    const data = await db.HcpMonthlyFFSPayment.findAndCountAll({
+      where: { auditRequestDate: { [Op.not]: null } },
+      ...this.paginate(),
+      include: [
+        {
+          model: db.MonthlyFFSPayment,
+          as: 'monthlyFFSPayment',
+          where: { month },
+          attributes: [],
+        },
+        {
+          model: db.HealthCareProvider,
+          as: 'hcp',
+          attributes: ['code', 'name', 'state'],
+        },
+      ],
+    });
+    return { count: data.count, data: this.groupFFSByHcpState(data.rows) };
+  }
+
+  async $fetchFFSMonthlyPaymentByHcps() {
     const script = claimsScripts.getClaimsByHcp;
     const rows = await this.executeQuery(script, {});
     const totals = rows.reduce(
