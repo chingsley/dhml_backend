@@ -76,14 +76,31 @@ module.exports = (sequelize, DataTypes) => {
   };
   HcpMonthlyFFSPayment.updateCurrentMonthRecords = async function (
     records,
-    mfpId,
-    t
+    mfpId
   ) {
-    await this.destroy({ where: { mfpId }, transaction: t });
-    await this.bulkCreate(
-      records.map((row) => ({ ...row, mfpId })),
-      { transaction: t }
-    );
+    const hcpIds = records.map(({ hcpId }) => hcpId);
+    const existingData = await this.findAll({
+      where: { mfpId, hcpId: hcpIds },
+    });
+    if (existingData.length > 0) {
+      // update existing records
+      existingData.forEach((hcpData) => {
+        const record = records.find(
+          ({ hcpId }) => Number(hcpId) === Number(hcpData.hcpId)
+        );
+        hcpData.update(
+          {
+            amount: record.amount,
+            totalClaims: record.totalClaims,
+          },
+          { where: { mfpId, hcpId: record.hcpId } }
+        );
+      });
+    } else {
+      // create new records
+      this.bulkCreate(records.map((row) => ({ ...row, mfpId })));
+    }
+
     return true;
   };
 

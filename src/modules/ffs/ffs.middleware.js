@@ -32,6 +32,21 @@ export default class FFSMiddleware {
       Response.handleError('validateQuery', error, req, res, next);
     }
   }
+  static async validateAuditRequest(req, res, next) {
+    try {
+      const bodySchema = Joi.object({
+        selectedHcpIds: Joi.array()
+          .items(Joi.number().integer().min(1))
+          .unique()
+          .required(),
+      });
+      const { joiFormatted } = await validateSchema(bodySchema, req.body);
+      req.body = joiFormatted;
+      return next();
+    } catch (error) {
+      Response.handleError('validateAuditRequest', error, req, res, next);
+    }
+  }
 
   static rejectSpecialCharacters(fields) {
     for (let field of fields) {
