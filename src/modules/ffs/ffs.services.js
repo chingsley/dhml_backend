@@ -1,7 +1,9 @@
 import AppService from '../app/app.service';
+import { Op } from 'sequelize';
 import db from '../../database/models';
 import claimsScripts from '../../database/scripts/claims.scripts';
 import ffsHelpers from './ffs.helpers';
+import { firstDayOfLastMonth } from '../../utils/timers';
 
 export default class FFSService extends AppService {
   constructor({ body, files, query, params }) {
@@ -32,6 +34,7 @@ export default class FFSService extends AppService {
   }
   async getFFSMonthlyHcpBreakdownSvc() {
     const { mfpId } = this.params;
+    const { selectedAmount } = await this.handlePreselection(mfpId);
     const monthlySum = await this.findOneRecord({
       modelName: 'MonthlyFFSPayment',
       where: { id: mfpId },
@@ -53,8 +56,7 @@ export default class FFSService extends AppService {
       count: monthlySum.hcpMonthlyFFSPayments.length,
       data: this.groupFFSByHcpState(monthlySum.hcpMonthlyFFSPayments),
       totalActualAmount: monthlySum.actualAmount,
-      totalSelectedAmount: monthlySum.selectedAmount,
-      monthlySumData: monthlySum,
+      totalSelectedAmount: selectedAmount,
     };
   }
 
@@ -79,6 +81,30 @@ export default class FFSService extends AppService {
       { amount: 0, claims: 0 }
     );
     return { rows, totals };
+  }
+
+  async handlePreselection(mfpId) {
+    const [__, updatedRecords] = await db.HcpMonthlyFFSPayment.update(
+      {
+        auditRequestDate: new Date(),
+      },
+      {
+        where: {
+          mfpId,
+          earliestClaimsVerificationDate: {
+            [Op.lt]: new Date(firstDayOfLastMonth),
+          },
+        },
+        returning: true,
+      }
+    );
+    const selectedAmount = updatedRecords.reduce((acc, record) => {
+      acc += Number(record.amount);
+      return acc;
+    }, 0);
+    db.MonthlyFFSPayment.update({ selectedAmount }, { where: { id: mfpId } });
+
+    return { selectedAmount, updatedRecords };
   }
 }
 
