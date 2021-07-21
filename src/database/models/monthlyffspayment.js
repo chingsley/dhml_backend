@@ -1,6 +1,7 @@
 'use strict';
 
 const { AUDIT_STATUS } = require('../../shared/constants/lists.constants');
+const { rejectIf } = require('../../shared/helpers');
 const { moment, days, months } = require('../../utils/timers');
 
 module.exports = (sequelize, DataTypes) => {
@@ -99,6 +100,11 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
     return ffsSumForCurrentMonth;
+  };
+  MonthlyFFSPayment.prototype.rejectIfNotReadyForAudit = function () {
+    rejectIf(this.auditRequestDate === null, {
+      withError: 'Record not ready for audit.',
+    });
   };
   return MonthlyFFSPayment;
 };
