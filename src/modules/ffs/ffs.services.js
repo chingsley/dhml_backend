@@ -24,10 +24,8 @@ export default class FFSService extends AppService {
     );
     db.HcpMonthlyFFSPayment.updateCurrentMonthRecords(rows, mfpId);
 
-    // console.log(this.operator.role.title, ROLES.MD);
     const operatorRole = this.operator.role.title;
     const filters = {
-      [ROLES.MD]: { auditStatus: AUDIT_STATUS.auditPass },
       [ROLES.HOD_AUDIT]: { auditRequestDate: { [Op.not]: null } },
     };
     return db.MonthlyFFSPayment.findAndCountAll({
@@ -37,7 +35,6 @@ export default class FFSService extends AppService {
   }
   async getFFSMonthlyHcpBreakdownSvc() {
     const { mfpId } = this.params;
-    // const { totalSelectedAmt } = await this.handlePreselection(mfpId);
     const monthlySum = await this.findOneRecord({
       modelName: 'MonthlyFFSPayment',
       where: { id: mfpId },
@@ -93,6 +90,19 @@ export default class FFSService extends AppService {
       { where: { id: mfpId }, returning: true }
     );
     return data[0];
+  }
+
+  async handleFFSAudit() {
+    const { mfpId } = this.params;
+    const statusUpdate = this.body;
+    const monthlyFFS = await this.findOneRecord({
+      modelName: 'MonthlyFFSPayment',
+      where: { id: mfpId },
+      errorIfNotFound: `No record found for mfpId: ${mfpId}`,
+    });
+    monthlyFFS.rejectIfNotReadyForAudit();
+    await monthlyFFS.update({ ...statusUpdate, dateAudited: new Date() });
+    return monthlyFFS;
   }
 
   async getPaymentAdviceSvc() {

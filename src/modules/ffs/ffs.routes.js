@@ -27,10 +27,17 @@ router.get(
 );
 router.patch(
   '/monthly-payments/:mfpId/request-audit',
-  AuthMiddleware.authorize([MD, HOD_ACCOUNT, ACCOUNT_OFFICER]),
+  AuthMiddleware.authorize([HOD_ACCOUNT, ACCOUNT_OFFICER]),
   AppMiddleware.validateIdParams,
   FFSMiddleware.validateAuditRequest,
   FFSController.requestAudit
+);
+router.patch(
+  '/monthly-payments/:mfpId/audit',
+  AuthMiddleware.authorize([HOD_AUDIT]),
+  AppMiddleware.validateIdParams,
+  FFSMiddleware.validateFFSAudit,
+  FFSController.auditFFS
 );
 router.get(
   '/payment-advice',
