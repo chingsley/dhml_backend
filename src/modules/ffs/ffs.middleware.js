@@ -1,5 +1,8 @@
 // import Joi from '@hapi/joi';
-import { AUDIT_STATUS } from '../../shared/constants/lists.constants';
+import {
+  AUDIT_STATUS,
+  PAY_ACTIONS,
+} from '../../shared/constants/lists.constants';
 import { throwError } from '../../shared/helpers';
 import Response from '../../utils/Response';
 import { Joi, validateSchema } from '../../validators/joi/config';
@@ -83,6 +86,22 @@ export default class FFSMiddleware {
       return next();
     } catch (error) {
       Response.handleError('validateFFSApproval', error, req, res, next);
+    }
+  }
+
+  static async validateCancelPay(req, res, next) {
+    try {
+      const approvalSchema = Joi.object({
+        action: Joi.string()
+          .trim()
+          .lowercase()
+          .valid(...Object.values(PAY_ACTIONS)),
+      });
+      const { joiFormatted } = await validateSchema(approvalSchema, req.body);
+      req.body = joiFormatted;
+      return next();
+    } catch (error) {
+      Response.handleError('validateCancelPay', error, req, res, next);
     }
   }
 

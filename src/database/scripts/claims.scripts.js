@@ -86,5 +86,31 @@ WHERE r."receivingHcpId" IN (${hcpIds.join(', ')})
   return query;
 };
 
-const claimsScripts = { getClaims, getClaimsByHcp, markPaidRefcodes };
+const undoMarkedPaidRefcodes = (__, ___, reqQuery = {}) => {
+  const { date, hcpIds } = reqQuery;
+  const month = months.firstDay(date);
+  const query = `
+UPDATE "ReferalCodes" r
+SET "datePaid" = NULL
+WHERE r.id IN
+(
+SELECT r.id
+FROM "ReferalCodes" r
+JOIN "Claims" c
+    ON r.id = c."refcodeId"
+        AND r."datePaid" IS NOT NULL
+        AND DATE_TRUNC('month', r."claimsVerifiedOn") <= '${month}'
+WHERE r."receivingHcpId" IN (${hcpIds.join(', ')})
+)
+  `;
+  // console.log(query);
+  return query;
+};
+
+const claimsScripts = {
+  getClaims,
+  getClaimsByHcp,
+  markPaidRefcodes,
+  undoMarkedPaidRefcodes,
+};
 export default claimsScripts;

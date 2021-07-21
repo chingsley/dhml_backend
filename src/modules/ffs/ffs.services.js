@@ -5,7 +5,10 @@ import claimsScripts from '../../database/scripts/claims.scripts';
 import ffsHelpers from './ffs.helpers';
 import { firstDayOfLastMonth, months } from '../../utils/timers';
 import ROLES from '../../shared/constants/roles.constants';
-import { AUDIT_STATUS } from '../../shared/constants/lists.constants';
+import {
+  AUDIT_STATUS,
+  PAY_ACTIONS,
+} from '../../shared/constants/lists.constants';
 
 export default class FFSService extends AppService {
   constructor({ body, files, query, params, user: operator }) {
@@ -134,11 +137,19 @@ export default class FFSService extends AppService {
       const { hcpMonthlyFFSPayments, monthInWords } = monthlyFFS;
       const hcpIds = hcpMonthlyFFSPayments.map((obj) => obj.hcpId);
       this.rejectIf(hcpIds.length < 1, {
-        withError: `No HCPs have been selected for payment for the ${monthInWords}`,
+        withError: `No HCPs have been selected for ${monthInWords} payment`,
       });
 
-      await monthlyFFS.update({ datePaid: new Date() }, { transaction: t });
-      const script = claimsScripts.markPaidRefcodes;
+      let datePaid = new Date();
+      let script = claimsScripts.markPaidRefcodes;
+
+      const { action } = this.body;
+      if (action === PAY_ACTIONS.CANCEL_PAY) {
+        datePaid = null;
+        script = claimsScripts.undoMarkedPaidRefcodes;
+      }
+
+      await monthlyFFS.update({ datePaid }, { transaction: t });
       await this.executeQuery(script, {
         date: monthlyFFS.month,
         hcpIds,
