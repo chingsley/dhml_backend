@@ -39,6 +39,13 @@ router.patch(
   FFSMiddleware.validateFFSAudit,
   FFSController.auditFFS
 );
+router.patch(
+  '/monthly-payments/:mfpId/approval',
+  AuthMiddleware.authorize([MD]),
+  AppMiddleware.validateIdParams,
+  FFSMiddleware.validateFFSApproval,
+  FFSController.approveFFS
+);
 router.get(
   '/payment-advice',
   AuthMiddleware.authorize([MD, HOD_ACCOUNT, ACCOUNT_OFFICER]),
