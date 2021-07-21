@@ -105,6 +105,21 @@ export default class FFSService extends AppService {
     return monthlyFFS;
   }
 
+  async handleFFSApproval() {
+    const { mfpId } = this.params;
+    const monthlyFFS = await this.findOneRecord({
+      modelName: 'MonthlyFFSPayment',
+      where: { id: mfpId },
+      errorIfNotFound: `No record found for mfpId: ${mfpId}`,
+    });
+    monthlyFFS.rejectIfNotAuditPass();
+    monthlyFFS.rejectIfPaid();
+    const { approve } = this.body;
+    const dateApproved = approve ? new Date() : null;
+    await monthlyFFS.update({ dateApproved });
+    return monthlyFFS;
+  }
+
   async getPaymentAdviceSvc() {
     const { date = new Date() } = this.query;
     const month = new Date(months.firstDay(date));

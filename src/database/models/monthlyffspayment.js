@@ -106,5 +106,20 @@ module.exports = (sequelize, DataTypes) => {
       withError: 'Record not ready for audit.',
     });
   };
+  MonthlyFFSPayment.prototype.rejectIfPaid = function () {
+    rejectIf(this.datePaid !== null, {
+      withError: 'Action not allowed. Record has been paid.',
+    });
+  };
+  MonthlyFFSPayment.prototype.rejectIfNotAuditPass = function () {
+    rejectIf(this.auditStatus !== AUDIT_STATUS.auditPass, {
+      withError: 'Action not allowed. Record has not passed audit.',
+    });
+  };
+  MonthlyFFSPayment.prototype.rejectIfNotApproved = function () {
+    rejectIf(this.dateApproved === null, {
+      withError: 'Action not allowed. Record has not been approved.',
+    });
+  };
   return MonthlyFFSPayment;
 };

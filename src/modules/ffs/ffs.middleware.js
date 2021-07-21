@@ -73,6 +73,19 @@ export default class FFSMiddleware {
     }
   }
 
+  static async validateFFSApproval(req, res, next) {
+    try {
+      const approvalSchema = Joi.object({
+        approve: Joi.bool().required(),
+      });
+      const { joiFormatted } = await validateSchema(approvalSchema, req.body);
+      req.body = joiFormatted;
+      return next();
+    } catch (error) {
+      Response.handleError('validateFFSApproval', error, req, res, next);
+    }
+  }
+
   static rejectSpecialCharacters(fields) {
     for (let field of fields) {
       const reg = /[`!#$%^&*()+=[\]{};':"<>?~]/;

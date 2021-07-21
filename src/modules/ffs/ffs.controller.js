@@ -46,6 +46,17 @@ export default class FFSController {
       Response.handleError('auditFFS', error, req, res, next);
     }
   }
+  static async approveFFS(req, res, next) {
+    try {
+      const ffsService = new FFSService(req);
+      const data = await ffsService.handleFFSApproval();
+      return res.status(200).json({
+        data,
+      });
+    } catch (error) {
+      Response.handleError('approveFFS', error, req, res, next);
+    }
+  }
   static async getPaymentAdvice(req, res, next) {
     try {
       const ffsService = new FFSService(req);
