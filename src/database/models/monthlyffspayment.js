@@ -103,7 +103,7 @@ module.exports = (sequelize, DataTypes) => {
   };
   MonthlyFFSPayment.prototype.rejectIfNotReadyForAudit = function () {
     rejectIf(this.auditRequestDate === null, {
-      withError: 'Record not ready for audit.',
+      withError: 'Record NOT ready for audit.',
     });
   };
   MonthlyFFSPayment.prototype.rejectIfPaid = function () {
@@ -113,12 +113,22 @@ module.exports = (sequelize, DataTypes) => {
   };
   MonthlyFFSPayment.prototype.rejectIfNotAuditPass = function () {
     rejectIf(this.auditStatus !== AUDIT_STATUS.auditPass, {
-      withError: 'Action not allowed. Record has not passed audit.',
+      withError: 'Action not allowed. Record has NOT passed audit.',
+    });
+  };
+  MonthlyFFSPayment.prototype.rejectIfRecordHasPassedAudit = function () {
+    rejectIf(this.auditStatus === AUDIT_STATUS.auditPass, {
+      withError: 'Action not allowed. Record has passed audit.',
     });
   };
   MonthlyFFSPayment.prototype.rejectIfNotApproved = function () {
     rejectIf(this.dateApproved === null, {
-      withError: 'Action not allowed. Record has not been approved.',
+      withError: 'Action not allowed. Record has NOT been approved.',
+    });
+  };
+  MonthlyFFSPayment.prototype.rejectIfApproved = function () {
+    rejectIf(this.dateApproved !== null, {
+      withError: 'Action not allowed. Record has been approved.',
     });
   };
   return MonthlyFFSPayment;

@@ -57,11 +57,23 @@ export default class FFSController {
       Response.handleError('approveFFS', error, req, res, next);
     }
   }
+  static async payMonthlyFFS(req, res, next) {
+    try {
+      const ffsService = new FFSService(req);
+      const data = await ffsService.markPaidFFS();
+      return res.status(200).json({
+        data,
+      });
+    } catch (error) {
+      Response.handleError('payMonthlyFFS', error, req, res, next);
+    }
+  }
   static async getPaymentAdvice(req, res, next) {
     try {
       const ffsService = new FFSService(req);
       const data = await ffsService.getPaymentAdviceSvc();
       return res.status(200).json({
+        message: 'Successfully updated records',
         data,
       });
     } catch (error) {
