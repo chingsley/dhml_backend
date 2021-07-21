@@ -64,8 +64,10 @@ export default class FFSService extends AppService {
 
   async requestAuditSvc() {
     const { mfpId } = this.params;
-    const { selectedHcpIds } = this.body;
+    const monthlyFFS = await this.$findMonthlyFFSById(mfpId);
+    monthlyFFS.rejectIfRecordHasPassedAudit();
 
+    const { selectedHcpIds } = this.body;
     const [_, updatedRecords] = await db.HcpMonthlyFFSPayment.update(
       { auditRequestDate: new Date() },
       { where: { mfpId, hcpId: selectedHcpIds }, returning: true }
@@ -95,29 +97,58 @@ export default class FFSService extends AppService {
   async handleFFSAudit() {
     const { mfpId } = this.params;
     const statusUpdate = this.body;
-    const monthlyFFS = await this.findOneRecord({
-      modelName: 'MonthlyFFSPayment',
-      where: { id: mfpId },
-      errorIfNotFound: `No record found for mfpId: ${mfpId}`,
-    });
+    const monthlyFFS = await this.$findMonthlyFFSById(mfpId);
     monthlyFFS.rejectIfNotReadyForAudit();
+    monthlyFFS.rejectIfApproved();
+
     await monthlyFFS.update({ ...statusUpdate, dateAudited: new Date() });
     return monthlyFFS;
   }
 
   async handleFFSApproval() {
     const { mfpId } = this.params;
-    const monthlyFFS = await this.findOneRecord({
-      modelName: 'MonthlyFFSPayment',
-      where: { id: mfpId },
-      errorIfNotFound: `No record found for mfpId: ${mfpId}`,
-    });
+    const monthlyFFS = await this.$findMonthlyFFSById(mfpId);
     monthlyFFS.rejectIfNotAuditPass();
     monthlyFFS.rejectIfPaid();
     const { approve } = this.body;
     const dateApproved = approve ? new Date() : null;
     await monthlyFFS.update({ dateApproved });
     return monthlyFFS;
+  }
+
+  async markPaidFFS() {
+    const t = await db.sequelize.transaction();
+    try {
+      const { mfpId } = this.params;
+      const monthlyFFS = await this.$findMonthlyFFSById(mfpId, {
+        include: {
+          model: db.HcpMonthlyFFSPayment,
+          as: 'hcpMonthlyFFSPayments',
+          where: { auditRequestDate: { [Op.not]: null } },
+          required: false,
+        },
+      });
+
+      monthlyFFS.rejectIfNotApproved();
+
+      const { hcpMonthlyFFSPayments, monthInWords } = monthlyFFS;
+      const hcpIds = hcpMonthlyFFSPayments.map((obj) => obj.hcpId);
+      this.rejectIf(hcpIds.length < 1, {
+        withError: `No HCPs have been selected for payment for the ${monthInWords}`,
+      });
+
+      await monthlyFFS.update({ datePaid: new Date() }, { transaction: t });
+      const script = claimsScripts.markPaidRefcodes;
+      await this.executeQuery(script, {
+        date: monthlyFFS.month,
+        hcpIds,
+      });
+      await t.commit();
+      return monthlyFFS;
+    } catch (error) {
+      await t.rollback();
+      throw error;
+    }
   }
 
   async getPaymentAdviceSvc() {
@@ -180,6 +211,15 @@ export default class FFSService extends AppService {
     db.MonthlyFFSPayment.update({ totalSelectedAmt }, { where: { id: mfpId } });
 
     return { totalSelectedAmt, updatedRecords };
+  }
+
+  $findMonthlyFFSById(mfpId, includeOptions = {}) {
+    return this.findOneRecord({
+      modelName: 'MonthlyFFSPayment',
+      where: { id: mfpId },
+      errorIfNotFound: `No record found for mfpId: ${mfpId}`,
+      ...includeOptions,
+    });
   }
 
   $fetchAllByMfpId(mfpId) {

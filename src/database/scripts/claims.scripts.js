@@ -46,12 +46,9 @@ const getClaimsByHcp = (__, ___, reqQuery = {}) => {
     date: reqQuery.date ? months.firstDay(reqQuery.date) : undefined,
   };
   const query = `
-  SELECT h.id "hcpId", h.code "hcpCode", h.name "hcpName", h.state,
+SELECT h.id "hcpId", h.code "hcpCode", h.name "hcpName", h.state,
   COUNT(DISTINCT r.code) as "totalClaims", SUM(c.unit * c."pricePerUnit") as amount,
-  DATE_TRUNC('month', MIN (r."claimsVerifiedOn")) "earliestClaimsVerificationDate",
-  CASE WHEN DATE_TRUNC('month', MIN (r."claimsVerifiedOn")) < '${date}' THEN TRUE     
-          ELSE FALSE
-  END AS "isOverdue"
+  DATE_TRUNC('month', MIN (r."claimsVerifiedOn")) "earliestClaimsVerificationDate"
 FROM "ReferalCodes" r
 JOIN "Claims" c
   ON r.id = c."refcodeId"
@@ -64,9 +61,30 @@ ORDER BY h.state ASC, amount DESC
 LIMIT ${limit}
 OFFSET ${offset}
     `;
-  //   console.log(query);
+  // console.log(query);
   return query;
 };
 
-const claimsScripts = { getClaims, getClaimsByHcp };
+const markPaidRefcodes = (__, ___, reqQuery = {}) => {
+  const { date, hcpIds } = reqQuery;
+  const month = months.firstDay(date);
+  const query = `
+UPDATE "ReferalCodes" r
+SET "datePaid" = NOW()
+WHERE r.id IN
+(
+SELECT r.id
+FROM "ReferalCodes" r
+JOIN "Claims" c
+    ON r.id = c."refcodeId"
+        AND r."datePaid" IS NULL
+        AND DATE_TRUNC('month', r."claimsVerifiedOn") <= '${month}'
+WHERE r."receivingHcpId" IN (${hcpIds.join(', ')})
+)
+  `;
+  // console.log(query);
+  return query;
+};
+
+const claimsScripts = { getClaims, getClaimsByHcp, markPaidRefcodes };
 export default claimsScripts;
