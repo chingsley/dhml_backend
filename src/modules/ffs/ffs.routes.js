@@ -50,6 +50,7 @@ router.patch(
   '/monthly-payments/:mfpId/pay',
   AuthMiddleware.authorize([HOD_ACCOUNT]),
   AppMiddleware.validateIdParams,
+  FFSMiddleware.validateCancelPay,
   FFSController.payMonthlyFFS
 );
 router.get(
