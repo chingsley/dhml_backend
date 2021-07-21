@@ -4,14 +4,17 @@ import db from '../../database/models';
 import claimsScripts from '../../database/scripts/claims.scripts';
 import ffsHelpers from './ffs.helpers';
 import { firstDayOfLastMonth, months } from '../../utils/timers';
+import ROLES from '../../shared/constants/roles.constants';
+import { AUDIT_STATUS } from '../../shared/constants/lists.constants';
 
 export default class FFSService extends AppService {
-  constructor({ body, files, query, params }) {
+  constructor({ body, files, query, params, user: operator }) {
     super({ body, files, query, params });
     this.body = body;
     this.files = files;
     this.query = query;
     this.params = params;
+    this.operator = operator;
   }
 
   async getFFSMonthlyPaymentsSvc() {
@@ -20,7 +23,15 @@ export default class FFSService extends AppService {
       totals
     );
     db.HcpMonthlyFFSPayment.updateCurrentMonthRecords(rows, mfpId);
+
+    // console.log(this.operator.role.title, ROLES.MD);
+    const operatorRole = this.operator.role.title;
+    const filters = {
+      [ROLES.MD]: { auditStatus: AUDIT_STATUS.auditPass },
+      [ROLES.HOD_AUDIT]: { auditRequestDate: { [Op.not]: null } },
+    };
     return db.MonthlyFFSPayment.findAndCountAll({
+      where: filters[operatorRole] || {},
       ...this.paginate(),
     });
   }

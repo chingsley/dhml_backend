@@ -36,7 +36,6 @@ module.exports = {
         },
         auditStatus: {
           type: Sequelize.STRING,
-          defaultValue: AUDIT_STATUS.pending,
         },
         flagReason: {
           type: Sequelize.TEXT,

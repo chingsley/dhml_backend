@@ -6,6 +6,7 @@ import {
   ACCOUNT_OFFICER,
   MD,
   HOD_ACCOUNT,
+  HOD_AUDIT,
 } from '../../shared/constants/roles.constants';
 import FFSController from './ffs.controller';
 
@@ -13,13 +14,13 @@ const router = express.Router();
 
 router.get(
   '/monthly-payments',
-  AuthMiddleware.authorize([MD, HOD_ACCOUNT, ACCOUNT_OFFICER]),
+  AuthMiddleware.authorize([MD, HOD_AUDIT, HOD_ACCOUNT, ACCOUNT_OFFICER]),
   FFSMiddleware.validateQuery,
   FFSController.getFFSMonthlyPayments
 );
 router.get(
   '/monthly-payments/:mfpId',
-  AuthMiddleware.authorize([MD, HOD_ACCOUNT, ACCOUNT_OFFICER]),
+  AuthMiddleware.authorize([MD, HOD_AUDIT, HOD_ACCOUNT, ACCOUNT_OFFICER]),
   FFSMiddleware.validateQuery,
   AppMiddleware.validateIdParams,
   FFSController.getFFSMonthlyHcpBreakdown
