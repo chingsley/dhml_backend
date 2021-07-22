@@ -29,9 +29,22 @@ router.patch(
   '/monthly-payments/:mfpId/request-audit',
   AuthMiddleware.authorize([HOD_ACCOUNT, ACCOUNT_OFFICER]),
   AppMiddleware.validateIdParams,
-  FFSMiddleware.validateAuditRequest,
+  FFSMiddleware.validateFFSVoucher,
   FFSController.requestAudit
 );
+// router.get(
+//   '/voucher/:voucherId',
+//   AppMiddleware.validateIdParams,
+//   AuthMiddleware.authorize([MD, HOD_AUDIT, HOD_ACCOUNT, ACCOUNT_OFFICER]),
+//   AccountController.getFFSVoucherById
+// );
+// router.patch(
+//   '/monthly-payments/:mfpId/tsa-remita',
+//   AuthMiddleware.authorize([HOD_ACCOUNT, ACCOUNT_OFFICER]),
+//   AppMiddleware.validateIdParams,
+//   AccountMiddleware.validateTsaRemitaUpdate,
+//   AccountController.updateFFSTsaRemitaValues
+// );
 router.patch(
   '/monthly-payments/:mfpId/audit',
   AuthMiddleware.authorize([HOD_AUDIT]),

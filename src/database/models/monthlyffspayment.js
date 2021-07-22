@@ -55,6 +55,15 @@ module.exports = (sequelize, DataTypes) => {
           return moment(this.month).format('MMMM YYYY');
         },
       },
+      isCurrentMonth: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return (
+            moment(this.month).clone().startOf('month').format('YYYY-MM-DD') ===
+            moment().clone().startOf('month').format('YYYY-MM-DD')
+          );
+        },
+      },
       readyForAudit: {
         type: DataTypes.VIRTUAL,
         get() {
@@ -129,6 +138,11 @@ module.exports = (sequelize, DataTypes) => {
   MonthlyFFSPayment.prototype.rejectIfApproved = function () {
     rejectIf(this.dateApproved !== null, {
       withError: 'Action not allowed. Record has been approved.',
+    });
+  };
+  MonthlyFFSPayment.prototype.rejectCurrentMonth = function () {
+    rejectIf(this.isCurrentMonth, {
+      withError: 'Operation not allowed on current running FFS until month end',
     });
   };
   return MonthlyFFSPayment;

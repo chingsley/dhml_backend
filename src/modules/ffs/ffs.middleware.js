@@ -6,6 +6,7 @@ import {
 import { throwError } from '../../shared/helpers';
 import Response from '../../utils/Response';
 import { Joi, validateSchema } from '../../validators/joi/config';
+import { getFFSVoucherSchema } from '../../validators/joi/schemas/ffs.schema';
 
 export default class FFSMiddleware {
   static async validateQuery(req, res, next) {
@@ -36,19 +37,16 @@ export default class FFSMiddleware {
       Response.handleError('validateQuery', error, req, res, next);
     }
   }
-  static async validateAuditRequest(req, res, next) {
+  static async validateFFSVoucher(req, res, next) {
     try {
-      const bodySchema = Joi.object({
-        selectedHcpIds: Joi.array()
-          .items(Joi.number().integer().min(1))
-          .unique()
-          .required(),
-      });
-      const { joiFormatted } = await validateSchema(bodySchema, req.body);
+      const { joiFormatted } = await validateSchema(
+        getFFSVoucherSchema(),
+        req.body
+      );
       req.body = joiFormatted;
       return next();
     } catch (error) {
-      Response.handleError('validateAuditRequest', error, req, res, next);
+      Response.handleError('validateFFSVoucher', error, req, res, next);
     }
   }
   static async validateFFSAudit(req, res, next) {
