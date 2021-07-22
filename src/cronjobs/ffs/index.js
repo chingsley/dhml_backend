@@ -1,7 +1,7 @@
 const cron = require('node-cron');
 import db from '../../database/models';
 import claimsScripts from '../../database/scripts/claims.scripts';
-import ScriptRunner from '../../utils/QueryRunner';
+import ScriptRunner from '../../utils/ScriptRunner';
 import SCHEDULES from '../schedules';
 import { AFRICA_LAGOS } from '../timezones';
 const { log } = console;

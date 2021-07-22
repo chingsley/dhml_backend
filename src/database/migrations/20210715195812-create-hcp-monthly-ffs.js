@@ -40,6 +40,12 @@ module.exports = {
         auditRequestDate: {
           type: Sequelize.DATE,
         },
+        rrr: {
+          type: Sequelize.STRING,
+        },
+        tsaCharge: {
+          type: Sequelize.DOUBLE,
+        },
         createdAt: {
           allowNull: false,
           type: Sequelize.DATE,

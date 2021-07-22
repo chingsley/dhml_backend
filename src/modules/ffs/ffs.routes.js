@@ -13,20 +13,20 @@ import FFSController from './ffs.controller';
 const router = express.Router();
 
 router.get(
-  '/monthly-payments',
+  '/monthly-ffs',
   AuthMiddleware.authorize([MD, HOD_AUDIT, HOD_ACCOUNT, ACCOUNT_OFFICER]),
   FFSMiddleware.validateQuery,
   FFSController.getFFSMonthlyPayments
 );
 router.get(
-  '/monthly-payments/:mfpId',
+  '/monthly-ffs/:mfpId',
   AuthMiddleware.authorize([MD, HOD_AUDIT, HOD_ACCOUNT, ACCOUNT_OFFICER]),
   FFSMiddleware.validateQuery,
   AppMiddleware.validateIdParams,
   FFSController.getFFSMonthlyHcpBreakdown
 );
 router.patch(
-  '/monthly-payments/:mfpId/request-audit',
+  '/monthly-ffs/:mfpId/request-audit',
   AuthMiddleware.authorize([HOD_ACCOUNT, ACCOUNT_OFFICER]),
   AppMiddleware.validateIdParams,
   FFSMiddleware.validateFFSVoucher,
@@ -38,29 +38,29 @@ router.patch(
 //   AuthMiddleware.authorize([MD, HOD_AUDIT, HOD_ACCOUNT, ACCOUNT_OFFICER]),
 //   AccountController.getFFSVoucherById
 // );
-// router.patch(
-//   '/monthly-payments/:mfpId/tsa-remita',
-//   AuthMiddleware.authorize([HOD_ACCOUNT, ACCOUNT_OFFICER]),
-//   AppMiddleware.validateIdParams,
-//   AccountMiddleware.validateTsaRemitaUpdate,
-//   AccountController.updateFFSTsaRemitaValues
-// );
 router.patch(
-  '/monthly-payments/:mfpId/audit',
+  '/hcp-monthly-ffs/:hcpmfpId/tsa-remita',
+  AuthMiddleware.authorize([HOD_ACCOUNT, ACCOUNT_OFFICER]),
+  AppMiddleware.validateIdParams,
+  FFSMiddleware.FFSvalidateTsaRemitaUpdate,
+  FFSController.updateFFSTsaRemitaValues
+);
+router.patch(
+  '/monthly-ffs/:mfpId/audit',
   AuthMiddleware.authorize([HOD_AUDIT]),
   AppMiddleware.validateIdParams,
   FFSMiddleware.validateFFSAudit,
   FFSController.auditFFS
 );
 router.patch(
-  '/monthly-payments/:mfpId/approval',
+  '/monthly-ffs/:mfpId/approval',
   AuthMiddleware.authorize([MD]),
   AppMiddleware.validateIdParams,
   FFSMiddleware.validateFFSApproval,
   FFSController.approveFFS
 );
 router.patch(
-  '/monthly-payments/:mfpId/pay',
+  '/monthly-ffs/:mfpId/pay',
   AuthMiddleware.authorize([HOD_ACCOUNT]),
   AppMiddleware.validateIdParams,
   FFSMiddleware.validateCancelPay,
