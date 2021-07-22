@@ -69,8 +69,10 @@ export default class FFSService extends AppService {
     const { mfpId } = this.params;
     const monthlyFFS = await this.$findMonthlyFFSById(mfpId);
     monthlyFFS.rejectIfRecordHasPassedAudit();
+    monthlyFFS.rejectCurrentMonth();
 
-    const { selectedHcpIds } = this.body;
+    const { selectedHcpIds, ...voucherData } = this.body;
+    db.FFSVoucher.updateOrCreate(mfpId, voucherData);
     const [_, updatedRecords] = await db.HcpMonthlyFFSPayment.update(
       { auditRequestDate: new Date() },
       { where: { mfpId, hcpId: selectedHcpIds }, returning: true }
