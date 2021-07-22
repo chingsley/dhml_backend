@@ -72,5 +72,11 @@ router.get(
   FFSMiddleware.validateQuery,
   FFSController.selectedFFSBreakdownByHcp
 );
+router.get(
+  '/nhis-report',
+  AuthMiddleware.authorize([MD, HOD_ACCOUNT, ACCOUNT_OFFICER]),
+  AppMiddleware.requireDateQuery,
+  FFSController.getFFSNhisReportByMonth
+);
 
 export default router;

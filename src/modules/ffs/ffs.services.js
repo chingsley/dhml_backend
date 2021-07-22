@@ -3,7 +3,8 @@ import { Op } from 'sequelize';
 import db from '../../database/models';
 import claimsScripts from '../../database/scripts/claims.scripts';
 import ffsHelpers from './ffs.helpers';
-import { firstDayOfLastMonth, months } from '../../utils/timers';
+import { months } from '../../utils/timers';
+import ffsScripts from '../../database/scripts/ffsreports.scripts';
 import ROLES from '../../shared/constants/roles.constants';
 import {
   AUDIT_STATUS,
@@ -215,6 +216,20 @@ export default class FFSService extends AppService {
       : data;
   }
 
+  async getFFSNhisReportByMonthSvc() {
+    const script = ffsScripts.ffsNhisReport;
+    const nonPaginatedRows = await this.executeQuery(script, {
+      ...this.query,
+      pageSize: undefined,
+      page: undefined,
+    });
+    const count = nonPaginatedRows.length;
+    const rows = await this.executeQuery(script, {
+      ...this.query,
+    });
+    return { count, rows };
+  }
+
   async $fetchFFSMonthlyPaymentByHcps() {
     const script = claimsScripts.getClaimsByHcp;
     const rows = await this.executeQuery(script, {});
@@ -229,29 +244,29 @@ export default class FFSService extends AppService {
     return { rows, totals };
   }
 
-  async handlePreselection(mfpId) {
-    const [__, updatedRecords] = await db.HcpMonthlyFFSPayment.update(
-      {
-        auditRequestDate: new Date(),
-      },
-      {
-        where: {
-          mfpId,
-          earliestClaimsVerificationDate: {
-            [Op.lt]: new Date(firstDayOfLastMonth),
-          },
-        },
-        returning: true,
-      }
-    );
-    const totalSelectedAmt = updatedRecords.reduce((acc, record) => {
-      acc += Number(record.amount);
-      return acc;
-    }, 0);
-    db.MonthlyFFSPayment.update({ totalSelectedAmt }, { where: { id: mfpId } });
+  // async handlePreselection(mfpId) {
+  //   const [__, updatedRecords] = await db.HcpMonthlyFFSPayment.update(
+  //     {
+  //       auditRequestDate: new Date(),
+  //     },
+  //     {
+  //       where: {
+  //         mfpId,
+  //         earliestClaimsVerificationDate: {
+  //           [Op.lt]: new Date(firstDayOfLastMonth),
+  //         },
+  //       },
+  //       returning: true,
+  //     }
+  //   );
+  //   const totalSelectedAmt = updatedRecords.reduce((acc, record) => {
+  //     acc += Number(record.amount);
+  //     return acc;
+  //   }, 0);
+  //   db.MonthlyFFSPayment.update({ totalSelectedAmt }, { where: { id: mfpId } });
 
-    return { totalSelectedAmt, updatedRecords };
-  }
+  //   return { totalSelectedAmt, updatedRecords };
+  // }
 
   $findMonthlyFFSById(mfpId, includeOptions = {}) {
     return this.findOneRecord({

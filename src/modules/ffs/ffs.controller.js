@@ -83,9 +83,9 @@ export default class FFSController {
   static async payMonthlyFFS(req, res, next) {
     try {
       const ffsService = new FFSService(req);
-      const data = await ffsService.markPaidFFS();
+      await ffsService.markPaidFFS();
       return res.status(200).json({
-        data,
+        message: 'Successful',
       });
     } catch (error) {
       Response.handleError('payMonthlyFFS', error, req, res, next);
@@ -101,6 +101,18 @@ export default class FFSController {
       });
     } catch (error) {
       Response.handleError('selectedFFSBreakdownByHcp', error, req, res, next);
+    }
+  }
+  static async getFFSNhisReportByMonth(req, res, next) {
+    try {
+      const ffsService = new FFSService(req);
+      const data = await ffsService.getFFSNhisReportByMonthSvc();
+      return res.status(200).json({
+        message: 'Successfully updated records',
+        data,
+      });
+    } catch (error) {
+      Response.handleError('getFFSNhisReportByMonth', error, req, res, next);
     }
   }
 }
