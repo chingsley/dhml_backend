@@ -18,7 +18,8 @@ export default class FFSMiddleware {
         hcpCode: Joi.string().trim(),
         hcpName: Joi.string().trim(),
         category: Joi.string().trim(),
-        selectedForPayment: Joi.string().trim().valid('true', 'false'),
+        selectedForPayment: Joi.bool(),
+        groupByState: Joi.bool(),
         date: Joi.date()
           .format('YYYY-MM-DD')
           .max('now')

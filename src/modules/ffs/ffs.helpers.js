@@ -14,8 +14,7 @@ const ffsHelpers = {
   canFilterBySelectedRecords({ selectedForPayment = null }) {
     const filter = { where: {} };
     if (selectedForPayment !== null) {
-      const value = JSON.parse(String(selectedForPayment).toLowerCase());
-      if (value === true) {
+      if (selectedForPayment === true) {
         filter.where = { auditRequestDate: { [Op.not]: null } };
       } else {
         filter.where = { auditRequestDate: { [Op.is]: null } };

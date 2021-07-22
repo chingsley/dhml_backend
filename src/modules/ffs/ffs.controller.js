@@ -80,16 +80,16 @@ export default class FFSController {
       Response.handleError('payMonthlyFFS', error, req, res, next);
     }
   }
-  static async getPaymentAdvice(req, res, next) {
+  static async selectedFFSBreakdownByHcp(req, res, next) {
     try {
       const ffsService = new FFSService(req);
-      const data = await ffsService.getPaymentAdviceSvc();
+      const data = await ffsService.selectedFFSBreakdownByHcpSvc();
       return res.status(200).json({
         message: 'Successfully updated records',
         data,
       });
     } catch (error) {
-      Response.handleError('getPaymentAdvice', error, req, res, next);
+      Response.handleError('selectedFFSBreakdownByHcp', error, req, res, next);
     }
   }
 }

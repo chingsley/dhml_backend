@@ -175,8 +175,8 @@ export default class FFSService extends AppService {
     }
   }
 
-  async getPaymentAdviceSvc() {
-    const { date = new Date() } = this.query;
+  async selectedFFSBreakdownByHcpSvc() {
+    const { date = new Date(), groupByState = false } = this.query;
     const month = new Date(months.firstDay(date));
 
     const data = await db.HcpMonthlyFFSPayment.findAndCountAll({
@@ -192,11 +192,13 @@ export default class FFSService extends AppService {
         {
           model: db.HealthCareProvider,
           as: 'hcp',
-          attributes: ['code', 'name', 'state'],
+          attributes: ['code', 'name', 'state', 'accountNumber', 'email'],
         },
       ],
     });
-    return { count: data.count, data: this.groupFFSByHcpState(data.rows) };
+    return groupByState
+      ? { count: data.count, data: this.groupFFSByHcpState(data.rows) }
+      : data;
   }
 
   async $fetchFFSMonthlyPaymentByHcps() {
