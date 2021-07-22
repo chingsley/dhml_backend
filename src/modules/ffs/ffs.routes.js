@@ -67,10 +67,10 @@ router.patch(
   FFSController.payMonthlyFFS
 );
 router.get(
-  '/payment-advice',
+  '/selected-for-payment',
   AuthMiddleware.authorize([MD, HOD_ACCOUNT, ACCOUNT_OFFICER]),
   FFSMiddleware.validateQuery,
-  FFSController.getPaymentAdvice
+  FFSController.selectedFFSBreakdownByHcp
 );
 
 export default router;
