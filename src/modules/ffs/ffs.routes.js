@@ -32,12 +32,12 @@ router.patch(
   FFSMiddleware.validateFFSVoucher,
   FFSController.requestAudit
 );
-// router.get(
-//   '/voucher/:voucherId',
-//   AppMiddleware.validateIdParams,
-//   AuthMiddleware.authorize([MD, HOD_AUDIT, HOD_ACCOUNT, ACCOUNT_OFFICER]),
-//   AccountController.getFFSVoucherById
-// );
+router.get(
+  '/voucher/:mfpId',
+  AppMiddleware.validateIdParams,
+  AuthMiddleware.authorize([MD, HOD_AUDIT, HOD_ACCOUNT, ACCOUNT_OFFICER]),
+  FFSController.getFFSVoucherByMfpId
+);
 router.patch(
   '/hcp-monthly-ffs/:hcpmfpId/tsa-remita',
   AuthMiddleware.authorize([HOD_ACCOUNT, ACCOUNT_OFFICER]),
