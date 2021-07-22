@@ -99,6 +99,20 @@ export default class FFSService extends AppService {
     return data[0];
   }
 
+  async getFFSVoucherByMfpIdSvc() {
+    const { mfpId } = this.params;
+    const data = await this.findOneRecord({
+      modelName: 'FFSVoucher',
+      where: { mfpId },
+      errorIfNotFound: `No ffs voucher found for the mfpId: ${mfpId}`,
+      include: {
+        model: db.MonthlyFFSPayment,
+        as: 'monthlyFFS',
+      },
+    });
+    return data;
+  }
+
   async updateFFSTsaRemita() {
     const { hcpmfpId: id } = this.params;
     const hcpMonthlyFSS = await this.findOneRecord({
