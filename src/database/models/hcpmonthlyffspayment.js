@@ -47,6 +47,12 @@ module.exports = (sequelize, DataTypes) => {
       auditRequestDate: {
         type: DataTypes.DATE,
       },
+      rrr: {
+        type: DataTypes.STRING,
+      },
+      tsaCharge: {
+        type: DataTypes.DOUBLE,
+      },
       selectedForPayment: {
         type: DataTypes.VIRTUAL,
         get() {

@@ -99,6 +99,17 @@ export default class FFSService extends AppService {
     return data[0];
   }
 
+  async updateFFSTsaRemita() {
+    const { hcpmfpId: id } = this.params;
+    const hcpMonthlyFSS = await this.findOneRecord({
+      modelName: 'HcpMonthlyFFSPayment',
+      where: { id },
+      errorIfNotFound: `no record matches the hcpmfpId: ${id}`,
+    });
+    await hcpMonthlyFSS.update(this.body);
+    return hcpMonthlyFSS;
+  }
+
   async handleFFSAudit() {
     const { mfpId } = this.params;
     const statusUpdate = this.body;
@@ -176,7 +187,7 @@ export default class FFSService extends AppService {
           model: db.MonthlyFFSPayment,
           as: 'monthlyFFSPayment',
           where: { month },
-          attributes: [],
+          attributes: ['month'],
         },
         {
           model: db.HealthCareProvider,

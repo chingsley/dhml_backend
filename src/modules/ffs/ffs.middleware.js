@@ -49,6 +49,19 @@ export default class FFSMiddleware {
       Response.handleError('validateFFSVoucher', error, req, res, next);
     }
   }
+  static async FFSvalidateTsaRemitaUpdate(req, res, next) {
+    try {
+      const schema = Joi.object({
+        tsaCharge: Joi.number(),
+        rrr: Joi.string().trim(),
+      });
+      const { joiFormatted } = await validateSchema(schema, req.body);
+      req.body = joiFormatted;
+      return next();
+    } catch (error) {
+      Response.handleError('FFSvalidateTsaRemitaUpdate', error, req, res, next);
+    }
+  }
   static async validateFFSAudit(req, res, next) {
     try {
       // remove 'pending' from allowed input audit status

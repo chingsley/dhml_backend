@@ -35,6 +35,18 @@ export default class FFSController {
       Response.handleError('requestAudit', error, req, res, next);
     }
   }
+  static async updateFFSTsaRemitaValues(req, res, next) {
+    try {
+      const ffsService = new FFSService(req);
+      const data = await ffsService.updateFFSTsaRemita();
+      return res.status(200).json({
+        message: 'Saved successfully.',
+        data,
+      });
+    } catch (error) {
+      Response.handleError('updateFFSTsaRemitaValues', error, req, res, next);
+    }
+  }
   static async auditFFS(req, res, next) {
     try {
       const ffsService = new FFSService(req);
