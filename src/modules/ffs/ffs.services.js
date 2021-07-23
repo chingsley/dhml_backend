@@ -10,6 +10,7 @@ import {
   AUDIT_STATUS,
   PAY_ACTIONS,
 } from '../../shared/constants/lists.constants';
+import analysisScripts from '../../database/scripts/analysis.scripts';
 
 export default class FFSService extends AppService {
   constructor({ body, files, query, params, user: operator }) {
@@ -244,29 +245,11 @@ export default class FFSService extends AppService {
     return { rows, totals };
   }
 
-  // async handlePreselection(mfpId) {
-  //   const [__, updatedRecords] = await db.HcpMonthlyFFSPayment.update(
-  //     {
-  //       auditRequestDate: new Date(),
-  //     },
-  //     {
-  //       where: {
-  //         mfpId,
-  //         earliestClaimsVerificationDate: {
-  //           [Op.lt]: new Date(firstDayOfLastMonth),
-  //         },
-  //       },
-  //       returning: true,
-  //     }
-  //   );
-  //   const totalSelectedAmt = updatedRecords.reduce((acc, record) => {
-  //     acc += Number(record.amount);
-  //     return acc;
-  //   }, 0);
-  //   db.MonthlyFFSPayment.update({ totalSelectedAmt }, { where: { id: mfpId } });
-
-  //   return { totalSelectedAmt, updatedRecords };
-  // }
+  async analyseFFSByArmOfService() {
+    const script = analysisScripts.ffsReports;
+    const data = await this.executeQuery(script, this.query);
+    return this.analysisFormatter.summarized(data, this.query);
+  }
 
   $findMonthlyFFSById(mfpId, includeOptions = {}) {
     return this.findOneRecord({

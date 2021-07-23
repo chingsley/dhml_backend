@@ -29,6 +29,7 @@ export default class FFSController {
       const ffsService = new FFSService(req);
       const data = await ffsService.requestAuditSvc();
       return res.status(200).json({
+        message: 'Audit request successful',
         data,
       });
     } catch (error) {
@@ -63,6 +64,7 @@ export default class FFSController {
       const ffsService = new FFSService(req);
       const data = await ffsService.handleFFSAudit();
       return res.status(200).json({
+        message: 'Successfully updated records',
         data,
       });
     } catch (error) {
@@ -74,6 +76,7 @@ export default class FFSController {
       const ffsService = new FFSService(req);
       const data = await ffsService.handleFFSApproval();
       return res.status(200).json({
+        message: 'Successfully updated records',
         data,
       });
     } catch (error) {
@@ -85,7 +88,7 @@ export default class FFSController {
       const ffsService = new FFSService(req);
       await ffsService.markPaidFFS();
       return res.status(200).json({
-        message: 'Successful',
+        message: 'Successfully updated records',
       });
     } catch (error) {
       Response.handleError('payMonthlyFFS', error, req, res, next);
@@ -96,7 +99,6 @@ export default class FFSController {
       const ffsService = new FFSService(req);
       const data = await ffsService.selectedFFSBreakdownByHcpSvc();
       return res.status(200).json({
-        message: 'Successfully updated records',
         data,
       });
     } catch (error) {
@@ -108,11 +110,21 @@ export default class FFSController {
       const ffsService = new FFSService(req);
       const data = await ffsService.getFFSNhisReportByMonthSvc();
       return res.status(200).json({
-        message: 'Successfully updated records',
         data,
       });
     } catch (error) {
       Response.handleError('getFFSNhisReportByMonth', error, req, res, next);
+    }
+  }
+  static async FFSAnalysisByArmOfService(req, res, next) {
+    try {
+      const ffsService = new FFSService(req);
+      const data = await ffsService.analyseFFSByArmOfService();
+      return res.status(200).json({
+        data,
+      });
+    } catch (error) {
+      Response.handleError('FFSAnalysisByArmOfService', error, req, res, next);
     }
   }
 }

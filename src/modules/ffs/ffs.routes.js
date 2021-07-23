@@ -78,5 +78,12 @@ router.get(
   AppMiddleware.requireDateQuery,
   FFSController.getFFSNhisReportByMonth
 );
+router.get(
+  '/analysis',
+  AuthMiddleware.authorize([MD, HOD_AUDIT, HOD_ACCOUNT, ACCOUNT_OFFICER]),
+  AppMiddleware.validateQueryParams,
+  AppMiddleware.requireDateQuery,
+  FFSController.FFSAnalysisByArmOfService
+);
 
 export default router;

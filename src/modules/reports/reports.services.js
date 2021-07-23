@@ -4,8 +4,8 @@ import db from '../../database/models';
 import { Op } from 'sequelize';
 import ROLES from '../../shared/constants/roles.constants';
 import { capitationByArmOfService } from '../../database/scripts/analysis.scripts';
-import reportHelpers from './reports.helpers';
 import { AUDIT_STATUS } from '../../shared/constants/lists.constants';
+import reportHelpers from './reports.helpers';
 
 export default class ReportService extends AppService {
   constructor({ body, files, query, params }) {
@@ -106,7 +106,7 @@ export default class ReportService extends AppService {
 
   async getCapByArmOfService() {
     const data = await this.executeQuery(capitationByArmOfService, this.query);
-    return this.summarized(data, this.query);
+    return this.analysisFormatter.summarized(data, this.query);
   }
 }
 
