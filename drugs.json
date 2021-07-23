@@ -1,0 +1,5952 @@
+[
+ {
+   "NAME OF DRUG": "Halothane",
+   "DOSAGE FORM": "Inhalation, Liquid",
+   "STRENGTHS": "10 mg/ml in 20 ml,",
+   "PRESENTATION": "250ml bottle",
+   "PRICE (N)": "37,000.00"
+ },
+ {
+   "NAME OF DRUG": "Ketamine",
+   "DOSAGE FORM": "Injection(HCL)",
+   "STRENGTHS": "50mg/ml in 10ml, 100mg/ml in 5ml",
+   "PRESENTATION": "vial",
+   "PRICE (N)": "2,100.00"
+ },
+ {
+   "NAME OF DRUG": "Oxygen",
+   "DOSAGE FORM": "Inhalation, medicinal gas",
+   "STRENGTHS": "",
+   "PRESENTATION": "",
+   "PRICE (N)": "14,000.00"
+ },
+ {
+   "NAME OF DRUG": "Thiopental",
+   "DOSAGE FORM": "Injection (powder) for IV as sodium\nsalt",
+   "STRENGTHS": "100 mg/ml in 5 ml",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "4,800.00"
+ },
+ {
+   "NAME OF DRUG": "Atropine",
+   "DOSAGE FORM": "Injection (sulphate)",
+   "STRENGTHS": "0.5mg/amp",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Atropine",
+   "DOSAGE FORM": "Injection (sulphate)",
+   "STRENGTHS": "1mg/ 1ml",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Hyoscine N -Butylbromide",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "20mg/ml",
+   "PRESENTATION": "amp",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Morphine",
+   "DOSAGE FORM": "Injection (Sulphate or Hcl)",
+   "STRENGTHS": "10 mg/ml, 15mg/ml in 1ml ampoules",
+   "PRESENTATION": "Amp",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Morphine",
+   "DOSAGE FORM": "Injection (Sulphate or Hcl)",
+   "STRENGTHS": "25mg, (Hydrochloride)",
+   "PRESENTATION": "Amp",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Promethazine",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "5mg/5ml",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Promethazine",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "25mg/ml (HC1) in 1 ml",
+   "PRESENTATION": "60mls",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Promethazine",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "2ml Ampoule",
+   "PRESENTATION": "Amp",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Atracurium",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "50 mg/ml",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "1,600.00"
+ },
+ {
+   "NAME OF DRUG": "Neostigmine",
+   "DOSAGE FORM": "Injection (methylsulphate)",
+   "STRENGTHS": "2.5mg/ml in 1ml ampoule",
+   "PRESENTATION": "Amp",
+   "PRICE (N)": "250.00"
+ },
+ {
+   "NAME OF DRUG": "Pancuronium",
+   "DOSAGE FORM": "Injection (Bromide)",
+   "STRENGTHS": "4mg/2ml",
+   "PRESENTATION": "Amp",
+   "PRICE (N)": "360.00"
+ },
+ {
+   "NAME OF DRUG": "Pancuronium",
+   "DOSAGE FORM": "Injection (Bromide)",
+   "STRENGTHS": "",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "360.00"
+ },
+ {
+   "NAME OF DRUG": "Suxamethonium",
+   "DOSAGE FORM": "Injection( Chloride)",
+   "STRENGTHS": "100mg/2ml",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "250.00"
+ },
+ {
+   "NAME OF DRUG": "Lidocaine",
+   "DOSAGE FORM": "Injection (HCL)",
+   "STRENGTHS": "1%, /2% + Adrenaline 1:200000",
+   "PRESENTATION": "Vial50mls",
+   "PRICE (N)": "400.00"
+ },
+ {
+   "NAME OF DRUG": "Bupivacaine",
+   "DOSAGE FORM": "Injection (HCL)",
+   "STRENGTHS": "Plain or with epinephrine",
+   "PRESENTATION": "Amp",
+   "PRICE (N)": "800.00"
+ },
+ {
+   "NAME OF DRUG": "Lidocaine",
+   "DOSAGE FORM": "",
+   "STRENGTHS": "10%",
+   "PRESENTATION": "",
+   "PRICE (N)": "400.00"
+ },
+ {
+   "NAME OF DRUG": "Lidocaine",
+   "DOSAGE FORM": "Topical spray",
+   "STRENGTHS": "2-4%",
+   "PRESENTATION": "Spray",
+   "PRICE (N)": "1,500.00"
+ },
+ {
+   "NAME OF DRUG": "Lidocaine",
+   "DOSAGE FORM": "Jelly",
+   "STRENGTHS": "2-5%",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "900.00"
+ },
+ {
+   "NAME OF DRUG": "Lidocaine",
+   "DOSAGE FORM": "Cream, Ointment",
+   "STRENGTHS": "2% + epinephrine (adrenaline) 1:80,000",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "850.00"
+ },
+ {
+   "NAME OF DRUG": "Lidocaine",
+   "DOSAGE FORM": "Dental catridge",
+   "STRENGTHS": "0.25%, 0.5%, in 10ml amp (with or without epinephrine\n(adrenaline) 1:200,000)",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "1,500.00"
+ },
+ {
+   "NAME OF DRUG": "Prilocaine",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "3% with felypressin 0.03units/ml",
+   "PRESENTATION": "Amp",
+   "PRICE (N)": "800.00"
+ },
+ {
+   "NAME OF DRUG": "Morphine",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "10mg ( SO4  or HC1) in 1ml Ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Morphine",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "15mg ( SO4  or HC1) in 1ml Ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Morphine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "30mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Pentazocine",
+   "DOSAGE FORM": "Injection ( lactate)",
+   "STRENGTHS": "30mg/ml",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Pentazocine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "25mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Pentazocine",
+   "DOSAGE FORM": "Capsule",
+   "STRENGTHS": "50 mg",
+   "PRESENTATION": "Caps.",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Pethidine",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "50mg/ml in 2 ml Ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Pethidine",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "50 mg",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Pethidine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "50mg 0r 100mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Tramadol",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "50mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Tramadol",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "50mg/ml ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Naloxone",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "0.4mg/ml in 1ml Ampoule",
+   "PRESENTATION": "Amp",
+   "PRICE (N)": "3,500.00"
+ },
+ {
+   "NAME OF DRUG": "Acetyl salicylic Acid",
+   "DOSAGE FORM": "Tablet ,  capsule",
+   "STRENGTHS": "300mg",
+   "PRESENTATION": "Tab/Caps.",
+   "PRICE (N)": "2.00"
+ },
+ {
+   "NAME OF DRUG": "Paracetamol",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "500mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "3.00"
+ },
+ {
+   "NAME OF DRUG": "Paracetamol",
+   "DOSAGE FORM": "Suppository",
+   "STRENGTHS": "100 mg",
+   "PRESENTATION": "Supp.",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Paracetamol",
+   "DOSAGE FORM": "Syrup/suspension",
+   "STRENGTHS": "125mg/5ml",
+   "PRESENTATION": "60mls",
+   "PRICE (N)": "120.00"
+ },
+ {
+   "NAME OF DRUG": "Paracetamol",
+   "DOSAGE FORM": "Drop",
+   "STRENGTHS": "125mg/5ml",
+   "PRESENTATION": "15mls",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Paracetamol",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "150mg/ml",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Paracetamol",
+   "DOSAGE FORM": "Infusion",
+   "STRENGTHS": "50mls",
+   "PRESENTATION": "Inf.",
+   "PRICE (N)": "400.00"
+ },
+ {
+   "NAME OF DRUG": "Allopurinol",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "100mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Celecoxib",
+   "DOSAGE FORM": "Capsules",
+   "STRENGTHS": "200mg",
+   "PRESENTATION": "Caps.",
+   "PRICE (N)": "180.00"
+ },
+ {
+   "NAME OF DRUG": "Chondriotin sulphate+ Glucoseamine",
+   "DOSAGE FORM": "Capsules",
+   "STRENGTHS": "200mg+250mg",
+   "PRESENTATION": "Caps.",
+   "PRICE (N)": "60.00"
+ },
+ {
+   "NAME OF DRUG": "Diclofenac (sodium or potassium salt)",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "100mg,",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Diclofenac (sodium or potassium salt)",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "50mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "15.00"
+ },
+ {
+   "NAME OF DRUG": "Diclofenac (sodium or potassium salt)",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "25mg/ml Ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Diclofenac sodium",
+   "DOSAGE FORM": "Gel",
+   "STRENGTHS": "1%",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "400.00"
+ },
+ {
+   "NAME OF DRUG": "Diclofenac sodium + misoprostol",
+   "DOSAGE FORM": "Tab",
+   "STRENGTHS": "Single",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "65.00"
+ },
+ {
+   "NAME OF DRUG": "Diclofenac sodium + misoprostol",
+   "DOSAGE FORM": "Tab",
+   "STRENGTHS": "Forte",
+   "PRESENTATION": "“",
+   "PRICE (N)": "65.00"
+ },
+ {
+   "NAME OF DRUG": "Diclofenac sodium + misoprostol",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "50mg/200mcg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "70.00"
+ },
+ {
+   "NAME OF DRUG": "Diclofenac sodium + misoprostol",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "75mg/200mcg",
+   "PRESENTATION": "“",
+   "PRICE (N)": "80.00"
+ },
+ {
+   "NAME OF DRUG": "Diclofenac sodium+B1+B6+B12",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "",
+   "PRESENTATION": "",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Diclofenac sodium+Cholestyramine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "75mg/65mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Ibuprofen",
+   "DOSAGE FORM": "Tablets, capsules",
+   "STRENGTHS": "200mg,",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Ibuprofen",
+   "DOSAGE FORM": "Tablets, capsules",
+   "STRENGTHS": "400mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Ibuprofen",
+   "DOSAGE FORM": "Suspension",
+   "STRENGTHS": "100mg/5ml",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "250.00"
+ },
+ {
+   "NAME OF DRUG": "Ketoprofen",
+   "DOSAGE FORM": "Capsules",
+   "STRENGTHS": "150mg or 200mg",
+   "PRESENTATION": "Caps./tabs",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Ketoprofen",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "100mg",
+   "PRESENTATION": "2ml Amp",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Naproxen",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "250mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "40.00"
+ },
+ {
+   "NAME OF DRUG": "Naproxen",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "500mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "60.00"
+ },
+ {
+   "NAME OF DRUG": "Piroxicam",
+   "DOSAGE FORM": "Capsules",
+   "STRENGTHS": "20mg",
+   "PRESENTATION": "Caps.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Piroxicam",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "10mg/ml",
+   "PRESENTATION": "2ml Amp",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Ophenadrine",
+   "DOSAGE FORM": "Tablet ( citrate)",
+   "STRENGTHS": "100mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Orphenadrine + Paracetamol",
+   "DOSAGE FORM": "Tablet (citrate)",
+   "STRENGTHS": "35mg+ 450mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Tizanidine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "6mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Cetrizine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "10mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Cetrizine",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "1mg/5ml",
+   "PRESENTATION": "100ml",
+   "PRICE (N)": "1,500.00"
+ },
+ {
+   "NAME OF DRUG": "Chlorpheniramine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "4mg (Maleate)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Chlorpheniramine",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "2mg/5ml",
+   "PRESENTATION": "60mls",
+   "PRICE (N)": "180.00"
+ },
+ {
+   "NAME OF DRUG": "Chlorpheniramine",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "10mg (Maleate) in 1ml Ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "25.00"
+ },
+ {
+   "NAME OF DRUG": "Clemastine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "1mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Clemastine",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "500mcg/5ml",
+   "PRESENTATION": "100ml",
+   "PRICE (N)": "400.00"
+ },
+ {
+   "NAME OF DRUG": "Loratidine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "10mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Loratidine",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "5mg/5ml",
+   "PRESENTATION": "60ml",
+   "PRICE (N)": "1,000.00"
+ },
+ {
+   "NAME OF DRUG": "Promethazine",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "25mg, (Hydrochloride)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Promethazine",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "5mg/5ml",
+   "PRESENTATION": "60mls",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Promethazine",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "25mg/ml (HC1) in 1 ml and 2ml Ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Dexamethasone",
+   "DOSAGE FORM": "Injection (sodium phosphate)",
+   "STRENGTHS": "4mg/1ml",
+   "PRESENTATION": "Amp",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Epinephrine (Adrenaline)",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "1mg/ml (1 in 1000) as Acid tartrate or",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Epinephrine (Adrenaline)",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "HC1 in 1ml Ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Hydrocortisone",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "Powder for reconstitution, 100mg",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "120.00"
+ },
+ {
+   "NAME OF DRUG": "Hydrocortisone",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "(Sodium Succinate) in vial",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "120.00"
+ },
+ {
+   "NAME OF DRUG": "Atropine",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "1.0mg (Sulphate) in 1ml Ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Atropine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "1 mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Deferoxamine",
+   "DOSAGE FORM": "Injection (mesilate)",
+   "STRENGTHS": "500 mg/vial",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "2,250.00"
+ },
+ {
+   "NAME OF DRUG": "Methylene blue",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "5ml",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "400.00"
+ },
+ {
+   "NAME OF DRUG": "Methylene blue",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "50 ml",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "2,500.00"
+ },
+ {
+   "NAME OF DRUG": "Naloxone",
+   "DOSAGE FORM": "Injection (HCL)",
+   "STRENGTHS": "400mcg/ml",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "3,500.00"
+ },
+ {
+   "NAME OF DRUG": "Phytomenadione (Vitamin K1)",
+   "DOSAGE FORM": "Ampoule",
+   "STRENGTHS": "10mg/ml in 1ml",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "180.00"
+ },
+ {
+   "NAME OF DRUG": "Protamine sulphate",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "10mg/ml in 5 ml",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "750.00"
+ },
+ {
+   "NAME OF DRUG": "Sodium calcium edetate",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "200mg/ml in 5 ml",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Sodium nitrite",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "30mg/ml in 10 ml vial",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "330.00"
+ },
+ {
+   "NAME OF DRUG": "Activated charcoal",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "Tablet",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "40.00"
+ },
+ {
+   "NAME OF DRUG": "Activated charcoal",
+   "DOSAGE FORM": "Granule, Powder for",
+   "STRENGTHS": "5g/satchet, powder 25 g, 50 g pack, for",
+   "PRESENTATION": "",
+   "PRICE (N)": "700.00"
+ },
+ {
+   "NAME OF DRUG": "Carbamazepine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "200mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Carbamazepine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "400mg SR",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "60.00"
+ },
+ {
+   "NAME OF DRUG": "Carbamazepine",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "100mg/5ml",
+   "PRESENTATION": "100ml",
+   "PRICE (N)": "1,500.00"
+ },
+ {
+   "NAME OF DRUG": "Ethosuximide",
+   "DOSAGE FORM": "Caps/tablets",
+   "STRENGTHS": "250 mg",
+   "PRESENTATION": "Caps.",
+   "PRICE (N)": "55.00"
+ },
+ {
+   "NAME OF DRUG": "Magnesium sulphate",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "50% (500 mg/ml) in 2 ml",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "400.00"
+ },
+ {
+   "NAME OF DRUG": "Paraldehyde",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "10ml, 5 mls",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Phenobarbital",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "15mg,",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Phenobarbital",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "30mg,  60mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Phenobarbital",
+   "DOSAGE FORM": "Elixir, Syrup",
+   "STRENGTHS": "15mg/5ml",
+   "PRESENTATION": "60mls",
+   "PRICE (N)": "250.00"
+ },
+ {
+   "NAME OF DRUG": "Phenobarbital",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "200mg/ml",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Phenytoin Sodium",
+   "DOSAGE FORM": "Capsule",
+   "STRENGTHS": "100mg, 50 mg, 25, mg",
+   "PRESENTATION": "Caps",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Sodium valproate",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "200mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "60.00"
+ },
+ {
+   "NAME OF DRUG": "Sodium valproate",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "500mg SR",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "140.00"
+ },
+ {
+   "NAME OF DRUG": "Sodium valproate",
+   "DOSAGE FORM": "Elixir/syrup",
+   "STRENGTHS": "200mg/5ml",
+   "PRESENTATION": "200mls",
+   "PRICE (N)": "3,500.00"
+ },
+ {
+   "NAME OF DRUG": "Metronidazole",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "200mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Metronidazole",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "400mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "6.00"
+ },
+ {
+   "NAME OF DRUG": "Metronidazole",
+   "DOSAGE FORM": "Suspension",
+   "STRENGTHS": "200mg/5ml",
+   "PRESENTATION": "60mls",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Metronidazole",
+   "DOSAGE FORM": "IV Injection",
+   "STRENGTHS": "500mg in 100ml bottle",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Metronidazole",
+   "DOSAGE FORM": "Suppository",
+   "STRENGTHS": "500mg",
+   "PRESENTATION": "supp/ovule",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Secnidazole",
+   "DOSAGE FORM": "4 Tablets (single dose)",
+   "STRENGTHS": "500mg",
+   "PRESENTATION": "4 tabs",
+   "PRICE (N)": "360.00"
+ },
+ {
+   "NAME OF DRUG": "Tinidazole",
+   "DOSAGE FORM": "4 Tablets (Single dose)",
+   "STRENGTHS": "500mg",
+   "PRESENTATION": "4 tabs",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Albendazole",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "200mg",
+   "PRESENTATION": "2 tabs",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Albendazole",
+   "DOSAGE FORM": "Suspension Oral",
+   "STRENGTHS": "100mg/5ml",
+   "PRESENTATION": "30mls",
+   "PRICE (N)": "180.00"
+ },
+ {
+   "NAME OF DRUG": "Levamisole",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "40mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Levamisole",
+   "DOSAGE FORM": "Suspension",
+   "STRENGTHS": "40mg/5ml",
+   "PRESENTATION": "30mls",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Mebendazole",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "100mg,",
+   "PRESENTATION": "6`s",
+   "PRICE (N)": "350.00"
+ },
+ {
+   "NAME OF DRUG": "Mebendazole",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "500 mg",
+   "PRESENTATION": "x 1",
+   "PRICE (N)": "350.00"
+ },
+ {
+   "NAME OF DRUG": "Mebendazole",
+   "DOSAGE FORM": "Suspension",
+   "STRENGTHS": "100mg/5ml",
+   "PRESENTATION": "30mls",
+   "PRICE (N)": "900.00"
+ },
+ {
+   "NAME OF DRUG": "Pyrantel Pamoate",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "125mg (pamoate)",
+   "PRESENTATION": "6`s",
+   "PRICE (N)": "250.00"
+ },
+ {
+   "NAME OF DRUG": "Pyrantel Pamoate",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "125mg/5ml",
+   "PRESENTATION": "15mls",
+   "PRICE (N)": "250.00"
+ },
+ {
+   "NAME OF DRUG": "Praziquantel",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "600mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "60.00"
+ },
+ {
+   "NAME OF DRUG": "Ivermectin",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "6mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "a-B–Artemether Injection",
+   "DOSAGE FORM": "Ampoules",
+   "STRENGTHS": "150mg/2ml",
+   "PRESENTATION": "Amp x 3s",
+   "PRICE (N)": "1,350.00"
+ },
+ {
+   "NAME OF DRUG": "Artemeter",
+   "DOSAGE FORM": "Injection (Phosphate)",
+   "STRENGTHS": "80mg/ml",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Artemeter",
+   "DOSAGE FORM": "Injection (Phosphate)",
+   "STRENGTHS": "40mg/ml in 1ml Ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Artemeter + Lumefantrine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "20mg/120mg",
+   "PRESENTATION": "Tab x 12s",
+   "PRICE (N)": "600.00"
+ },
+ {
+   "NAME OF DRUG": "Artemeter + Lumefantrine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "80mg/480mg",
+   "PRESENTATION": "Tab x 6s",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Artemeter + Lumefantrine",
+   "DOSAGE FORM": "Paediatric Dispersible Tabet",
+   "STRENGTHS": "10mg/60mg",
+   "PRESENTATION": "Tab x 24s",
+   "PRICE (N)": "600.00"
+ },
+ {
+   "NAME OF DRUG": "Artemeter + Lumefantrine",
+   "DOSAGE FORM": "Suspension",
+   "STRENGTHS": "180mg/1080mg",
+   "PRESENTATION": "60mls",
+   "PRICE (N)": "600.00"
+ },
+ {
+   "NAME OF DRUG": "Artemeter + Lumefantrine",
+   "DOSAGE FORM": "Suppossitory",
+   "STRENGTHS": "20mg/120mg",
+   "PRESENTATION": "x 6s",
+   "PRICE (N)": "600.00"
+ },
+ {
+   "NAME OF DRUG": "Artesunate",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "50mg/tab",
+   "PRESENTATION": "Tablet",
+   "PRICE (N)": "40.00"
+ },
+ {
+   "NAME OF DRUG": "Artesunate",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "80mg/5ml",
+   "PRESENTATION": "100ml",
+   "PRICE (N)": "600.00"
+ },
+ {
+   "NAME OF DRUG": "Atersunate  + Sulfadoxine+ Pyrimethamine",
+   "DOSAGE FORM": "Tablet (Adult)",
+   "STRENGTHS": "200mg/500mg/25mg",
+   "PRESENTATION": "Tab.x3s",
+   "PRICE (N)": "600.00"
+ },
+ {
+   "NAME OF DRUG": "Atersunate  + Sulfadoxine+ Pyrimethamine",
+   "DOSAGE FORM": "(Paed)",
+   "STRENGTHS": "100mg/250mg/12.5mg",
+   "PRESENTATION": "Tab.x3s",
+   "PRICE (N)": "400.00"
+ },
+ {
+   "NAME OF DRUG": "Atersunate + Amodiaquine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "50mg/200mg",
+   "PRESENTATION": "Tab x 12s",
+   "PRICE (N)": "600.00"
+ },
+ {
+   "NAME OF DRUG": "Atersunate + Amodiaquine",
+   "DOSAGE FORM": "“     DS",
+   "STRENGTHS": "200mg/600mg",
+   "PRESENTATION": "6’s",
+   "PRICE (N)": "600.00"
+ },
+ {
+   "NAME OF DRUG": "Atersunate + Amodiaquine",
+   "DOSAGE FORM": "Paediatric Powder",
+   "STRENGTHS": "25mg/75mg",
+   "PRESENTATION": "Sachet x 6s",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Atersunate + Mefloquine",
+   "DOSAGE FORM": "Tablet (Adult)",
+   "STRENGTHS": "200mg/250mg",
+   "PRESENTATION": "Tab x 6s",
+   "PRICE (N)": "1,000.00"
+ },
+ {
+   "NAME OF DRUG": "Atersunate + Mefloquine",
+   "DOSAGE FORM": "(Paed)",
+   "STRENGTHS": "100mg/125mg",
+   "PRESENTATION": "Tab x 6s",
+   "PRICE (N)": "350.00"
+ },
+ {
+   "NAME OF DRUG": "Chloroquine (restricted)",
+   "DOSAGE FORM": "Tablet, Capsule",
+   "STRENGTHS": "300 mg,",
+   "PRESENTATION": "Tab/ Caps.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Chloroquine (restricted)",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "200mg/5ml,",
+   "PRESENTATION": "Ampoules",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Chloroquine (restricted)",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "75mg/5ml,",
+   "PRESENTATION": "60 ml",
+   "PRICE (N)": "120.00"
+ },
+ {
+   "NAME OF DRUG": "Dihydroartemisinin",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "60mg/Tablet",
+   "PRESENTATION": "8s",
+   "PRICE (N)": "640.00"
+ },
+ {
+   "NAME OF DRUG": "Dihydroartemisinin",
+   "DOSAGE FORM": "Suspension",
+   "STRENGTHS": "160mg/80mls",
+   "PRESENTATION": "80mls",
+   "PRICE (N)": "600.00"
+ },
+ {
+   "NAME OF DRUG": "Dihydroartemisinin  + Piperaquine phosphate",
+   "DOSAGE FORM": "Tab",
+   "STRENGTHS": "40mg/320mg",
+   "PRESENTATION": "Tabx8s",
+   "PRICE (N)": "650.00"
+ },
+ {
+   "NAME OF DRUG": "Dihydroartemisinin  + Piperaquine phosphate",
+   "DOSAGE FORM": "“",
+   "STRENGTHS": "30mg/225mg",
+   "PRESENTATION": "Tabx8s",
+   "PRICE (N)": "550.00"
+ },
+ {
+   "NAME OF DRUG": "Dihydroartemisinin  + Piperaquine phosphate",
+   "DOSAGE FORM": "“ DS",
+   "STRENGTHS": "62.5mg/375mg",
+   "PRESENTATION": "Tabx8s",
+   "PRICE (N)": "600.00"
+ },
+ {
+   "NAME OF DRUG": "Dihydroartemisinin  + Piperaquine phosphate",
+   "DOSAGE FORM": "Suspension",
+   "STRENGTHS": "80/640mg",
+   "PRESENTATION": "80mls Bottle",
+   "PRICE (N)": "600.00"
+ },
+ {
+   "NAME OF DRUG": "Proguanil",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "100mg (HC1)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Pyrimethamine + Sulphadoxine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "25mg  Pyrimethamine +500mg Sulphadoxine",
+   "PRESENTATION": "3’s",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Pyrimethamine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "25mg  Pyrimethamine",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Quinine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "300mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "45.00"
+ },
+ {
+   "NAME OF DRUG": "Quinine",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "300mg (dihydrochloride)/ml in 2ml amp",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Quinine",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "100ml",
+   "PRESENTATION": "",
+   "PRICE (N)": "450.00"
+ },
+ {
+   "NAME OF DRUG": "Amoxycillin",
+   "DOSAGE FORM": "Capsule",
+   "STRENGTHS": "250mg",
+   "PRESENTATION": "Caps.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Amoxycillin",
+   "DOSAGE FORM": "Capsule",
+   "STRENGTHS": "500 mg",
+   "PRESENTATION": "Caps.",
+   "PRICE (N)": "15.00"
+ },
+ {
+   "NAME OF DRUG": "Amoxycillin",
+   "DOSAGE FORM": "Powder for oral  suspension",
+   "STRENGTHS": "125mg/5ml",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Amoxycillin",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "500mg in vials",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Amoxycillin plus Clavulanic Acid (Co-amoxiclav)",
+   "DOSAGE FORM": "Tablet, Capsules",
+   "STRENGTHS": "250 mg amoxycillin (Trihydrate) +125 mg clavulanic Acid\n(Potassium Salt)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "60.00"
+ },
+ {
+   "NAME OF DRUG": "Amoxycillin plus Clavulanic Acid (Co-amoxiclav)",
+   "DOSAGE FORM": "Tablet, Capsules",
+   "STRENGTHS": "500mg     amoxycillin (Trihydrate) +        125mg clvulanic\nacid(potassium salt)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Amoxycillin plus Clavulanic Acid (Co-amoxiclav)",
+   "DOSAGE FORM": "Powder for oral suspension",
+   "STRENGTHS": "200 mg Amoxycillin (trihydrate) + 28 mg Clavulanic acid\n(Potassium salt)/5 ml",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "1,150.00"
+ },
+ {
+   "NAME OF DRUG": "Amoxycillin plus Clavulanic Acid (Co-amoxiclav)",
+   "DOSAGE FORM": "Powder for oral suspension",
+   "STRENGTHS": "400 mg Amoxycillin (trihydrate) + 57 mg Clavulanic acid\n(Potassium salt)/5 ml",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "1,500.00"
+ },
+ {
+   "NAME OF DRUG": "Amoxycillin plus Clavulanic Acid (Co-amoxiclav)",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "500 mg Amoxycillin (Sodium salt) + 100 mg Clavulanic\nacid (Potassium salt) in vial",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "450.00"
+ },
+ {
+   "NAME OF DRUG": "Amoxycillin plus Clavulanic Acid (Co-amoxiclav)",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "1g Amoxycillin (Sodium salt) + 200 mg Clavulanic acid\n(Potassium salt) in vial",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "700.00"
+ },
+ {
+   "NAME OF DRUG": "Ampicillin + Cloxacillin",
+   "DOSAGE FORM": "Capsule",
+   "STRENGTHS": "250mg of each constituent",
+   "PRESENTATION": "Caps.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Ampicillin + Cloxacillin",
+   "DOSAGE FORM": "Powder for oral suspension",
+   "STRENGTHS": "125mg of each/5ml",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Ampicillin + Cloxacillin",
+   "DOSAGE FORM": "Neonatal Drops",
+   "STRENGTHS": "Ampicillin  60mg + Cloxacillin 30mg/0.6mls",
+   "PRESENTATION": "8mls",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Ampicillin + Cloxacillin",
+   "DOSAGE FORM": "Neonatal injection",
+   "STRENGTHS": "Ampicillin 50mg + cloxacillin 25 mg",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Ampicillin + Cloxacillin",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "Ampicillin 250mg+Cloxacillin 250mg per vial (sodium salt\nof each)",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "120.00"
+ },
+ {
+   "NAME OF DRUG": "Azithromycin",
+   "DOSAGE FORM": "Capsules",
+   "STRENGTHS": "250mg",
+   "PRESENTATION": "Caps.",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Azithromycin",
+   "DOSAGE FORM": "Capsules",
+   "STRENGTHS": "500mg",
+   "PRESENTATION": "Caps.",
+   "PRICE (N)": "350.00"
+ },
+ {
+   "NAME OF DRUG": "Azithromycin",
+   "DOSAGE FORM": "Suspension",
+   "STRENGTHS": "200mg/ 5ml",
+   "PRESENTATION": "30mls",
+   "PRICE (N)": "1,000.00"
+ },
+ {
+   "NAME OF DRUG": "Benzathine- Benzylepenicillin",
+   "DOSAGE FORM": "Injections",
+   "STRENGTHS": "2.4 M.U. of benzylpenicillin",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "400.00"
+ },
+ {
+   "NAME OF DRUG": "Benzylepenicillin",
+   "DOSAGE FORM": "Injection, powder",
+   "STRENGTHS": "1.0 MU Vial",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Benzylepenicillin",
+   "DOSAGE FORM": "Injection, powder",
+   "STRENGTHS": "5 MU Vial",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Cefixime",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "400mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Cefixime",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "200mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Cefixime",
+   "DOSAGE FORM": "Suspension",
+   "STRENGTHS": "100mg/5ml",
+   "PRESENTATION": "100ml",
+   "PRICE (N)": "750.00"
+ },
+ {
+   "NAME OF DRUG": "Cefotaxime",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "500mg",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Ceftazidime",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "1gm",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "800.00"
+ },
+ {
+   "NAME OF DRUG": "Ceftriaxone",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "250mg,",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Ceftriaxone",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "500mg I.M.",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Ceftriaxone",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "1g IV",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "700.00"
+ },
+ {
+   "NAME OF DRUG": "Cefuroxime",
+   "DOSAGE FORM": "Tablets (axetil)",
+   "STRENGTHS": "250mg,",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Cefuroxime",
+   "DOSAGE FORM": "Tablets (axetil)",
+   "STRENGTHS": "500 mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "160.00"
+ },
+ {
+   "NAME OF DRUG": "Cefuroxime",
+   "DOSAGE FORM": "Suspension (axetil)",
+   "STRENGTHS": "125mg/5ml",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "1,200.00"
+ },
+ {
+   "NAME OF DRUG": "Cefuroxime",
+   "DOSAGE FORM": "Injection (sodium salt)",
+   "STRENGTHS": "750mg",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Cefuroxime",
+   "DOSAGE FORM": "Injection (sodium salt)",
+   "STRENGTHS": "250 mg",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "400.00"
+ },
+ {
+   "NAME OF DRUG": "Cephalexin",
+   "DOSAGE FORM": "Capsules/Tablet",
+   "STRENGTHS": "500mg",
+   "PRESENTATION": "Caps/Tab",
+   "PRICE (N)": "35.00"
+ },
+ {
+   "NAME OF DRUG": "Cephalexin",
+   "DOSAGE FORM": "Suspension",
+   "STRENGTHS": "125mg/5ml",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "480.00"
+ },
+ {
+   "NAME OF DRUG": "Cephalexin",
+   "DOSAGE FORM": "Suspension",
+   "STRENGTHS": "250mg/5ml",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "650.00"
+ },
+ {
+   "NAME OF DRUG": "Chloramphenicol (restricted)",
+   "DOSAGE FORM": "Capsule",
+   "STRENGTHS": "250mg",
+   "PRESENTATION": "Caps.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Chloramphenicol (restricted)",
+   "DOSAGE FORM": "Suspension, Oral",
+   "STRENGTHS": "125mg/5ml (Palmitate)",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Chloramphenicol (restricted)",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "1g (sodium succinate) in vial",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Ciprofloxacin",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "250mg (HC1)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "40.00"
+ },
+ {
+   "NAME OF DRUG": "Ciprofloxacin",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "500 mg (Hcl)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "40.00"
+ },
+ {
+   "NAME OF DRUG": "Ciprofloxacin",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "I.V. 2mg/ml (lactate) in 50 and 100ml vials",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Clarithromycin",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "250mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Clarithromycin",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "500mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "120.00"
+ },
+ {
+   "NAME OF DRUG": "Clarithromycin",
+   "DOSAGE FORM": "Suspension",
+   "STRENGTHS": "125mg",
+   "PRESENTATION": "100ml",
+   "PRICE (N)": "880.00"
+ },
+ {
+   "NAME OF DRUG": "Clindamycin",
+   "DOSAGE FORM": "Capsule",
+   "STRENGTHS": "HCL 150mg",
+   "PRESENTATION": "Cap",
+   "PRICE (N)": "120.00"
+ },
+ {
+   "NAME OF DRUG": "Clindamycin",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "Phosphate 150mg/ml",
+   "PRESENTATION": "Amp",
+   "PRICE (N)": "180.00"
+ },
+ {
+   "NAME OF DRUG": "Cloxacillin",
+   "DOSAGE FORM": "Injection, powder",
+   "STRENGTHS": "250mg,",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Cloxacillin",
+   "DOSAGE FORM": "Injection, powder",
+   "STRENGTHS": "500 mg in vial",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "70.00"
+ },
+ {
+   "NAME OF DRUG": "Cloxacillin",
+   "DOSAGE FORM": "Capsule",
+   "STRENGTHS": "250mg",
+   "PRESENTATION": "Caps.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Cloxacillin",
+   "DOSAGE FORM": "Suspension, oral,",
+   "STRENGTHS": "125mg/5mls",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "180.00"
+ },
+ {
+   "NAME OF DRUG": "Co-trimoxazole",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "400mg Sulphamethoxazole  +80mg  Trimethoprim",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Co-trimoxazole",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "800mg Sulphamethoxazole  +160mg Trimethoprim",
+   "PRESENTATION": "Tab.(DS)",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Co-trimoxazole",
+   "DOSAGE FORM": "Suspension",
+   "STRENGTHS": "Sulphamethoxazole   200 mg +40mg Trimethoprim /5ml.",
+   "PRESENTATION": "60mls",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Doxycycline",
+   "DOSAGE FORM": "Capsule",
+   "STRENGTHS": "100mg",
+   "PRESENTATION": "Caps.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Erythromycin",
+   "DOSAGE FORM": "Tablets, capsules, enteric, film coated",
+   "STRENGTHS": "250mg stearate or ethylsuccinate)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "15.00"
+ },
+ {
+   "NAME OF DRUG": "Erythromycin",
+   "DOSAGE FORM": "Tablets, capsules, enteric, film coated",
+   "STRENGTHS": "500mg (stearate or ethylsuccinate)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Erythromycin",
+   "DOSAGE FORM": "Suspension oral",
+   "STRENGTHS": "125mg/5ml (stearate or Ethylsuccinate)",
+   "PRESENTATION": "60mls",
+   "PRICE (N)": "400.00"
+ },
+ {
+   "NAME OF DRUG": "Gentamycin",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "80mg/mls, 40 mg/2mls (Sulphate)",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Gentamycin",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "20mg/2ml",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Levofloxacin",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "250mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "60.00"
+ },
+ {
+   "NAME OF DRUG": "Levofloxacin",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "500mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "80.00"
+ },
+ {
+   "NAME OF DRUG": "Levofloxacin",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "500mg/100mls Infusion",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Lincomycin",
+   "DOSAGE FORM": "Capsules",
+   "STRENGTHS": "500 mg",
+   "PRESENTATION": "Caps.",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Lincomycin",
+   "DOSAGE FORM": "Suspension",
+   "STRENGTHS": "250mg/5ml",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "1,150.00"
+ },
+ {
+   "NAME OF DRUG": "Lincomycin",
+   "DOSAGE FORM": "injection (Phosphate)",
+   "STRENGTHS": "150 mg/ml in 2 ml",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Metronidazole",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "200mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Metronidazole",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "400mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "6.00"
+ },
+ {
+   "NAME OF DRUG": "Metronidazole",
+   "DOSAGE FORM": "Suspension",
+   "STRENGTHS": "200mg/5ml",
+   "PRESENTATION": "60mls",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Metronidazole",
+   "DOSAGE FORM": "IV Injection",
+   "STRENGTHS": "500mg in 100ml bottle",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Nitrofurantoin",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "50mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Nitrofurantoin",
+   "DOSAGE FORM": "",
+   "STRENGTHS": "100mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Ofloxacin",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "200mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Ofloxacin",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "200mg/100ml Infusion",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Pefloxacin",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "400mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "80.00"
+ },
+ {
+   "NAME OF DRUG": "Phenoxymethyl- Penicillin",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "250mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "15.00"
+ },
+ {
+   "NAME OF DRUG": "Phenoxymethyl- Penicillin",
+   "DOSAGE FORM": "Suspension",
+   "STRENGTHS": "250mg/5ml",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Rifampicin",
+   "DOSAGE FORM": "Capsules",
+   "STRENGTHS": "150mg, 300mg",
+   "PRESENTATION": "Caps.",
+   "PRICE (N)": "15.00"
+ },
+ {
+   "NAME OF DRUG": "Secnidazole",
+   "DOSAGE FORM": "4 Tablets (single dose)",
+   "STRENGTHS": "See section 6.1",
+   "PRESENTATION": "",
+   "PRICE (N)": "360.00"
+ },
+ {
+   "NAME OF DRUG": "Sparfloxacin",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "200mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "70.00"
+ },
+ {
+   "NAME OF DRUG": "Tetracycline",
+   "DOSAGE FORM": "Capsule",
+   "STRENGTHS": "250mg (Hydrochloride)",
+   "PRESENTATION": "Caps.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Tinidazole",
+   "DOSAGE FORM": "4 Tablets (Single dose)",
+   "STRENGTHS": "See section 6.1",
+   "PRESENTATION": "",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Clofazimine",
+   "DOSAGE FORM": "Capsules",
+   "STRENGTHS": "50 mg, 100 mg",
+   "PRESENTATION": "Caps.",
+   "PRICE (N)": "15.00"
+ },
+ {
+   "NAME OF DRUG": "Dapsone",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "50mg, 100 mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Rifampicin",
+   "DOSAGE FORM": "Capsules",
+   "STRENGTHS": "300 mg",
+   "PRESENTATION": "Caps.",
+   "PRICE (N)": "15.00"
+ },
+ {
+   "NAME OF DRUG": "Rifampicin",
+   "DOSAGE FORM": "Capsules",
+   "STRENGTHS": "150 mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "15.00"
+ },
+ {
+   "NAME OF DRUG": "Amphotericin B",
+   "DOSAGE FORM": "Injection, powder",
+   "STRENGTHS": "50 mg/vial",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "3,465.00"
+ },
+ {
+   "NAME OF DRUG": "Fluconazole",
+   "DOSAGE FORM": "Capsule",
+   "STRENGTHS": "50 mg",
+   "PRESENTATION": "Caps.",
+   "PRICE (N)": "60.00"
+ },
+ {
+   "NAME OF DRUG": "Fluconazole",
+   "DOSAGE FORM": "Capsule",
+   "STRENGTHS": "150 mg",
+   "PRESENTATION": "Caps.",
+   "PRICE (N)": "450.00"
+ },
+ {
+   "NAME OF DRUG": "Fluconazole",
+   "DOSAGE FORM": "Suspension",
+   "STRENGTHS": "50mg/5ml",
+   "PRESENTATION": "35mls",
+   "PRICE (N)": "900.00"
+ },
+ {
+   "NAME OF DRUG": "Fluconazole",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "I.V. 2 mg/ml in 0.9 % sodium chloride",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Griseofulvin",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "500mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Griseofulvin",
+   "DOSAGE FORM": "Suspension",
+   "STRENGTHS": "125mg/ 5ml",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "450.00"
+ },
+ {
+   "NAME OF DRUG": "Itraconazole",
+   "DOSAGE FORM": "Capsules",
+   "STRENGTHS": "100mg",
+   "PRESENTATION": "Cap.",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Itraconazole",
+   "DOSAGE FORM": "Suspension",
+   "STRENGTHS": "10mg/ml",
+   "PRESENTATION": "Suspension",
+   "PRICE (N)": "340.00"
+ },
+ {
+   "NAME OF DRUG": "Ketoconazole",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "200mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Miconazole",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "250 mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Nystatin",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "500,000 units,",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "40.00"
+ },
+ {
+   "NAME OF DRUG": "Nystatin",
+   "DOSAGE FORM": "Suspension",
+   "STRENGTHS": "100,000 units/ml",
+   "PRESENTATION": "30mls",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Nystatin",
+   "DOSAGE FORM": "lozenges",
+   "STRENGTHS": "100,000 units/ml",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Nystatin",
+   "DOSAGE FORM": "Pessary",
+   "STRENGTHS": "100,000 units",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Terbinafine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "250mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Aciclovir",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "200mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Aciclovir",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "400 mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "75.00"
+ },
+ {
+   "NAME OF DRUG": "Aciclovir",
+   "DOSAGE FORM": "Suspension",
+   "STRENGTHS": "200 mg/5 ml",
+   "PRESENTATION": "125mls",
+   "PRICE (N)": "620.00"
+ },
+ {
+   "NAME OF DRUG": "Aciclovir",
+   "DOSAGE FORM": "Cream",
+   "STRENGTHS": "5%",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "600.00"
+ },
+ {
+   "NAME OF DRUG": "Aciclovir",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "IV Sodium salt 250mg/vial",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Lamivudine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "150 mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Lamivudine",
+   "DOSAGE FORM": "Solution",
+   "STRENGTHS": "50mg/5ml",
+   "PRESENTATION": "240 mls",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Indinavir    (IDV)  *",
+   "DOSAGE FORM": "Capsule (Sulphate)",
+   "STRENGTHS": "200 mg, 333mg, 400 mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Nelfinavir   (NFV)  *",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "250 mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Ritonavir   (RTV)  *",
+   "DOSAGE FORM": "Oral liqiud",
+   "STRENGTHS": "400mg/5ml",
+   "PRESENTATION": "bottle",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Saquinavir  (SQV)  *",
+   "DOSAGE FORM": "Capsule",
+   "STRENGTHS": "100mg",
+   "PRESENTATION": "Capsule",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Saquinavir  (SQV)  *",
+   "DOSAGE FORM": "Capsule",
+   "STRENGTHS": "200mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Lopinavir + ritonavir  LPV/r)  *",
+   "DOSAGE FORM": "Capsule",
+   "STRENGTHS": "133.3mg+33.3mg",
+   "PRESENTATION": "Capsule",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Lopinavir + ritonavir  LPV/r)  *",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "100mg/25mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Lopinavir + ritonavir  LPV/r)  *",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "200mg/50mg",
+   "PRESENTATION": "“",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Lopinavir + ritonavir  LPV/r)  *",
+   "DOSAGE FORM": "Oral liquid",
+   "STRENGTHS": "400mg/100mg/ 5ml",
+   "PRESENTATION": "Bottle",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Lamivudine (3TC)  *",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "150 mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Lamivudine (3TC)  *",
+   "DOSAGE FORM": "Solution",
+   "STRENGTHS": "5mg/ml",
+   "PRESENTATION": "",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Zidovudine (ZDV)  *",
+   "DOSAGE FORM": "Capsules",
+   "STRENGTHS": "100 mg,",
+   "PRESENTATION": "",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Zidovudine (ZDV)  *",
+   "DOSAGE FORM": "Capsules",
+   "STRENGTHS": "250 mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Zidovudine (ZDV)  *",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "50 mg/5ml",
+   "PRESENTATION": "",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Abacavir (ABC)  *",
+   "DOSAGE FORM": "Tablet  (sulfate)",
+   "STRENGTHS": "300mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Abacavir (ABC)  *",
+   "DOSAGE FORM": "Liquid      “",
+   "STRENGTHS": "100mg/5ml",
+   "PRESENTATION": "",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Stavudine (d4T)  *",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "40mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Zalcitabine (ddC)  *",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "750ug",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Didanosine  (ddI)  *",
+   "DOSAGE FORM": "Capsule",
+   "STRENGTHS": "125mg",
+   "PRESENTATION": "Cap",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Didanosine  (ddI)  *",
+   "DOSAGE FORM": "Capsule",
+   "STRENGTHS": "200mg, 250mg",
+   "PRESENTATION": "“",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Didanosine  (ddI)  *",
+   "DOSAGE FORM": "Capsule",
+   "STRENGTHS": "400mg",
+   "PRESENTATION": "“",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Didanosine  (ddI)  *",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "25mg, 50mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Didanosine  (ddI)  *",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "100mg, 150mg",
+   "PRESENTATION": "“",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Didanosine  (ddI)  *",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "200mg",
+   "PRESENTATION": "“",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Didanosine  (ddI)  *",
+   "DOSAGE FORM": "Powder for oral dosage",
+   "STRENGTHS": "100mg,167mg",
+   "PRESENTATION": "Packets",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Didanosine  (ddI)  *",
+   "DOSAGE FORM": "Powder for oral dosage",
+   "STRENGTHS": "200mg",
+   "PRESENTATION": "Packets",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Nevirapine  (NVP)  *",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "200 mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Nevirapine  (NVP)  *",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "50 mg/5ml",
+   "PRESENTATION": "",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Efavirenz  (EFV or EFZ)  *",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "600mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Efavirenz  (EFV or EFZ)  *",
+   "DOSAGE FORM": "Capsules",
+   "STRENGTHS": "50mg",
+   "PRESENTATION": "Caps",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Efavirenz  (EFV or EFZ)  *",
+   "DOSAGE FORM": "Capsules",
+   "STRENGTHS": "100mg, 200mg",
+   "PRESENTATION": "“",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Efavirenz  (EFV or EFZ)  *",
+   "DOSAGE FORM": "Oral liquid",
+   "STRENGTHS": "150mg/5ml",
+   "PRESENTATION": "Bottle",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Lamivudine + nevirapine + stavudine  *",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "150mg+200mg+30mg",
+   "PRESENTATION": "Tab x60s",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Lamivudine + nevirapine + stavudine  *",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "150mg+200mg+30mg",
+   "PRESENTATION": "Tab x60s",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Lamivudine + nevirapine + stavudine  *",
+   "DOSAGE FORM": "Tablet(Dispersible",
+   "STRENGTHS": "30mg+50mg+6mg",
+   "PRESENTATION": "Tab x60s",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Lamivudine + nevirapine + stavudine  *",
+   "DOSAGE FORM": "Tablet(Dispersible",
+   "STRENGTHS": "60mg+100mg+12mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Lamivudine + nevirapine + Zidovudine  *",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "30mg+50mg+60mg/",
+   "PRESENTATION": "Tab x 60s",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Lamivudine + nevirapine + Zidovudine  *",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "150mg+200mg+300mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Lamivudine + Zidovudine  *",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "30mg + 60mg",
+   "PRESENTATION": "Tab x 60s",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Lamivudine + Zidovudine  *",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "150mg + 300mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Ergotamine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "Tartrate, 2g",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Ergotamine Tartrate + Caffeine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "1mg / 100mg",
+   "PRESENTATION": "Tablet",
+   "PRICE (N)": "60.00"
+ },
+ {
+   "NAME OF DRUG": "Pizotifen",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "0.5mg,  1.5 mg",
+   "PRESENTATION": "Tablet",
+   "PRICE (N)": "35.00"
+ },
+ {
+   "NAME OF DRUG": "Pizotifen",
+   "DOSAGE FORM": "Elixir",
+   "STRENGTHS": "0.25 mg/ml",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "2,000.00"
+ },
+ {
+   "NAME OF DRUG": "Propranolol",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "40mg/",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "9.00"
+ },
+ {
+   "NAME OF DRUG": "Azathioprine (Restricted)",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "50 mg",
+   "PRESENTATION": "Tablet",
+   "PRICE (N)": "4,200.00"
+ },
+ {
+   "NAME OF DRUG": "Dexamethasone",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "0.5 mg, 4 mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Dexamethasone",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "Sodium PO4, 4 mg/ml",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Methotrexate (restricted)",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "2.5 mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "40.00"
+ },
+ {
+   "NAME OF DRUG": "Methotrexate (restricted)",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "50 mg/vial sodium salt",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Prednisolone",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "5 mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Benzhexol",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "2mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Benzhexol",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "5 mg (as HCl)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Biperiden",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "2mg   (as HCL)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "3.00"
+ },
+ {
+   "NAME OF DRUG": "Biperiden",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "5mg/ml (as lactate) in 1ml ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "40.00"
+ },
+ {
+   "NAME OF DRUG": "Levodopa + Carbidopa",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "Levodopa250mg + Carbidopa 25mg,",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "80.00"
+ },
+ {
+   "NAME OF DRUG": "Levodopa + Carbidopa",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "Levodopa100 mg + Carbidopa 10 mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "70.00"
+ },
+ {
+   "NAME OF DRUG": "Neostigmine",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "(Bromide) 15mg/ml",
+   "PRESENTATION": "Inj",
+   "PRICE (N)": "250.00"
+ },
+ {
+   "NAME OF DRUG": "Neostigmine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "15mg (Bromide)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "140.00"
+ },
+ {
+   "NAME OF DRUG": "Pyridostigmine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "60 mg (Bromide)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Chlorhexidine",
+   "DOSAGE FORM": "Solution",
+   "STRENGTHS": "5%   (Gluconate) for dilution",
+   "PRESENTATION": "500mls",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Chlorhexidine + Cetrimide",
+   "DOSAGE FORM": "Solution",
+   "STRENGTHS": "Cetrimide 15% + 1.5% chlorhexidine gluconate for dilution",
+   "PRESENTATION": "500mls",
+   "PRICE (N)": "400.00"
+ },
+ {
+   "NAME OF DRUG": "Chloroxylenol",
+   "DOSAGE FORM": "Solution",
+   "STRENGTHS": "5% for dilution",
+   "PRESENTATION": "250mls",
+   "PRICE (N)": "400.00"
+ },
+ {
+   "NAME OF DRUG": "Chloroxylenol",
+   "DOSAGE FORM": "Solution",
+   "STRENGTHS": "5% for dilution",
+   "PRESENTATION": "125mls",
+   "PRICE (N)": "400.00"
+ },
+ {
+   "NAME OF DRUG": "Coal tar",
+   "DOSAGE FORM": "Solution",
+   "STRENGTHS": "5%",
+   "PRESENTATION": "Solution",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Compound Tincture of Benzoin (TBC)",
+   "DOSAGE FORM": "Liquid",
+   "STRENGTHS": "2%",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Dichloroxylenol + Chlorophenol",
+   "DOSAGE FORM": "Soap solution",
+   "STRENGTHS": "",
+   "PRESENTATION": "125mls",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Iodine",
+   "DOSAGE FORM": "Solution",
+   "STRENGTHS": "Different Preparations   1%",
+   "PRESENTATION": "30mls",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Methylated spirit",
+   "DOSAGE FORM": "Solution",
+   "STRENGTHS": "Alcohol vol/vol",
+   "PRESENTATION": "200mls",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Potassium Permanganate",
+   "DOSAGE FORM": "Solution",
+   "STRENGTHS": "0.10%",
+   "PRESENTATION": "15mls",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Povidone – iodine",
+   "DOSAGE FORM": "Solution",
+   "STRENGTHS": "10%",
+   "PRESENTATION": "Solution",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Sodium hypochlorite",
+   "DOSAGE FORM": "Solution",
+   "STRENGTHS": "1-10% (chlorine in different preparations)",
+   "PRESENTATION": "500mls",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Trichlorophenol",
+   "DOSAGE FORM": "Cream, Liquid, ointment",
+   "STRENGTHS": "Mixture of halogenated phenols and Salicylic acid",
+   "PRESENTATION": "-",
+   "PRICE (N)": "570.00"
+ },
+ {
+   "NAME OF DRUG": "Cyanocobalamin/ Hydroxocobalamin",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "0.05mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Cyanocobalamin/ Hydroxocobalamin",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "0.25 and 1mg/ml  (injection, Hydroxocobalamin\npreferred)",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Ferric Ammonium Citrate",
+   "DOSAGE FORM": "Mixture",
+   "STRENGTHS": "400mg/5ml of Ferric Ammonium citrate",
+   "PRESENTATION": "200mls",
+   "PRICE (N)": "250.00"
+ },
+ {
+   "NAME OF DRUG": "Ferrous Sulphate",
+   "DOSAGE FORM": "Tablets, Capsule",
+   "STRENGTHS": "200 mg equivalent to 60mg of Iron",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "3.00"
+ },
+ {
+   "NAME OF DRUG": "Folic Acid",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "5mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "3.00"
+ },
+ {
+   "NAME OF DRUG": "Iron dextran",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "Equiv to 50mg/iron/ml in 2ml amp",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Erythropoeitin",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "4000 I.U (prefilled syringe)",
+   "PRESENTATION": "",
+   "PRICE (N)": "4,000.00"
+ },
+ {
+   "NAME OF DRUG": "Enoxaparin",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "100 mg/ml in 0.4ml (40mg)",
+   "PRESENTATION": "prefilled Syringe",
+   "PRICE (N)": "1,200.00"
+ },
+ {
+   "NAME OF DRUG": "Enoxaparin",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "100 mg/ml in 0.2ml (20mg)",
+   "PRESENTATION": "prefilled Syringe",
+   "PRICE (N)": "850.00"
+ },
+ {
+   "NAME OF DRUG": "Heparin Sodium",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "5000 units/ml in Ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "620.00"
+ },
+ {
+   "NAME OF DRUG": "Heparin Sodium",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "25,000 units/ml in Ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "1,200.00"
+ },
+ {
+   "NAME OF DRUG": "Warfarin Sodium",
+   "DOSAGE FORM": "Tablets (as sodium)",
+   "STRENGTHS": "3mg,",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Warfarin Sodium",
+   "DOSAGE FORM": "Tablets (as sodium)",
+   "STRENGTHS": "5mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Acetylsalicylic acid",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "75 mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "3.00"
+ },
+ {
+   "NAME OF DRUG": "Clopidogrel",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "75mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "60.00"
+ },
+ {
+   "NAME OF DRUG": "Dextran 70",
+   "DOSAGE FORM": "Injection I.V.",
+   "STRENGTHS": "6% in 5% glucose or normal saline solution (in bottles of\n500ml)",
+   "PRESENTATION": "500ml",
+   "PRICE (N)": "1,000.00"
+ },
+ {
+   "NAME OF DRUG": "Human Albumin (Plasma Protein fraction)",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "20% in 100ml  vials",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "9,765.00"
+ },
+ {
+   "NAME OF DRUG": "Polygeline",
+   "DOSAGE FORM": "Injection IV",
+   "STRENGTHS": "3.5% solution in 500 mls",
+   "PRESENTATION": "500ml",
+   "PRICE (N)": "3,500.00"
+ },
+ {
+   "NAME OF DRUG": "Atenolol",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "25mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "8.00"
+ },
+ {
+   "NAME OF DRUG": "Atenolol",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "50mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Atenolol",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "100mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "12.00"
+ },
+ {
+   "NAME OF DRUG": "Atenolol",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "0.5mg/ml",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "90.00"
+ },
+ {
+   "NAME OF DRUG": "Glyceryl Trinitrate",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "Sublingual, 0.5mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Isosorbide dinitrate",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "OralSublingual 5 mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "60.00"
+ },
+ {
+   "NAME OF DRUG": "Isosorbide dinitrate",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "10mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "70.00"
+ },
+ {
+   "NAME OF DRUG": "Propranolol",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "40 mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Propranolol",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "1mg/ml in Ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Amiodarone",
+   "DOSAGE FORM": "Tab",
+   "STRENGTHS": "200mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "55.00"
+ },
+ {
+   "NAME OF DRUG": "Lidocaine",
+   "DOSAGE FORM": "injection",
+   "STRENGTHS": "20mg/ml (HCL) in 5ml Ampoule",
+   "PRESENTATION": "50ml Vial",
+   "PRICE (N)": "400.00"
+ },
+ {
+   "NAME OF DRUG": "Procainamide",
+   "DOSAGE FORM": "Tab",
+   "STRENGTHS": "250mg (HCL)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Disopyramide",
+   "DOSAGE FORM": "Tab",
+   "STRENGTHS": "100 mg, 150 mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Procainamide",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "100mg in 10mls ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Propranolol",
+   "DOSAGE FORM": "Tab",
+   "STRENGTHS": "40mg (Hydrochloride)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Propranolol",
+   "DOSAGE FORM": "INJECTION",
+   "STRENGTHS": "1mg/ml in Ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Amiloride+Hydrochlorothiazide",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "5mg+ 50mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "7.50"
+ },
+ {
+   "NAME OF DRUG": "Bendrofluazide",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "5mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Furosemide",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "40mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Furosemide",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "10mgmi in 2ml ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "140.00"
+ },
+ {
+   "NAME OF DRUG": "Hydrochlorothiazide",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "25mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Hydrochlorothiazide",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "50mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "8.00"
+ },
+ {
+   "NAME OF DRUG": "Spironolactone",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "25mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "15.00"
+ },
+ {
+   "NAME OF DRUG": "Spironolactone",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "50mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Spironolactone",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "100mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Amiloride  + hydrochlorothiazide",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "0.5mg/25mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "40.00"
+ },
+ {
+   "NAME OF DRUG": "Amlodipine",
+   "DOSAGE FORM": "Tablet  (Besylate)",
+   "STRENGTHS": "5mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Amlodipine",
+   "DOSAGE FORM": "Tablet  (Besylate)",
+   "STRENGTHS": "10mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "60.00"
+ },
+ {
+   "NAME OF DRUG": "Amlodipine + Valsartan + Hydrochlorothiazide",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "5 mg + 160mg + 12.5mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "260.00"
+ },
+ {
+   "NAME OF DRUG": "Amlodipine + Valsartan",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "5 mg + 160mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "250.00"
+ },
+ {
+   "NAME OF DRUG": "Atenolol",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "25mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "8.00"
+ },
+ {
+   "NAME OF DRUG": "Atenolol",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "50 mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Atenolol",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "100mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "12.00"
+ },
+ {
+   "NAME OF DRUG": "Candesartan cilexetil",
+   "DOSAGE FORM": "Tab",
+   "STRENGTHS": "8mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Candesartan cilexetil",
+   "DOSAGE FORM": "Tab",
+   "STRENGTHS": "16mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "250.00"
+ },
+ {
+   "NAME OF DRUG": "Candesartan cilexetil/hydrochlothiazide",
+   "DOSAGE FORM": "Tab",
+   "STRENGTHS": "16/12.5mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "260.00"
+ },
+ {
+   "NAME OF DRUG": "Captopril",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "12.5 mg,",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "15.00"
+ },
+ {
+   "NAME OF DRUG": "Captopril",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "25 mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "15.00"
+ },
+ {
+   "NAME OF DRUG": "Captopril",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "50mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "25.00"
+ },
+ {
+   "NAME OF DRUG": "Enalapril",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "5mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "25.00"
+ },
+ {
+   "NAME OF DRUG": "Enalapril",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "10mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Felodipine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "5mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "80.00"
+ },
+ {
+   "NAME OF DRUG": "Felodipine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "10mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Hydralazine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "25mg,",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Hydralazine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "50mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Hydralazine",
+   "DOSAGE FORM": "Injection powder",
+   "STRENGTHS": "20mg in 1ml Ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Labetalol",
+   "DOSAGE FORM": "Tablet (HCL)",
+   "STRENGTHS": "100mg, 200mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Labetalol",
+   "DOSAGE FORM": "Injection powder Tablet (HCL)",
+   "STRENGTHS": "5mg/ml in 20ml Ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "1,400.00"
+ },
+ {
+   "NAME OF DRUG": "Lisinopril",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "2.5mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "70.00"
+ },
+ {
+   "NAME OF DRUG": "Lisinopril",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "5mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Lisinopril",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "10mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "25.00"
+ },
+ {
+   "NAME OF DRUG": "Lisinopril + hydrochlorothiazide",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "20mg/12.5mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Methyldopa",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "250mg,",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "15.00"
+ },
+ {
+   "NAME OF DRUG": "Methyldopa",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "500mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Nifedipine",
+   "DOSAGE FORM": "Tablet,",
+   "STRENGTHS": "20mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "15.00"
+ },
+ {
+   "NAME OF DRUG": "Nifedipine",
+   "DOSAGE FORM": "slow release",
+   "STRENGTHS": "30mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "35.00"
+ },
+ {
+   "NAME OF DRUG": "Prazosin",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "1mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Prazosin",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "2mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "25.00"
+ },
+ {
+   "NAME OF DRUG": "Prazosin + Polythiazide",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "0.5mg + 0.25mg (respectively)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "40.00"
+ },
+ {
+   "NAME OF DRUG": "Propranolol (Hydrochloride)",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "40mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Resperpine + Dihydroergocristine + Clopamide",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "Reserpine  0.1mg + Dihydroergocristine 0.5mg +\nClopamide 5.0mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "40.00"
+ },
+ {
+   "NAME OF DRUG": "Resperpine + Dihydroergocristine\n+Hydrochlorothiazide",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "Resperpine 0.1mg+ Dihydroergocristine 0.6mg+",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "40.00"
+ },
+ {
+   "NAME OF DRUG": "Resperpine + Dihydroergocristine\n+Hydrochlorothiazide",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "Hydrochlorothiazide 10mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "40.00"
+ },
+ {
+   "NAME OF DRUG": "Telmisartan",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "Telmisartan 40mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "130.00"
+ },
+ {
+   "NAME OF DRUG": "Telmisartan",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "Telmisartan 80mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "135.00"
+ },
+ {
+   "NAME OF DRUG": "Telmisartan + Hydrochlorthiazide",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "Telmisartan 40mg/HCTZ 12.5mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "130.00"
+ },
+ {
+   "NAME OF DRUG": "Telmisartan + Hydrochlorthiazide",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "Telmisartan 80mg/HCTZ 12.5mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "135.00"
+ },
+ {
+   "NAME OF DRUG": "Valsatan",
+   "DOSAGE FORM": "Tab",
+   "STRENGTHS": "80mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "170.00"
+ },
+ {
+   "NAME OF DRUG": "Valsatan",
+   "DOSAGE FORM": "Tab",
+   "STRENGTHS": "160mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "190.00"
+ },
+ {
+   "NAME OF DRUG": "Valsatan /Hydrochlothiazide",
+   "DOSAGE FORM": "Tab",
+   "STRENGTHS": "80/12.5mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "170.00"
+ },
+ {
+   "NAME OF DRUG": "Valsatan /Hydrochlothiazide",
+   "DOSAGE FORM": "Tab",
+   "STRENGTHS": "160/12.5mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Valsatan /Hydrochlothiazide",
+   "DOSAGE FORM": "Tab",
+   "STRENGTHS": "160/25mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "235.00"
+ },
+ {
+   "NAME OF DRUG": "Captopril",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "12.5 mg, 25 mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "15.00"
+ },
+ {
+   "NAME OF DRUG": "Digoxin",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "0.0625mg, 0.125mg, 0.25mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "6.00"
+ },
+ {
+   "NAME OF DRUG": "Digoxin",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "0.25mg/ml in 2ml Ampoule, and 0.1mg/ml in 1ml\nAmpoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Digoxin",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "50mg/ml",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "280.00"
+ },
+ {
+   "NAME OF DRUG": "Dopamine",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "40mg/ml in 5mls",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "400.00"
+ },
+ {
+   "NAME OF DRUG": "Artovastatin",
+   "DOSAGE FORM": "Tab/Caps",
+   "STRENGTHS": "10mg",
+   "PRESENTATION": "Tab/ Cap.",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Artovastatin",
+   "DOSAGE FORM": "Tab/Caps",
+   "STRENGTHS": "20mg",
+   "PRESENTATION": "Tab/ Cap.",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Clofibrate",
+   "DOSAGE FORM": "Tab/Caps",
+   "STRENGTHS": "20mg",
+   "PRESENTATION": "Tab/ Cap.",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Fluvastatin",
+   "DOSAGE FORM": "Tab/Caps",
+   "STRENGTHS": "40mg",
+   "PRESENTATION": "Tab/ Cap.",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Fluvastatin",
+   "DOSAGE FORM": "Tab/Caps",
+   "STRENGTHS": "20mg",
+   "PRESENTATION": "Tab/ Cap.",
+   "PRICE (N)": "190.00"
+ },
+ {
+   "NAME OF DRUG": "Rosuvastatin",
+   "DOSAGE FORM": "Tab/Caps",
+   "STRENGTHS": "40mg",
+   "PRESENTATION": "Tab/ Cap.",
+   "PRICE (N)": "250.00"
+ },
+ {
+   "NAME OF DRUG": "Rosuvastatin",
+   "DOSAGE FORM": "Tab/Caps",
+   "STRENGTHS": "5mg",
+   "PRESENTATION": "Tab/ Cap.",
+   "PRICE (N)": "190.00"
+ },
+ {
+   "NAME OF DRUG": "Rosuvastatin",
+   "DOSAGE FORM": "Tab/Caps",
+   "STRENGTHS": "10mg",
+   "PRESENTATION": "Tab/ Cap.",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Rosuvastatin",
+   "DOSAGE FORM": "Tab/Caps",
+   "STRENGTHS": "20mg",
+   "PRESENTATION": "Tab/ Cap.",
+   "PRICE (N)": "160.00"
+ },
+ {
+   "NAME OF DRUG": "Simvastatin",
+   "DOSAGE FORM": "Tab/Caps",
+   "STRENGTHS": "40mg",
+   "PRESENTATION": "Tab/ Cap.",
+   "PRICE (N)": "250.00"
+ },
+ {
+   "NAME OF DRUG": "Simvastatin",
+   "DOSAGE FORM": "Tab/Caps",
+   "STRENGTHS": "500mg",
+   "PRESENTATION": "Tab/ Cap.",
+   "PRICE (N)": "550.00"
+ },
+ {
+   "NAME OF DRUG": "Benzocaine",
+   "DOSAGE FORM": "Lozenges",
+   "STRENGTHS": "10mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "40.00"
+ },
+ {
+   "NAME OF DRUG": "Lidocaine",
+   "DOSAGE FORM": "Injections",
+   "STRENGTHS": "2% + epinephrine 1 in 80,000 in dental catridge",
+   "PRESENTATION": "Catridge",
+   "PRICE (N)": "400.00"
+ },
+ {
+   "NAME OF DRUG": "Lidocaine",
+   "DOSAGE FORM": "Spray",
+   "STRENGTHS": "",
+   "PRESENTATION": "Tin",
+   "PRICE (N)": "2,000.00"
+ },
+ {
+   "NAME OF DRUG": "Prilocaine",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "3% with Felypressin  0.03 units/mls",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Chorhexetidine",
+   "DOSAGE FORM": "Solution",
+   "STRENGTHS": "0.10%",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Glycerin thymol",
+   "DOSAGE FORM": "Solution",
+   "STRENGTHS": "",
+   "PRESENTATION": "200mls",
+   "PRICE (N)": "360.00"
+ },
+ {
+   "NAME OF DRUG": "Hexetidine",
+   "DOSAGE FORM": "Solution",
+   "STRENGTHS": "0.10%",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Nystatin",
+   "DOSAGE FORM": "Solution",
+   "STRENGTHS": "100,000 unit/ml",
+   "PRESENTATION": "30mls",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Zinc Chloride Plus Zinc sulphate",
+   "DOSAGE FORM": "Solution",
+   "STRENGTHS": "1% Zncl + 2% Zn2 SO4",
+   "PRESENTATION": "Solution",
+   "PRICE (N)": "240.00"
+ },
+ {
+   "NAME OF DRUG": "Triamcinolone",
+   "DOSAGE FORM": "Paste (accetonide)",
+   "STRENGTHS": "0.10%",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "700.00"
+ },
+ {
+   "NAME OF DRUG": "Aciclovir",
+   "DOSAGE FORM": "Cream",
+   "STRENGTHS": "5%",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "450.00"
+ },
+ {
+   "NAME OF DRUG": "Framycetin",
+   "DOSAGE FORM": "gauze dressing",
+   "STRENGTHS": "1%",
+   "PRESENTATION": "Gauze",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Gentamicin",
+   "DOSAGE FORM": "Ointment",
+   "STRENGTHS": "0.30%",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Gentian Violet",
+   "DOSAGE FORM": "Aqueous Solution",
+   "STRENGTHS": "0.50%",
+   "PRESENTATION": "60mls",
+   "PRICE (N)": "80.00"
+ },
+ {
+   "NAME OF DRUG": "Gentian Violet",
+   "DOSAGE FORM": "Tincture",
+   "STRENGTHS": "",
+   "PRESENTATION": "60mls",
+   "PRICE (N)": "80.00"
+ },
+ {
+   "NAME OF DRUG": "Mupiricon",
+   "DOSAGE FORM": "Ointment",
+   "STRENGTHS": "2% w/w",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "1,000.00"
+ },
+ {
+   "NAME OF DRUG": "Neomycin-Bacitracin",
+   "DOSAGE FORM": "Ointment and Cream",
+   "STRENGTHS": "Containing:     Neomycin Sulphate   5mg  plus Bacitracin\nzinc 500 units/g in 5g & 30g tubes",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Neomycin-Bacitracin",
+   "DOSAGE FORM": "Powder",
+   "STRENGTHS": "Containing:  Neomycin Sulphate 5mg plus  Bacitracin\nzinc 250 units/g",
+   "PRESENTATION": "Tin",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Neomycin-Bacitracin",
+   "DOSAGE FORM": "Spray",
+   "STRENGTHS": "Containing:  Bacitracin, 12,500 units & Neomycin\nSulphate,  165,000 units",
+   "PRESENTATION": "Bottle",
+   "PRICE (N)": "850.00"
+ },
+ {
+   "NAME OF DRUG": "Silver Sulphadiazine",
+   "DOSAGE FORM": "Cream",
+   "STRENGTHS": "1%",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "400.00"
+ },
+ {
+   "NAME OF DRUG": "Betamethasone",
+   "DOSAGE FORM": "Cream",
+   "STRENGTHS": "0.1% (Valerate)",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "250.00"
+ },
+ {
+   "NAME OF DRUG": "Betamethasone + Clioquinol",
+   "DOSAGE FORM": "Cream",
+   "STRENGTHS": "0.1% + 0.3%",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Betamethasone +Neomycin",
+   "DOSAGE FORM": "Cream",
+   "STRENGTHS": "0.1% + 0.5%",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Calamine Lotion",
+   "DOSAGE FORM": "Lotion",
+   "STRENGTHS": "",
+   "PRESENTATION": "120mls",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Clobetasol propionate",
+   "DOSAGE FORM": "Cream",
+   "STRENGTHS": "0.05%",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "850.00"
+ },
+ {
+   "NAME OF DRUG": "Clobetasone",
+   "DOSAGE FORM": "Cream",
+   "STRENGTHS": "0.05%",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Fluocinolone",
+   "DOSAGE FORM": "Cream",
+   "STRENGTHS": "0.03%",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "900.00"
+ },
+ {
+   "NAME OF DRUG": "Fluocinolone",
+   "DOSAGE FORM": "Cream",
+   "STRENGTHS": "0.025% +3% clioquinol",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "900.00"
+ },
+ {
+   "NAME OF DRUG": "Hydrocortisone",
+   "DOSAGE FORM": "Cream",
+   "STRENGTHS": "1%",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Hydrocortisone (Plus) Neomycin",
+   "DOSAGE FORM": "Cream",
+   "STRENGTHS": "0.5 – 1% hydrocortisone  + 0.25 – 0.5% Neomycin",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Methyl Salicylate",
+   "DOSAGE FORM": "Oitment",
+   "STRENGTHS": "4 – 20% methyl salicylate)",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "250.00"
+ },
+ {
+   "NAME OF DRUG": "Calamine + Zinc oxide",
+   "DOSAGE FORM": "Lotion, plaster",
+   "STRENGTHS": "",
+   "PRESENTATION": "",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Benzoyl Peroxide",
+   "DOSAGE FORM": "Cream",
+   "STRENGTHS": "10%, 5%, 2.5%",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "900.00"
+ },
+ {
+   "NAME OF DRUG": "Benzoyl Peroxide",
+   "DOSAGE FORM": "Gel",
+   "STRENGTHS": "10%, 5%, 2.5%",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "900.00"
+ },
+ {
+   "NAME OF DRUG": "Benzyl Benzoate",
+   "DOSAGE FORM": "Emulsion and lotion",
+   "STRENGTHS": "25%",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "220.00"
+ },
+ {
+   "NAME OF DRUG": "Crotamiton",
+   "DOSAGE FORM": "Cream",
+   "STRENGTHS": "10%",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "660.00"
+ },
+ {
+   "NAME OF DRUG": "Crotamiton",
+   "DOSAGE FORM": "Lotion",
+   "STRENGTHS": "10%",
+   "PRESENTATION": "50mls",
+   "PRICE (N)": "550.00"
+ },
+ {
+   "NAME OF DRUG": "Monosulfiram",
+   "DOSAGE FORM": "Soap",
+   "STRENGTHS": "5%",
+   "PRESENTATION": "Soap",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Permethrine",
+   "DOSAGE FORM": "Cream, Lotion",
+   "STRENGTHS": "5%, 1% respectively",
+   "PRESENTATION": "lotion",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Clotrimazole",
+   "DOSAGE FORM": "Cream",
+   "STRENGTHS": "1%",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Clotrimazole",
+   "DOSAGE FORM": "Aerosol, spray",
+   "STRENGTHS": "1%",
+   "PRESENTATION": "Tin",
+   "PRICE (N)": "250.00"
+ },
+ {
+   "NAME OF DRUG": "Clotrimazole",
+   "DOSAGE FORM": "Dusting Powder",
+   "STRENGTHS": "1%",
+   "PRESENTATION": "Tin",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Clotrimazole",
+   "DOSAGE FORM": "Pesssary",
+   "STRENGTHS": "",
+   "PRESENTATION": "6's",
+   "PRICE (N)": "350.00"
+ },
+ {
+   "NAME OF DRUG": "Clotrimazole",
+   "DOSAGE FORM": "Vaginal Cream",
+   "STRENGTHS": "",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Ketoconazole",
+   "DOSAGE FORM": "Cream",
+   "STRENGTHS": "2%",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "550.00"
+ },
+ {
+   "NAME OF DRUG": "Miconazole",
+   "DOSAGE FORM": "Oral Gel",
+   "STRENGTHS": "2 – 2.5%",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "1,000.00"
+ },
+ {
+   "NAME OF DRUG": "Miconazole",
+   "DOSAGE FORM": "Cream",
+   "STRENGTHS": "2%",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "400.00"
+ },
+ {
+   "NAME OF DRUG": "Miconazole",
+   "DOSAGE FORM": "Lotion",
+   "STRENGTHS": "2%",
+   "PRESENTATION": "Tin",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Miconazole",
+   "DOSAGE FORM": "Ovule",
+   "STRENGTHS": "",
+   "PRESENTATION": "Ovules",
+   "PRICE (N)": "700.00"
+ },
+ {
+   "NAME OF DRUG": "Miconazole",
+   "DOSAGE FORM": "Pessary",
+   "STRENGTHS": "",
+   "PRESENTATION": "Pessaries",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Miconazole + Hydrocortisone",
+   "DOSAGE FORM": "Cream",
+   "STRENGTHS": "2%  +  1%",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "1,200.00"
+ },
+ {
+   "NAME OF DRUG": "Nystatin",
+   "DOSAGE FORM": "Cream/Oint",
+   "STRENGTHS": "100,000 units",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Sulphur + Mesulphen",
+   "DOSAGE FORM": "Ointment",
+   "STRENGTHS": "Sulphur 10-20% + Mesulphen 64%",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "250.00"
+ },
+ {
+   "NAME OF DRUG": "Tioconazole",
+   "DOSAGE FORM": "Cream",
+   "STRENGTHS": "1%",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "400.00"
+ },
+ {
+   "NAME OF DRUG": "Tioconazole",
+   "DOSAGE FORM": "Ovule",
+   "STRENGTHS": "3s",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "600.00"
+ },
+ {
+   "NAME OF DRUG": "Benzoic acid + salicylic acid",
+   "DOSAGE FORM": "Cream ointment",
+   "STRENGTHS": "6% + 3%",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Coal Tar",
+   "DOSAGE FORM": "Solution/Cream",
+   "STRENGTHS": "1-10%",
+   "PRESENTATION": "",
+   "PRICE (N)": "1,000.00"
+ },
+ {
+   "NAME OF DRUG": "Dithranol",
+   "DOSAGE FORM": "Ointment",
+   "STRENGTHS": "0.1 - 2%",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "1,000.00"
+ },
+ {
+   "NAME OF DRUG": "Podophyllum resin",
+   "DOSAGE FORM": "Topical solution",
+   "STRENGTHS": "10- 25%",
+   "PRESENTATION": "",
+   "PRICE (N)": "1,500.00"
+ },
+ {
+   "NAME OF DRUG": "Salicylic acid",
+   "DOSAGE FORM": "Topical solution,",
+   "STRENGTHS": "12% in flexible collodion",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Salicylic acid",
+   "DOSAGE FORM": "Ointment",
+   "STRENGTHS": "2-5%",
+   "PRESENTATION": "",
+   "PRICE (N)": "180.00"
+ },
+ {
+   "NAME OF DRUG": "Urea",
+   "DOSAGE FORM": "Cream/ointment",
+   "STRENGTHS": "10%",
+   "PRESENTATION": "Tube",
+   "PRICE (N)": "4,000.00"
+ },
+ {
+   "NAME OF DRUG": "Chloramphenicol",
+   "DOSAGE FORM": "Ear Drops",
+   "STRENGTHS": "5%",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Gentamicin",
+   "DOSAGE FORM": "Eye/Ear Drops",
+   "STRENGTHS": "0.3%  (Sulphate)",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Betamethasone",
+   "DOSAGE FORM": "",
+   "STRENGTHS": "",
+   "PRESENTATION": "",
+   "PRICE (N)": "250.00"
+ },
+ {
+   "NAME OF DRUG": "Hydrocortisone + Neomycin",
+   "DOSAGE FORM": "Ear Drops",
+   "STRENGTHS": "Hydrocortisone       1.5% (Acetate)      +  Neomycin 0.5%\n(Sulphate)",
+   "PRESENTATION": "5mls",
+   "PRICE (N)": "360.00"
+ },
+ {
+   "NAME OF DRUG": "Bethamethasone + Neomycin",
+   "DOSAGE FORM": "Ear drops",
+   "STRENGTHS": "0.1% + 0.5%",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "250.00"
+ },
+ {
+   "NAME OF DRUG": "Dexamethasone + Neomycin",
+   "DOSAGE FORM": "Ear drops",
+   "STRENGTHS": "0.1% + 3200 unit/ml",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "350.00"
+ },
+ {
+   "NAME OF DRUG": "Flumethasone plus clioquinol",
+   "DOSAGE FORM": "Ear drops",
+   "STRENGTHS": "0.02% + 1% clioquinol",
+   "PRESENTATION": "7.5mls",
+   "PRICE (N)": "700.00"
+ },
+ {
+   "NAME OF DRUG": "Hydrocortisone + Neomycin + polymyxin B",
+   "DOSAGE FORM": "Ear Drops",
+   "STRENGTHS": "Hydrocortisone 1.0% (Acetate)      + Neomycin 3400 units\n(Sulphate) + polymyxin B 10,000 units/10mls",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Glycerol plus sodium bicarbonate",
+   "DOSAGE FORM": "Ear drops",
+   "STRENGTHS": "",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "650.00"
+ },
+ {
+   "NAME OF DRUG": "Chlorbutanol +Paradichlorobenzine+ Arachis oil +\nTurpentine oil",
+   "DOSAGE FORM": "Ear drops",
+   "STRENGTHS": "",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "800.00"
+ },
+ {
+   "NAME OF DRUG": "Antazoline + Nephazoline",
+   "DOSAGE FORM": "Nasal drops",
+   "STRENGTHS": "0.5% + 0.025%",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": ""
+ },
+ {
+   "NAME OF DRUG": "Beclomethasone Dipropionate",
+   "DOSAGE FORM": "Nasal Spray",
+   "STRENGTHS": "(aerosol)  0.05mg / metered spray",
+   "PRESENTATION": "Spray",
+   "PRICE (N)": "1,500.00"
+ },
+ {
+   "NAME OF DRUG": "Ephedrine",
+   "DOSAGE FORM": "Nasal drops (Hcl)",
+   "STRENGTHS": "0.50%",
+   "PRESENTATION": "",
+   "PRICE (N)": "400.00"
+ },
+ {
+   "NAME OF DRUG": "Pseudoephedrine (HCL)",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "60mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Pseudoephedrine (HCL)",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "30mg/5ml",
+   "PRESENTATION": "60mls",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Tripolidine (HCL)  + Pseudoephedrine (HCL)",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "60mg + 2.5mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Tripolidine (HCL)  + Pseudoephedrine (HCL)",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "30mg  +  1.2mg",
+   "PRESENTATION": "60mks",
+   "PRICE (N)": "350.00"
+ },
+ {
+   "NAME OF DRUG": "Xylomethazoline",
+   "DOSAGE FORM": "Nasal drops",
+   "STRENGTHS": "0.25%",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "750.00"
+ },
+ {
+   "NAME OF DRUG": "Xylomethazoline",
+   "DOSAGE FORM": "Nasal drops",
+   "STRENGTHS": "0.50%",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "750.00"
+ },
+ {
+   "NAME OF DRUG": "Xylomethazoline + Antazoline",
+   "DOSAGE FORM": "Nasal drops",
+   "STRENGTHS": "0.25% + 0.5%  (paed)",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Xylomethazoline + Antazoline",
+   "DOSAGE FORM": "Nasal drops",
+   "STRENGTHS": "Adult",
+   "PRESENTATION": "10ml",
+   "PRICE (N)": "400.00"
+ },
+ {
+   "NAME OF DRUG": "Silver nitrate",
+   "DOSAGE FORM": "Sticks, crystals, solution",
+   "STRENGTHS": "0.50%",
+   "PRESENTATION": "Sticks",
+   "PRICE (N)": "660.00"
+ },
+ {
+   "NAME OF DRUG": "Dequalinium",
+   "DOSAGE FORM": "Lozenges",
+   "STRENGTHS": "250mg",
+   "PRESENTATION": "lozenges",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Dequalinium",
+   "DOSAGE FORM": "Paint",
+   "STRENGTHS": "250mg (HCL)",
+   "PRESENTATION": "10ml",
+   "PRICE (N)": "450.00"
+ },
+ {
+   "NAME OF DRUG": "Dichlrobenzyl alchohol + Amylmetacresol",
+   "DOSAGE FORM": "Lozenges",
+   "STRENGTHS": "",
+   "PRESENTATION": "Lozenges",
+   "PRICE (N)": "40.00"
+ },
+ {
+   "NAME OF DRUG": "Aluminium hydroxide",
+   "DOSAGE FORM": "Suspension",
+   "STRENGTHS": "320mg/5ml",
+   "PRESENTATION": "200mls",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Aluminium hydroxide",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "500mg",
+   "PRESENTATION": "Tablet",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Aluminium hydroxide +Magnesium Hydroxide\n+Simethicone",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "200mg+200mg +30mg",
+   "PRESENTATION": "Tablet",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Aluminium hydroxide +Magnesium Hydroxide\n+Simethicone",
+   "DOSAGE FORM": "Mixture (with or without\ndiglycirrhizinnated Liquarice)-",
+   "STRENGTHS": "6gm+80mg+100mg+/- 400mg",
+   "PRESENTATION": "200ml",
+   "PRICE (N)": "400.00"
+ },
+ {
+   "NAME OF DRUG": "Aluminium hydroxide +Magnesium trisilicate",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "120 mg + 250 mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Aluminium hydroxide +Magnesium trisilicate",
+   "DOSAGE FORM": "Mixture",
+   "STRENGTHS": "BP",
+   "PRESENTATION": "200mls",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Magnesium Trisilicate",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "500mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Magnesium Trisilicate",
+   "DOSAGE FORM": "Mixtures",
+   "STRENGTHS": "250mg/ml",
+   "PRESENTATION": "200mls",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Metoclopramide",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "10mg  (HCL)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "7.00"
+ },
+ {
+   "NAME OF DRUG": "Metoclopramide",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "5mg/5ml  (HCL)",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Metoclopramide",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "5mg/ml  (HCL)",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Prochlorperazine",
+   "DOSAGE FORM": "Tablet (Maleate)",
+   "STRENGTHS": "5 mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Prochlorperazine",
+   "DOSAGE FORM": "Tablet (Maleate)",
+   "STRENGTHS": "25 mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Prochlorperazine",
+   "DOSAGE FORM": "Syrup (Mesilate)",
+   "STRENGTHS": "5 mg/ 5 ml",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "350.00"
+ },
+ {
+   "NAME OF DRUG": "Prochlorperazine",
+   "DOSAGE FORM": "Injection (Mesilate)",
+   "STRENGTHS": "12.5 mg/ml in 1 ml & 2 ml Ampoules",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "70.00"
+ },
+ {
+   "NAME OF DRUG": "Promethazine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "10 and 25 mg (HCL)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Promethazine",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "5mg/5ml   (HCL)",
+   "PRESENTATION": "60mls",
+   "PRICE (N)": "120.00"
+ },
+ {
+   "NAME OF DRUG": "Promethazine",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "25mg/ml  (HCL) in 2ml Ampoules",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Promethazine theoclate",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "15.00"
+ },
+ {
+   "NAME OF DRUG": "Homatrropine methyl bromide",
+   "DOSAGE FORM": "Drop",
+   "STRENGTHS": "2mg/ml",
+   "PRESENTATION": "15ml",
+   "PRICE (N)": "460.00"
+ },
+ {
+   "NAME OF DRUG": "Hysocine N-butylbro-Mide",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "10mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Hysocine N-butylbro-Mide",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "1mg/ml",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "400.00"
+ },
+ {
+   "NAME OF DRUG": "Hysocine N-butylbro-Mide",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "20mg/ml in 1ml Ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Bisacodyl",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "5mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Bisacodyl",
+   "DOSAGE FORM": "Suppositories",
+   "STRENGTHS": "5 & 10mg",
+   "PRESENTATION": "Supp.",
+   "PRICE (N)": "130.00"
+ },
+ {
+   "NAME OF DRUG": "Liquid Paraffin",
+   "DOSAGE FORM": "Emulsion, oral",
+   "STRENGTHS": "5mg/10ml of emulsion",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "220.00"
+ },
+ {
+   "NAME OF DRUG": "Senna",
+   "DOSAGE FORM": "Tablet & granule",
+   "STRENGTHS": "",
+   "PRESENTATION": "Tablet",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Diphenoxylate hydrochloride + Atropine sulphate",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "2.5mg + 0.025mg",
+   "PRESENTATION": "Tablet",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Loperamide",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "2mg",
+   "PRESENTATION": "Tablet",
+   "PRICE (N)": "16.50"
+ },
+ {
+   "NAME OF DRUG": "Oral Rehydration Salt",
+   "DOSAGE FORM": "Salts",
+   "STRENGTHS": "Glucose 13.5 g, Potassium  Cl.  1.5g, Sodium bicarbonate\n2.5%, Sodium  Chloride  2.6g",
+   "PRESENTATION": "Sachet",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Aluminium Actate +Hydrocortisone+ Lidocaine\n+Zinc oxide",
+   "DOSAGE FORM": "Suppository",
+   "STRENGTHS": "50mg +5mg + 60mg",
+   "PRESENTATION": "supp",
+   "PRICE (N)": "110.00"
+ },
+ {
+   "NAME OF DRUG": "Benzyl benzoate + bismuth Oxide + Bismuth\nsubgallate+ Hydrocortisone",
+   "DOSAGE FORM": "Suppository",
+   "STRENGTHS": "33mg + 24mg + 59mg",
+   "PRESENTATION": "supp",
+   "PRICE (N)": "110.00"
+ },
+ {
+   "NAME OF DRUG": "Benzyl benzoate + bismuth Oxide + Bismuth\nsubgallate+ Hydrocortisone + Peru balsam",
+   "DOSAGE FORM": "Suppository",
+   "STRENGTHS": "33mg + 24mg + 59mg",
+   "PRESENTATION": "supp",
+   "PRICE (N)": "110.00"
+ },
+ {
+   "NAME OF DRUG": "Cinchocaine hydrochloride +Prednisolone\nhexanoate",
+   "DOSAGE FORM": "Suppository",
+   "STRENGTHS": "1mg + 1.3mg",
+   "PRESENTATION": "supp",
+   "PRICE (N)": "110.00"
+ },
+ {
+   "NAME OF DRUG": "Cimetidine",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "200mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Cimetidine",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "400mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "15.00"
+ },
+ {
+   "NAME OF DRUG": "Cimetidine",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "100mg/ml in 2 ml Ampoules",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Esomeprazole",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "20mg",
+   "PRESENTATION": "Tabl",
+   "PRICE (N)": "35.00"
+ },
+ {
+   "NAME OF DRUG": "Lansoperazole",
+   "DOSAGE FORM": "capsule",
+   "STRENGTHS": "30mg",
+   "PRESENTATION": "capsule",
+   "PRICE (N)": "40.00"
+ },
+ {
+   "NAME OF DRUG": "Omeprazole",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "10mg, 20 mg",
+   "PRESENTATION": "20mgTab.",
+   "PRICE (N)": "33.00"
+ },
+ {
+   "NAME OF DRUG": "Rabeprazole",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "20mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "70.00"
+ },
+ {
+   "NAME OF DRUG": "Ranitidine",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "150mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "16.50"
+ },
+ {
+   "NAME OF DRUG": "Ranitidine",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "300 mg  (HCL)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Ranitidine",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "25mg/ml in 2 ml Ampoules",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "220.00"
+ },
+ {
+   "NAME OF DRUG": "Dexamethasone",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "0.5mg and 4mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Dexamethasone",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "2mg/ml, 4mg/ml in 2ml Ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Fludrocortisone",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "0.1mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Hydrocortisone",
+   "DOSAGE FORM": "Injection, powder",
+   "STRENGTHS": "100mg/vial",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Methyl prednisolone",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "40mg/ml I 2ml ampule",
+   "PRESENTATION": "Amp",
+   "PRICE (N)": "1,200.00"
+ },
+ {
+   "NAME OF DRUG": "Predinsolone",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "1mg, 5mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Triamcinolone",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "10mg/40mg/ml",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "1,000.00"
+ },
+ {
+   "NAME OF DRUG": "Ethinyloestradiol",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "0.01mg, 0.05mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Hydroxyprogesterone",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "Hexanoate 250mg/ml in 1ml, 2ml Ampoules",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "250.00"
+ },
+ {
+   "NAME OF DRUG": "Norethisterone",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "200mg/ml",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Bromocriptine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "1mg, 2.5mg (Mesylate)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Clomiphene",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "50mg (Citrate)",
+   "PRESENTATION": "10s",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Chorionic gonadotropin",
+   "DOSAGE FORM": "Injection powder",
+   "STRENGTHS": "500 units  in Ampoule",
+   "PRESENTATION": "Amp",
+   "PRICE (N)": "4,000.00"
+ },
+ {
+   "NAME OF DRUG": "Chorionic gonadotropin",
+   "DOSAGE FORM": "Injection powder",
+   "STRENGTHS": "1000 units in Ampoule",
+   "PRESENTATION": "Amp",
+   "PRICE (N)": "4,000.00"
+ },
+ {
+   "NAME OF DRUG": "Danazol",
+   "DOSAGE FORM": "Capsule",
+   "STRENGTHS": "100mg/200mg",
+   "PRESENTATION": "Cap",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Vasopressin",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "20units/ml in 1ml ampoule",
+   "PRESENTATION": "Amp",
+   "PRICE (N)": "5,700.00"
+ },
+ {
+   "NAME OF DRUG": "Biphasic Isophane Insulin",
+   "DOSAGE FORM": "injection",
+   "STRENGTHS": "Human Soluble Insulin 30%+isophane Insulin 70%",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "1,800.00"
+ },
+ {
+   "NAME OF DRUG": "Insulin Soluble",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "40 units/ml",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "1,800.00"
+ },
+ {
+   "NAME OF DRUG": "Insulin Soluble",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "100 units/ml",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "3,700.00"
+ },
+ {
+   "NAME OF DRUG": "Insulin Zinc Suspension  (I.Z.S)",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "40 units/ml",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "1,800.00"
+ },
+ {
+   "NAME OF DRUG": "Insulin Zinc Suspension  (I.Z.S)",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "100 units/ml",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "3,700.00"
+ },
+ {
+   "NAME OF DRUG": "Isophane Insulin",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "100 units/ml",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "3,700.00"
+ },
+ {
+   "NAME OF DRUG": "Protamine Zinc Insulin",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "100 units/ml",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "3,700.00"
+ },
+ {
+   "NAME OF DRUG": "Chlorpropamide",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "250mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "25.00"
+ },
+ {
+   "NAME OF DRUG": "Metformin",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "500mg (HCL)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "15.00"
+ },
+ {
+   "NAME OF DRUG": "Glibenclamide",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "5mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "15.00"
+ },
+ {
+   "NAME OF DRUG": "Gliclazide",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "80mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Gliclazide",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "30mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "25.00"
+ },
+ {
+   "NAME OF DRUG": "Glimepiride",
+   "DOSAGE FORM": "Tab",
+   "STRENGTHS": "1mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "45.00"
+ },
+ {
+   "NAME OF DRUG": "Glimepiride",
+   "DOSAGE FORM": "Tab",
+   "STRENGTHS": "2mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Glimepiride",
+   "DOSAGE FORM": "Tab",
+   "STRENGTHS": "4mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "140.00"
+ },
+ {
+   "NAME OF DRUG": "Glucagon",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "1mg/ml",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "2,000.00"
+ },
+ {
+   "NAME OF DRUG": "Metformin",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "1000mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Metformin",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "850mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "16.00"
+ },
+ {
+   "NAME OF DRUG": "Metformin + Glabenclamide",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "500mg (HCL) +2.5mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Pioglitazone Hydrochloride",
+   "DOSAGE FORM": "Tab",
+   "STRENGTHS": "15mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "70.00"
+ },
+ {
+   "NAME OF DRUG": "Pioglitazone Hydrochloride",
+   "DOSAGE FORM": "Tab",
+   "STRENGTHS": "30mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "80.00"
+ },
+ {
+   "NAME OF DRUG": "Rosiglitazone",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "4mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "210.00"
+ },
+ {
+   "NAME OF DRUG": "Vildagliptin",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "50mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "220.00"
+ },
+ {
+   "NAME OF DRUG": "Vidagliptin + Metformin",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "50mg/500mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "220.00"
+ },
+ {
+   "NAME OF DRUG": "Vidagliptin + Metformin",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "50mg/1000mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "220.00"
+ },
+ {
+   "NAME OF DRUG": "Carbimazole",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "5mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Levothyroxine",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "0.05 mg (sodium salt)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Levothyroxine",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "0.1mg (sodium salt)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Lugol’s solution",
+   "DOSAGE FORM": "Solution, oral",
+   "STRENGTHS": "iodine 5%, potassium iodide  10% in purified water",
+   "PRESENTATION": "sol.",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Propylthiouracil",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "50 mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Dutasteride",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Finasteride",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "5mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Tamsulosin",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "400mcg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Alpha interferon",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "4.5mu",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "6,000.00"
+ },
+ {
+   "NAME OF DRUG": "Anti snake bite serum",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "Polyvalent, 10 ml, 20 ml in Ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "5,000.00"
+ },
+ {
+   "NAME OF DRUG": "Anti tetanus immunoglobin (human)",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "1500 units/amp,",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Anti tetanus immunoglobin (human)",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "10,000 units / ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "1,200.00"
+ },
+ {
+   "NAME OF DRUG": "Anti-D (Rhesus) immunoglobulin (Humans)",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "300microgram (1,500 I.U)/ml",
+   "PRESENTATION": "Prefilled Syringe",
+   "PRICE (N)": "13,000.00"
+ },
+ {
+   "NAME OF DRUG": "Hepatitis B Anti-serum",
+   "DOSAGE FORM": "inj",
+   "STRENGTHS": "200iu",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "78,750.00"
+ },
+ {
+   "NAME OF DRUG": "Hepatitis B Anti-serum",
+   "DOSAGE FORM": "inj",
+   "STRENGTHS": "400iu",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "94,500.00"
+ },
+ {
+   "NAME OF DRUG": "Rabies immunoglobin",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "150 unit in  ml in vial",
+   "PRESENTATION": "Vial .",
+   "PRICE (N)": "2,500.00"
+ },
+ {
+   "NAME OF DRUG": "BCG Vaccines dried **",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "Powder for reconstitution in multidose amp 1ml, 5 ml",
+   "PRESENTATION": "",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Diptheria, Tetanus and Pertussis Vaccine **",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "0.5ml, 5ml",
+   "PRESENTATION": "",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Hepatitis B vaccines",
+   "DOSAGE FORM": "Liquid for injection",
+   "STRENGTHS": "10 doses/vial",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "3,000.00"
+ },
+ {
+   "NAME OF DRUG": "Measeles, Mumps & Rubella vaccine **",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "0.5 ml",
+   "PRESENTATION": "",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Measles vaccine **",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "0.5ml",
+   "PRESENTATION": "",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Pentavelent Vaccine **",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "",
+   "PRESENTATION": "",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Poliomyelitis vaccine **",
+   "DOSAGE FORM": "Oral suspension",
+   "STRENGTHS": "",
+   "PRESENTATION": "",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Tetanus vaccine",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "Formoltoxoid, 0.5 ml, 5 ml vial",
+   "PRESENTATION": "0.5ml, amp.",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Cholera vaccine",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "1.5ml – 50 ml in Ampoule or vial",
+   "PRESENTATION": "",
+   "PRICE (N)": "13,050.00"
+ },
+ {
+   "NAME OF DRUG": "Hepatitis B Vaccine",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "0.02 mg/ml in 0.5 ml, 1 ml vial",
+   "PRESENTATION": "",
+   "PRICE (N)": "3,000.00"
+ },
+ {
+   "NAME OF DRUG": "HPV Vaccine (Quadrivalent)",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "0.5mls single dose vial or prefilled inj",
+   "PRESENTATION": "",
+   "PRICE (N)": "12,000.00"
+ },
+ {
+   "NAME OF DRUG": "Meningococcal vaccine",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "Powder for reconstitution in multidose vial of 0.5mg ,\n2.5 mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "6,450.00"
+ },
+ {
+   "NAME OF DRUG": "Pneumococcal Vaccine",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "55mcg/0.5ml",
+   "PRESENTATION": "",
+   "PRICE (N)": "15,450.00"
+ },
+ {
+   "NAME OF DRUG": "Rabies vaccine",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "1 ml",
+   "PRESENTATION": "",
+   "PRICE (N)": "3,050.00"
+ },
+ {
+   "NAME OF DRUG": "Typhoid vaccine (TAB)",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "1.5ml/vial",
+   "PRESENTATION": "",
+   "PRICE (N)": "450.00"
+ },
+ {
+   "NAME OF DRUG": "Typhoid vaccine (VI antigen)",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "10 ml vial (20 doses), 25ml/vial (50 doses), 0.5 ml/syringe",
+   "PRESENTATION": "",
+   "PRICE (N)": "400.00"
+ },
+ {
+   "NAME OF DRUG": "Yellow fever vaccine **",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "Powder for reconstitution 1,5 and 10 dose vial",
+   "PRESENTATION": "",
+   "PRICE (N)": "0.00"
+ },
+ {
+   "NAME OF DRUG": "Acyclovir",
+   "DOSAGE FORM": "Eye ointment",
+   "STRENGTHS": "3.00%",
+   "PRESENTATION": "5gms",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Chloramphenicol",
+   "DOSAGE FORM": "Eye Ointment",
+   "STRENGTHS": "1%",
+   "PRESENTATION": "5gm",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Chloramphenicol",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "0.50%",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Ciprofloxacin",
+   "DOSAGE FORM": "Drops",
+   "STRENGTHS": "0.30%",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Fluconsazole",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "0.30%",
+   "PRESENTATION": "",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Gentamicin",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "0.3%  (Sulphate)",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Miconazole",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "",
+   "PRESENTATION": "",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Ofloxacin",
+   "DOSAGE FORM": "Drops",
+   "STRENGTHS": "0.30%",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Oxytetracycline plus Polymyxin B",
+   "DOSAGE FORM": "Eye ointment",
+   "STRENGTHS": "5mg + 10,000 unit",
+   "PRESENTATION": "5gms",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Neomycin sulfate+Polymyxin B + Dexamethasone",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "3500 IU/6000iu/0.1%",
+   "PRESENTATION": "5mls",
+   "PRICE (N)": "700.00"
+ },
+ {
+   "NAME OF DRUG": "Antazoline HCL, Tetrazoline HCL, Methylhydroxy\nPropyl cellulose.",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "",
+   "PRESENTATION": "5mls",
+   "PRICE (N)": "600.00"
+ },
+ {
+   "NAME OF DRUG": "Tetrahydrozoline(HCl)",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "0.05%",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "600.00"
+ },
+ {
+   "NAME OF DRUG": "Amethocaine",
+   "DOSAGE FORM": "",
+   "STRENGTHS": "Eye Drop",
+   "PRESENTATION": "0.5%, 1%",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Betamethasone",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "0,10%",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Betamethasone + Neomycin",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "0,10% +0.5%",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Dexamethasone",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "0.10%",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Dexamethasone + Chloramphenicol +\nTetrahydrozolina",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "650.00"
+ },
+ {
+   "NAME OF DRUG": "Hydrocortisone + Neomycin",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "1.5% + 0.5%",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Ketotifen",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "250mcg/ml",
+   "PRESENTATION": "5mls",
+   "PRICE (N)": "1,600.00"
+ },
+ {
+   "NAME OF DRUG": "Lodoxamide",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "0.10%",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "3,750.00"
+ },
+ {
+   "NAME OF DRUG": "Prednisolone",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "1% (Acetate) 5% (Sodium phosphate)",
+   "PRESENTATION": "5mls",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Ringer’s Lactate",
+   "DOSAGE FORM": "",
+   "STRENGTHS": "",
+   "PRESENTATION": "",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Acetazolamide",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "250mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Acetazolamide",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "500 mg/vial",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "8,700.00"
+ },
+ {
+   "NAME OF DRUG": "Betaxolol Hydrocloride",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "0.50%",
+   "PRESENTATION": "5mls",
+   "PRICE (N)": "900.00"
+ },
+ {
+   "NAME OF DRUG": "Betaxolol Hydrocloride + Neomycin",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "",
+   "PRESENTATION": "5mls",
+   "PRICE (N)": "900.00"
+ },
+ {
+   "NAME OF DRUG": "Brinzolamide",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "10mg/ml",
+   "PRESENTATION": "5mls",
+   "PRICE (N)": "4,000.00"
+ },
+ {
+   "NAME OF DRUG": "Dorzolamide",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "2%",
+   "PRESENTATION": "5mls",
+   "PRICE (N)": "4,000.00"
+ },
+ {
+   "NAME OF DRUG": "Dorzolamide Hcl + Timolol",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "2% + 0.5%",
+   "PRESENTATION": "5mls",
+   "PRICE (N)": "6,000.00"
+ },
+ {
+   "NAME OF DRUG": "Latanoprost",
+   "DOSAGE FORM": "Eye Drps",
+   "STRENGTHS": "500mcg",
+   "PRESENTATION": "5mls",
+   "PRICE (N)": "5,200.00"
+ },
+ {
+   "NAME OF DRUG": "Pilocarpine",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "2% & 4% (HCL)",
+   "PRESENTATION": "5mls",
+   "PRICE (N)": "550.00"
+ },
+ {
+   "NAME OF DRUG": "Timolol",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "0.25, 0.5% (Maleate)",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "600.00"
+ },
+ {
+   "NAME OF DRUG": "Travoprost",
+   "DOSAGE FORM": "Eye Drps",
+   "STRENGTHS": "40mcg/ml",
+   "PRESENTATION": "2.5mls",
+   "PRICE (N)": "9,000.00"
+ },
+ {
+   "NAME OF DRUG": "Atropine",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "0.5%, 1%  (Sulphate)",
+   "PRESENTATION": "5mls",
+   "PRICE (N)": "550.00"
+ },
+ {
+   "NAME OF DRUG": "Homatropine",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "2%, 1% (Hydrobromide)",
+   "PRESENTATION": "5mls",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Phenylephrine",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "2.5%, 10% (HCL)",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Tropicamide",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "0.5%, 1%",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "650.00"
+ },
+ {
+   "NAME OF DRUG": "Cyclopentolate",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "0.5%, 0.1% (Hydrochloride)",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "750.00"
+ },
+ {
+   "NAME OF DRUG": "Flourescein sodium",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "1%, 2%",
+   "PRESENTATION": "",
+   "PRICE (N)": "4,650.00"
+ },
+ {
+   "NAME OF DRUG": "Methylcellulose",
+   "DOSAGE FORM": "Eye Drops",
+   "STRENGTHS": "1%, 2%",
+   "PRESENTATION": "",
+   "PRICE (N)": "850.00"
+ },
+ {
+   "NAME OF DRUG": "Ergometrine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "0.5mg (Maleate)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Ergometrine",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "0.5mg/ml  (Maleate)",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Oxytocin",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "10 units/ml, 5 units/ml in Ampoules",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Misoprostol",
+   "DOSAGE FORM": "Pessary",
+   "STRENGTHS": "3mg",
+   "PRESENTATION": "Pessary",
+   "PRICE (N)": "90.00"
+ },
+ {
+   "NAME OF DRUG": "Oral Rehydration Salt",
+   "DOSAGE FORM": "Powder",
+   "STRENGTHS": "(See 18.5.2)",
+   "PRESENTATION": "Sachet",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Potassium Chloride (slow release)",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "600mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Potassium Chloride (slow release)",
+   "DOSAGE FORM": "Oral solution",
+   "STRENGTHS": "5%, 10%, 20%",
+   "PRESENTATION": "Sol.",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Darrow’s Solution",
+   "DOSAGE FORM": "Injection, BP",
+   "STRENGTHS": "½ & full strength",
+   "PRESENTATION": "500ml IVF",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Dextrose + Sodium Chloride",
+   "DOSAGE FORM": "Infusion",
+   "STRENGTHS": "5% + 0.9%",
+   "PRESENTATION": "500ml IVF",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Glucose (Dextrose)",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "5% & 10%",
+   "PRESENTATION": "500ml IVF",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Glucose (Dextrose)",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "50% in water",
+   "PRESENTATION": "500ml IVF",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Glucose + Sodium Chloride (Paediatric)",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "4.3% + 0.18%",
+   "PRESENTATION": "500ml IVF",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Isoplasma",
+   "DOSAGE FORM": "Infusion",
+   "STRENGTHS": "",
+   "PRESENTATION": "",
+   "PRICE (N)": "1,300.00"
+ },
+ {
+   "NAME OF DRUG": "Mannitol",
+   "DOSAGE FORM": "Infusion",
+   "STRENGTHS": "10%",
+   "PRESENTATION": "",
+   "PRICE (N)": "250.00"
+ },
+ {
+   "NAME OF DRUG": "Mannitol",
+   "DOSAGE FORM": "Infusion",
+   "STRENGTHS": "20%",
+   "PRESENTATION": "",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Potassium Chloride",
+   "DOSAGE FORM": "Injection Strong",
+   "STRENGTHS": "15% in 10ml Ampoule",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Ringer’s Lactate",
+   "DOSAGE FORM": "solution",
+   "STRENGTHS": "",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Sodium   Lactate Compound solution",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "Solution, BP",
+   "PRESENTATION": "500ml IVF",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Sodium Bicarbonate",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "1.4% in 10ml (isotonic)",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "250.00"
+ },
+ {
+   "NAME OF DRUG": "Sodium chloride",
+   "DOSAGE FORM": "Infusion",
+   "STRENGTHS": "0.9%, 0.45%",
+   "PRESENTATION": "",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Water for injection",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "10ml, per amp/vial",
+   "PRESENTATION": "Vial.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Bromazepam",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "1.5mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Bromazepam",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "3mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Diazepam",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "5mg, 2mg, 10mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Diazepam",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "5mg/ml in 2ml",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Flunitrazepam",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "1mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "110.00"
+ },
+ {
+   "NAME OF DRUG": "Lorazepam",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "1mg,",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Lorazepam",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "2mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "15.00"
+ },
+ {
+   "NAME OF DRUG": "Nitrazepam",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "5mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Amitriptyline",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "25mg (HCL)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Amitriptyline",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "50mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "15.00"
+ },
+ {
+   "NAME OF DRUG": "Clomipramine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "10mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "66.00"
+ },
+ {
+   "NAME OF DRUG": "Clomipramine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "25mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "66.00"
+ },
+ {
+   "NAME OF DRUG": "Citalopram",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "20mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Gabapentin + Methylcobalamin",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "300mg + 50 mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Imipramine",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "10mg,",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Imipramine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "25mg  (HCL)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Olanzepine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "5mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Paroxetine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "20mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Paroxetine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "30mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Sertraline",
+   "DOSAGE FORM": "Capsule",
+   "STRENGTHS": "50mg",
+   "PRESENTATION": "Caps.",
+   "PRICE (N)": "70.00"
+ },
+ {
+   "NAME OF DRUG": "Carbamazepine",
+   "DOSAGE FORM": "Tablet (scored)",
+   "STRENGTHS": "200mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Carbamazepine",
+   "DOSAGE FORM": "Tablet (scored)",
+   "STRENGTHS": "400mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "60.00"
+ },
+ {
+   "NAME OF DRUG": "Carbamazepine",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "100mg/5ml",
+   "PRESENTATION": "",
+   "PRICE (N)": "1,500.00"
+ },
+ {
+   "NAME OF DRUG": "Chlorpromazine",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "25mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Chlorpromazine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "50mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Chlorpromazine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "100mg  (HCL)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Chlorpromazine",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "25mg/5ml (HCL)",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "1,000.00"
+ },
+ {
+   "NAME OF DRUG": "Chlorpromazine",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "25mg/ml (HCL) in 2ml Ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "70.00"
+ },
+ {
+   "NAME OF DRUG": "Fluoxethine",
+   "DOSAGE FORM": "Capsules",
+   "STRENGTHS": "20mg",
+   "PRESENTATION": "Cap.",
+   "PRICE (N)": "90.00"
+ },
+ {
+   "NAME OF DRUG": "Fluoxethine",
+   "DOSAGE FORM": "Injection  (oily)",
+   "STRENGTHS": "25mg/ml in 1ml Ampoule (decanoate or enanthate)",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "350.00"
+ },
+ {
+   "NAME OF DRUG": "Flupenthixol",
+   "DOSAGE FORM": "Injection (depot)",
+   "STRENGTHS": "20mg (decanoate  or enanthate) in 1ml Ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "900.00"
+ },
+ {
+   "NAME OF DRUG": "Flupenthixol",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "1.5mg, 3mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Flupenthixol",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "50mg/ml, 100mg/ml,",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Fluphenazine",
+   "DOSAGE FORM": "injection",
+   "STRENGTHS": "25mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Haloperidol",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "2mg, 5mg.10mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "7.00"
+ },
+ {
+   "NAME OF DRUG": "Haloperidol",
+   "DOSAGE FORM": "injection",
+   "STRENGTHS": "5mg/ml",
+   "PRESENTATION": "injection",
+   "PRICE (N)": "630.00"
+ },
+ {
+   "NAME OF DRUG": "Thioridazine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "100mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "80.00"
+ },
+ {
+   "NAME OF DRUG": "Thioridazine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "50mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "70.00"
+ },
+ {
+   "NAME OF DRUG": "Trifluoperazine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "1mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Trifluoperazine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "5mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "7.00"
+ },
+ {
+   "NAME OF DRUG": "Valproic acid (sodium valproate)",
+   "DOSAGE FORM": "Tablet (enteric-coated)",
+   "STRENGTHS": "200mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "60.00"
+ },
+ {
+   "NAME OF DRUG": "Valproic acid (sodium valproate)",
+   "DOSAGE FORM": "Tablet (enteric-coated)",
+   "STRENGTHS": "500mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "140.00"
+ },
+ {
+   "NAME OF DRUG": "Benzhexol (triehexylphenidyl)",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "2mg, 5mg (HCL)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Biperidem",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "5mg/ml",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "1,500.00"
+ },
+ {
+   "NAME OF DRUG": "Aminophylline",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "25mg/ml  in 10ml  Ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "220.00"
+ },
+ {
+   "NAME OF DRUG": "Beclomethasone",
+   "DOSAGE FORM": "Aerosol inhalation",
+   "STRENGTHS": "0.050mg/metered dose",
+   "PRESENTATION": "Spray",
+   "PRICE (N)": "1,500.00"
+ },
+ {
+   "NAME OF DRUG": "Ephedrine + Theophyline",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "11mg + 20 mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "15.00"
+ },
+ {
+   "NAME OF DRUG": "Epinephrine (Adrenaline)",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "1mg/ml  (1 in 1000) in 1ml Ampoule",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Hydrocortisone",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "100mg/vial",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "120.00"
+ },
+ {
+   "NAME OF DRUG": "Ipratropium bromide",
+   "DOSAGE FORM": "Inhalation (aerosol)",
+   "STRENGTHS": "20 micrograms per metered dose",
+   "PRESENTATION": "Spray",
+   "PRICE (N)": "1,000.00"
+ },
+ {
+   "NAME OF DRUG": "Salbutamol",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "2mg, 4mg (Sulphate)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Salbutamol",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "2mg/5ml  (Sulphate)",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "400.00"
+ },
+ {
+   "NAME OF DRUG": "Salbutamol",
+   "DOSAGE FORM": "Aerosol",
+   "STRENGTHS": "0.1mg/metered dose",
+   "PRESENTATION": "Spray",
+   "PRICE (N)": "700.00"
+ },
+ {
+   "NAME OF DRUG": "Salbutamol",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "500ug/ml",
+   "PRESENTATION": "Amp",
+   "PRICE (N)": "350.00"
+ },
+ {
+   "NAME OF DRUG": "Salmeterol",
+   "DOSAGE FORM": "Inhalation",
+   "STRENGTHS": "100mcg/dose",
+   "PRESENTATION": "Spray",
+   "PRICE (N)": "4,200.00"
+ },
+ {
+   "NAME OF DRUG": "Salmeterol",
+   "DOSAGE FORM": "Inhalation",
+   "STRENGTHS": "250mcg/dose",
+   "PRESENTATION": "Spray",
+   "PRICE (N)": "4,200.00"
+ },
+ {
+   "NAME OF DRUG": "Salmeterol + Fluticasone",
+   "DOSAGE FORM": "Inhalation",
+   "STRENGTHS": "250mcg /100mcg",
+   "PRESENTATION": "Spray",
+   "PRICE (N)": "4,000.00"
+ },
+ {
+   "NAME OF DRUG": "Theophylline",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "125mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "15.00"
+ },
+ {
+   "NAME OF DRUG": "Theophylline",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "250mg (SR)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "30.00"
+ },
+ {
+   "NAME OF DRUG": "Bromhexine",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "8mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Bromhexine",
+   "DOSAGE FORM": "Elixir",
+   "STRENGTHS": "4mg/5ml",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "230.00"
+ },
+ {
+   "NAME OF DRUG": "Cough Mixtures containing Codeine",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Cough Mixtures containing Guaphenesin",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Dextromethorphan hydrobromide",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "15mg/5ml",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Diphenyl hydramine Mixtures",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "",
+   "PRESENTATION": "",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Alpha tocopheryl acetate( Vitamin E)",
+   "DOSAGE FORM": "Capsules/ Tablet",
+   "STRENGTHS": "100mg",
+   "PRESENTATION": "Cap./Tab.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Alpha tocopheryl acetate( Vitamin E)",
+   "DOSAGE FORM": "Capsules/ Tablet",
+   "STRENGTHS": "1000 I.U",
+   "PRESENTATION": "Cap./Tab.",
+   "PRICE (N)": "25.00"
+ },
+ {
+   "NAME OF DRUG": "Ascorbic Acid",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "100mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "2.00"
+ },
+ {
+   "NAME OF DRUG": "Ascorbic Acid",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "100mg/5ml, 200mg/5ml, 500mg/5ml",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Ascorbic Acid",
+   "DOSAGE FORM": "Effervescent tablets",
+   "STRENGTHS": "1g",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "750.00"
+ },
+ {
+   "NAME OF DRUG": "Cyanocobalamin (B12)",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "0.25mg in 1ml, 1mg/ml",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Cyanocobalamin (B12)",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "0.05 mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Ergocalciferol (Vit. D)",
+   "DOSAGE FORM": "Tablets, capsules",
+   "STRENGTHS": "0.25mg, 1.25mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "Folic acid",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "5 mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "3.00"
+ },
+ {
+   "NAME OF DRUG": "Multivitamin",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Multivitamin",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "",
+   "PRESENTATION": "Caps.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Multivitamin",
+   "DOSAGE FORM": "Drops",
+   "STRENGTHS": "",
+   "PRESENTATION": "10mls",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Pyridoxine (Vitamin B6)",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "10,20,50, mg  (HCL)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Retinol (Vitamin A)",
+   "DOSAGE FORM": "Tablets/Capsules",
+   "STRENGTHS": "1.5mg, 7.5mg , 15mg (5 000,25 000, 50 000 units)\nrespectively.",
+   "PRESENTATION": "Caps.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Retinol (Vitamin A)",
+   "DOSAGE FORM": "Tablets/Capsules",
+   "STRENGTHS": "10000iu(5.5mg)/5ml",
+   "PRESENTATION": "Caps.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Retinol (Vitamin A)",
+   "DOSAGE FORM": "Syrup/Emulsion",
+   "STRENGTHS": "",
+   "PRESENTATION": "60mls",
+   "PRICE (N)": "300.00"
+ },
+ {
+   "NAME OF DRUG": "Retinol (Vitamin A)",
+   "DOSAGE FORM": "Syrup/Emulsion",
+   "STRENGTHS": "",
+   "PRESENTATION": "200mls",
+   "PRICE (N)": "310.00"
+ },
+ {
+   "NAME OF DRUG": "Riboflavine (Vitamin B2)",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "5mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Thiamine (Vitamin B1)",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "25, 50mg (HCL)",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Vitamin  B Complex",
+   "DOSAGE FORM": "Tablets/Capsules",
+   "STRENGTHS": "",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "2.00"
+ },
+ {
+   "NAME OF DRUG": "Vitamin  B Complex",
+   "DOSAGE FORM": "Syrup",
+   "STRENGTHS": "",
+   "PRESENTATION": "100mls",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Vitamin  B Complex",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "",
+   "PRESENTATION": "Vial",
+   "PRICE (N)": "80.00"
+ },
+ {
+   "NAME OF DRUG": "Vitamins B1+B6+B12",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "100mg+200mg+200mcg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Vitamins B1+B6+B12",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "100mg+100mg+1000mcg",
+   "PRESENTATION": "Amp.",
+   "PRICE (N)": "200.00"
+ },
+ {
+   "NAME OF DRUG": "Yeast BPC",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "300mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "2.00"
+ },
+ {
+   "NAME OF DRUG": "Calcium Gluconate",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "600mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "3.00"
+ },
+ {
+   "NAME OF DRUG": "Calcium Lactate",
+   "DOSAGE FORM": "Tablets",
+   "STRENGTHS": "300mg",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "5.00"
+ },
+ {
+   "NAME OF DRUG": "Fluorouracil (5FU)",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "500mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "500.00"
+ },
+ {
+   "NAME OF DRUG": "Doxorubicin",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "50mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "4,000.00"
+ },
+ {
+   "NAME OF DRUG": "Bicalutamide",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "50mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "5,500.00"
+ },
+ {
+   "NAME OF DRUG": "Cisplatinium",
+   "DOSAGE FORM": "",
+   "STRENGTHS": "50mg",
+   "PRESENTATION": "",
+   "PRICE (N)": "3,000.00"
+ },
+ {
+   "NAME OF DRUG": "Cyclophosphamides",
+   "DOSAGE FORM": "Tablet/ Injection",
+   "STRENGTHS": "500mg",
+   "PRESENTATION": "vial",
+   "PRICE (N)": "1,000.00"
+ },
+ {
+   "NAME OF DRUG": "Docetaxel",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "80mg",
+   "PRESENTATION": "vial",
+   "PRICE (N)": "55,000.00"
+ },
+ {
+   "NAME OF DRUG": "Epirubicin",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "50mg",
+   "PRESENTATION": "vial",
+   "PRICE (N)": "8,500.00"
+ },
+ {
+   "NAME OF DRUG": "Gemcitabine",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "1gm",
+   "PRESENTATION": "vial",
+   "PRICE (N)": "16,000.00"
+ },
+ {
+   "NAME OF DRUG": "Granisetron",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "3mg",
+   "PRESENTATION": "vial",
+   "PRICE (N)": "3,000.00"
+ },
+ {
+   "NAME OF DRUG": "Leucovorin",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "50mg",
+   "PRESENTATION": "vial",
+   "PRICE (N)": "1,500.00"
+ },
+ {
+   "NAME OF DRUG": "Ondansetron",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "8mg",
+   "PRESENTATION": "vial",
+   "PRICE (N)": "2,000.00"
+ },
+ {
+   "NAME OF DRUG": "Ondansetron",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "4mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Oxaliplatin",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "100mg",
+   "PRESENTATION": "vial",
+   "PRICE (N)": "40,000.00"
+ },
+ {
+   "NAME OF DRUG": "Paclitaxel",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "100mg",
+   "PRESENTATION": "vial",
+   "PRICE (N)": "20,000.00"
+ },
+ {
+   "NAME OF DRUG": "Tamoxifen",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "20mg",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "1,000.00"
+ },
+ {
+   "NAME OF DRUG": "Vincristine",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "2mg",
+   "PRESENTATION": "Ampoule",
+   "PRICE (N)": "4,500.00"
+ },
+ {
+   "NAME OF DRUG": "Xeloda",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "1 pack",
+   "PRESENTATION": "Tab",
+   "PRICE (N)": "50,000.00"
+ },
+ {
+   "NAME OF DRUG": "Zoladex Inj",
+   "DOSAGE FORM": "Injection",
+   "STRENGTHS": "3.6mg",
+   "PRESENTATION": "Prefilled syringe",
+   "PRICE (N)": "24,000.00"
+ },
+ {
+   "NAME OF DRUG": "Zoledronic acid",
+   "DOSAGE FORM": "Solution",
+   "STRENGTHS": "5mg/100ml",
+   "PRESENTATION": "Solution",
+   "PRICE (N)": "20,000.00"
+ },
+ {
+   "NAME OF DRUG": "Trypsin + Chymotrypsin",
+   "DOSAGE FORM": "Tablet",
+   "STRENGTHS": "Trypsin 50,000 Armour units + Chymotrypsin 50000\nArmour units",
+   "PRESENTATION": "Tab.",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Blood giving set",
+   "DOSAGE FORM": "Unit",
+   "STRENGTHS": "Unit",
+   "PRESENTATION": "Unit",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Chromic  catgut",
+   "DOSAGE FORM": "Size",
+   "STRENGTHS": "All sizes",
+   "PRESENTATION": "Unit",
+   "PRICE (N)": "250.00"
+ },
+ {
+   "NAME OF DRUG": "Cotton wool",
+   "DOSAGE FORM": "Roll",
+   "STRENGTHS": "All sizes",
+   "PRESENTATION": "Unit",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Crepe bandage",
+   "DOSAGE FORM": "Roll",
+   "STRENGTHS": "All sizes",
+   "PRESENTATION": "Unit",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Folleys Catether",
+   "DOSAGE FORM": "Size",
+   "STRENGTHS": "All sizes",
+   "PRESENTATION": "Unit",
+   "PRICE (N)": "150.00"
+ },
+ {
+   "NAME OF DRUG": "Infusion set",
+   "DOSAGE FORM": "Unit",
+   "STRENGTHS": "Unit",
+   "PRESENTATION": "Unit",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "IV Cannula",
+   "DOSAGE FORM": "Size",
+   "STRENGTHS": "14G,16G,18G,20G-23G,25G",
+   "PRESENTATION": "Unit",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Mucus extractor",
+   "DOSAGE FORM": "Size",
+   "STRENGTHS": "All sizes",
+   "PRESENTATION": "Unit",
+   "PRICE (N)": "130.00"
+ },
+ {
+   "NAME OF DRUG": "Needle",
+   "DOSAGE FORM": "Unit",
+   "STRENGTHS": "Unit",
+   "PRESENTATION": "Unit",
+   "PRICE (N)": "10.00"
+ },
+ {
+   "NAME OF DRUG": "NG Tube",
+   "DOSAGE FORM": "Size",
+   "STRENGTHS": "All sizes",
+   "PRESENTATION": "Unit",
+   "PRICE (N)": "100.00"
+ },
+ {
+   "NAME OF DRUG": "Nylon",
+   "DOSAGE FORM": "Size",
+   "STRENGTHS": "All sizes",
+   "PRESENTATION": "Unit",
+   "PRICE (N)": "250.00"
+ },
+ {
+   "NAME OF DRUG": "plaster",
+   "DOSAGE FORM": "Roll",
+   "STRENGTHS": "All sizes",
+   "PRESENTATION": "Unit",
+   "PRICE (N)": "250.00"
+ },
+ {
+   "NAME OF DRUG": "Scalp vein needle",
+   "DOSAGE FORM": "Size",
+   "STRENGTHS": "20G,21G,22G,23G,25G",
+   "PRESENTATION": "Unit",
+   "PRICE (N)": "50.00"
+ },
+ {
+   "NAME OF DRUG": "Soluset",
+   "DOSAGE FORM": "Size",
+   "STRENGTHS": "All sizes",
+   "PRESENTATION": "Unit",
+   "PRICE (N)": "1,400.00"
+ },
+ {
+   "NAME OF DRUG": "Surgical blade",
+   "DOSAGE FORM": "Size",
+   "STRENGTHS": "All sizes",
+   "PRESENTATION": "Unit",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Surgical Gloves",
+   "DOSAGE FORM": "Size",
+   "STRENGTHS": "All sizes",
+   "PRESENTATION": "Unit",
+   "PRICE (N)": "70.00"
+ },
+ {
+   "NAME OF DRUG": "Syringe/Needle",
+   "DOSAGE FORM": "Unit",
+   "STRENGTHS": "2ml",
+   "PRESENTATION": "Unit",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Syringe/Needle",
+   "DOSAGE FORM": "Unit",
+   "STRENGTHS": "5ml",
+   "PRESENTATION": "Unit",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Syringe/Needle",
+   "DOSAGE FORM": "Unit",
+   "STRENGTHS": "10ml",
+   "PRESENTATION": "Unit",
+   "PRICE (N)": "20.00"
+ },
+ {
+   "NAME OF DRUG": "Syringe/Needle",
+   "DOSAGE FORM": "Unit",
+   "STRENGTHS": "20ml",
+   "PRESENTATION": "Unit",
+   "PRICE (N)": "40.00"
+ },
+ {
+   "NAME OF DRUG": "Urine Bag",
+   "DOSAGE FORM": "Size",
+   "STRENGTHS": "All sizes",
+   "PRESENTATION": "Unit",
+   "PRICE (N)": "200.00"
+ }
+]

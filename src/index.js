@@ -1,6 +1,7 @@
 require('dotenv').config();
 const { log, color } = require('./utils/logger');
 const db = require('./database/models');
+const ffsJob = require('./cronjobs/ffs/index');
 import server from './server';
 
 const PORT = process.env.PORT || 3000;
@@ -11,6 +12,9 @@ dbconnection
   .authenticate()
   .then(async () => {
     log('connected to', color.yellow, env, color.blue, 'database');
+    // start cron job(s);
+    ffsJob.start();
+
     server.server.listen(PORT, function () {
       const { address, port } = this.address();
       const url = `http://${address === '::' ? 'localhost' : address}:${port}`;

@@ -64,7 +64,7 @@ class RefcodeSample {
 
   getOneVerified({
     enrollee = _random(this.enrollees),
-    dateVerified = months.setPast(randInt(0, 1)),
+    dateVerified = months.setPast(randInt(0, 2)),
     claimsVerifierId = _random(this.userIds),
   }) {
     return {

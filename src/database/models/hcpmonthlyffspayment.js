@@ -1,6 +1,6 @@
 'use strict';
 
-const { days, months } = require('../../utils/timers');
+const { firstDayOfLastMonth } = require('../../utils/timers');
 
 module.exports = (sequelize, DataTypes) => {
   const HcpMonthlyFFSPayment = sequelize.define(
@@ -47,6 +47,12 @@ module.exports = (sequelize, DataTypes) => {
       auditRequestDate: {
         type: DataTypes.DATE,
       },
+      rrr: {
+        type: DataTypes.STRING,
+      },
+      tsaCharge: {
+        type: DataTypes.DOUBLE,
+      },
       selectedForPayment: {
         type: DataTypes.VIRTUAL,
         get() {
@@ -56,8 +62,9 @@ module.exports = (sequelize, DataTypes) => {
       isOverdue: {
         type: DataTypes.VIRTUAL,
         get() {
-          const currentMonth = months.firstDay(days.today);
-          return this.earliestClaimsVerificationDate < new Date(currentMonth);
+          return (
+            this.earliestClaimsVerificationDate < new Date(firstDayOfLastMonth)
+          );
         },
       },
     },
@@ -75,14 +82,31 @@ module.exports = (sequelize, DataTypes) => {
   };
   HcpMonthlyFFSPayment.updateCurrentMonthRecords = async function (
     records,
-    mfpId,
-    t
+    mfpId
   ) {
-    await this.destroy({ where: { mfpId }, transaction: t });
-    await this.bulkCreate(
-      records.map((row) => ({ ...row, mfpId })),
-      { transaction: t }
-    );
+    const hcpIds = records.map(({ hcpId }) => hcpId);
+    const existingData = await this.findAll({
+      where: { mfpId, hcpId: hcpIds },
+    });
+    if (existingData.length > 0) {
+      // update existing records
+      existingData.forEach((hcpData) => {
+        const record = records.find(
+          ({ hcpId }) => Number(hcpId) === Number(hcpData.hcpId)
+        );
+        hcpData.update(
+          {
+            amount: record.amount,
+            totalClaims: record.totalClaims,
+          },
+          { where: { mfpId, hcpId: record.hcpId } }
+        );
+      });
+    } else {
+      // create new records
+      this.bulkCreate(records.map((row) => ({ ...row, mfpId })));
+    }
+
     return true;
   };
 

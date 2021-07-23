@@ -79,3 +79,8 @@ export const SERVICE_STATUS_CODE = {
   RETIRED: 'R',
   AD: 'AD',
 };
+
+export const PAY_ACTIONS = {
+  PAY: 'pay',
+  CANCEL_PAY: 'cancel pay',
+};

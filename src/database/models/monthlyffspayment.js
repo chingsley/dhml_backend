@@ -1,6 +1,7 @@
 'use strict';
 
 const { AUDIT_STATUS } = require('../../shared/constants/lists.constants');
+const { rejectIf } = require('../../shared/helpers');
 const { moment, days, months } = require('../../utils/timers');
 
 module.exports = (sequelize, DataTypes) => {
@@ -17,16 +18,20 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: false,
       },
-      totalClaims: {
+      totalActualClaims: {
         type: DataTypes.INTEGER,
-        allowNull: false,
       },
-      actualAmount: {
-        type: DataTypes.DECIMAL,
-        allowNull: false,
+      totalSelectedClaims: {
+        type: DataTypes.INTEGER,
       },
-      selectedAmount: {
+      totalActualAmt: {
         type: DataTypes.DECIMAL,
+      },
+      totalSelectedAmt: {
+        type: DataTypes.DECIMAL,
+      },
+      auditRequestDate: {
+        type: DataTypes.DATE,
       },
       dateAudited: {
         type: DataTypes.DATE,
@@ -50,6 +55,21 @@ module.exports = (sequelize, DataTypes) => {
           return moment(this.month).format('MMMM YYYY');
         },
       },
+      isCurrentMonth: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return (
+            moment(this.month).clone().startOf('month').format('YYYY-MM-DD') ===
+            moment().clone().startOf('month').format('YYYY-MM-DD')
+          );
+        },
+      },
+      readyForAudit: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return this.auditRequestDate !== null;
+        },
+      },
       isApproved: {
         type: DataTypes.VIRTUAL,
         get() {
@@ -71,30 +91,59 @@ module.exports = (sequelize, DataTypes) => {
       as: 'hcpMonthlyFFSPayments',
     });
   };
-  MonthlyFFSPayment.updateCurrentMonthRecord = async function (totals, t) {
+  MonthlyFFSPayment.updateCurrentMonthRecord = async function (totals) {
     const currentMonth = months.firstDay(days.today);
     let ffsSumForCurrentMonth = await this.findOne({
       where: { month: new Date(currentMonth) },
     });
     if (ffsSumForCurrentMonth) {
-      await ffsSumForCurrentMonth.update(
-        {
-          actualAmount: totals.amount,
-          totalClaims: totals.claims,
-        },
-        { transaction: t }
-      );
+      await ffsSumForCurrentMonth.update({
+        totalActualAmt: totals.amount,
+        totalActualClaims: totals.claims,
+      });
     } else {
-      ffsSumForCurrentMonth = await this.create(
-        {
-          month: currentMonth,
-          actualAmount: totals.amount,
-          totalClaims: totals.claims,
-        },
-        { transaction: t }
-      );
+      ffsSumForCurrentMonth = await this.create({
+        month: currentMonth,
+        totalActualAmt: totals.amount,
+        totalActualClaims: totals.claims,
+      });
     }
     return ffsSumForCurrentMonth;
+  };
+  MonthlyFFSPayment.prototype.rejectIfNotReadyForAudit = function () {
+    rejectIf(this.auditRequestDate === null, {
+      withError: 'Record NOT ready for audit.',
+    });
+  };
+  MonthlyFFSPayment.prototype.rejectIfPaid = function () {
+    rejectIf(this.datePaid !== null, {
+      withError: 'Action not allowed. Record has been paid.',
+    });
+  };
+  MonthlyFFSPayment.prototype.rejectIfNotAuditPass = function () {
+    rejectIf(this.auditStatus !== AUDIT_STATUS.auditPass, {
+      withError: 'Action not allowed. Record has NOT passed audit.',
+    });
+  };
+  MonthlyFFSPayment.prototype.rejectIfRecordHasPassedAudit = function () {
+    rejectIf(this.auditStatus === AUDIT_STATUS.auditPass, {
+      withError: 'Action not allowed. Record has passed audit.',
+    });
+  };
+  MonthlyFFSPayment.prototype.rejectIfNotApproved = function () {
+    rejectIf(this.dateApproved === null, {
+      withError: 'Action not allowed. Record has NOT been approved.',
+    });
+  };
+  MonthlyFFSPayment.prototype.rejectIfApproved = function () {
+    rejectIf(this.dateApproved !== null, {
+      withError: 'Action not allowed. Record has been approved.',
+    });
+  };
+  MonthlyFFSPayment.prototype.rejectCurrentMonth = function () {
+    rejectIf(this.isCurrentMonth, {
+      withError: 'Operation not allowed on current running FFS until month end',
+    });
   };
   return MonthlyFFSPayment;
 };
