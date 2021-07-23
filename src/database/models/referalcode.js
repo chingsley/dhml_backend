@@ -140,6 +140,9 @@ module.exports = (sequelize, DataTypes) => {
       claimsSupportingDocument: {
         type: DataTypes.TEXT,
       },
+      datePaid: {
+        type: DataTypes.DATE,
+      },
       status: {
         type: DataTypes.VIRTUAL,
         get() {

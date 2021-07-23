@@ -1,8 +1,8 @@
 import { days, moment, firstDayOfYear, months } from '../../utils/timers';
-
-export const CONTROL_HCPs = ['XX/0000/P', 'XX/0001/P', 'XX/0002/P']
-  .map((code) => `'${code}'`)
-  .join(', ');
+export const CONTROL_HCPs_ARRAY = ['XX/0000/P', 'XX/0001/P', 'XX/0002/P'];
+export const CONTROL_HCPs = CONTROL_HCPs_ARRAY.map((code) => `'${code}'`).join(
+  ', '
+);
 
 export function getPaginationParameters(reqQuery = {}) {
   const { page, pageSize } = reqQuery;
@@ -65,6 +65,7 @@ export function getClaimsFilters(reqQuery) {
     receivingHcpCode,
     date,
     isVerified = null,
+    operator = {},
   } = {
     ...reqQuery,
     date: reqQuery.date
@@ -72,6 +73,7 @@ export function getClaimsFilters(reqQuery) {
       : undefined,
   };
 
+  const { userType } = operator;
   const fallback = 'sub."id" IS NOT NULL';
   const generalSearch =
     searchItem &&
@@ -93,7 +95,7 @@ export function getClaimsFilters(reqQuery) {
   const filterByDate = `DATE_TRUNC('month', sub."claimsVerifiedOn") = '${months?.firstDay(
     date
   )}'`;
-  // const shouldFilterByVerifiedStatus = isVerified ?? false;
+
   const filterByVerifiedStatus = (isVerifiedStatus) =>
     isVerifiedStatus === true
       ? 'sub."claimsVerifiedOn" IS NOT NULL'
@@ -115,6 +117,9 @@ export function getClaimsFilters(reqQuery) {
   if (isVerified !== null) {
     const status = JSON.parse(String(isVerified).toLowerCase());
     searchQuery = searchQuery + ' AND ' + filterByVerifiedStatus(status);
+  }
+  if (userType?.toLowerCase() === 'hcp') {
+    searchQuery = searchQuery + ' AND ' + `rechcp.id = ${operator.id}`;
   }
   return { filter: searchQuery };
 }

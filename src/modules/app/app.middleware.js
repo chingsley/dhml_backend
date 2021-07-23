@@ -23,6 +23,8 @@ export default class AppMiddleware {
         specialtyId: uuidSchema,
         refcodeId: uuidSchema,
         claimId: uuidSchema,
+        mfpId: uuidSchema,
+        hcpmfpId: uuidSchema,
       });
       const { joiFormatted } = await validateSchema(
         paramsSchema,

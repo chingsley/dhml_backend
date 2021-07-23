@@ -13,3 +13,31 @@ ORDER BY "armOfService" ASC, month ASC
 ) monthly
 ${year ? `WHERE DATE_TRUNC('year', "month") = '${yearly(year)}'` : '--'}
 `;
+
+const ffsReports = (_, __, { date: year }) => {
+  const query = `
+SELECT *
+FROM
+(
+SELECT COALESCE(h."armOfService", 'CIVIL') "armOfService", mfp."month" "month", SUM(hmfp."totalClaims") claims, SUM(hmfp.amount) amount
+FROM  "HcpMonthlyFFSPayments" hmfp
+JOIN "HealthCareProviders" h
+        ON hmfp."hcpId" = h.id
+        AND hmfp."auditRequestDate" IS NOT NULL
+JOIN "MonthlyFFSPayments" mfp
+		ON mfp.id = hmfp."mfpId"
+		AND mfp."datePaid" IS NOT NULL
+GROUP BY "armOfService", mfp."month"
+ORDER BY "armOfService" ASC, "month" ASC
+) monthly
+${year ? `WHERE DATE_TRUNC('year', "month") = '${yearly(year)}'` : '--'}
+	`;
+
+  return query;
+};
+
+const analysisScripts = {
+  ffsReports,
+};
+
+export default analysisScripts;

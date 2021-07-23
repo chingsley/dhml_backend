@@ -2,73 +2,66 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable(
-      'HealthCareProviders',
+      'FFSVouchers',
       {
         id: {
-          allowNull: false,
-          autoIncrement: true,
+          type: Sequelize.UUID,
           primaryKey: true,
-          type: Sequelize.INTEGER,
+          defaultValue: Sequelize.UUIDV4,
+          allowNull: false,
         },
-        code: {
-          type: Sequelize.STRING,
+        mfpId: {
+          type: Sequelize.UUID,
           allowNull: false,
           unique: true,
-        },
-        name: {
-          type: Sequelize.STRING,
-          allowNull: false,
-        },
-        category: {
-          type: Sequelize.STRING,
-          allowNull: false,
-        },
-        state: {
-          type: Sequelize.STRING,
-          allowNull: false,
-        },
-        status: {
-          type: Sequelize.STRING,
-          allowNull: false,
-        },
-        address: {
-          type: Sequelize.STRING,
-        },
-        email: {
-          type: Sequelize.STRING,
-          allowNull: false,
-        },
-        phoneNumber: {
-          type: Sequelize.STRING,
-          allowNull: false,
-        },
-        alternativePhoneNumber: {
-          type: Sequelize.STRING,
-        },
-        bank: {
-          type: Sequelize.STRING,
-          allowNull: false,
-        },
-        bankAddress: {
-          type: Sequelize.STRING,
-        },
-        accountNumber: {
-          type: Sequelize.STRING,
-          allowNull: false,
-        },
-        accountType: {
-          type: Sequelize.STRING,
-          allowNull: false,
-        },
-        roleId: {
-          type: Sequelize.INTEGER,
-          allowNull: false,
           references: {
-            model: 'Roles',
+            model: 'MonthlyFFSPayments',
             key: 'id',
           },
           onDelete: 'RESTRICT',
           onUpdate: 'CASCADE',
+        },
+        department: {
+          type: Sequelize.STRING,
+        },
+        acCode: {
+          type: Sequelize.STRING,
+        },
+        pvNo: {
+          type: Sequelize.STRING,
+        },
+        payee: {
+          type: Sequelize.STRING,
+        },
+        address: {
+          type: Sequelize.TEXT,
+        },
+        amountInWords: {
+          type: Sequelize.TEXT,
+        },
+        serviceDate: {
+          type: Sequelize.DATE,
+        },
+        serviceDescription: {
+          type: Sequelize.TEXT,
+        },
+        preparedBy: {
+          type: Sequelize.STRING,
+        },
+        preparerDesignation: {
+          type: Sequelize.STRING,
+        },
+        datePrepared: {
+          type: Sequelize.DATE,
+        },
+        authorizedBy: {
+          type: Sequelize.STRING,
+        },
+        authorizerDesignation: {
+          type: Sequelize.STRING,
+        },
+        dateAuthorized: {
+          type: Sequelize.DATE,
         },
         createdAt: {
           allowNull: false,
@@ -88,6 +81,6 @@ module.exports = {
   },
   // eslint-disable-next-line no-unused-vars
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('HealthCareProviders');
+    return queryInterface.dropTable('FFSVouchers');
   },
 };

@@ -13,6 +13,7 @@ import accountRoutes from '../../modules/account/account.routes';
 import devRoutes from '../../modules/dev/dev.routes';
 import specialtyRoutes from '../../modules/specialty/specialty.routes';
 import claimsRoutes from '../../modules/claims/claims.routes';
+import ffsRoutes from '../../modules/ffs/ffs.routes';
 
 const router = express.Router();
 
@@ -28,6 +29,7 @@ router.use('/stats', statsRoutes);
 router.use('/accounts', accountRoutes);
 router.use('/specialties', specialtyRoutes);
 router.use('/claims', claimsRoutes);
+router.use('/ffs', ffsRoutes);
 router.use('/devs', devRoutes);
 
 export default router;

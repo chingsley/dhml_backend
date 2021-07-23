@@ -17,11 +17,12 @@ import {
 const { log } = console;
 
 export default class EnrolleeService extends AppService {
-  constructor({ body, files, query, params }) {
-    super({ body, files, query, params });
+  constructor({ body, files, query, params, user: operator }) {
+    super({ body, files, query, params, operator });
     this.files = files;
     this.query = query;
     this.params = params;
+    this.operator = operator;
   }
   async registerNewEnrollee(enrolleeData) {
     const { enrolmentType } = enrolleeData;
@@ -164,6 +165,7 @@ export default class EnrolleeService extends AppService {
   }
 
   async getAllEnrollees() {
+    const { userType, id: hcpId } = this.operator;
     const { isVerified } = this.query;
     let orderBy;
     if (isVerified === 'true') {
@@ -184,6 +186,7 @@ export default class EnrolleeService extends AppService {
       where: {
         ...this.searchRecordsBy(enrolleeSearchableFields),
         ...this.exactMatch(['isVerified']),
+        ...(userType.toLowerCase() === 'hcp' ? { hcpId } : {}),
       },
       ...this.paginate(),
       order: orderBy,
@@ -196,11 +199,13 @@ export default class EnrolleeService extends AppService {
     });
   }
 
-  getById() {
-    return db.Enrollee.findAll({
+  async getById() {
+    const enrollee = await this.findOneRecord({
+      modelName: 'Enrollee',
       where: {
         id: this.params.enrolleeId,
       },
+      errorIfNotFound: `no Enrollee found for id ${this.params.enrolleeId}`,
       include: [
         {
           model: db.HealthCareProvider,
@@ -216,6 +221,15 @@ export default class EnrolleeService extends AppService {
         },
       ],
     });
+    this.rejectIf(
+      this.operator.userType === 'hcp' && enrollee.hcpId !== this.operator.id,
+      {
+        withError: 'Access Denied. AUTH004',
+        errorCode: 'AUTH004',
+        status: 401,
+      }
+    );
+    return enrollee;
   }
 
   async updateEnrolleeData() {

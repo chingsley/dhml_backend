@@ -42,4 +42,5 @@ module.exports = {
   nextMonth,
   firstDayOfYear,
   dateInWords,
+  firstDayOfLastMonth: months.firstDay(months.setPast(1)),
 };
