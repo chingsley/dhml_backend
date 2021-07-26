@@ -219,6 +219,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'enrolleeId',
       as: 'referalCodes',
     });
+    Enrollee.hasMany(models.Encounter, {
+      foreignKey: 'enrolleeId',
+      as: 'encounters',
+    });
   };
 
   Enrollee.prototype.reloadDetails = async function () {
