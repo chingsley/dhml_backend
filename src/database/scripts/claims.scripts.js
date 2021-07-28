@@ -52,7 +52,7 @@ SELECT h.id "hcpId", h.code "hcpCode", h.name "hcpName", h.state,
 FROM "ReferalCodes" r
 JOIN "Claims" c
   ON r.id = c."refcodeId"
-      AND r."datePaid" IS NULL
+      AND r."monthPaidFor" IS NULL
       AND DATE_TRUNC('month', r."claimsVerifiedOn") <= '${date}'
 JOIN "HealthCareProviders" h
   ON h.id = r."receivingHcpId"
@@ -70,14 +70,14 @@ const markPaidRefcodes = (__, ___, reqQuery = {}) => {
   const month = months.firstDay(date);
   const query = `
 UPDATE "ReferalCodes" r
-SET "datePaid" = NOW()
+SET "monthPaidFor" = '${month}'
 WHERE r.id IN
 (
 SELECT r.id
 FROM "ReferalCodes" r
 JOIN "Claims" c
     ON r.id = c."refcodeId"
-        AND r."datePaid" IS NULL
+        AND r."monthPaidFor" IS NULL
         AND DATE_TRUNC('month', r."claimsVerifiedOn") <= '${month}'
 WHERE r."receivingHcpId" IN (${hcpIds.join(', ')})
 )
@@ -91,14 +91,14 @@ const undoMarkedPaidRefcodes = (__, ___, reqQuery = {}) => {
   const month = months.firstDay(date);
   const query = `
 UPDATE "ReferalCodes" r
-SET "datePaid" = NULL
+SET "monthPaidFor" = NULL
 WHERE r.id IN
 (
 SELECT r.id
 FROM "ReferalCodes" r
 JOIN "Claims" c
     ON r.id = c."refcodeId"
-        AND r."datePaid" IS NOT NULL
+        AND r."monthPaidFor" IS NOT NULL
         AND DATE_TRUNC('month', r."claimsVerifiedOn") <= '${month}'
 WHERE r."receivingHcpId" IN (${hcpIds.join(', ')})
 )

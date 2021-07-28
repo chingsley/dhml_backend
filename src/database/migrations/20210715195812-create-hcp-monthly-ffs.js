@@ -12,6 +12,7 @@ module.exports = {
         },
         mfpId: {
           type: Sequelize.UUID,
+          allowNull: false,
           references: {
             model: 'MonthlyFFSPayments',
             key: 'id',

@@ -16,7 +16,7 @@ async function updateFFSAccountRecords() {
     );
     await db.HcpMonthlyFFSPayment.updateCurrentMonthRecords(rows, mfpId, t);
     await t.commit();
-    log('', '---@ cronjob started @---');
+    log('', '---@ cronjob done @---');
   } catch (error) {
     await t.rollback();
     log('CRON ERROR: cronjobs/ffs:', error);
@@ -25,7 +25,7 @@ async function updateFFSAccountRecords() {
 
 async function fetchFFSMonthlyPaymentByHcps() {
   const scriptFunc = claimsScripts.getClaimsByHcp;
-  const scriptRunner = new ScriptRunner(db);
+  const scriptRunner = new ScriptRunner(db.sequelize);
   const rows = await scriptRunner.execute(scriptFunc, {});
   const totals = rows.reduce(
     (acc, record) => {
@@ -46,11 +46,15 @@ module.exports = {
     cron.schedule(
       SCHEDULES.FFS,
       () => {
+        log('', '---@ cronjob started @---');
+        updateFFSAccountRecords(); // TOBE DELETED
+
         const today = new Date();
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
+
+        // run job only on the last day of the month
         if (today.getMonth() !== tomorrow.getMonth()) {
-          // run job only on the last day of the month
           updateFFSAccountRecords();
         }
       },
