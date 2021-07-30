@@ -1,10 +1,7 @@
 'use strict';
-import { QueryTypes } from 'sequelize';
-import claimsScripts from '../scripts/claims.scripts';
 const { AUDIT_STATUS } = require('../../shared/constants/lists.constants');
 const { rejectIf } = require('../../shared/helpers');
-const { moment, days, nextMonth, months } = require('../../utils/timers');
-import { v4 as uuidv4 } from 'uuid';
+const { moment, days, months } = require('../../utils/timers');
 
 module.exports = (sequelize, DataTypes) => {
   const MonthlyFFSPayment = sequelize.define(
@@ -92,82 +89,6 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'mfpId',
       as: 'hcpMonthlyFFSPayments',
     });
-  };
-  MonthlyFFSPayment.runScript = async function (queryFunction, reqQuery, key) {
-    const { dialect, database } = sequelize.options;
-    const rows = await sequelize.query(
-      queryFunction(dialect, database, reqQuery),
-      {
-        type: QueryTypes.SELECT,
-      }
-    );
-    if (key) {
-      return { [key]: rows };
-    } else {
-      return rows;
-    }
-  };
-  MonthlyFFSPayment.initializeRecords = async function () {
-    const dates = await this.$getMonthsFromFirstVerifiedClaimToNow();
-
-    const script = claimsScripts.getClaimsByHcp;
-    const bulkQuery = dates.map((date) =>
-      this.runScript(script, { date }, date)
-    );
-    const results = await Promise.all(bulkQuery);
-
-    const { monthlyFFSPayments, hcpMontlyFFSPamyments } =
-      this.$parseClaimsByHcpQueryResult(results);
-
-    await this.bulkCreate(monthlyFFSPayments);
-    this.sequelize.models.HcpMonthlyFFSPayment.bulkCreate(
-      hcpMontlyFFSPamyments
-    );
-  };
-
-  MonthlyFFSPayment.$getMonthsFromFirstVerifiedClaimToNow = async function () {
-    const refcodeWithEarliestVerifiedClaims =
-      await this.sequelize.models.ReferalCode.getRefcodeWithEarliestVerifiedClaims();
-    const startMonth = months.firstDay(
-      refcodeWithEarliestVerifiedClaims.claimsVerifiedOn
-    );
-    const currentMonth = months.currentMonth;
-    const dates = [startMonth];
-    while (
-      new Date(nextMonth(dates)).getTime() <= new Date(currentMonth).getTime()
-    ) {
-      dates.push(nextMonth(dates));
-    }
-    return dates;
-  };
-
-  MonthlyFFSPayment.$parseClaimsByHcpQueryResult = function (results) {
-    const monthlyFFSPayments = [];
-    const hcpMontlyFFSPamyments = [];
-    results.map((result) => {
-      const [[month, rows]] = Object.entries(result);
-      const totals = this.$computeTotals(rows);
-      const mfpId = uuidv4();
-      monthlyFFSPayments.push({
-        id: mfpId,
-        month,
-        totalActualAmt: totals.amount,
-        totalActualClaims: totals.claims,
-      });
-      rows.map((row) => hcpMontlyFFSPamyments.push({ ...row, mfpId }));
-    });
-    return { monthlyFFSPayments, hcpMontlyFFSPamyments };
-  };
-
-  MonthlyFFSPayment.$computeTotals = function (rows) {
-    return rows.reduce(
-      (acc, record) => {
-        acc.amount += Number(record.amount);
-        acc.claims += Number(record.totalClaims);
-        return acc;
-      },
-      { amount: 0, claims: 0 }
-    );
   };
 
   MonthlyFFSPayment.updateCurrentMonthRecord = async function (totals) {
