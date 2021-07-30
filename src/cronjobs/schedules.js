@@ -1,3 +1,3 @@
 module.exports = {
-  FFS: '55 16 * * *', // 04:30PM EVERY DAY,
+  FFS: '01 22 * * *', // 10:01PM EVERY DAY,
 };

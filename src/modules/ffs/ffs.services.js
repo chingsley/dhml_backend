@@ -23,7 +23,6 @@ export default class FFSService extends AppService {
   }
 
   async getFFSMonthlyPaymentsSvc() {
-    // await db.MonthlyFFSPayment.initializeRecords();
     const { rows, totals } = await this.$fetchFFSMonthlyPaymentByHcps();
     const { id: mfpId } = await db.MonthlyFFSPayment.updateCurrentMonthRecord(
       totals
