@@ -35,7 +35,7 @@ module.exports = {
 
 async function fetchFFSMonthlyPaymentByHcps(date) {
   const script = claimsScripts.getClaimsByHcp;
-  const scriptRunner = new ScriptRunner(db);
+  const scriptRunner = new ScriptRunner(db.sequelize);
   const rows = await scriptRunner.execute(script, { date });
   const totals = rows.reduce(
     (acc, record) => {

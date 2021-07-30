@@ -8,12 +8,12 @@ const ffsNhisReport = (__, ___, reqQuery = {}) => {
   const query = `
 SELECT  h.code "hcpCode", h.name "hcpName",
 		e."firstName"||' '||e.surname "beneficiary",
-		r.code "authorization", r."claimsVerifiedOn", DATE_TRUNC('month', r."datePaid") "datePaid", SUM(c.unit * c."pricePerUnit") as amount
+		r.code "authorization", r."claimsVerifiedOn", DATE_TRUNC('month', r."monthPaidFor") "monthPaidFor", SUM(c.unit * c."pricePerUnit") as amount
 FROM "ReferalCodes" r
 JOIN "Claims" c
   ON r.id = c."refcodeId"
-      AND r."datePaid" IS NOT NULL
-      AND DATE_TRUNC('month', r."claimsVerifiedOn") <= '${month}'
+      AND r."monthPaidFor" IS NOT NULL
+      AND DATE_TRUNC('month', r."monthPaidFor") = '${month}'
 JOIN "Enrollees" e
   ON e.id = r."enrolleeId"
 JOIN "HealthCareProviders" h
