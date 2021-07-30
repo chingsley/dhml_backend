@@ -1,13 +1,13 @@
 import { QueryTypes } from 'sequelize';
 
 class ScriptRunner {
-  constructor(db) {
-    this.db = db;
+  constructor(sequelize) {
+    this.sequelize = sequelize;
   }
 
   async execute(queryFunction, reqQuery, key) {
-    const { dialect, database } = this.db.sequelize.options;
-    const rows = await this.db.sequelize.query(
+    const { dialect, database } = this.sequelize.options;
+    const rows = await this.sequelize.query(
       queryFunction(dialect, database, reqQuery),
       {
         type: QueryTypes.SELECT,

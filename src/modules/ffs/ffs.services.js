@@ -23,6 +23,7 @@ export default class FFSService extends AppService {
   }
 
   async getFFSMonthlyPaymentsSvc() {
+    // await db.MonthlyFFSPayment.initializeRecords();
     const { rows, totals } = await this.$fetchFFSMonthlyPaymentByHcps();
     const { id: mfpId } = await db.MonthlyFFSPayment.updateCurrentMonthRecord(
       totals
@@ -38,6 +39,21 @@ export default class FFSService extends AppService {
       ...this.paginate(),
     });
   }
+
+  async $fetchFFSMonthlyPaymentByHcps() {
+    const script = claimsScripts.getClaimsByHcp;
+    const rows = await this.executeQuery(script, {});
+    const totals = rows.reduce(
+      (acc, record) => {
+        acc.amount += Number(record.amount);
+        acc.claims += Number(record.totalClaims);
+        return acc;
+      },
+      { amount: 0, claims: 0 }
+    );
+    return { rows, totals };
+  }
+
   async getFFSMonthlyHcpBreakdownSvc() {
     const { mfpId } = this.params;
     const monthlySum = await this.findOneRecord({
@@ -229,20 +245,6 @@ export default class FFSService extends AppService {
       ...this.query,
     });
     return { count, rows };
-  }
-
-  async $fetchFFSMonthlyPaymentByHcps() {
-    const script = claimsScripts.getClaimsByHcp;
-    const rows = await this.executeQuery(script, {});
-    const totals = rows.reduce(
-      (acc, record) => {
-        acc.amount += Number(record.amount);
-        acc.claims += Number(record.totalClaims);
-        return acc;
-      },
-      { amount: 0, claims: 0 }
-    );
-    return { rows, totals };
   }
 
   async analyseFFSByArmOfService() {

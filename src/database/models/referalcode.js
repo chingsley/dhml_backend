@@ -1,6 +1,6 @@
 /* eslint-disable indent */
 'use strict';
-
+const { Op } = require('sequelize');
 const { rejectIf } = require('../../shared/helpers');
 const { isExpired } = require('../../utils/helpers');
 
@@ -140,7 +140,7 @@ module.exports = (sequelize, DataTypes) => {
       claimsSupportingDocument: {
         type: DataTypes.TEXT,
       },
-      datePaid: {
+      monthPaidFor: {
         type: DataTypes.DATE,
       },
       status: {
@@ -334,6 +334,14 @@ module.exports = (sequelize, DataTypes) => {
     if (arr.includes('claimed')) this.rejectIfCodeIsClaimed();
     if (arr.includes('declined')) this.rejectIfCodeIsDeclined();
     if (arr.includes('approved')) this.rejectIfCodeIsApproved();
+  };
+  ReferalCode.getRefcodeWithEarliestVerifiedClaims = async function () {
+    const [firstVerifiedEnrollee] = await this.findAll({
+      where: { claimsVerifiedOn: { [Op.not]: null } },
+      order: [['claimsVerifiedOn', 'ASC']],
+      limit: 1,
+    });
+    return firstVerifiedEnrollee;
   };
   return ReferalCode;
 };
