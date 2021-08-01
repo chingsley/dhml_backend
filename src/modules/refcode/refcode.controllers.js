@@ -1,22 +1,11 @@
 import Response from '../../utils/Response';
-import EnrolleeService from '../enrollee/enrollee.service';
 import RefcodeService from './refcode.services';
 
 export default class RefcodeController {
   static async createRequestForRefcodeCTRL(req, res, next) {
     try {
-      const { enrolleeIdNo, ...newEnrolleeData } = req.body;
-
       const refcodeService = new RefcodeService(req);
-      const enrolleeService = new EnrolleeService(req);
-      let enrollee;
-      if (!enrolleeIdNo) {
-        enrollee = await enrolleeService.registerNewEnrollee(newEnrolleeData);
-        req.body.enrolleeIdNo = enrollee.enrolleeIdNo;
-      }
-      const data = await refcodeService.createRequestForReferalCodeSVC(
-        req.body
-      );
+      const data = await refcodeService.createRequestForReferalCodeSVC();
       return res.status(201).json({
         message: 'Request for Referral Code has been successfully sent',
         data,

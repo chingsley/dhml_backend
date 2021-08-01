@@ -21,9 +21,9 @@ export default class RefcodeService extends AppService {
     this.ReferalCodeModel = db.ReferalCode;
     this.operator = operator;
   }
-  async createRequestForReferalCodeSVC(payload) {
+  async createRequestForReferalCodeSVC() {
     const { enrolleeIdNo, referringHcpId, receivingHcpId, specialtyId } =
-      payload;
+      this.body;
     await this.validateId('HealthCareProvider', referringHcpId);
     const receivingHcp = await this.validateId(
       'HealthCareProvider',
