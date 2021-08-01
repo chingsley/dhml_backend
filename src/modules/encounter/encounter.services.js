@@ -2,6 +2,7 @@
 
 import AppService from '../app/app.service';
 import db from '../../database/models';
+import encounterSrcipts from '../../database/scripts/encounter.scripts';
 
 export default class EncounterService extends AppService {
   constructor({ body, files, query, params, user: operator }) {
@@ -32,5 +33,14 @@ export default class EncounterService extends AppService {
       isRepeatVisit,
       isReferalVisit,
     });
+  }
+
+  async getEncounterStatsSVC() {
+    const promises = Object.entries(encounterSrcipts).map(([key, queryFnc]) =>
+      this.executeQuery(queryFnc, this.query, key)
+    );
+    const result = await Promise.all(promises);
+    // console.log(result);
+    return result;
   }
 }

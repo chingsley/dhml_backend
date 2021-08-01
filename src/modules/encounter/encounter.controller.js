@@ -35,4 +35,17 @@ export default class EncounterController {
       Response.handleError('recordEncounterCTRL', error, req, res, next);
     }
   }
+
+  static async getEncounterStats(req, res, next) {
+    try {
+      const encounterService = new EncounterService(req);
+      const data = await encounterService.getEncounterStatsSVC();
+      return res.status(201).json({
+        message: 'Successful!',
+        data,
+      });
+    } catch (error) {
+      Response.handleError('getEncounterStats', error, req, res, next);
+    }
+  }
 }
