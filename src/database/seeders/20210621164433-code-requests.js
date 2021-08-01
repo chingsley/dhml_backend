@@ -2,14 +2,18 @@ const dotenv = require('dotenv');
 dotenv.config();
 const RefcodeSample = require('../../shared/samples/refcodeRequest.samples');
 const db = require('../../database/models');
-const IS_DEV = !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
+const SKIP_FFS_SEED = process.env.SKIP_FFS_SEED;
 const { log } = console;
 
 module.exports = {
   // eslint-disable-next-line no-unused-vars
   up: async (queryInterface, Sequelize) => {
     try {
-      if (IS_DEV) {
+      if (SKIP_FFS_SEED === 'true') {
+        return new Promise((resolve, _) => {
+          resolve();
+        });
+      } else {
         const hcpSpecialties = await db.HcpSpecialty.findAll();
         const specialties = await db.Specialty.findAll();
         const enrollees = await db.Enrollee.findAll();
@@ -32,10 +36,6 @@ module.exports = {
         });
         // const codeRequests = await generateSampleRequestForRefcodesForSeed(1000);
         await queryInterface.bulkInsert('ReferalCodes', codeRequests);
-      } else {
-        return new Promise((resolve, _) => {
-          resolve();
-        });
       }
     } catch (e) {
       log(e);
