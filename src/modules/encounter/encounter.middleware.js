@@ -9,13 +9,12 @@ export default class EncounterMiddleware {
   static async validateEncounter(req, res, next) {
     try {
       const { enrolleeIdNo, enrolmentType } = req.body;
-      const isReturningVisit = !!enrolleeIdNo;
-      const schema = isReturningVisit
+      const schema = enrolleeIdNo
         ? schemaReturningEncounter
         : schemaFristTimeEncounter(enrolmentType);
       const { joiFormatted } = await validateSchema(schema, req.body);
       req.body = joiFormatted;
-      req.body.isReturningVisit = isReturningVisit;
+      req.body.isRepeatVisit = !!enrolleeIdNo;
       return next();
     } catch (error) {
       Response.handleError('validateRequestForRefcode', error, req, res, next);
