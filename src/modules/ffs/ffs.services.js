@@ -79,6 +79,11 @@ export default class FFSService extends AppService {
       totalActualClaims: monthlySum.totalActualClaims,
       totalSelectedAmt: monthlySum.totalSelectedAmt,
       totalSelectedClaims: monthlySum.totalSelectedClaims,
+      status: {
+        isCurrentMonth: monthlySum.isCurrentMonth,
+        isApproved: monthlySum.isApproved,
+        isPaid: monthlySum.isPaid,
+      },
     };
   }
 

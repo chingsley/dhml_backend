@@ -30,7 +30,7 @@ router.use('/stats', statsRoutes);
 router.use('/accounts', accountRoutes);
 router.use('/specialties', specialtyRoutes);
 router.use('/claims', claimsRoutes);
-router.use('/encounter', encounterRoutes);
+router.use('/encounters', encounterRoutes);
 router.use('/ffs', ffsRoutes);
 router.use('/devs', devRoutes);
 

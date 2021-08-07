@@ -11,7 +11,7 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     const enrollees = await db.Enrollee.findAll({ attributes: ['id'] });
     const hcps = await db.HealthCareProvider.findAll({ attributes: ['id'] });
-    const encounters = Array.from(Array(1000000).keys()).map((_, index) => {
+    const encounters = Array.from(Array(1000000).keys()).map(() => {
       return {
         id: uuidv4(),
         enrolleeId: _random(enrollees).id,
@@ -21,7 +21,7 @@ module.exports = {
         prescription: faker.lorem.text(),
         isRepeatVisit: _random([true, false]),
         isReferalVisit: _random([true, false]),
-        createdAt: months.setPast(index % 12),
+        createdAt: months.setPast(randNum(0, 12)),
       };
     });
     return queryInterface.bulkInsert('Encounters', encounters);
