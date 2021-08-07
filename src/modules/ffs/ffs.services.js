@@ -23,7 +23,6 @@ export default class FFSService extends AppService {
   }
 
   async getFFSMonthlyPaymentsSvc() {
-    // await db.MonthlyFFSPayment.initializeRecords();
     const { rows, totals } = await this.$fetchFFSMonthlyPaymentByHcps();
     const { id: mfpId } = await db.MonthlyFFSPayment.updateCurrentMonthRecord(
       totals
@@ -80,6 +79,11 @@ export default class FFSService extends AppService {
       totalActualClaims: monthlySum.totalActualClaims,
       totalSelectedAmt: monthlySum.totalSelectedAmt,
       totalSelectedClaims: monthlySum.totalSelectedClaims,
+      status: {
+        isCurrentMonth: monthlySum.isCurrentMonth,
+        isApproved: monthlySum.isApproved,
+        isPaid: monthlySum.isPaid,
+      },
     };
   }
 

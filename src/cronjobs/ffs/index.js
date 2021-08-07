@@ -47,16 +47,24 @@ module.exports = {
       SCHEDULES.FFS,
       () => {
         log('', '---@ cronjob started @---');
-        updateFFSAccountRecords(); // TOBE DELETED
+        /**
+         * WE CALL 'updateFFSAccountRecords()' HERE TO RUN THE
+         * COMPUTATION ONCE EVERY DAY
+         */
+        updateFFSAccountRecords();
 
-        const today = new Date();
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-
-        // run job only on the last day of the month
-        if (today.getMonth() !== tomorrow.getMonth()) {
-          updateFFSAccountRecords();
-        }
+        /**
+         * BUT IF WE DECIDE TO RUN THE COMPUTATION ON THE LAST DAY OF EVERY
+         * MONTH, THEN WE WILL USE THE BLOCK OF CODE BELOW AND COMMENT OUT
+         *  THE CALL TO 'updateFFSAccountRecords()' ABOVE
+         */
+        // const today = new Date();
+        // const tomorrow = new Date();
+        // tomorrow.setDate(tomorrow.getDate() + 1);
+        // // run job only on the last day of the month
+        // if (today.getMonth() !== tomorrow.getMonth()) {
+        //   updateFFSAccountRecords();
+        // }
       },
       {
         timezone: AFRICA_LAGOS,

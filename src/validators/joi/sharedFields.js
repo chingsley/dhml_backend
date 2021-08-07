@@ -75,25 +75,6 @@ class SharedFields {
       nin: this.Joi.string().trim(),
     };
   }
-
-  refcodeRequestFields(validStates) {
-    return {
-      referringHcpId: this.Joi.number().min(1).required(),
-      receivingHcpId: this.Joi.number().min(1).required(),
-      reasonForReferral: this.Joi.string().trim().required(),
-      diagnosis: this.Joi.string().trim().required(),
-      clinicalFindings: this.Joi.string().trim().required(),
-      specialtyId: this.Joi.string()
-        .guid({
-          version: ['uuidv4', 'uuidv5'],
-        })
-        .required(),
-      stateOfGeneration: this.Joi.string()
-        .trim()
-        .lowercase()
-        .valid(...validStates),
-    };
-  }
 }
 
 export default SharedFields;

@@ -16,4 +16,6 @@ module.exports = {
   HCP: 'hcp',
   TIER_1_MEDICAL: 'tier 1 medical',
   TIER_2_MEDICAL: 'tier 2 medical',
+  HOD_PR_AND_M: 'hod pr and m',
+  SA: 'special assistant',
 };
