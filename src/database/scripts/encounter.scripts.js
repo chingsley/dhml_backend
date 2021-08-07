@@ -2,8 +2,7 @@ import { months } from '../../utils/timers';
 import { getPaginationParameters } from './helpers.scripts';
 
 const totalEncountersForMonth = (__, ___, reqQuery = {}) => {
-  const { date } = reqQuery;
-  const month = months.firstDay(date);
+  const month = months.firstDay(reqQuery.month);
   const query = `
   SELECT COUNT(*) "value" FROM "Encounters"
   WHERE DATE_TRUNC('month', "createdAt") = '${month}'
@@ -13,8 +12,7 @@ const totalEncountersForMonth = (__, ___, reqQuery = {}) => {
 };
 
 const avgEncounterPerHcpForMonth = (__, ___, reqQuery = {}) => {
-  const { date } = reqQuery;
-  const month = months.firstDay(date);
+  const month = months.firstDay(reqQuery.month);
   const query = `
   SELECT  (encounters.count::decimal / hcps.count::decimal) AS "value"
   FROM
@@ -33,8 +31,7 @@ const avgEncounterPerHcpForMonth = (__, ___, reqQuery = {}) => {
 };
 
 const totalReferalRateForMonth = (__, ___, reqQuery = {}) => {
-  const { date } = reqQuery;
-  const month = months.firstDay(date);
+  const month = months.firstDay(reqQuery.month);
   const query = `
   SELECT  (referals.count::decimal / total.count::decimal)*100 AS "value"
   FROM
@@ -55,8 +52,7 @@ const totalReferalRateForMonth = (__, ___, reqQuery = {}) => {
 };
 
 const averageCostOfEncounterForMonth = (__, ___, reqQuery = {}) => {
-  const { date } = reqQuery;
-  const month = months.firstDay(date);
+  const month = months.firstDay(reqQuery.month);
   const query = `
   SELECT AVG("cost") AS "value" FROM "Encounters"
   WHERE DATE_TRUNC('month', "createdAt") = '${month}'
@@ -66,8 +62,7 @@ const averageCostOfEncounterForMonth = (__, ___, reqQuery = {}) => {
 };
 
 const nhisReturnsForMonth = (__, ___, reqQuery = {}) => {
-  const { date } = reqQuery;
-  const month = months.firstDay(date);
+  const month = months.firstDay(reqQuery.month);
   const { limit, offset } = getPaginationParameters(reqQuery);
   const query = `
   SELECT e."hcpId" "hcpId", h.code, h.name, 
@@ -88,8 +83,7 @@ const nhisReturnsForMonth = (__, ___, reqQuery = {}) => {
 };
 
 const top10DiseaseEncontersForMonth = (__, ___, reqQuery = {}) => {
-  const { date } = reqQuery;
-  const month = months.firstDay(date);
+  const month = months.firstDay(reqQuery.month);
   const query = `
   SELECT diagnosis, COUNT(id) "numOfCases"
   FROM "Encounters"

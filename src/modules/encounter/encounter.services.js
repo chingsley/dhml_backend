@@ -35,12 +35,55 @@ export default class EncounterService extends AppService {
     });
   }
 
-  async getEncounterStatsSVC() {
-    const promises = Object.entries(encounterSrcipts).map(([key, queryFnc]) =>
-      this.executeQuery(queryFnc, this.query, key)
+  async getTotalEncounterForGivenMonthSVC() {
+    const result = await this.executeQuery(
+      encounterSrcipts.totalEncountersForMonth,
+      this.query
     );
-    const result = await Promise.all(promises);
-    // console.log(result);
+    return result;
+  }
+
+  async getAvgEncounterPerHcpForGivenMonthSVC() {
+    const result = await this.executeQuery(
+      encounterSrcipts.avgEncounterPerHcpForMonth,
+      this.query
+    );
+    return result;
+  }
+
+  async getTotalReferalRateForGivenMonthSVC() {
+    const result = await this.executeQuery(
+      encounterSrcipts.totalReferalRateForMonth,
+      this.query
+    );
+    return result;
+  }
+
+  async getAvgCostForGivenMonthSVC() {
+    const result = await this.executeQuery(
+      encounterSrcipts.averageCostOfEncounterForMonth,
+      this.query
+    );
+    return result;
+  }
+
+  async getNhisReturnsForGivenMonthSVC() {
+    const script = encounterSrcipts.nhisReturnsForMonth;
+    const nonPaginatedRows = await this.executeQuery(script, {
+      ...this.query,
+      pageSize: undefined,
+      page: undefined,
+    });
+    const count = nonPaginatedRows.length;
+    const rows = await this.executeQuery(script, {
+      ...this.query,
+    });
+    return { count, rows };
+  }
+
+  async getTop10DiseaseForGivenMonthSVC() {
+    const script = encounterSrcipts.top10DiseaseEncontersForMonth;
+    const result = await this.executeQuery(script, this.query);
     return result;
   }
 }

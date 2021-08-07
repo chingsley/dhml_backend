@@ -66,6 +66,17 @@ export default class AppMiddleware {
       Response.handleError('requireDateQuery', error, req, res, next);
     }
   }
+  static async requireMonthQuery(req, res, next) {
+    try {
+      const schema = Joi.object({
+        month: Joi.date().format('YYYY-MM-DD').max('now').required(),
+      }).unknown();
+      await validateSchema(schema, req.query);
+      return next();
+    } catch (error) {
+      Response.handleError('requireMonthQuery', error, req, res, next);
+    }
+  }
   static validateImageUpload(req, res, next) {
     try {
       if (req.files) {

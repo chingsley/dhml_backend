@@ -36,16 +36,109 @@ export default class EncounterController {
     }
   }
 
-  static async getEncounterStats(req, res, next) {
+  static async getTotalEncounterForGivenMonth(req, res, next) {
     try {
       const encounterService = new EncounterService(req);
-      const data = await encounterService.getEncounterStatsSVC();
+      const data = await encounterService.getTotalEncounterForGivenMonthSVC();
       return res.status(201).json({
         message: 'Successful!',
         data,
       });
     } catch (error) {
-      Response.handleError('getEncounterStats', error, req, res, next);
+      Response.handleError(
+        'getTotalEncounterForGivenMonth',
+        error,
+        req,
+        res,
+        next
+      );
+    }
+  }
+
+  static async getAvgEncounterPerHcpForGivenMonth(req, res, next) {
+    try {
+      const encounterService = new EncounterService(req);
+      const data =
+        await encounterService.getAvgEncounterPerHcpForGivenMonthSVC();
+      return res.status(201).json({
+        message: 'Successful!',
+        data,
+      });
+    } catch (error) {
+      Response.handleError(
+        'getAvgEncounterPerHcpForGivenMonth',
+        error,
+        req,
+        res,
+        next
+      );
+    }
+  }
+
+  static async getTotalReferalRateForGivenMonth(req, res, next) {
+    try {
+      const encounterService = new EncounterService(req);
+      const data = await encounterService.getTotalReferalRateForGivenMonthSVC();
+      return res.status(201).json({
+        message: 'Successful!',
+        data,
+      });
+    } catch (error) {
+      Response.handleError(
+        'getTotalReferalRateForGivenMonth',
+        error,
+        req,
+        res,
+        next
+      );
+    }
+  }
+  static async getAvgCostForGivenMonth(req, res, next) {
+    try {
+      const encounterService = new EncounterService(req);
+      const data = await encounterService.getAvgCostForGivenMonthSVC();
+      return res.status(201).json({
+        message: 'Successful!',
+        data,
+      });
+    } catch (error) {
+      Response.handleError('getAvgCostForGivenMonth', error, req, res, next);
+    }
+  }
+  static async getNhisReturnsForGivenMonth(req, res, next) {
+    try {
+      const encounterService = new EncounterService(req);
+      const data = await encounterService.getNhisReturnsForGivenMonthSVC();
+      return res.status(201).json({
+        message: 'Successful!',
+        data,
+      });
+    } catch (error) {
+      Response.handleError(
+        'getNhisReturnsForGivenMonth',
+        error,
+        req,
+        res,
+        next
+      );
+    }
+  }
+  static async getTop10DiseaseForGivenMonth(req, res, next) {
+    try {
+      const encounterService = new EncounterService(req);
+      const data = await encounterService.getTop10DiseaseForGivenMonthSVC();
+      return res.status(201).json({
+        message: 'Successful!',
+        data,
+      });
+    } catch (error) {
+      Response.handleError(
+        'getTop10DiseaseForGivenMonth',
+        error,
+        req,
+        res,
+        next
+      );
     }
   }
 }

@@ -19,11 +19,46 @@ router.post(
 );
 
 router.get(
-  '/stats',
+  '/total',
   AuthMiddleware.authorize(statsViewers),
-  AppMiddleware.requireDateQuery,
+  AppMiddleware.requireMonthQuery,
   AppMiddleware.validateQueryParams,
-  EncounterController.getEncounterStats
+  EncounterController.getTotalEncounterForGivenMonth
+);
+router.get(
+  '/avg-encounter-per-hcp',
+  AuthMiddleware.authorize(statsViewers),
+  AppMiddleware.requireMonthQuery,
+  AppMiddleware.validateQueryParams,
+  EncounterController.getAvgEncounterPerHcpForGivenMonth
+);
+router.get(
+  '/total-referal-rate',
+  AuthMiddleware.authorize(statsViewers),
+  AppMiddleware.requireMonthQuery,
+  AppMiddleware.validateQueryParams,
+  EncounterController.getTotalReferalRateForGivenMonth
+);
+router.get(
+  '/avg-cost',
+  AuthMiddleware.authorize(statsViewers),
+  AppMiddleware.requireMonthQuery,
+  AppMiddleware.validateQueryParams,
+  EncounterController.getAvgCostForGivenMonth
+);
+router.get(
+  '/nhis-returns',
+  AuthMiddleware.authorize(statsViewers),
+  AppMiddleware.requireMonthQuery,
+  AppMiddleware.validateQueryParams,
+  EncounterController.getNhisReturnsForGivenMonth
+);
+router.get(
+  '/top-10-diseases',
+  AuthMiddleware.authorize(statsViewers),
+  AppMiddleware.requireMonthQuery,
+  AppMiddleware.validateQueryParams,
+  EncounterController.getTop10DiseaseForGivenMonth
 );
 
 export default router;
