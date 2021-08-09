@@ -60,5 +60,12 @@ router.get(
   AppMiddleware.validateQueryParams,
   EncounterController.getTop10DiseaseForGivenMonth
 );
+router.get(
+  '/hcp-list',
+  AuthMiddleware.authorize(statsViewers),
+  AppMiddleware.requireMonthQuery,
+  AppMiddleware.validateQueryParams,
+  EncounterController.getHcpListForGivenMonth
+);
 
 export default router;

@@ -96,6 +96,20 @@ const top10DiseaseEncontersForMonth = (__, ___, reqQuery = {}) => {
   return query;
 };
 
+const hcpListForMonth = (__, ___, reqQuery = {}) => {
+  const month = months.firstDay(reqQuery.month);
+  const query = `
+  SELECT MIN(h.name) "name", h.code
+  FROM "Encounters" e
+  JOIN "HealthCareProviders" h
+    ON e."hcpId" = h.id
+    AND DATE_TRUNC('month', e."createdAt") = '${month}'
+  GROUP BY h.code
+  
+  `;
+  return query;
+};
+
 const encounterSrcipts = {
   totalEncountersForMonth,
   avgEncounterPerHcpForMonth,
@@ -103,6 +117,7 @@ const encounterSrcipts = {
   averageCostOfEncounterForMonth,
   nhisReturnsForMonth,
   top10DiseaseEncontersForMonth,
+  hcpListForMonth,
 };
 
 export default encounterSrcipts;
