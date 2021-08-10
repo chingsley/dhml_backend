@@ -1,8 +1,8 @@
 {
-  "name": "Access Gateway Api documentation",
-  "description": "Documentation for the REST api access provided at Access Gate way",
+"name": "IHIMS Api documentation",
+  "description": "Documentation for the REST api provided for DHML",
   "title": "Access gateway documentation",
-  "url" : "https://api.accessbankplc.com",
+  "url" : "https://api.ihims.com",
   "header": {
     "title": "Introduction",
     "filename": "doc-header.md"
