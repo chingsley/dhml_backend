@@ -67,5 +67,11 @@ router.get(
   AppMiddleware.validateQueryParams,
   EncounterController.getHcpListForGivenMonth
 );
+router.get(
+  '/hcp-disease-pattern',
+  AuthMiddleware.authorize(statsViewers),
+  EncounterMiddleware.validateHcpDiseasePatternQuery,
+  EncounterController.getHcpDiseasePatternForGivenMonth
+);
 
 export default router;
