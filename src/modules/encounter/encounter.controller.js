@@ -153,4 +153,23 @@ export default class EncounterController {
       Response.handleError('getHcpListForGivenMonth', error, req, res, next);
     }
   }
+  static async getHcpDiseasePatternForGivenMonth(req, res, next) {
+    try {
+      const encounterService = new EncounterService(req);
+      const data =
+        await encounterService.getHcpDiseasePatternForGivenMonthSVC();
+      return res.status(201).json({
+        message: 'Successful!',
+        data,
+      });
+    } catch (error) {
+      Response.handleError(
+        'getHcpDiseasePatternForGivenMonth',
+        error,
+        req,
+        res,
+        next
+      );
+    }
+  }
 }

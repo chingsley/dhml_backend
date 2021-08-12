@@ -84,3 +84,18 @@ export const PAY_ACTIONS = {
   PAY: 'pay',
   CANCEL_PAY: 'cancel pay',
 };
+
+export const DISEASE_PATTERN_RANGES = [
+  '0-4',
+  '5-9',
+  '10-14',
+  '15-19',
+  '20-24',
+  '25-29',
+  '30-34',
+  '35-39',
+  '40-44',
+  '45-49',
+  '50-59',
+  '60+',
+];
