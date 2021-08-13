@@ -32,3 +32,8 @@ export const schemaReturningEncounter = Joi.object({
   enrolleeIdNo: Joi.string().trim().required(),
   ...encounterSchema,
 }).unknown();
+
+export const hcpDiseasePatternQuerySchema = Joi.object({
+  month: Joi.date().format('YYYY-MM-DD').max('now').required(),
+  hcpCode: Joi.string().trim().required(),
+});

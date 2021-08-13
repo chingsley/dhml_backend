@@ -329,7 +329,7 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
 
-  ReferalCode.prototype.reject = function (arr) {
+  ReferalCode.prototype.disallowIf = function (arr) {
     if (arr.includes('expired')) this.rejectIfCodeIsExpired();
     if (arr.includes('claimed')) this.rejectIfCodeIsClaimed();
     if (arr.includes('declined')) this.rejectIfCodeIsDeclined();

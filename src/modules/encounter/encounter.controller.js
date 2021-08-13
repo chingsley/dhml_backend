@@ -141,4 +141,54 @@ export default class EncounterController {
       );
     }
   }
+  static async getHcpListForGivenMonth(req, res, next) {
+    try {
+      const encounterService = new EncounterService(req);
+      const data = await encounterService.getHcpListForGivenMonthSVC();
+      return res.status(201).json({
+        message: 'Successful!',
+        data,
+      });
+    } catch (error) {
+      Response.handleError('getHcpListForGivenMonth', error, req, res, next);
+    }
+  }
+  static async getHcpDiseasePatternForGivenMonth(req, res, next) {
+    try {
+      const encounterService = new EncounterService(req);
+      const data =
+        await encounterService.getHcpDiseasePatternForGivenMonthSVC();
+      return res.status(201).json({
+        message: 'Successful!',
+        data,
+      });
+    } catch (error) {
+      Response.handleError(
+        'getHcpDiseasePatternForGivenMonth',
+        error,
+        req,
+        res,
+        next
+      );
+    }
+  }
+  static async getHcpEncounterReportForGivenMonth(req, res, next) {
+    try {
+      const encounterService = new EncounterService(req);
+      const data =
+        await encounterService.getHcpEncounterReportForGivenMonthSVC();
+      return res.status(201).json({
+        message: 'Successful!',
+        data,
+      });
+    } catch (error) {
+      Response.handleError(
+        'getHcpEncounterReportForGivenMonth',
+        error,
+        req,
+        res,
+        next
+      );
+    }
+  }
 }

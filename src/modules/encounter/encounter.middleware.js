@@ -3,6 +3,7 @@ import { validateSchema } from '../../validators/joi/config';
 import {
   schemaFristTimeEncounter,
   schemaReturningEncounter,
+  hcpDiseasePatternQuerySchema,
 } from '../../validators/joi/schemas/encounter.schema';
 
 export default class EncounterMiddleware {
@@ -17,7 +18,21 @@ export default class EncounterMiddleware {
       req.body.isRepeatVisit = !!enrolleeIdNo;
       return next();
     } catch (error) {
-      Response.handleError('validateRequestForRefcode', error, req, res, next);
+      Response.handleError('validateEncounter', error, req, res, next);
+    }
+  }
+  static async validateHcpDiseasePatternQuery(req, res, next) {
+    try {
+      await validateSchema(hcpDiseasePatternQuerySchema, req.query);
+      return next();
+    } catch (error) {
+      Response.handleError(
+        'validateHcpDiseasePatternQuery',
+        error,
+        req,
+        res,
+        next
+      );
     }
   }
 }

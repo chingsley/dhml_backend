@@ -110,7 +110,7 @@ export default class RefcodeService extends AppService {
     // refcode.rejectIfCodeIsClaimed();
     // refcode.rejectIfCodeIsDeclined();
     // refcode.rejectIfCodeIsApproved();
-    refcode.reject(['expired', 'claimed', 'declined', 'approved']);
+    refcode.disallowIf(['expired', 'claimed', 'declined', 'approved']);
 
     if (newReceivingHcpId || newSpecialtyId) {
       const specialtyId = newSpecialtyId || refcode.specialtyId;
@@ -132,7 +132,7 @@ export default class RefcodeService extends AppService {
     // refcode.rejectIfCodeIsExpired();
     // refcode.rejectIfCodeIsClaimed();
     // refcode.rejectIfCodeIsDeclined();
-    refcode.reject(['expired', 'claimed', 'declined']);
+    refcode.disallowIf(['expired', 'claimed', 'declined']);
 
     let updates = {
       dateDeclined: null,
@@ -232,11 +232,7 @@ export default class RefcodeService extends AppService {
     const { refcodeId } = this.params;
 
     const refcode = await db.ReferalCode.findById(refcodeId);
-    // refcode.rejectIfCodeIsExpired();
-    // refcode.rejectIfCodeIsClaimed();
-    // refcode.rejectIfCodeIsDeclined();
-    // refcode.rejectIfCodeIsApproved();
-    refcode.reject(['expired', 'claimed', 'declined', 'approved']);
+    refcode.disallowIf(['expired', 'claimed', 'declined', 'approved']);
 
     await refcode.destroy();
     return true;

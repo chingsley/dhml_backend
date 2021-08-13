@@ -239,16 +239,7 @@ export default class FFSService extends AppService {
 
   async getFFSNhisReportByMonthSvc() {
     const script = ffsScripts.ffsNhisReport;
-    const nonPaginatedRows = await this.executeQuery(script, {
-      ...this.query,
-      pageSize: undefined,
-      page: undefined,
-    });
-    const count = nonPaginatedRows.length;
-    const rows = await this.executeQuery(script, {
-      ...this.query,
-    });
-    return { count, rows };
+    return this.getPaginatedData(script, this.query);
   }
 
   async analyseFFSByArmOfService() {
