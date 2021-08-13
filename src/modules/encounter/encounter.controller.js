@@ -172,4 +172,23 @@ export default class EncounterController {
       );
     }
   }
+  static async getHcpEncounterReportForGivenMonth(req, res, next) {
+    try {
+      const encounterService = new EncounterService(req);
+      const data =
+        await encounterService.getHcpEncounterReportForGivenMonthSVC();
+      return res.status(201).json({
+        message: 'Successful!',
+        data,
+      });
+    } catch (error) {
+      Response.handleError(
+        'getHcpEncounterReportForGivenMonth',
+        error,
+        req,
+        res,
+        next
+      );
+    }
+  }
 }
