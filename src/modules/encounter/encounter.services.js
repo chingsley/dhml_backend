@@ -88,6 +88,10 @@ export default class EncounterService extends AppService {
     const rows = await this.executeQuery(script, this.query);
     return this.formatHcpDiseasePatterns(rows);
   }
+  async getHcpEncounterReportForGivenMonthSVC() {
+    const script = encounterSrcipts.hcpEncounterReportForMonth;
+    return this.executeQuery(script, this.query);
+  }
 }
 
 Object.assign(EncounterService.prototype, encounterHelpers);

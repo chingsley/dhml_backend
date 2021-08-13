@@ -73,5 +73,11 @@ router.get(
   EncounterMiddleware.validateHcpDiseasePatternQuery,
   EncounterController.getHcpDiseasePatternForGivenMonth
 );
+router.get(
+  '/hcp-encounter-report',
+  AuthMiddleware.authorize(statsViewers),
+  EncounterMiddleware.validateHcpDiseasePatternQuery,
+  EncounterController.getHcpEncounterReportForGivenMonth
+);
 
 export default router;
