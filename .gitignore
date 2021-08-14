@@ -148,3 +148,4 @@ dEPENDENTS_OF_PRINCIPAL_FOR_iNTEGRATION_FINAL.xlsx
 *.xls
 *.logs
 drugs.json
+.temp_doc/

@@ -1,21 +1,10 @@
 /* eslint-disable indent */
 import AppService from '../app/app.service';
 import db from '../../database/models';
-import { months, moment, dateInWords } from '../../utils/timers';
+import { months, dateInWords, delayInSeconds } from '../../utils/timers';
 import { Op } from 'sequelize';
 import { downloadPaymentAdvice } from '../../utils/pdf/generatePaymentAdvicePdf';
 import send_email_report from '../../utils/pdf/sendPaymentAdvice';
-// import ROLES from '../../shared/constants/roles.constants';
-// import { throwError } from '../../shared/helpers';
-
-// const { sequelize } = db;
-
-const delayInSeconds = (timeout) =>
-  new Promise((res) => {
-    setTimeout(() => {
-      res();
-    }, timeout * 1000);
-  });
 
 export default class AccountService extends AppService {
   constructor({ body, files, query, params }) {
@@ -63,7 +52,7 @@ export default class AccountService extends AppService {
         {
           model: db.GeneralMonthlyCapitation,
           as: 'generalMonthlyCapitation',
-          attributes: ['dateApproved', 'datePaid'],
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
           where: { datePaid: { [Op.not]: null } },
         },
       ],
@@ -78,13 +67,19 @@ export default class AccountService extends AppService {
       bank: bankName,
       accountNumber,
       armOfService,
+      email,
     } = hmpa.hcp;
+    //----------------------------------------
+    // Todo: throw error if hcp has no email
+    //----------------------------------------
     const { datePaid } = hmpa.generalMonthlyCapitation;
-    const capitationMonth = moment(hmpa.month).format('MMMM YYYY');
+    const forPeriod = hmpa.generalMonthlyCapitation.monthInWords;
 
+    const fileName = 'payment_advice';
     const pdf = await downloadPaymentAdvice(
       {
-        capitationMonth,
+        subheader: 'PAYMENT ADVICE - CAPITATION',
+        forPeriod,
         datePaid,
         hcpName,
         bankName,
@@ -92,15 +87,17 @@ export default class AccountService extends AppService {
         armOfService,
         amount,
       },
-      'payment_advice.pdf'
+      `${fileName}.pdf`
     );
     await delayInSeconds(3);
     await send_email_report({
-      email: process.env.SAMPLE_HCP_RECIPIENT,
+      subject: `Payment Advice, Capitation ${forPeriod}`,
+      // email: process.env.SAMPLE_HCP_RECIPIENT,
+      email: 'chingsleychinonso@gmail.com',
       pathToAttachment: `${process.cwd()}/${pdf}`,
-      fileName: 'payment_advice',
+      fileName,
       fileType: 'application/pdf',
-      capitationMonth,
+      forPeriod,
     });
     return hmpa;
   }

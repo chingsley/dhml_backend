@@ -88,10 +88,5 @@ router.get(
   EncounterMiddleware.validateHcpDiseasePatternQuery,
   EncounterController.getHcpEncounterReportForGivenMonth
 );
-router.post(
-  '/capitation/:hcpMonthCapId/send_payment_advice',
-  AuthMiddleware.authorize([HOD_ACCOUNT, ACCOUNT_OFFICER]),
-  EncounterController.sendFFSPaymentAdvice
-);
 
 export default router;

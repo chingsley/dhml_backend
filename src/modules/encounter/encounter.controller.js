@@ -191,16 +191,4 @@ export default class EncounterController {
       );
     }
   }
-  static async sendFFSPaymentAdvice(req, res, next) {
-    try {
-      const encounterService = new EncounterService(req);
-      const data = await encounterService.sendFFSPaymentAdviceSVC();
-      return res.status(200).json({
-        message: 'Email sent successfully!',
-        data,
-      });
-    } catch (error) {
-      Response.handleError('sendFFSPaymentAdvice', error, req, res, next);
-    }
-  }
 }
