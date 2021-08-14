@@ -7,18 +7,14 @@ import { AFRICA_LAGOS } from '../timezones';
 const { log } = console;
 
 async function updateFFSAccountRecords() {
-  const t = await db.sequelize.transaction();
   try {
     const { rows, totals } = await fetchFFSMonthlyPaymentByHcps();
     const { id: mfpId } = await db.MonthlyFFSPayment.updateCurrentMonthRecord(
-      totals,
-      t
+      totals
     );
-    await db.HcpMonthlyFFSPayment.updateCurrentMonthRecords(rows, mfpId, t);
-    await t.commit();
+    await db.HcpMonthlyFFSPayment.updateCurrentMonthRecords(rows, mfpId);
     log('', '---@ cronjob done @---');
   } catch (error) {
-    await t.rollback();
     log('CRON ERROR: cronjobs/ffs:', error);
   }
 }

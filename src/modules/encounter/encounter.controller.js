@@ -40,7 +40,7 @@ export default class EncounterController {
     try {
       const encounterService = new EncounterService(req);
       const data = await encounterService.getTotalEncounterForGivenMonthSVC();
-      return res.status(201).json({
+      return res.status(200).json({
         message: 'Successful!',
         data,
       });
@@ -60,7 +60,7 @@ export default class EncounterController {
       const encounterService = new EncounterService(req);
       const data =
         await encounterService.getAvgEncounterPerHcpForGivenMonthSVC();
-      return res.status(201).json({
+      return res.status(200).json({
         message: 'Successful!',
         data,
       });
@@ -79,7 +79,7 @@ export default class EncounterController {
     try {
       const encounterService = new EncounterService(req);
       const data = await encounterService.getTotalReferalRateForGivenMonthSVC();
-      return res.status(201).json({
+      return res.status(200).json({
         message: 'Successful!',
         data,
       });
@@ -97,7 +97,7 @@ export default class EncounterController {
     try {
       const encounterService = new EncounterService(req);
       const data = await encounterService.getAvgCostForGivenMonthSVC();
-      return res.status(201).json({
+      return res.status(200).json({
         message: 'Successful!',
         data,
       });
@@ -109,7 +109,7 @@ export default class EncounterController {
     try {
       const encounterService = new EncounterService(req);
       const data = await encounterService.getNhisReturnsForGivenMonthSVC();
-      return res.status(201).json({
+      return res.status(200).json({
         message: 'Successful!',
         data,
       });
@@ -127,7 +127,7 @@ export default class EncounterController {
     try {
       const encounterService = new EncounterService(req);
       const data = await encounterService.getTop10DiseaseForGivenMonthSVC();
-      return res.status(201).json({
+      return res.status(200).json({
         message: 'Successful!',
         data,
       });
@@ -145,7 +145,7 @@ export default class EncounterController {
     try {
       const encounterService = new EncounterService(req);
       const data = await encounterService.getHcpListForGivenMonthSVC();
-      return res.status(201).json({
+      return res.status(200).json({
         message: 'Successful!',
         data,
       });
@@ -158,7 +158,7 @@ export default class EncounterController {
       const encounterService = new EncounterService(req);
       const data =
         await encounterService.getHcpDiseasePatternForGivenMonthSVC();
-      return res.status(201).json({
+      return res.status(200).json({
         message: 'Successful!',
         data,
       });
@@ -177,7 +177,7 @@ export default class EncounterController {
       const encounterService = new EncounterService(req);
       const data =
         await encounterService.getHcpEncounterReportForGivenMonthSVC();
-      return res.status(201).json({
+      return res.status(200).json({
         message: 'Successful!',
         data,
       });
@@ -189,6 +189,18 @@ export default class EncounterController {
         res,
         next
       );
+    }
+  }
+  static async sendFFSPaymentAdvice(req, res, next) {
+    try {
+      const encounterService = new EncounterService(req);
+      const data = await encounterService.sendFFSPaymentAdviceSVC();
+      return res.status(200).json({
+        message: 'Email sent successfully!',
+        data,
+      });
+    } catch (error) {
+      Response.handleError('sendFFSPaymentAdvice', error, req, res, next);
     }
   }
 }

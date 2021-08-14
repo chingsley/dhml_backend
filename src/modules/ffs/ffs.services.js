@@ -92,6 +92,7 @@ export default class FFSService extends AppService {
     const monthlyFFS = await this.$findMonthlyFFSById(mfpId);
     monthlyFFS.rejectIfRecordHasPassedAudit();
     monthlyFFS.rejectCurrentMonth();
+    await monthlyFFS.checkPendingMonths();
 
     const { selectedHcpIds, ...voucherData } = this.body;
     db.FFSVoucher.updateOrCreate(mfpId, voucherData);

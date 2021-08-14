@@ -12,7 +12,7 @@ module.exports = {
         return resolve();
       });
     }
-    for (const n of [2, 1, 0]) {
+    for (const n of [4, 3, 2, 1, 0]) {
       const date = months.setPast(n);
       const { rows, totals } = await fetchFFSMonthlyPaymentByHcps(date);
       const { id: mfpId } = await db.MonthlyFFSPayment.create({
