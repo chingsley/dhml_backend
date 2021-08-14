@@ -36,11 +36,11 @@ module.exports = {
         },
         email: {
           type: Sequelize.STRING,
-          allowNull: false,
+          // allowNull: false,
         },
         phoneNumber: {
           type: Sequelize.STRING,
-          allowNull: false,
+          // allowNull: false,
         },
         alternativePhoneNumber: {
           type: Sequelize.STRING,
@@ -58,7 +58,7 @@ module.exports = {
         },
         accountType: {
           type: Sequelize.STRING,
-          allowNull: false,
+          // allowNull: false,
         },
         roleId: {
           type: Sequelize.INTEGER,
