@@ -61,6 +61,7 @@ export default class AccountService extends AppService {
       withError: `No paid capitation was found for the id of ${id}. Please confirm that the id is correct and that the capitation has been paid`,
     });
     const hmpa = hcpMonthlyPaymentAdvice;
+    hmpa.hcp.mustHaveEmail();
     const { amount } = hmpa;
     const {
       name: hcpName,
@@ -92,8 +93,7 @@ export default class AccountService extends AppService {
     await delayInSeconds(3);
     await send_email_report({
       subject: `Payment Advice, Capitation ${forPeriod}`,
-      // email: process.env.SAMPLE_HCP_RECIPIENT,
-      email: 'chingsleychinonso@gmail.com',
+      email,
       pathToAttachment: `${process.cwd()}/${pdf}`,
       fileName,
       fileType: 'application/pdf',
