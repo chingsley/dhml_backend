@@ -11,7 +11,7 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     const enrollees = await db.Enrollee.findAll({ attributes: ['id'] });
     const hcps = await db.HealthCareProvider.findAll({ attributes: ['id'] });
-    const encounters = Array.from(Array(1000000).keys()).map(() => {
+    const encounters = Array.from(Array(1000).keys()).map(() => {
       return {
         id: uuidv4(),
         enrolleeId: _random(enrollees).id,
