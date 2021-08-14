@@ -1,5 +1,4 @@
 /* eslint-disable indent */
-
 import AppService from '../app/app.service';
 import db from '../../database/models';
 import encounterSrcipts from '../../database/scripts/encounter.scripts';

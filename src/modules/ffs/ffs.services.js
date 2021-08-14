@@ -1,6 +1,9 @@
-import AppService from '../app/app.service';
 import { Op } from 'sequelize';
+import { delayInSeconds } from '../../utils/timers';
+import { downloadPaymentAdvice } from '../../utils/pdf/generatePaymentAdvicePdf';
+import send_email_report from '../../utils/pdf/sendPaymentAdvice';
 import db from '../../database/models';
+import AppService from '../app/app.service';
 import claimsScripts from '../../database/scripts/claims.scripts';
 import ffsHelpers from './ffs.helpers';
 import { months } from '../../utils/timers';
@@ -92,6 +95,7 @@ export default class FFSService extends AppService {
     const monthlyFFS = await this.$findMonthlyFFSById(mfpId);
     monthlyFFS.rejectIfRecordHasPassedAudit();
     monthlyFFS.rejectCurrentMonth();
+    await monthlyFFS.checkPendingMonths();
 
     const { selectedHcpIds, ...voucherData } = this.body;
     db.FFSVoucher.updateOrCreate(mfpId, voucherData);
@@ -246,6 +250,67 @@ export default class FFSService extends AppService {
     const script = analysisScripts.ffsReports;
     const data = await this.executeQuery(script, this.query);
     return this.analysisFormatter.summarized(data, this.query);
+  }
+
+  async sendFFSPaymentAdviceSVC() {
+    const { hcpmfpId: id } = this.params;
+    const hcpMonthlyFFSPayment = await this.findOneRecord({
+      modelName: 'HcpMonthlyFFSPayment',
+      where: { id },
+      errorIfNotFound: `No "Paid" hcpMonthlyFFSPayment matches the id of ${id}. Please confirm that the id is correct and that the ffs has been paid`,
+      include: [
+        {
+          model: db.HealthCareProvider,
+          as: 'hcp',
+          attributes: { exclude: ['createdAt', 'updatedAt', 'roleId'] },
+        },
+        {
+          model: db.MonthlyFFSPayment,
+          as: 'monthlyFFSPayment',
+          where: { datePaid: { [Op.not]: null } },
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
+        },
+      ],
+    });
+
+    const hcp = hcpMonthlyFFSPayment.hcp;
+    hcp.mustHaveEmail();
+
+    const { amount } = hcpMonthlyFFSPayment;
+    const {
+      name: hcpName,
+      bank: bankName,
+      accountNumber,
+      armOfService,
+      email,
+    } = hcp;
+
+    const { datePaid } = hcpMonthlyFFSPayment.monthlyFFSPayment;
+    const forPeriod = hcpMonthlyFFSPayment.monthlyFFSPayment.monthInWords;
+    const fileName = 'ffs_payment_advice';
+    const pdf = await downloadPaymentAdvice(
+      {
+        subheader: 'PAYMENT ADVICE - FEE FOR SERVICE',
+        forPeriod,
+        datePaid,
+        hcpName,
+        bankName,
+        accountNumber,
+        armOfService,
+        amount,
+      },
+      `${fileName}.pdf`
+    );
+    await delayInSeconds(3);
+    await send_email_report({
+      subject: `Payment Advice, FFS ${forPeriod}`,
+      email,
+      pathToAttachment: `${process.cwd()}/${pdf}`,
+      fileName,
+      fileType: 'application/pdf',
+      forPeriod,
+    });
+    return hcpMonthlyFFSPayment;
   }
 
   $findMonthlyFFSById(mfpId, includeOptions = {}) {

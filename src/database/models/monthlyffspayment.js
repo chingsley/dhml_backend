@@ -1,7 +1,8 @@
 'use strict';
 const { AUDIT_STATUS } = require('../../shared/constants/lists.constants');
-const { rejectIf } = require('../../shared/helpers');
+const { rejectIf, throwError } = require('../../shared/helpers');
 const { moment, days, months } = require('../../utils/timers');
+const { Op } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
   const MonthlyFFSPayment = sequelize.define(
@@ -151,6 +152,27 @@ module.exports = (sequelize, DataTypes) => {
     rejectIf(this.isCurrentMonth, {
       withError: 'Operation not allowed on current running FFS until month end',
     });
+  };
+
+  MonthlyFFSPayment.prototype.checkPendingMonths = async function () {
+    const [pendingRecord] =
+      await this.sequelize.models.MonthlyFFSPayment.findAll({
+        where: { month: { [Op.lt]: this.month }, datePaid: { [Op.is]: null } },
+        order: [['month', 'ASC']],
+        LIMIT: 1,
+      });
+    if (pendingRecord) {
+      throwError({
+        status: 403,
+        error: [
+          `Can't process ${moment(this.month).format(
+            'MMMM YYYY'
+          )} because ${moment(pendingRecord.month).format(
+            'MMMM YYYY'
+          )} has not been paid`,
+        ],
+      });
+    }
   };
 
   return MonthlyFFSPayment;

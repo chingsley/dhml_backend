@@ -5,7 +5,16 @@ import AuthMiddleware from '../auth/auth.middleware';
 import EncounterMiddleware from './encounter.middleware';
 import EncounterController from './encounter.controller';
 
-const { HCP, MD, SUPERADMIN, HOD_MEDICAL, HOD_PR_AND_M, HOD_VHS } = roles;
+const {
+  HCP,
+  MD,
+  SUPERADMIN,
+  HOD_MEDICAL,
+  HOD_PR_AND_M,
+  HOD_VHS,
+  HOD_ACCOUNT,
+  ACCOUNT_OFFICER,
+} = roles;
 
 const statsViewers = [MD, SUPERADMIN, HOD_MEDICAL, HOD_PR_AND_M, HOD_VHS];
 
