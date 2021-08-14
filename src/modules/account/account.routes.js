@@ -57,6 +57,7 @@ router.get(
 router.post(
   '/capitation/:hcpMonthCapId/send_payment_advice',
   AuthMiddleware.authorize([HOD_ACCOUNT, ACCOUNT_OFFICER]),
+  AppMiddleware.validateIdParams,
   AccountController.sendPaymentAdvice
 );
 

@@ -10,7 +10,8 @@ const pdfFonts = require('pdfmake/build/vfs_fonts');
 
 export const downloadPaymentAdvice = (
   {
-    capitationMonth,
+    subheader,
+    forPeriod,
     datePaid,
     hcpName,
     bankName,
@@ -41,8 +42,7 @@ export const downloadPaymentAdvice = (
           alignment: 'center',
         },
         {
-          text:
-            '\nHead Office: Plot 1323, Adesoji Aderemi Street, Gudu District, Abuja, Nigeria. 0704083787-8, 07098212850, 07037921025 ',
+          text: '\nHead Office: Plot 1323, Adesoji Aderemi Street, Gudu District, Abuja, Nigeria. 0704083787-8, 07098212850, 07037921025 ',
           style: 'subheader',
           fontSize: 14,
           bold: true,
@@ -50,8 +50,7 @@ export const downloadPaymentAdvice = (
           alignment: 'center',
         },
         {
-          text:
-            'Website: www.dhmlnigeria.com e-Mail: info@dhmlnigeria.com \n\n',
+          text: 'Website: www.dhmlnigeria.com e-Mail: info@dhmlnigeria.com \n\n',
           style: 'subheader',
           fontSize: 14,
           bold: true,
@@ -109,7 +108,7 @@ export const downloadPaymentAdvice = (
           alignment: 'left',
         },
         {
-          text: '\n\n  PAYMENT ADVICE - CAPITATION',
+          text: `\n\n  ${subheader}`,
           style: 'subheader',
           fontSize: 14,
           bold: true,
@@ -118,7 +117,7 @@ export const downloadPaymentAdvice = (
           decoration: 'underline',
         },
         {
-          text: `\nSequel to your forwarded bill for the months of ${capitationMonth} and subsequent vetting of same in line with the National Health Insurance Scheme’s Guidelines, I am directed to inform you that payment had been effected. Please find below the details:`,
+          text: `\nSequel to your forwarded bill for the month of ${forPeriod} and subsequent vetting of same in line with the National Health Insurance Scheme’s Guidelines, I am directed to inform you that payment had been effected. Please find below the details:`,
           style: 'subheader',
           fontSize: 14,
           color: '#333333',
@@ -241,8 +240,7 @@ export const downloadPaymentAdvice = (
           ],
         },
         {
-          text:
-            '\n\n While thanking you for the care rendered to our enrollees, we reassure you of our highest regards.',
+          text: '\n\n While thanking you for the care rendered to our enrollees, we reassure you of our highest regards.',
           style: 'subheader',
           fontSize: 14,
           color: '#000000',

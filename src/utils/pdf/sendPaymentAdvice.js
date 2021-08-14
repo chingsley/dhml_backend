@@ -7,15 +7,16 @@ const send_email_report = async ({
   pathToAttachment,
   fileName,
   fileType,
-  capitationMonth,
+  forPeriod,
+  subject,
 }) => {
   // const pathToAttachment = `${__dirname}/payment_advice.pdf`;
   const attachment = fs.readFileSync(pathToAttachment).toString('base64');
-  const text = `Please find attached the payment advice for ${capitationMonth} capitation`;
+  const text = `Please find attached the payment advice for ${forPeriod}`;
   const payload = {
     to: email,
     from: process.env.SENDER_ADDRESS,
-    subject: `Payment Advice, Capitation ${capitationMonth}`,
+    subject,
     text,
     attachments: [
       {

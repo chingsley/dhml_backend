@@ -33,6 +33,13 @@ const firstDayOfYear = (date) =>
 
 const dateInWords = (date) => moment(date).format('MMMM YYYY');
 
+const delayInSeconds = (timeout) =>
+  new Promise((res) => {
+    setTimeout(() => {
+      res();
+    }, timeout * 1000);
+  });
+
 module.exports = {
   moment,
   days,
@@ -43,4 +50,5 @@ module.exports = {
   firstDayOfYear,
   dateInWords,
   firstDayOfLastMonth: months.firstDay(months.setPast(1)),
+  delayInSeconds,
 };
