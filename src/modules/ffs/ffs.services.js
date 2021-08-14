@@ -1,5 +1,5 @@
 import { Op } from 'sequelize';
-import { delayInSeconds, moment } from '../../utils/timers';
+import { delayInSeconds } from '../../utils/timers';
 import { downloadPaymentAdvice } from '../../utils/pdf/generatePaymentAdvicePdf';
 import send_email_report from '../../utils/pdf/sendPaymentAdvice';
 import db from '../../database/models';
@@ -273,6 +273,9 @@ export default class FFSService extends AppService {
       ],
     });
 
+    const hcp = hcpMonthlyFFSPayment.hcp;
+    hcp.mustHaveEmail();
+
     const { amount } = hcpMonthlyFFSPayment;
     const {
       name: hcpName,
@@ -280,10 +283,8 @@ export default class FFSService extends AppService {
       accountNumber,
       armOfService,
       email,
-    } = hcpMonthlyFFSPayment.hcp;
-    //----------------------------------------
-    // Todo: throw error if hcp has no email
-    //----------------------------------------
+    } = hcp;
+
     const { datePaid } = hcpMonthlyFFSPayment.monthlyFFSPayment;
     const forPeriod = hcpMonthlyFFSPayment.monthlyFFSPayment.monthInWords;
     const fileName = 'ffs_payment_advice';
@@ -302,9 +303,8 @@ export default class FFSService extends AppService {
     );
     await delayInSeconds(3);
     await send_email_report({
-      // email: process.env.SAMPLE_HCP_RECIPIENT,
       subject: `Payment Advice, FFS ${forPeriod}`,
-      email: 'chingsleychinonso@gmail.com',
+      email,
       pathToAttachment: `${process.cwd()}/${pdf}`,
       fileName,
       fileType: 'application/pdf',
