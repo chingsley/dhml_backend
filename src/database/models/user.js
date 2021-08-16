@@ -61,6 +61,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'flaggedById',
       as: 'flaggedCodes',
     });
+    User.hasMany(models.AuditLog, {
+      foreignKey: 'userId',
+      as: 'auditLogs',
+    });
   };
   User.findOneWhere = async function (condition, options) {
     const {
