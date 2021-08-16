@@ -8,7 +8,7 @@ export const getHcpSchema = ({ withRequiredFields = true, req = {} }) => {
     category: stringValidate(withRequiredFields),
     state: stringValidate(withRequiredFields),
     address: Joi.string().trim(),
-    email: stringValidate(withRequiredFields),
+    email: Joi.string().email(),
     phoneNumber: Joi.string().trim(),
     alternativePhoneNumber: Joi.string().trim(),
     bank: stringValidate(withRequiredFields),
