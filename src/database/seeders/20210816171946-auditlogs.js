@@ -27,7 +27,7 @@ module.exports = {
       } else {
         const hcp = _random(hcps);
         hcpId = hcp.id;
-        name = hcp.name;
+        name = `${hcp.name} (${hcp.code})`;
       }
 
       return {
