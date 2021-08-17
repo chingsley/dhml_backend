@@ -9,12 +9,13 @@ import Cloudinary from '../../utils/Cloudinary';
 import AppService from '../app/app.service';
 
 export default class StaffService extends AppService {
-  constructor({ body, files, query, params }) {
-    super({ body, files, query, params });
+  constructor({ body, files, query, params, user: operator }) {
+    super({ body, files, query, params, operator });
     this.body = body;
     this.files = files;
     this.query = query;
     this.params = params;
+    this.operator = operator;
   }
 
   async createNewStaff() {
@@ -23,7 +24,9 @@ export default class StaffService extends AppService {
     await this.validateStaffUniqueFields(id, newStaff);
     const files = this.files;
     const uploadedImages = files ? await Cloudinary.bulkUpload(files) : {};
-    return await db.Staff.create({ ...newStaff, ...uploadedImages });
+    const staff = await db.Staff.create({ ...newStaff, ...uploadedImages });
+    this.record(`Created a new staff record. StaffIdNo: ${staff.staffIdNo}`);
+    return staff;
   }
 
   async updateStaffInfo() {
@@ -37,6 +40,10 @@ export default class StaffService extends AppService {
       { ...changes, ...uploadedImages },
       { where: { id: staffId }, returning: true }
     );
+    this.rejectIf(!results[1][0], {
+      withError: `no staff record found for id ${staffId}`,
+    });
+    this.record(`Updated staff record. StaffIdNo: ${results[1][0].staffIdNo}`);
     return results[1][0];
   }
 

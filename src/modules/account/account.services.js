@@ -7,12 +7,13 @@ import { downloadPaymentAdvice } from '../../utils/pdf/generatePaymentAdvicePdf'
 import send_email_report from '../../utils/pdf/sendPaymentAdvice';
 
 export default class AccountService extends AppService {
-  constructor({ body, files, query, params }) {
-    super({ body, files, query, params });
-    this.reqBody = body;
+  constructor({ body, files, query, params, user: operator }) {
+    super({ body, files, query, params, operator });
+    this.body = body;
     this.files = files;
     this.query = query;
     this.params = params;
+    this.operator = operator;
   }
 
   async getMonthSpecificCaps() {
@@ -163,24 +164,14 @@ export default class AccountService extends AppService {
   }
 
   async upsertCapitationVoucher() {
-    const t = await db.sequelize.transaction();
-    try {
-      // eslint-disable-next-line no-unused-vars
-      const capSum = await this.getCapSumById(this.reqBody.gmcId, {
-        rejectCurrentMonth: true,
-      });
-      const voucher = await db.Voucher.updateOrCreate(this.reqBody, t);
-
-      /**
-       * this operation is currently done at the point of "auditing..."
-       */
-      // await db.HcpMonthlyCapitation.addMonthlyRecord(capSum, t);
-      await t.commit();
-      return voucher;
-    } catch (error) {
-      await t.rollback();
-      throw error;
-    }
+    const voucher = await db.Voucher.updateOrCreate(this.body);
+    /**
+     * the operation below is currently done at the point of "auditing..."
+     * await db.HcpMonthlyCapitation.addMonthlyRecord(capSum, t);
+     */
+    const month = voucher.capitation.monthInWords;
+    this.record(`Created/updated voucher for ${month} capitation`);
+    return voucher;
   }
 
   findVoucherById() {

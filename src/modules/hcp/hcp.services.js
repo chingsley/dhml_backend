@@ -17,12 +17,13 @@ import { CONTROL_HCPs_ARRAY } from '../../database/scripts/helpers.scripts';
 const { sequelize } = db;
 
 export default class HcpService extends AppService {
-  constructor({ body, files, query, params }) {
-    super({ body, files, query, params });
+  constructor({ body, files, query, params, user: operator }) {
+    super({ body, files, query, params, operator });
     this.body = body;
     this.files = files;
     this.query = query;
     this.params = params;
+    this.operator = operator;
   }
 
   async createHcp() {
@@ -50,6 +51,7 @@ export default class HcpService extends AppService {
       const result = hcp.dataValues;
       result.defaultPassword = returnPassword && defaultPass;
       !returnPassword && (await this.sendPassword(hcp.email, defaultPass));
+      this.record(`Created a new HCP (hcpCode: ${hcp.code})`);
       await t.commit();
       return db.HealthCareProvider.findOne({
         where: { id: hcp.id },
@@ -85,9 +87,11 @@ export default class HcpService extends AppService {
         withError: `No hcp matches the id of ${hcpId}`,
         status: 404,
       });
+      this.record(
+        `Updated the details of a HCP (hcpCode: ${results[1][0].code})`
+      );
       await t.commit();
       return this.findHpcById(hcpId);
-      // return results[1][0];
     } catch (error) {
       await t.rollback();
       throw error;
@@ -309,6 +313,9 @@ export default class HcpService extends AppService {
       { status },
       { where: { id: hcpIds }, returning: true }
     );
+    this.record(
+      `Changed the status of HCPs (IDs: ${hcpIds.join(', ')}) to ${status}`
+    );
     return result[1];
   }
 
@@ -320,6 +327,7 @@ export default class HcpService extends AppService {
         error: ['cannot delete hcp with enrolleess'],
       });
     }
+    this.record(`Deleted the HCP (${hcp.code})`);
     await hcp.destroy();
     return hcp;
   }

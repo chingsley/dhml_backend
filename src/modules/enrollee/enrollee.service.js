@@ -19,6 +19,7 @@ const { log } = console;
 export default class EnrolleeService extends AppService {
   constructor({ body, files, query, params, user: operator }) {
     super({ body, files, query, params, operator });
+    this.body = body;
     this.files = files;
     this.query = query;
     this.params = params;
@@ -29,6 +30,8 @@ export default class EnrolleeService extends AppService {
     const enrollee = enrolmentType.match(/principal/i)
       ? await this.enrolPrincipal(enrolleeData)
       : await this.enrolDependant(enrolleeData);
+
+    this.record(`Registered new Enrollee (ID NO: ${enrollee.enrolleeIdNo})`);
     return enrollee;
   }
 
@@ -258,6 +261,8 @@ export default class EnrolleeService extends AppService {
         required: false,
       },
     });
+
+    this.record(`Edited Enrollee info (ID NO:${enrollee.enrolleeIdNo})`);
     return enrollee;
   }
 
@@ -278,6 +283,8 @@ export default class EnrolleeService extends AppService {
         { where: { id: { [Op.in]: dependantIds } } }
       );
     }
+
+    this.record(`Verified Enrollee (ID NO:${enrollee.enrolleeIdNo})`);
     return enrollee;
   }
 
@@ -291,12 +298,14 @@ export default class EnrolleeService extends AppService {
         { where: { id: { [Op.in]: dependantIds } } }
       );
     }
+    this.record(`Unverified Enrollee (ID NO:${enrollee.enrolleeIdNo})`);
     return enrollee;
   }
 
   async destroyEnrollee() {
     const enrollee = await this.findWithReqParams();
     await enrollee.destroy();
+    this.record(`Deleted Enrollee (ID NO:${enrollee.enrolleeIdNo})`);
     return enrollee;
   }
 

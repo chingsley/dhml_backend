@@ -24,6 +24,7 @@ export default class ClaimsService extends AppService {
       refcodeId: refcode.id,
       preparedBy: this.operator.subjectId,
     }));
+    this.record(`Submitted claims for referal code: ${referalCode}`);
     return db.Claim.bulkCreate(preparedClaims);
   }
 
@@ -54,6 +55,7 @@ export default class ClaimsService extends AppService {
     const refcode = claim.referalCode;
     this.$handleRefcodeValidation(this.operator, refcode);
     const changes = this.body;
+    this.record(`Edited a claim (claimId: ${claimId}`);
     await claim.update(changes);
     return claim;
   }
@@ -63,7 +65,7 @@ export default class ClaimsService extends AppService {
     const claim = await this.$getClaimById(claimId);
     const refcode = claim.referalCode;
     this.$handleRefcodeValidation(this.operator, refcode);
-
+    this.record(`Deleted a claim (claimId: ${claim.id}`);
     await claim.destroy();
     return claim;
   }
@@ -85,6 +87,7 @@ export default class ClaimsService extends AppService {
       await this.$handleBulkDelete(arrOfClaimIds, t);
       await this.$hanldBulkUpdate(arrOfUpdates, t);
       await this.$handleBulkAddtions(arrOfNewClaims, t);
+      this.record(`Edited claims associated with code ${referalCode}`);
       await t.commit();
       return true;
     } catch (error) {

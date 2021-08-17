@@ -18,6 +18,7 @@ export default class EncounterController {
       let enrollee;
       const enrolleeService = new EnrolleeService(req);
       const { enrolleeIdNo, ...newEnrolleeData } = req.body;
+
       if (enrolleeIdNo) {
         enrollee = await enrolleeService.getByEnrolleeIdNo(enrolleeIdNo);
       } else {
