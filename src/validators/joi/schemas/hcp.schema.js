@@ -1,4 +1,9 @@
-import { Joi, stringValidate, numberValidate } from '../config';
+import {
+  Joi,
+  stringValidate,
+  stringValidateSetDefault,
+  numberValidate,
+} from '../config';
 
 export const getHcpSchema = ({ withRequiredFields = true }) => {
   return Joi.object({
@@ -6,16 +11,16 @@ export const getHcpSchema = ({ withRequiredFields = true }) => {
     name: stringValidate(withRequiredFields),
     category: stringValidate(withRequiredFields),
     state: stringValidate(withRequiredFields),
-    address: stringValidate(withRequiredFields),
+    address: Joi.string().trim(),
     email: stringValidate(withRequiredFields),
-    phoneNumber: stringValidate(withRequiredFields),
+    phoneNumber: stringValidateSetDefault(withRequiredFields),
     alternativePhoneNumber: Joi.string().trim(),
     bank: stringValidate(withRequiredFields),
     bankAddress: Joi.string().trim(),
     armOfService: Joi.string().trim(),
     geopoliticalZone: Joi.string().trim(),
     accountNumber: numberValidate(withRequiredFields),
-    accountType: stringValidate(withRequiredFields),
+    accountType: stringValidateSetDefault(withRequiredFields),
     returnPassword: Joi.bool().valid(true, false),
   });
 };

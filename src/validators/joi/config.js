@@ -38,6 +38,11 @@ export function stringValidate(withRequiredFields) {
     ? Joi.string().trim().required()
     : Joi.string().trim();
 }
+export function stringValidateSetDefault(withRequiredFields) {
+  return withRequiredFields
+    ? Joi.string().trim().default('NOT SPECIFIED')
+    : Joi.string().trim();
+}
 
 export function numberValidate(withRequiredFields) {
   return withRequiredFields ? Joi.number().required() : Joi.number();
