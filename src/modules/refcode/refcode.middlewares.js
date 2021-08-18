@@ -7,21 +7,19 @@ import {
   schemaRefcodeIdArr,
   refcodeQuerySchema,
   schemaEnrolleeIdNo,
-  schemaCodeRequestForNewEnrollee,
-  schemaCodeRequestForExistingEnrollee,
   shcemaPatchCodeRequest,
   claimsVerificationSchema,
   claimsDocUploadSchema,
+  codeRequestSchema,
 } from '../../validators/joi/schemas/refcode.schema';
 
 export default class RefcodeMiddleware {
   static async validateRequestForRefcode(req, res, next) {
     try {
-      const { enrolleeIdNo, enrolmentType } = req.body;
-      const refcodeSchema = enrolleeIdNo
-        ? schemaCodeRequestForExistingEnrollee
-        : schemaCodeRequestForNewEnrollee(enrolmentType);
-      const { joiFormatted } = await validateSchema(refcodeSchema, req.body);
+      const { joiFormatted } = await validateSchema(
+        codeRequestSchema,
+        req.body
+      );
       req.body = joiFormatted;
       return next();
     } catch (error) {

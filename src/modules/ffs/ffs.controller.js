@@ -127,4 +127,16 @@ export default class FFSController {
       Response.handleError('FFSAnalysisByArmOfService', error, req, res, next);
     }
   }
+  static async sendFFSPaymentAdvice(req, res, next) {
+    try {
+      const ffsService = new FFSService(req);
+      const data = await ffsService.sendFFSPaymentAdviceSVC();
+      return res.status(200).json({
+        message: 'Email sent successfully!',
+        data,
+      });
+    } catch (error) {
+      Response.handleError('sendFFSPaymentAdvice', error, req, res, next);
+    }
+  }
 }

@@ -2,7 +2,7 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable(
-      'HcpMonthlyFFSPayments',
+      'AuditLogs',
       {
         id: {
           type: Sequelize.UUID,
@@ -10,14 +10,12 @@ module.exports = {
           defaultValue: Sequelize.UUIDV4,
           allowNull: false,
         },
-        mfpId: {
-          type: Sequelize.UUID,
-          allowNull: false,
+        userId: {
+          type: Sequelize.INTEGER,
           references: {
-            model: 'MonthlyFFSPayments',
+            model: 'Users',
             key: 'id',
           },
-          onDelete: 'RESTRICT',
           onUpdate: 'CASCADE',
         },
         hcpId: {
@@ -26,26 +24,15 @@ module.exports = {
             model: 'HealthCareProviders',
             key: 'id',
           },
-          onDelete: 'RESTRICT',
           onUpdate: 'CASCADE',
         },
-        totalClaims: {
-          type: Sequelize.INTEGER,
+        action: {
+          type: Sequelize.TEXT,
+          allowNull: false,
         },
-        amount: {
-          type: Sequelize.DECIMAL,
-        },
-        earliestClaimsVerificationDate: {
-          type: Sequelize.DATE,
-        },
-        auditRequestDate: {
-          type: Sequelize.DATE,
-        },
-        rrr: {
+        name: {
           type: Sequelize.STRING,
-        },
-        tsaCharge: {
-          type: Sequelize.DOUBLE,
+          allowNull: false,
         },
         createdAt: {
           allowNull: false,
@@ -65,6 +52,6 @@ module.exports = {
   },
   // eslint-disable-next-line no-unused-vars
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('HcpMonthlyFFSPayments');
+    return queryInterface.dropTable('AuditLogs');
   },
 };

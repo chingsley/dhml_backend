@@ -85,5 +85,11 @@ router.get(
   AppMiddleware.requireDateQuery,
   FFSController.FFSAnalysisByArmOfService
 );
+router.post(
+  '/hcp-monthyly-payments/:hcpmfpId/mail',
+  AuthMiddleware.authorize([HOD_ACCOUNT, ACCOUNT_OFFICER]),
+  AppMiddleware.validateIdParams,
+  FFSController.sendFFSPaymentAdvice
+);
 
 export default router;

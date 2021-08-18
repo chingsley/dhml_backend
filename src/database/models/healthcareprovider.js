@@ -33,6 +33,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       email: {
         type: DataTypes.STRING,
+        allowNull: false,
       },
       phoneNumber: {
         type: DataTypes.STRING,
@@ -42,12 +43,14 @@ module.exports = (sequelize, DataTypes) => {
       },
       bank: {
         type: DataTypes.STRING,
+        allowNull: false,
       },
       bankAddress: {
         type: DataTypes.STRING,
       },
       accountNumber: {
         type: DataTypes.STRING,
+        allowNull: false,
       },
       accountType: {
         type: DataTypes.STRING,
@@ -105,6 +108,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'hcpId',
       as: 'ffsPayments',
     });
+    HealthCareProvider.hasMany(models.Encounter, {
+      foreignKey: 'hcpId',
+      as: 'encounters',
+    });
   };
   HealthCareProvider.findOneWhere = async function (condition, options) {
     const {
@@ -157,6 +164,12 @@ module.exports = (sequelize, DataTypes) => {
   HealthCareProvider.prototype.removeSpecialties = function (specialtyIdArr) {
     return this.sequelize.models.HcpSpecialty.destroy({
       where: { specialtyId: specialtyIdArr, hcpId: this.id },
+    });
+  };
+  HealthCareProvider.prototype.mustHaveEmail = function () {
+    rejectIf(!this.email, {
+      withError: `Request Failed. The HCP ${this.code} has no email in the system`,
+      status: 422,
     });
   };
 

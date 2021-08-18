@@ -16,6 +16,7 @@ export default class AppMiddleware {
         hcpId: Joi.number().integer().min(1),
         staffId: Joi.number().integer().min(1),
         enrolleeId: Joi.number().integer().min(1),
+        hcpMonthCapId: Joi.number().integer().min(1),
         userId: Joi.number().integer().min(1),
         summaryId: Joi.number().integer().min(1),
         capitationId: Joi.number().integer().min(1),
@@ -64,6 +65,17 @@ export default class AppMiddleware {
       return next();
     } catch (error) {
       Response.handleError('requireDateQuery', error, req, res, next);
+    }
+  }
+  static async requireMonthQuery(req, res, next) {
+    try {
+      const schema = Joi.object({
+        month: Joi.date().format('YYYY-MM-DD').max('now').required(),
+      }).unknown();
+      await validateSchema(schema, req.query);
+      return next();
+    } catch (error) {
+      Response.handleError('requireMonthQuery', error, req, res, next);
     }
   }
   static validateImageUpload(req, res, next) {

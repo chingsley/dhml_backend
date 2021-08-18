@@ -95,8 +95,7 @@ module.exports = (sequelize, DataTypes) => {
 
   GeneralMonthlyCapitation.runScript = async function (
     queryFunction,
-    reqQuery,
-    key
+    reqQuery
   ) {
     const { dialect, database } = sequelize.options;
     const rows = await sequelize.query(
@@ -105,11 +104,7 @@ module.exports = (sequelize, DataTypes) => {
         type: QueryTypes.SELECT,
       }
     );
-    if (key) {
-      return { [key]: rows };
-    } else {
-      return rows;
-    }
+    return rows;
   };
 
   GeneralMonthlyCapitation.updateRecords_Depricated = async function () {
@@ -143,7 +138,8 @@ module.exports = (sequelize, DataTypes) => {
 
   GeneralMonthlyCapitation.initializeRecords = async function () {
     // const { log } = console;
-    const firstVerifiedEnrollee = await this.sequelize.models.Enrollee.getFirstVerifiedEnrollee();
+    const firstVerifiedEnrollee =
+      await this.sequelize.models.Enrollee.getFirstVerifiedEnrollee();
     const startMonth = months.firstDay(firstVerifiedEnrollee.dateVerified);
     const currentMonth = months.currentMonth;
     const dates = [startMonth];

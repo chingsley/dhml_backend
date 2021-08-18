@@ -2,7 +2,7 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable(
-      'HcpMonthlyFFSPayments',
+      'Encounters',
       {
         id: {
           type: Sequelize.UUID,
@@ -10,14 +10,13 @@ module.exports = {
           defaultValue: Sequelize.UUIDV4,
           allowNull: false,
         },
-        mfpId: {
-          type: Sequelize.UUID,
-          allowNull: false,
+        enrolleeId: {
+          type: Sequelize.INTEGER,
           references: {
-            model: 'MonthlyFFSPayments',
+            model: 'Enrollees',
             key: 'id',
           },
-          onDelete: 'RESTRICT',
+          onDelete: 'CASCADE',
           onUpdate: 'CASCADE',
         },
         hcpId: {
@@ -29,23 +28,20 @@ module.exports = {
           onDelete: 'RESTRICT',
           onUpdate: 'CASCADE',
         },
-        totalClaims: {
-          type: Sequelize.INTEGER,
-        },
-        amount: {
-          type: Sequelize.DECIMAL,
-        },
-        earliestClaimsVerificationDate: {
-          type: Sequelize.DATE,
-        },
-        auditRequestDate: {
-          type: Sequelize.DATE,
-        },
-        rrr: {
+        diagnosis: {
           type: Sequelize.STRING,
         },
-        tsaCharge: {
-          type: Sequelize.DOUBLE,
+        cost: {
+          type: Sequelize.DECIMAL,
+        },
+        prescription: {
+          type: Sequelize.TEXT,
+        },
+        isRepeatVisit: {
+          type: Sequelize.BOOLEAN,
+        },
+        isReferalVisit: {
+          type: Sequelize.BOOLEAN,
         },
         createdAt: {
           allowNull: false,
@@ -65,6 +61,6 @@ module.exports = {
   },
   // eslint-disable-next-line no-unused-vars
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('HcpMonthlyFFSPayments');
+    return queryInterface.dropTable('Encounters');
   },
 };

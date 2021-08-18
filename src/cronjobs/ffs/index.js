@@ -7,25 +7,21 @@ import { AFRICA_LAGOS } from '../timezones';
 const { log } = console;
 
 async function updateFFSAccountRecords() {
-  const t = await db.sequelize.transaction();
   try {
     const { rows, totals } = await fetchFFSMonthlyPaymentByHcps();
     const { id: mfpId } = await db.MonthlyFFSPayment.updateCurrentMonthRecord(
-      totals,
-      t
+      totals
     );
-    await db.HcpMonthlyFFSPayment.updateCurrentMonthRecords(rows, mfpId, t);
-    await t.commit();
-    log('', '---@ cronjob started @---');
+    await db.HcpMonthlyFFSPayment.updateCurrentMonthRecords(rows, mfpId);
+    log('', '---@ cronjob done @---');
   } catch (error) {
-    await t.rollback();
     log('CRON ERROR: cronjobs/ffs:', error);
   }
 }
 
 async function fetchFFSMonthlyPaymentByHcps() {
   const scriptFunc = claimsScripts.getClaimsByHcp;
-  const scriptRunner = new ScriptRunner(db);
+  const scriptRunner = new ScriptRunner(db.sequelize);
   const rows = await scriptRunner.execute(scriptFunc, {});
   const totals = rows.reduce(
     (acc, record) => {
@@ -46,13 +42,25 @@ module.exports = {
     cron.schedule(
       SCHEDULES.FFS,
       () => {
-        const today = new Date();
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        if (today.getMonth() !== tomorrow.getMonth()) {
-          // run job only on the last day of the month
-          updateFFSAccountRecords();
-        }
+        log('', '---@ cronjob started @---');
+        /**
+         * WE CALL 'updateFFSAccountRecords()' HERE TO RUN THE
+         * COMPUTATION ONCE EVERY DAY
+         */
+        updateFFSAccountRecords();
+
+        /**
+         * BUT IF WE DECIDE TO RUN THE COMPUTATION ON THE LAST DAY OF EVERY
+         * MONTH, THEN WE WILL USE THE BLOCK OF CODE BELOW AND COMMENT OUT
+         *  THE CALL TO 'updateFFSAccountRecords()' ABOVE
+         */
+        // const today = new Date();
+        // const tomorrow = new Date();
+        // tomorrow.setDate(tomorrow.getDate() + 1);
+        // // run job only on the last day of the month
+        // if (today.getMonth() !== tomorrow.getMonth()) {
+        //   updateFFSAccountRecords();
+        // }
       },
       {
         timezone: AFRICA_LAGOS,

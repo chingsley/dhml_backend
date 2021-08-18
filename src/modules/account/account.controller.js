@@ -50,7 +50,7 @@ export default class AccountController {
     try {
       const accountService = new AccountService(req);
       const data = await accountService.sendHcpMonthlyPaymentAdvice();
-      return res.status(200).json({ message: 'email sent successfully', data });
+      return res.status(200).json({ message: 'Email sent successfully', data });
     } catch (error) {
       Response.handleError('sendPaymentAdvice', error, req, res, next);
     }

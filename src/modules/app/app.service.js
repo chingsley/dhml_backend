@@ -170,6 +170,19 @@ export default class AppService {
     }
   }
 
+  async getPaginatedData(script, query) {
+    const nonPaginatedRows = await this.executeQuery(script, {
+      ...query,
+      pageSize: undefined,
+      page: undefined,
+    });
+    const count = nonPaginatedRows.length;
+    const rows = await this.executeQuery(script, {
+      ...this.query,
+    });
+    return { count, rows };
+  }
+
   throwError = (responseObj) => {
     throw new Error(JSON.stringify(responseObj));
   };

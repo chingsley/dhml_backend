@@ -1,5 +1,5 @@
 const db = require('../models');
-const IS_DEV = !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
+const SKIP_FFS_SEED = process.env.SKIP_FFS_SEED;
 const { default: claimsScripts } = require('../scripts/claims.scripts');
 const { default: ScriptRunner } = require('../../utils/ScriptRunner');
 const { months } = require('../../utils/timers');
@@ -7,23 +7,23 @@ const { months } = require('../../utils/timers');
 module.exports = {
   // eslint-disable-next-line no-unused-vars
   up: async (queryInterface, Sequelize) => {
-    if (IS_DEV) {
-      for (const n of [2, 1, 0]) {
-        const date = months.setPast(n);
-        const { rows, totals } = await fetchFFSMonthlyPaymentByHcps(date);
-        const { id: mfpId } = await db.MonthlyFFSPayment.create({
-          month: months.firstDay(date),
-          totalActualAmt: totals.amount,
-          totalActualClaims: totals.claims,
-        });
-        await db.HcpMonthlyFFSPayment.bulkCreate(
-          rows.map((row) => ({ ...row, mfpId }))
-        );
-      }
+    if (SKIP_FFS_SEED === 'true') {
+      return new Promise((resolve, _) => {
+        return resolve();
+      });
     }
-    return new Promise((resolve, _) => {
-      return resolve();
-    });
+    for (const n of [4, 3, 2, 1, 0]) {
+      const date = months.setPast(n);
+      const { rows, totals } = await fetchFFSMonthlyPaymentByHcps(date);
+      const { id: mfpId } = await db.MonthlyFFSPayment.create({
+        month: months.firstDay(date),
+        totalActualAmt: totals.amount,
+        totalActualClaims: totals.claims,
+      });
+      await db.HcpMonthlyFFSPayment.bulkCreate(
+        rows.map((row) => ({ ...row, mfpId }))
+      );
+    }
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -35,7 +35,7 @@ module.exports = {
 
 async function fetchFFSMonthlyPaymentByHcps(date) {
   const script = claimsScripts.getClaimsByHcp;
-  const scriptRunner = new ScriptRunner(db);
+  const scriptRunner = new ScriptRunner(db.sequelize);
   const rows = await scriptRunner.execute(script, { date });
   const totals = rows.reduce(
     (acc, record) => {
