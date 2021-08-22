@@ -6,24 +6,25 @@ import AppService from '../app/app.service';
 const { sequelize } = db;
 
 export default class UserService extends AppService {
-  constructor({ body, files, query, params }) {
-    super({ body, files, query, params });
-    this.userData = body;
+  constructor({ body, files, query, params, user: operator }) {
+    super({ body, files, query, params, operator });
+    this.body = body;
     this.files = files;
     this.query = query;
     this.params = params;
+    this.operator = operator;
   }
 
   async createUser() {
     const t = await sequelize.transaction();
     try {
-      const { staffId, roleId, returnPassword } = this.userData;
+      const { staffId, roleId, returnPassword } = this.body;
       // const staff = await this.validateStaffId(staffId);
       const staff = await this.validateId('Staff', staffId);
       this.rejectStaffWithoutEmail(staff);
       await this.validateRoleId(roleId); // move to appService
       await this.checkUserUniqueViolations();
-      const user = await db.User.create(this.userData, { transaction: t });
+      const user = await db.User.create(this.body, { transaction: t });
       const defaultPass = await this.createDefaultPassword(
         { userId: user.id },
         {
@@ -34,6 +35,7 @@ export default class UserService extends AppService {
       result.defaultPassword = returnPassword && defaultPass;
       await this.sendPassword(staff.email, defaultPass);
       await t.commit();
+      this.record(`created a new user; userId: ${user.id}`);
       return result;
     } catch (error) {
       await t.rollback();
@@ -88,12 +90,14 @@ export default class UserService extends AppService {
         { model: db.Staff, as: 'staffInfo' },
       ],
     });
+    this.record(`Updated user record: userId: ${user.id}`);
     return user;
   }
 
   async handleUserDelete() {
     const { userIds } = this.body;
     await db.User.destroy({ where: { id: userIds } });
+    this.record(`Deleted users: userIds: ${userIds.join(', ')}`);
   }
 
   async findUserById(userId) {
@@ -116,7 +120,7 @@ export default class UserService extends AppService {
     await this.validateUnique(['staffId'], {
       resourceType: 'User',
       model: db.User,
-      reqBody: this.userData,
+      reqBody: this.body,
       nonStringDataTypes: ['staffId'],
       resourceId: Number(userId),
     });

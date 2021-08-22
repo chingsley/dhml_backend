@@ -3,11 +3,13 @@ import db from '../../database/models';
 import AppService from '../app/app.service';
 
 export default class SpecialistService extends AppService {
-  constructor({ body, query, params }) {
-    super({ body, query, params });
+  constructor({ body, files, query, params, user: operator }) {
+    super({ body, files, query, params, operator });
     this.body = body;
+    this.files = files;
     this.query = query;
     this.params = params;
+    this.operator = operator;
   }
 
   getAllSpecialistsSVC() {

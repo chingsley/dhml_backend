@@ -6,6 +6,7 @@ import faker from 'faker';
 import getSampleStaffs from '../../../src/shared/samples/staff.samples';
 import ROLES from '../../../src/shared/constants/roles.constants';
 import nodemailer from 'nodemailer';
+import sgMail from '@sendgrid/mail';
 import _UserService from './user.test.services';
 import UserApi from './user.test.api';
 import _RoleService from '../role/role.test.service';
@@ -13,13 +14,16 @@ import UserController from '../../../src/modules/user/user.controller';
 
 describe('UserController', () => {
   const nodemailerOriginalImplementation = nodemailer.createTransport;
+  const sgMailOriginalImplementation = sgMail.send;
   beforeAll(() => {
     nodemailer.createTransport = jest.fn().mockReturnValue({
       sendMail: jest.fn().mockReturnValue({ status: 200 }),
     });
+    sgMail.send = jest.fn().mockReturnValue({ status: 200 });
   });
   afterAll(() => {
     nodemailer.createTransport = nodemailerOriginalImplementation;
+    sgMail.send = sgMailOriginalImplementation;
   });
   describe('registerUser', () => {
     let token, res, userPassword;

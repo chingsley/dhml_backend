@@ -13,7 +13,7 @@ import { CLAIMS_SUPPORT_DOCS } from '../../shared/constants/strings.constants';
 
 export default class RefcodeService extends AppService {
   constructor({ body, files, query, params, user: operator }) {
-    super({ body, files, query, params });
+    super({ body, files, query, params, operator });
     this.body = body;
     this.files = files;
     this.query = query;
@@ -22,9 +22,12 @@ export default class RefcodeService extends AppService {
     this.operator = operator;
   }
   async createRequestForReferalCodeSVC() {
-    const { enrolleeIdNo, referringHcpId, receivingHcpId, specialtyId } =
-      this.body;
-    await this.validateId('HealthCareProvider', referringHcpId);
+    const { enrolleeIdNo, receivingHcpId, specialtyId } = this.body;
+    // await this.validateId('HealthCareProvider', referringHcpId);
+    const referringHcp = await this.$getReferringHcpIdForCodeRequest(
+      this.operator,
+      this.body
+    );
     const receivingHcp = await this.validateId(
       'HealthCareProvider',
       receivingHcpId
@@ -35,12 +38,15 @@ export default class RefcodeService extends AppService {
       modelName: 'Enrollee',
       errorIfNotFound: 'Invalid enrollee Id No. Record not found',
     });
-    return db.ReferalCode.createAndReload({
+    const data = await db.ReferalCode.createAndReload({
       ...this.body,
       enrolleeId: enrollee.id,
       requestState: this.operator.userLocation,
       requestedBy: this.operator.subjectId,
+      referringHcpId: referringHcp.id,
     });
+    this.record(`Submitted a request for referal code (refcodeId: ${data.id})`);
+    return data;
   }
 
   getOneRefcodeSv() {
@@ -119,7 +125,9 @@ export default class RefcodeService extends AppService {
         : refcode.receivingHcp;
       await receivingHcp.validateSpecialtyId(specialtyId);
     }
-
+    this.record(
+      `Updated the details of the code request (refcodeId: ${refcodeId})`
+    );
     return refcode.updateAndReload(this.body);
   }
 
@@ -186,6 +194,7 @@ export default class RefcodeService extends AppService {
         stateOfGeneration: refcode.stateOfGeneration || stateOfGeneration,
       };
     }
+    this.record(`${status} code request (refcodeId: ${refcodeId})`);
     return refcode.updateAndReload(updates);
   }
 
@@ -196,11 +205,15 @@ export default class RefcodeService extends AppService {
     refcode.rejectIfNotApproved();
     refcode.rejectIfClaimsNotFound();
     refcode.rejectIfCodeIsClaimed('Claims have already been verified');
-    return refcode.updateAndReload({
+    const data = await refcode.updateAndReload({
       claimsVerifiedOn: new Date(),
       claimsVerifierId: this.operator.id,
       remarksOnClaims: remarks,
     });
+    this.record(
+      `Verified the claims for code request (refcodeId: ${refcodeId})`
+    );
+    return data;
   }
 
   async uploadClaimsSupportingDocSVC() {
@@ -213,7 +226,9 @@ export default class RefcodeService extends AppService {
     });
     const uploadedImgUrl = await Cloudinary.uploadImage(image, cloudSubFolder);
     await refcode.updateAndReload({ claimsSupportingDocument: uploadedImgUrl });
-
+    this.record(
+      `Uploaded claims-supporting documents (refcodeId: ${refcodeId})`
+    );
     return refcode;
   }
 
@@ -224,7 +239,9 @@ export default class RefcodeService extends AppService {
       withError: 'Invalid refcodeId, belongs to a different Receiving Hcp',
     });
     await refcode.updateAndReload({ claimsSupportingDocument: null });
-
+    this.record(
+      `Deleted claims-supporting documents (refcodeId: ${refcodeId})`
+    );
     return refcode;
   }
 
@@ -235,6 +252,7 @@ export default class RefcodeService extends AppService {
     refcode.disallowIf(['expired', 'claimed', 'declined', 'approved']);
 
     await refcode.destroy();
+    this.record(`Deleted code request (refcodeId: ${refcodeId})`);
     return true;
   }
 
@@ -291,6 +309,21 @@ export default class RefcodeService extends AppService {
     });
     refcodeHistory.enrollee = enrollee;
     return refcodeHistory;
+  }
+
+  async $getReferringHcpIdForCodeRequest(operator, reqBody) {
+    const { referringHcpId } = reqBody;
+    const { userType } = operator;
+    let referringHcp;
+    if (userType.toLowerCase() === 'hcp') {
+      referringHcp = operator;
+    } else {
+      referringHcp = await this.validateId(
+        'HealthCareProvider',
+        referringHcpId
+      );
+    }
+    return referringHcp;
   }
 }
 

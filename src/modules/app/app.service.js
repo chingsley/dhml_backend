@@ -3,16 +3,31 @@ import bcrypt from 'bcryptjs';
 import db from '../../database/models';
 import { QueryTypes } from 'sequelize';
 import { isBoolean, isValidDate } from '../../utils/helpers';
-import NodeMailer from '../../utils/NodeMailer';
+// import NodeMailer from '../../utils/NodeMailer';
 import { passwordMsgTemplate } from '../../utils/templates/forPassword';
 import NanoId from '../../utils/NanoId';
 import appHelpers from './app.helpers';
+import Sendgrid from '../../utils/Sendgrid/index';
 
 export default class AppService {
-  constructor({ body, files, query }) {
+  constructor({ body, files, query, params, operator }) {
     this.body = body;
     this.files = files;
     this.query = query;
+    this.params = params;
+    this.operator = operator;
+  }
+
+  record(action) {
+    if (!this.operator) {
+      throw new Error(
+        'AppService was initiated as Super(...) without a value for operator; operator is required'
+      );
+    }
+    db.AuditLog.logAction({
+      operator: this.operator,
+      action,
+    });
   }
 
   async validateUnique(
@@ -346,11 +361,16 @@ export default class AppService {
   }
 
   sendPassword(email, password) {
-    return NodeMailer.sendMail({
-      subject: 'INTEGRATED HEALTH MANAGEMENT SYSTEM',
-      emails: email,
+    // return NodeMailer.sendMail({
+    //   subject: 'INTEGRATED HEALTH MANAGEMENT SYSTEM',
+    //   emails: email,
+    //   html: passwordMsgTemplate(password),
+    //   notificationType: 'password',
+    // });
+    return Sendgrid.send({
+      subject: 'IHIMS NEW USER ACCOUNT',
+      email,
       html: passwordMsgTemplate(password),
-      notificationType: 'password',
     });
   }
 
