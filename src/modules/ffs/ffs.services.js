@@ -1,5 +1,5 @@
 import { Op } from 'sequelize';
-import { delayInSeconds } from '../../utils/timers';
+import { delayInSeconds, moment } from '../../utils/timers';
 import { downloadPaymentAdvice } from '../../utils/pdf/generatePaymentAdvicePdf';
 import send_email_report from '../../utils/pdf/sendPaymentAdvice';
 import db from '../../database/models';
@@ -122,6 +122,9 @@ export default class FFSService extends AppService {
       },
       { where: { id: mfpId }, returning: true }
     );
+    this.record(
+      `Requested Audit for FFS ${moment(monthlyFFS.month).format('MMMM YYYY')}`
+    );
     return data[0];
   }
 
@@ -147,6 +150,7 @@ export default class FFSService extends AppService {
       errorIfNotFound: `no record matches the hcpmfpId: ${id}`,
     });
     await hcpMonthlyFSS.update(this.body);
+    this.record(`Updated value for tsa/remita (hcpmfpId: ${id})`);
     return hcpMonthlyFSS;
   }
 
@@ -158,6 +162,7 @@ export default class FFSService extends AppService {
     monthlyFFS.rejectIfApproved();
 
     await monthlyFFS.update({ ...statusUpdate, dateAudited: new Date() });
+    this.record(`Audited FFS ${moment(monthlyFFS.month).format('MMMM YYYY')}`);
     return monthlyFFS;
   }
 
@@ -169,6 +174,10 @@ export default class FFSService extends AppService {
     const { approve } = this.body;
     const dateApproved = approve ? new Date() : null;
     await monthlyFFS.update({ dateApproved });
+    const action = approve ? 'Approved FFS' : 'Canceled FFS approval';
+    this.record(
+      `${action} for ${moment(monthlyFFS.month).format('MMMM YYYY')}`
+    );
     return monthlyFFS;
   }
 
@@ -207,6 +216,9 @@ export default class FFSService extends AppService {
         date: monthlyFFS.month,
         hcpIds,
       });
+      this.record(
+        `Marked ${moment(monthlyFFS.month).format('MMMM YYYY')} FFS as "Paid"`
+      );
       await t.commit();
       return monthlyFFS;
     } catch (error) {
@@ -310,6 +322,7 @@ export default class FFSService extends AppService {
       fileType: 'application/pdf',
       forPeriod,
     });
+    this.record(`Sent FFS payment advice to hcp ${hcp.code}`);
     return hcpMonthlyFFSPayment;
   }
 

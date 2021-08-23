@@ -4,7 +4,7 @@ import AppService from '../app/app.service';
 
 export default class AuditLogService extends AppService {
   constructor({ body, files, query, params, user: operator }) {
-    super({ body, files, query, params });
+    super({ body, files, query, params, operator });
     this.body = body;
     this.files = files;
     this.query = query;

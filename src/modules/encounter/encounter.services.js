@@ -6,7 +6,7 @@ import encounterHelpers from './encounter.helpers';
 
 export default class EncounterService extends AppService {
   constructor({ body, files, query, params, user: operator }) {
-    super({ body, files, query, params });
+    super({ body, files, query, params, operator });
     this.body = body;
     this.files = files;
     this.query = query;
@@ -24,6 +24,7 @@ export default class EncounterService extends AppService {
     isRepeatVisit,
     isReferalVisit,
   }) {
+    this.record(`Created new Encounter (Enrollee Int Id: ${enrolleeId})`);
     return db.Encounter.create({
       enrolleeId,
       hcpId,
