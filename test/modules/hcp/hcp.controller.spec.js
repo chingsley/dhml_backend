@@ -1,4 +1,5 @@
 /* eslint-disable jest/expect-expect */
+import sgMail from '@sendgrid/mail';
 import TestService from '../app/app.test.service';
 import getSampleHCPs from '../../../src/shared/samples/hcp.samples';
 import ROLES from '../../../src/shared/constants/roles.constants';
@@ -19,10 +20,12 @@ const { log } = console;
 
 describe('HcpController', () => {
   let hcpSample;
+  const sgMailOriginalImplementation = sgMail.send;
   const nodemailerOriginalImplementation = nodemailer.createTransport;
   const originalNanoIdGetValue = NanoId.getValue;
   const SAMPLE_PASSWORD = 'Testing*123';
   beforeAll(() => {
+    sgMail.send = jest.fn().mockReturnValue({ status: 200 });
     nodemailer.createTransport = jest.fn().mockReturnValue({
       sendMail: jest.fn().mockReturnValue({ status: 200 }),
     });
@@ -30,6 +33,7 @@ describe('HcpController', () => {
   });
   afterAll(() => {
     nodemailer.createTransport = nodemailerOriginalImplementation;
+    sgMail.send = sgMailOriginalImplementation;
     NanoId.getValue = originalNanoIdGetValue;
   });
   describe('addNewHcp', () => {
@@ -112,6 +116,7 @@ describe('HcpController', () => {
   describe('updateHcp', () => {
     let token, res, hcp1, hcp2;
     const changes = { email: 'newmail@gmail.com' };
+
     beforeAll(async () => {
       await TestService.resetDB();
       const HCPs = await TestService.seedHCPs(2);
@@ -122,6 +127,7 @@ describe('HcpController', () => {
       token = data.token;
       res = await HcpApi.update(hcp1.id, changes, token);
     });
+
     it('returns a success message with status 200', async (done) => {
       try {
         expect(res.status).toBe(200);
