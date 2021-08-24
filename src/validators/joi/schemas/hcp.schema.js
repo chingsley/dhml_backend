@@ -16,6 +16,7 @@ export const getHcpSchema = ({ withRequiredFields = true, req = {} }) => {
     armOfService: Joi.string().trim(),
     geopoliticalZone: Joi.string().trim(),
     accountNumber: numberValidate(withRequiredFields),
+    accountName: stringValidate(withRequiredFields),
     accountType: Joi.string().trim(),
     returnPassword: Joi.bool().valid(true, false),
     specialtyIds: Joi.array()

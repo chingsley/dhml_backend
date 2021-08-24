@@ -95,37 +95,17 @@ export default class FFSService extends AppService {
     const monthlyFFS = await this.$findMonthlyFFSById(mfpId);
     monthlyFFS.rejectIfRecordHasPassedAudit();
     monthlyFFS.rejectCurrentMonth();
+    monthlyFFS.rejectIfMonthHasZeroClaims();
     await monthlyFFS.checkPendingMonths();
 
-    const { selectedHcpIds, ...voucherData } = this.body;
+    const { selectedHcpIds: hcpIds, ...voucherData } = this.body;
     db.FFSVoucher.updateOrCreate(mfpId, voucherData);
-    const [_, updatedRecords] = await db.HcpMonthlyFFSPayment.update(
-      { auditRequestDate: new Date() },
-      { where: { mfpId, hcpId: selectedHcpIds }, returning: true }
-    );
-    const totals = updatedRecords.reduce(
-      (acc, record) => {
-        acc.selectedAmt += Number(record.amount);
-        acc.selectedClaims += Number(record.totalClaims);
-        return acc;
-      },
-      {
-        selectedAmt: 0,
-        selectedClaims: 0,
-      }
-    );
-    const [__, data] = await db.MonthlyFFSPayment.update(
-      {
-        totalSelectedAmt: totals.selectedAmt,
-        totalSelectedClaims: totals.selectedClaims,
-        auditRequestDate: new Date(),
-      },
-      { where: { id: mfpId }, returning: true }
-    );
+    const totals = await db.HcpMonthlyFFSPayment.updateSelection(mfpId, hcpIds);
+    const data = await db.MonthlyFFSPayment.updateSelectionStats(mfpId, totals);
     this.record(
       `Requested Audit for FFS ${moment(monthlyFFS.month).format('MMMM YYYY')}`
     );
-    return data[0];
+    return data;
   }
 
   async getFFSVoucherByMfpIdSvc() {
@@ -196,11 +176,8 @@ export default class FFSService extends AppService {
 
       monthlyFFS.rejectIfNotApproved();
 
-      const { hcpMonthlyFFSPayments, monthInWords } = monthlyFFS;
+      const { hcpMonthlyFFSPayments } = monthlyFFS;
       const hcpIds = hcpMonthlyFFSPayments.map((obj) => obj.hcpId);
-      this.rejectIf(hcpIds.length < 1, {
-        withError: `No HCPs have been selected for ${monthInWords} payment`,
-      });
 
       let datePaid = new Date();
       let script = claimsScripts.markPaidRefcodes;
@@ -269,7 +246,7 @@ export default class FFSService extends AppService {
     const hcpMonthlyFFSPayment = await this.findOneRecord({
       modelName: 'HcpMonthlyFFSPayment',
       where: { id },
-      errorIfNotFound: `No "Paid" hcpMonthlyFFSPayment matches the id of ${id}. Please confirm that the id is correct and that the ffs has been paid`,
+      errorIfNotFound: `No "Paid" hcpMonthlyFFSPayment matches the id of ${id}`,
       include: [
         {
           model: db.HealthCareProvider,
@@ -279,10 +256,15 @@ export default class FFSService extends AppService {
         {
           model: db.MonthlyFFSPayment,
           as: 'monthlyFFSPayment',
-          where: { datePaid: { [Op.not]: null } },
+          // where: { datePaid: { [Op.not]: null } },
           attributes: { exclude: ['createdAt', 'updatedAt'] },
         },
       ],
+    });
+
+    const month = hcpMonthlyFFSPayment.monthlyFFSPayment.monthInWords;
+    this.rejectIf(!hcpMonthlyFFSPayment.monthlyFFSPayment.isPaid, {
+      withError: `The FFS for ${month} has not been paid`,
     });
 
     const hcp = hcpMonthlyFFSPayment.hcp;
@@ -293,6 +275,7 @@ export default class FFSService extends AppService {
       name: hcpName,
       bank: bankName,
       accountNumber,
+      accountName,
       armOfService,
       email,
     } = hcp;
@@ -308,6 +291,7 @@ export default class FFSService extends AppService {
         hcpName,
         bankName,
         accountNumber,
+        accountName,
         armOfService,
         amount,
       },

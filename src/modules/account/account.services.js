@@ -68,6 +68,7 @@ export default class AccountService extends AppService {
       name: hcpName,
       bank: bankName,
       accountNumber,
+      accountName,
       armOfService,
       email,
     } = hmpa.hcp;
@@ -83,6 +84,7 @@ export default class AccountService extends AppService {
         hcpName,
         bankName,
         accountNumber,
+        accountName,
         armOfService,
         amount,
       },

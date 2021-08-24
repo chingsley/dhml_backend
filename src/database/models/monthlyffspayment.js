@@ -112,6 +112,18 @@ module.exports = (sequelize, DataTypes) => {
     return ffsSumForCurrentMonth;
   };
 
+  MonthlyFFSPayment.updateSelectionStats = async function (mfpId, totals) {
+    const [__, data] = await this.update(
+      {
+        totalSelectedAmt: totals.selectedAmt,
+        totalSelectedClaims: totals.selectedClaims,
+        auditRequestDate: new Date(),
+      },
+      { where: { id: mfpId }, returning: true }
+    );
+    return data[0];
+  };
+
   MonthlyFFSPayment.prototype.rejectIfNotReadyForAudit = function () {
     rejectIf(this.auditRequestDate === null, {
       withError: 'Record NOT ready for audit.',
@@ -157,7 +169,11 @@ module.exports = (sequelize, DataTypes) => {
   MonthlyFFSPayment.prototype.checkPendingMonths = async function () {
     const [pendingRecord] =
       await this.sequelize.models.MonthlyFFSPayment.findAll({
-        where: { month: { [Op.lt]: this.month }, datePaid: { [Op.is]: null } },
+        where: {
+          month: { [Op.lt]: this.month },
+          totalActualClaims: { [Op.gt]: 0 },
+          datePaid: { [Op.is]: null },
+        },
         order: [['month', 'ASC']],
         LIMIT: 1,
       });
@@ -173,6 +189,12 @@ module.exports = (sequelize, DataTypes) => {
         ],
       });
     }
+  };
+
+  MonthlyFFSPayment.prototype.rejectIfMonthHasZeroClaims = function () {
+    rejectIf(this.totalActualClaims < 1, {
+      withError: `There are no computed FFS for ${this.monthInWords}; Total Actual Claims: ${this.totalActualClaims}, Total Acutal Amount: ${this.totalActualAmt}`,
+    });
   };
 
   return MonthlyFFSPayment;
