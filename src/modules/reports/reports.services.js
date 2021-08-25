@@ -8,12 +8,13 @@ import { AUDIT_STATUS } from '../../shared/constants/lists.constants';
 import reportHelpers from './reports.helpers';
 
 export default class ReportService extends AppService {
-  constructor({ body, files, query, params }) {
-    super({ body, files, query, params });
-    this.reqBody = body;
+  constructor({ body, files, query, params, user: operator }) {
+    super({ body, files, query, params, operator });
+    this.body = body;
     this.files = files;
     this.query = query;
     this.params = params;
+    this.operator = operator;
   }
 
   async getGeneralMonthlyCap(userRole) {
@@ -42,22 +43,6 @@ export default class ReportService extends AppService {
     });
   }
 
-  async approveMonthlyCapSum() {
-    const capSum = await this.getCapSumById(this.params.summaryId, {
-      rejectCurrentMonth: true,
-    });
-    this.rejectIf(capSum.auditStatus !== AUDIT_STATUS.auditPass, {
-      withError: 'Cannot approve. Capitation has not passed audit.',
-    });
-    this.rejectIf(capSum.isPaid, {
-      withError: 'Cannot change approval, capitation has been paid.',
-    });
-    const { approve } = this.body;
-    const dateApproved = approve ? new Date() : null;
-    await capSum.update({ dateApproved });
-    return capSum;
-  }
-
   async auditMonthlyCapSum() {
     const t = await db.sequelize.transaction();
     const { auditPass, pending } = AUDIT_STATUS;
@@ -82,12 +67,33 @@ export default class ReportService extends AppService {
         await capSum.update({ ...this.body, dateAudited }, { transaction: t });
         await db.HcpMonthlyCapitation.deleteMonthRecord(capSum, t);
       }
+      this.record(
+        `audited ${capSum.monthInWords} capitation. (Audit status: ${auditStatus})`
+      );
       await t.commit();
       return capSum;
     } catch (error) {
       await t.rollback();
       throw error;
     }
+  }
+
+  async approveMonthlyCapSum() {
+    const capSum = await this.getCapSumById(this.params.summaryId, {
+      rejectCurrentMonth: true,
+    });
+    this.rejectIf(capSum.auditStatus !== AUDIT_STATUS.auditPass, {
+      withError: 'Cannot approve. Capitation has not passed audit.',
+    });
+    this.rejectIf(capSum.isPaid, {
+      withError: 'Cannot change approval, capitation has been paid.',
+    });
+    const { approve } = this.body;
+    const dateApproved = approve ? new Date() : null;
+    await capSum.update({ dateApproved });
+    const logAction = approve ? 'Approved' : 'Cancled approval for';
+    this.record(`${logAction} ${capSum.monthInWords} capitation`);
+    return capSum;
   }
 
   /**
@@ -100,7 +106,11 @@ export default class ReportService extends AppService {
     this.rejectIf(!capSum.isApproved, {
       withError: 'Cannot pay for capitation before MD"s approval',
     });
+    this.rejectIf(capSum.isPaid, {
+      withError: `${capSum.monthInWords} has already been marked as paid`,
+    });
     await capSum.update({ datePaid: new Date() });
+    this.record(`Marked ${capSum.monthInWords} capitation as "paid"`);
     return capSum;
   }
 

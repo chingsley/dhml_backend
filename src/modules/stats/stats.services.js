@@ -3,12 +3,13 @@ import AppService from '../app/app.service';
 import statsScripts from '../../database/scripts/stats.scripts';
 
 export default class ReportService extends AppService {
-  constructor({ body, files, query, params }) {
-    super({ body, files, query, params });
-    this.reqBody = body;
+  constructor({ body, files, query, params, user: operator }) {
+    super({ body, files, query, params, operator });
+    this.body = body;
     this.files = files;
     this.query = query;
     this.params = params;
+    this.operator = operator;
   }
 
   async getGeneralStatistics() {

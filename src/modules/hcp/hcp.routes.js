@@ -1,5 +1,5 @@
 import express from 'express';
-import roles, { HOD_ACCOUNT } from '../../shared/constants/roles.constants';
+import roles from '../../shared/constants/roles.constants';
 import { HEADERS_OR_QUERY } from '../../shared/constants/strings.constants';
 import AppMiddleware from '../app/app.middleware';
 import AuthMiddleware from '../auth/auth.middleware';
@@ -15,6 +15,7 @@ const {
   HCP,
   ACCOUNT_OFFICER,
   DEPT_USER,
+  HOD_ACCOUNT,
 } = roles;
 
 const HOD_AND_HIGHER_ROLES = [
@@ -91,7 +92,7 @@ router.get(
 );
 router.patch(
   '/status',
-  AuthMiddleware.authorize([SUPERADMIN]),
+  AuthMiddleware.authorize([SUPERADMIN, MD]),
   HcpMiddleware.validateStatusUpdate,
   HcpController.changeHcpStatus
 );

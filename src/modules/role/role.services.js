@@ -2,12 +2,13 @@ import db from '../../database/models';
 import AppService from '../app/app.service';
 
 export default class RoleService extends AppService {
-  constructor({ body, files, query, params }) {
-    super({ body, files, query, params });
+  constructor({ body, files, query, params, user: operator }) {
+    super({ body, files, query, params, operator });
     this.body = body;
     this.files = files;
     this.query = query;
     this.params = params;
+    this.operator = operator;
   }
 
   fetchAllRoles() {

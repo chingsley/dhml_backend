@@ -18,16 +18,17 @@ import { throwError } from '../../shared/helpers';
 const { JWT_SECTET } = process.env;
 
 export default class AuthService extends AppService {
-  constructor({ body, files, query, params }) {
-    super({ body, files, query, params });
-    this.reqBody = body;
+  constructor({ body, files, query, params, user: operator }) {
+    super({ body, files, query, params, operator });
+    this.body = body;
     this.files = files;
     this.query = query;
     this.params = params;
+    this.operator = operator;
   }
 
   handleUserLogin = async () => {
-    const { email, password } = this.reqBody;
+    const { email, password } = this.body;
     let staff = await this.findStaffByEmail(email, { errorCode: LGN001 });
     const user = this.getUserInfoFromStaff(staff, { errorCode: LGN002 });
     this.rejectExpiredDefaultPass(user.password);
@@ -45,7 +46,7 @@ export default class AuthService extends AppService {
   };
 
   handleHcpLogin = async () => {
-    const { username, password } = this.reqBody;
+    const { username, password } = this.body;
     let hcp = await this.findHcpByEmailOrCode(username);
     this.rejectExpiredDefaultPass(hcp.password);
     this.validatePassword(password, hcp.password.value);
@@ -56,7 +57,7 @@ export default class AuthService extends AppService {
   };
 
   changeUserPassword = async function (user) {
-    const { oldPassword, newPassword } = this.reqBody;
+    const { oldPassword, newPassword } = this.body;
     const { password } = user;
     await this.validatePassword(
       oldPassword,
@@ -72,7 +73,7 @@ export default class AuthService extends AppService {
   };
 
   changeHcpPassword = async function (hcp) {
-    const { oldPassword, newPassword } = this.reqBody;
+    const { oldPassword, newPassword } = this.body;
     const { password } = hcp;
     await this.validatePassword(
       oldPassword,
