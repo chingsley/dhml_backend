@@ -16,6 +16,7 @@ export const downloadPaymentAdvice = (
     hcpName,
     bankName,
     accountNumber,
+    accountName,
     amount,
     armOfService,
   },
@@ -158,6 +159,26 @@ export const downloadPaymentAdvice = (
             },
             {
               text: accountNumber,
+              bold: true,
+            },
+            {
+              text: '',
+            },
+            {
+              text: '',
+            },
+            {
+              text: '',
+            },
+          ],
+        },
+        {
+          columns: [
+            {
+              text: 'Account Name: ',
+            },
+            {
+              text: accountName,
               bold: true,
             },
             {

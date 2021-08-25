@@ -2,11 +2,10 @@
 // const getSampleHCPs = require('../../shared/samples/hcp.samples');
 const ROLES = require('../../shared/constants/roles.constants');
 const HCPs = require('../../../live_data/HealthCareProviders.json');
-const { randInt } = require('../../utils/helpers');
+// const { randInt } = require('../../utils/helpers');
 const db = require('../../database/models');
 
 // const armOfService = ['NAVY', 'ARMY', 'AIR FORCE', 'TRI-SERVICE', undefined];
-const armOfService = [undefined, undefined, undefined, undefined, undefined];
 
 module.exports = {
   // eslint-disable-next-line no-unused-vars
@@ -20,7 +19,8 @@ module.exports = {
       HCPs.map((hcp) => ({
         ...hcp,
         roleId: hcpRole.id,
-        armOfService: armOfService[randInt(0, armOfService.length - 1)],
+        // armOfService: armOfService[randInt(0, armOfService.length - 1)],
+        accountName: hcp.accountName || 'NOT SPECIFIED',
       }))
     );
   },

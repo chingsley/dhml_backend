@@ -1,5 +1,6 @@
 'use strict';
 
+const { Op } = require('sequelize');
 const { firstDayOfLastMonth } = require('../../utils/timers');
 
 module.exports = (sequelize, DataTypes) => {
@@ -79,6 +80,36 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'hcpId',
       as: 'hcp',
     });
+  };
+  HcpMonthlyFFSPayment.resetSelection = async function (mfpId) {
+    await this.update(
+      {
+        auditRequestDate: null,
+      },
+      { where: { mfpId, auditRequestDate: { [Op.not]: null } } }
+    );
+  };
+  HcpMonthlyFFSPayment.updateSelection = async function (mfpId, hcpIds) {
+    await this.resetSelection(mfpId);
+    const [_, updatedRecords] = await this.update(
+      { auditRequestDate: new Date() },
+      { where: { mfpId, hcpId: hcpIds }, returning: true }
+    );
+    return this.computeTotalSelections(updatedRecords);
+  };
+  HcpMonthlyFFSPayment.computeTotalSelections = function (updatedRecords) {
+    const totals = updatedRecords.reduce(
+      (acc, record) => {
+        acc.selectedAmt += Number(record.amount);
+        acc.selectedClaims += Number(record.totalClaims);
+        return acc;
+      },
+      {
+        selectedAmt: 0,
+        selectedClaims: 0,
+      }
+    );
+    return totals;
   };
   HcpMonthlyFFSPayment.updateCurrentMonthRecords = async function (
     records,

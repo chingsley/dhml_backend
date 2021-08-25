@@ -18,6 +18,7 @@ export const getFFSVoucherSchema = () => {
     dateAuthorized: Joi.date().format('YYYY-MM-DD'),
     selectedHcpIds: Joi.array()
       .items(Joi.number().integer().min(1))
+      .min(1)
       .unique()
       .required(),
   });

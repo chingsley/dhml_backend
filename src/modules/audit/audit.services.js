@@ -15,6 +15,7 @@ export default class AuditLogService extends AppService {
   getAuditLogsService() {
     return db.AuditLog.findAndCountAll({
       where: { ...this.filterBy(['name']), ...this.$filterByDate(this.query) },
+      order: [['createdAt', 'DESC']],
       ...this.paginate(),
     });
   }
