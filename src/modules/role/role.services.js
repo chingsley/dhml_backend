@@ -1,4 +1,6 @@
+import { Op } from 'sequelize';
 import db from '../../database/models';
+import rolesConstants from '../../shared/constants/roles.constants';
 import AppService from '../app/app.service';
 
 export default class RoleService extends AppService {
@@ -13,19 +15,27 @@ export default class RoleService extends AppService {
 
   fetchAllRoles() {
     return db.Role.findAndCountAll({
-      where: { ...this.filterBy(['title'], { modelName: 'Role' }) },
+      where: {
+        [Op.and]: [
+          this.filterBy(['title']),
+          this.filterRolesByOperator(this.operator),
+        ],
+        //,
+      },
       attributes: ['id', 'title'],
       ...this.paginate(),
     });
   }
 
-  findAllWhere(condition) {
-    return db.Role.findAndCountAll({
-      where: {
-        ...condition,
-        ...this.filterBy(['title'], { modelName: 'Role' }),
-      },
-      ...this.paginate(),
-    });
+  filterRolesByOperator(operator) {
+    const operatorRole = operator.role.title;
+    const { MD, SUPERADMIN, BASIC } = rolesConstants;
+    if (operatorRole === MD) {
+      return {};
+    }
+    if (operatorRole === SUPERADMIN) {
+      return { title: { [Op.notIn]: [MD] } };
+    }
+    return { title: BASIC };
   }
 }
