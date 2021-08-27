@@ -244,7 +244,7 @@ export default class AppService {
       }
       return obj;
     }, {});
-
+    // console.log({ filterObj });
     return filterObj;
   }
   exactMatch(arrOfFields, options = {}) {
