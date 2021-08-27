@@ -15,7 +15,7 @@ describe('RoleController', () => {
       seededRoles = await _RoleService.seedAllRoles();
       stffs = getSampleStaffs(2).sampleStaffs;
     });
-    it('returns all available roles to a superadmin', async (done) => {
+    it('returns all roles EXCEPT "md" to a superadmin', async (done) => {
       try {
         const { token } = await TestService.getToken(
           stffs[0],
@@ -24,14 +24,14 @@ describe('RoleController', () => {
         res = await RoleApi.getAll(token);
         const { data } = res.body;
         expect(res.status).toBe(200);
-        expect(data.count).toEqual(seededRoles.length);
-        expect(data.rows).toHaveLength(seededRoles.length);
+        expect(data.count).toEqual(seededRoles.length - 1);
+        expect(data.rows).toHaveLength(seededRoles.length - 1);
         done();
       } catch (e) {
         done(e);
       }
     });
-    it('returns only the "basic" role to a non-superadmin', async (done) => {
+    it('returns only the "basic" role for an Admin user', async (done) => {
       try {
         const { token } = await TestService.getToken(stffs[1], ROLES.ADMIN);
         res = await RoleApi.getAll(token);
