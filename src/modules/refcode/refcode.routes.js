@@ -45,6 +45,7 @@ router.get(
     VERIFIER,
     ENROLMENT_OFFICER,
     HCP,
+    roles.SA,
   ]),
   RefcodeMiddleware.validateRefcodeQuery,
   RefcodeController.getReferalCodes
@@ -75,6 +76,7 @@ router.get(
     HOD_MEDICAL,
     roles.TIER_1_MEDICAL,
     roles.TIER_2_MEDICAL,
+    roles.SA,
   ]),
   RefcodeMiddleware.validateFetchCodeHistory,
   RefcodeController.getEnrolleeCodeHistory
