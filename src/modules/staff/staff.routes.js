@@ -5,6 +5,7 @@ import {
   ENROLMENT_OFFICER,
   HOD_ADMIN,
   MD,
+  SA,
   SUPERADMIN,
   VERIFIER,
 } from '../../shared/constants/roles.constants';
@@ -23,7 +24,7 @@ router.post(
 );
 router.patch(
   '/:staffId',
-  AuthMiddleware.authorize([MD, SUPERADMIN, ADMIN, HOD_ADMIN]),
+  AuthMiddleware.authorize([MD, SUPERADMIN, ADMIN, HOD_ADMIN, SA]),
   AppMiddleware.validateIdParams,
   StaffMiddleware.validateStaffUpdate,
   StaffController.updateStaff
@@ -38,6 +39,7 @@ router.get(
     VERIFIER,
     ENROLMENT_OFFICER,
     DEPT_USER,
+    SA,
   ]),
   StaffMiddleware.validateStaffQuery,
   StaffController.getAllStaff
