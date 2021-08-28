@@ -3,7 +3,11 @@ import {
   ACCOUNT_OFFICER,
   HOD_ACCOUNT,
   HOD_AUDIT,
+  HOD_MEDICAL,
+  HOD_PR_AND_M,
+  HOD_VHS,
   MD,
+  SA,
   SUPERADMIN,
 } from '../../shared/constants/roles.constants';
 import AppMiddleware from '../app/app.middleware';
@@ -13,7 +17,17 @@ import ReportsMiddleware from './reports.middleware';
 
 const router = express.Router();
 
-const allowedRoles = [SUPERADMIN, MD, HOD_ACCOUNT, HOD_AUDIT, ACCOUNT_OFFICER];
+const allowedRoles = [
+  SUPERADMIN,
+  MD,
+  HOD_ACCOUNT,
+  HOD_AUDIT,
+  ACCOUNT_OFFICER,
+  SA,
+  HOD_PR_AND_M,
+  HOD_MEDICAL,
+  HOD_VHS,
+];
 
 router.get(
   '/capitation',
