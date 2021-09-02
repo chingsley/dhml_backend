@@ -3,12 +3,27 @@ import AuthMiddleware from '../auth/auth.middleware';
 import ClaimsController from './claims.controllers';
 import ClaimsMiddleware from './claims.middlewares';
 import AppMiddleware from '../app/app.middleware';
-import { HCP, MD, SA, SUPERADMIN, TIER_1_MEDICAL, TIER_2_MEDICAL } from '../../shared/constants/roles.constants';
-
+import {
+  HCP,
+  HOD_MEDICAL,
+  MD,
+  SA,
+  SUPERADMIN,
+  TIER_1_MEDICAL,
+  TIER_2_MEDICAL,
+} from '../../shared/constants/roles.constants';
 
 const router = express.Router();
 
-const ALLOWED_ROLES = [MD, SA, HCP, TIER_1_MEDICAL, TIER_2_MEDICAL, SUPERADMIN];
+const ALLOWED_ROLES = [
+  MD,
+  SA,
+  HCP,
+  HOD_MEDICAL,
+  TIER_1_MEDICAL,
+  TIER_2_MEDICAL,
+  SUPERADMIN,
+];
 
 router.post(
   '/',
