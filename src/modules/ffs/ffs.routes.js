@@ -12,6 +12,7 @@ import {
   TIER_2_MEDICAL,
   HOD_PR_AND_M,
   SA,
+  SUPERADMIN,
 } from '../../shared/constants/roles.constants';
 import FFSController from './ffs.controller';
 
@@ -27,6 +28,7 @@ const CAN_VIEW_FFS_DETIAILS = [
   TIER_2_MEDICAL,
   HOD_PR_AND_M,
   SA,
+  SUPERADMIN
 ];
 
 router.get(

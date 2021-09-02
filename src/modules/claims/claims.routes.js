@@ -1,38 +1,39 @@
 import express from 'express';
-import roles from '../../shared/constants/roles.constants';
 import AuthMiddleware from '../auth/auth.middleware';
 import ClaimsController from './claims.controllers';
 import ClaimsMiddleware from './claims.middlewares';
 import AppMiddleware from '../app/app.middleware';
+import { HCP, MD, SA, SUPERADMIN, TIER_1_MEDICAL, TIER_2_MEDICAL } from '../../shared/constants/roles.constants';
 
-const { HCP, MD, TIER_1_MEDICAL, TIER_2_MEDICAL } = roles;
 
 const router = express.Router();
 
+const ALLOWED_ROLES = [MD, SA, HCP, TIER_1_MEDICAL, TIER_2_MEDICAL, SUPERADMIN];
+
 router.post(
   '/',
-  AuthMiddleware.authorize([MD, HCP, TIER_1_MEDICAL, TIER_2_MEDICAL]),
+  AuthMiddleware.authorize([...ALLOWED_ROLES]),
   ClaimsMiddleware.validateNewClaim,
   ClaimsController.addNewClaim
 );
 
 router.get(
   '/',
-  AuthMiddleware.authorize([MD, HCP, TIER_1_MEDICAL, TIER_2_MEDICAL]),
+  AuthMiddleware.authorize([...ALLOWED_ROLES]),
   ClaimsMiddleware.validateClaimsSearchQuery,
   ClaimsController.getClaims
 );
 
 router.patch(
   '/',
-  AuthMiddleware.authorize([MD, HCP, TIER_1_MEDICAL, TIER_2_MEDICAL]),
+  AuthMiddleware.authorize([...ALLOWED_ROLES]),
   ClaimsMiddleware.validateBulkClaimProcessing,
   ClaimsController.processBulkClaims
 );
 
 router.patch(
   '/:claimId',
-  AuthMiddleware.authorize([MD, HCP, TIER_1_MEDICAL, TIER_2_MEDICAL]),
+  AuthMiddleware.authorize([...ALLOWED_ROLES]),
   AppMiddleware.validateIdParams,
   ClaimsMiddleware.validatePatchUpdateByIdParam,
   ClaimsController.updateClaimByIdParam
@@ -40,7 +41,7 @@ router.patch(
 
 router.delete(
   '/:claimId',
-  AuthMiddleware.authorize([MD, HCP, TIER_1_MEDICAL, TIER_2_MEDICAL]),
+  AuthMiddleware.authorize([...ALLOWED_ROLES]),
   AppMiddleware.validateIdParams,
   ClaimsController.deleteClaimByIdParam
 );
