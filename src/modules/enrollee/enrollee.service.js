@@ -283,7 +283,7 @@ export default class EnrolleeService extends AppService {
         { where: { id: { [Op.in]: dependantIds } } }
       );
     }
-
+    db.GeneralMonthlyCapitation.updateRecords();
     this.record(`Verified Enrollee (ID NO:${enrollee.enrolleeIdNo})`);
     return enrollee;
   }
@@ -298,6 +298,7 @@ export default class EnrolleeService extends AppService {
         { where: { id: { [Op.in]: dependantIds } } }
       );
     }
+    db.GeneralMonthlyCapitation.updateRecords();
     this.record(`Unverified Enrollee (ID NO:${enrollee.enrolleeIdNo})`);
     return enrollee;
   }
