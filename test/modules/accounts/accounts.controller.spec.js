@@ -10,7 +10,7 @@ import getSampleVoucher from '../../../src/shared/samples/voucher.sample';
 import _ReportService from '../reports/reports.test.service';
 import AccountsApi from './accounts.test.api';
 import AccountController from '../../../src/modules/account/account.controller';
-import { dateInWords, months, nextMonth } from '../../../src/utils/timers';
+import { dateInWords, months, getNextMonth } from '../../../src/utils/timers';
 
 const rateInNaira = Number(process.env.RATE_IN_NAIRA);
 const { MD, HOD_AUDIT, HOD_ACCOUNT } = ROLES;
@@ -166,7 +166,7 @@ describe('AccountController', () => {
     });
     it('returns 400 error if no capitations were found for the specified month', async (done) => {
       try {
-        const date = nextMonth([subjectMonth]);
+        const date = getNextMonth([subjectMonth]);
         const res = await AccountsApi.getApprovedMonthSpecificCapitation(
           date,
           token[MD]
