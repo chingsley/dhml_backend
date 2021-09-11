@@ -1,9 +1,13 @@
 'use strict';
-import { Op } from 'sequelize';
-import { moment } from '../../utils/timers';
+
 import { QueryTypes } from 'sequelize';
 import { monthlyCapSum } from '../scripts/approvals.scripts';
-import { months, nextMonth } from '../../utils/timers';
+import {
+  moment,
+  months,
+  getNextMonth,
+  isFutureMonth,
+} from '../../utils/timers';
 import { AUDIT_STATUS } from '../../shared/constants/lists.constants';
 
 module.exports = (sequelize, DataTypes) => {
@@ -85,7 +89,7 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
 
-  GeneralMonthlyCapitation.prototype.nextMonths = function (i) {
+  GeneralMonthlyCapitation.prototype.getNextMonths = function (i) {
     return moment(this.month).add(i, 'months').format('YYYY-MM-DD');
   };
 
@@ -114,18 +118,18 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     if (!lastRecordedCapSum) {
-      return this.initializeRecords();
+      return this.createNewRecords();
     }
 
     const bulkQuery = [];
     let i = 0; // 0 so that it includes the lastRecordedCapSum in the list to update
     while (
-      new Date(lastRecordedCapSum.nextMonths(i)).getTime() <=
+      new Date(lastRecordedCapSum.getNextMonths(i)).getTime() <=
       new Date(months.currentMonth).getTime()
     ) {
       bulkQuery.push(
         this.runScript(monthlyCapSum, {
-          date: lastRecordedCapSum.nextMonths(i),
+          date: lastRecordedCapSum.getNextMonths(i),
         })
       );
       i = i + 1;
@@ -136,35 +140,55 @@ module.exports = (sequelize, DataTypes) => {
     await Promise.all(upserts);
   };
 
-  GeneralMonthlyCapitation.initializeRecords = async function () {
-    // const { log } = console;
-    const firstVerifiedEnrollee =
-      await this.sequelize.models.Enrollee.getFirstVerifiedEnrollee();
-    const startMonth = months.firstDay(firstVerifiedEnrollee.dateVerified);
+  GeneralMonthlyCapitation.createNewRecords = async function (startMonth) {
+    if (isFutureMonth(startMonth)) return;
+
     const currentMonth = months.currentMonth;
     const dates = [startMonth];
     while (
-      new Date(nextMonth(dates)).getTime() <= new Date(currentMonth).getTime()
+      new Date(getNextMonth(dates)).getTime() <=
+      new Date(currentMonth).getTime()
     ) {
-      dates.push(nextMonth(dates));
+      dates.push(getNextMonth(dates));
     }
     const bulkQuery = dates.map((date) =>
       this.runScript(monthlyCapSum, { date })
     );
+
     const results = await Promise.all(bulkQuery);
     await this.bulkCreate(results.map((results) => results[0]));
   };
 
   GeneralMonthlyCapitation.updateRecords = async function () {
-    const count = await this.count();
-    if (count === 0) {
-      return this.initializeRecords();
-    }
-
-    const pendingAndFlaggedRecords = await this.findAll({
-      where: { auditStatus: { [Op.not]: AUDIT_STATUS.auditPass } },
-      attributes: ['month'],
+    const currentRecords = await this.findAll({
+      order: [['month', 'DESC']],
+      attributes: ['month', 'auditStatus'],
     });
+
+    let startMonth;
+    if (currentRecords.length !== 0) {
+      this.updateCurrentRecords(currentRecords);
+      const mostRecentRecord = currentRecords[0];
+      const nextMonth = getNextMonth([mostRecentRecord.month]);
+      startMonth = nextMonth;
+    } else {
+      const firstVerifiedEnrollee =
+        await this.sequelize.models.Enrollee.getFirstVerifiedEnrollee();
+      startMonth =
+        firstVerifiedEnrollee &&
+        months.firstDay(firstVerifiedEnrollee.dateVerified);
+    }
+    if (startMonth) {
+      await this.createNewRecords(startMonth);
+    }
+  };
+
+  GeneralMonthlyCapitation.updateCurrentRecords = async function (
+    currentRecords
+  ) {
+    const pendingAndFlaggedRecords = currentRecords.filter(
+      (record) => record.auditStatus !== AUDIT_STATUS.auditPass
+    );
 
     const bulkQuery = pendingAndFlaggedRecords.map((record) => {
       return this.runScript(monthlyCapSum, {
