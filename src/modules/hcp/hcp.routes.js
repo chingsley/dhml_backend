@@ -107,6 +107,7 @@ router.get(
       ENROLMENT_OFFICER,
       TIER_2_MEDICAL,
       TIER_1_MEDICAL,
+      HCP,
     ],
     {
       tokenLocation: HEADERS_OR_QUERY,

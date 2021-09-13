@@ -1,4 +1,5 @@
 const moment = require('moment');
+const { rejectIf } = require('../shared/helpers');
 
 const days = {
   setPast: (n) => moment().subtract(n, 'days').format('YYYY-MM-DD'),
@@ -23,7 +24,7 @@ const dateOnly = (dateTime) => moment(dateTime).format('YYYY-MM-DD');
  * @param {array} dateArr array of date values
  * @returns date in the format (YYYY-MM-DD)
  */
-const nextMonth = (dateArr) =>
+const getNextMonth = (dateArr) =>
   moment(dateArr[dateArr.length - 1])
     .add(1, 'months')
     .format('YYYY-MM-DD');
@@ -40,15 +41,19 @@ const delayInSeconds = (timeout) =>
     }, timeout * 1000);
   });
 
+const isFutureMonth = (month) =>
+  new Date(month).getTime() > new Date(months.currentMonth).getTime();
+
 module.exports = {
   moment,
   days,
   t24Hours,
   months,
   dateOnly,
-  nextMonth,
+  getNextMonth,
   firstDayOfYear,
   dateInWords,
   firstDayOfLastMonth: months.firstDay(months.setPast(1)),
   delayInSeconds,
+  isFutureMonth,
 };

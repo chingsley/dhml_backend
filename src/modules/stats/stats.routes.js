@@ -13,20 +13,6 @@ const allowedRoles = Object.values(roles).filter(
   (role) => ![HCP, BASIC, ENROLMENT_OFFICER].includes(role)
 );
 
-// const allowedRoles = [
-//   SA,
-//   SUPERADMIN,
-//   MD,
-//   HOD_ACCOUNT,
-//   HOD_AUDIT,
-//   HOD_MEDICAL,
-//   HOD_VHS,
-//   HOD_PR_AND_M,
-//   TIER_1_MEDICAL,
-//   TIER_2_MEDICAL,
-//   HOD_STORES,
-// ];
-
 router.get(
   '/',
   AuthMiddleware.authorize([...allowedRoles]),
