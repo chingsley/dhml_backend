@@ -116,6 +116,35 @@ export default class AuthService extends AppService {
     }
   };
 
+  initiatePasswordResetSvc = async function () {
+    const { userType, email } = this.body;
+    const user = await this.$findUserForPasswordReset(userType, email);
+    this.$handlePasswordResetNotification(user, userType, db.Token);
+    return {
+      message: 'Please check your email for the password reset instructions',
+      user,
+    };
+  };
+
+  $findUserForPasswordReset = function (userType, email) {
+    let modelName, includeOption;
+    if (userType === 'user') {
+      // required: true => staff must have user account, else return null
+      includeOption = { model: db.User, as: 'userInfo', required: true };
+      modelName = 'Staff';
+    } else {
+      // required: true => hcp must have a password, else return null
+      includeOption = { model: db.Password, as: 'password', required: true };
+      modelName = 'HealthCareProvider';
+    }
+    return this.findOneRecord({
+      modelName,
+      where: { email: { [Op.iLike]: email } },
+      include: includeOption,
+      isRequired: false,
+    });
+  };
+
   findByEmail = async function (email, recordType) {
     const errorIfNotFound = `No ${recordType} found for the email ${email}`;
     if (recordType === 'user') {
@@ -133,7 +162,11 @@ export default class AuthService extends AppService {
   };
 
   findStaffByEmail = function (email, options) {
-    const { errorIfNotFound = INVALID_CREDENTIAL, errorCode } = options;
+    const {
+      errorIfNotFound = INVALID_CREDENTIAL,
+      errorCode,
+      isRequired = true,
+    } = options;
     return this.findOneRecord({
       modelName: 'Staff',
       where: { email: { [Op.iLike]: `${email}` } },
@@ -145,7 +178,7 @@ export default class AuthService extends AppService {
           { model: db.Role, attributes: ['title'], as: 'role' },
         ],
       },
-      isRequired: true,
+      isRequired,
       errorIfNotFound,
       status: 401,
       errorCode,
@@ -166,7 +199,8 @@ export default class AuthService extends AppService {
 
   findHcpByEmailOrCode = function (
     username,
-    errorIfNotFound = INVALID_CREDENTIAL
+    errorIfNotFound = INVALID_CREDENTIAL,
+    isRequired = true
   ) {
     return this.findOneRecord({
       modelName: 'HealthCareProvider',
@@ -180,7 +214,7 @@ export default class AuthService extends AppService {
         { model: db.Password, as: 'password' },
         { model: db.Role, attributes: ['title'], as: 'role' },
       ],
-      isRequired: true,
+      isRequired,
       errorIfNotFound,
       status: 401,
       errorCode: LGN001,
