@@ -49,6 +49,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'userId',
       as: 'password',
     });
+    User.hasOne(models.Token, {
+      foreignKey: 'userId',
+      as: 'token',
+    });
     User.belongsTo(models.Role, {
       foreignKey: 'roleId',
       as: 'role',

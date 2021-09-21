@@ -91,6 +91,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'hcpId',
       as: 'password',
     });
+    HealthCareProvider.hasOne(models.Token, {
+      foreignKey: 'hcpId',
+      as: 'token',
+    });
     HealthCareProvider.hasMany(models.ReferalCode, {
       foreignKey: 'receivingHcpId',
       as: 'referalCodes',

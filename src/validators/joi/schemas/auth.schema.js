@@ -15,22 +15,29 @@ export const login = Joi.object({
   }),
 });
 
-export const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^_&*])(?=.{8,})/;
+export const PASSWORD_REGEX =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^_&*])(?=.{8,})/;
 export const passwordChange = Joi.object({
   oldPassword: Joi.string().trim().required(),
   newPassword: Joi.string().regex(PASSWORD_REGEX).required(),
 });
 
 const resendDefaultPass = Joi.object({
-  email: Joi.string().trim().required(),
+  email: Joi.string().email().trim().required(),
   userType: Joi.string().trim().required().valid('user', 'hcp'),
   returnPassword: Joi.bool().valid(true, false),
+});
+
+const requestPasswordReset = Joi.object({
+  email: Joi.string().email().trim().required(),
+  userType: Joi.string().trim().required().valid('user', 'hcp'),
 });
 
 const authSchema = {
   resendDefaultPass,
   login,
   passwordChange,
+  requestPasswordReset,
 };
 
 export default authSchema;
