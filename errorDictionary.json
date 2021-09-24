@@ -1,12 +1,12 @@
 {
   "LGN001": "no user matches the supplied email/username",
   "LGN003": "incorrect password",
-  "PRT001": "password reset token is not a valid uuid",
-  "PRT002": "password reset token not found",
-  "PRT003": "password reset token has expired",
   "REFC001": "Referal code has invalid format",
   "REFC002": "Referal code not found in the db",
   "REFC003": "Referal code found but belong to a different Receiving Hcp",
   "REFC004": "Referal code found by refcodeId but belongs to a different Receiving Hcp",
-  "ENC001": "A non hcp user is attempting to register encounter. During new encounters for first-time visit, the enrollee hcpId is gotten from the token of the requesting hcp. If we allow user to register encounter then req.user.id will be a userId instead of a hcpId"
+  "ENC001": "A non hcp user is attempting to register encounter. During new encounters for first-time visit, the enrollee hcpId is gotten from the token of the requesting hcp. If we allow user to register encounter then req.user.id will be a userId instead of a hcpId",
+  "PRT001": "password reset token not found",
+  "PRT002": "password reset token has expired",
+  "PRT003": "Password reset token was found, but belongs to a different user.. ie. token does not  match the supplied email"
 }

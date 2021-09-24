@@ -11,7 +11,7 @@ import {
 import NanoId from '../../utils/NanoId';
 import appHelpers from './app.helpers';
 import Sendgrid from '../../utils/Sendgrid/index';
-import { TOKEN_TYPES } from '../../shared/constants/lists.constants';
+import { TOKEN_TYPES, USERTYPES } from '../../shared/constants/lists.constants';
 
 export default class AppService {
   constructor({ body, files, query, params, operator }) {
@@ -400,8 +400,8 @@ export default class AppService {
       });
 
       await TokenTable.create({
-        userId: userType === 'user' ? user.userInfo.id : null,
-        hcpId: userType === 'hcp' ? user.id : null,
+        userId: userType === USERTYPES.USER ? user.userInfo.id : null,
+        hcpId: userType === USERTYPES.HCP ? user.id : null,
         value: resetToken,
         type: TOKEN_TYPES.PASSWORD_RESET_TOKEN,
         expiresAt: timers.setMinutes(15),
@@ -449,7 +449,7 @@ export default class AppService {
    * @param {object} refcode the referal code
    */
   authorizeRefcodeRecevingHcp(operator, refcode, { withError } = {}) {
-    if (operator.userType === 'hcp') {
+    if (operator.userType === USERTYPES.HCP) {
       const hcpId = operator.id;
       this.rejectIf(refcode.receivingHcpId !== hcpId, {
         withError:

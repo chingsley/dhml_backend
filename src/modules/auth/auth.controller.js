@@ -1,4 +1,5 @@
 /* eslint-disable indent */
+import { USERTYPES } from '../../shared/constants/lists.constants';
 import Jwt from '../../utils/Jwt';
 import Response from '../../utils/Response';
 import AuthService from './auth.services';
@@ -9,7 +10,7 @@ export default class AuthController {
       const authService = new AuthService(req);
       const { userType } = req.body;
       let data;
-      if (userType === 'user') {
+      if (userType === USERTYPES.USER) {
         data = await authService.handleUserLogin();
       } else {
         data = await authService.handleHcpLogin();
@@ -24,7 +25,7 @@ export default class AuthController {
     try {
       const authService = new AuthService(req);
       let data;
-      if (req.userType === 'user') {
+      if (req.userType === USERTYPES.USER) {
         data = await authService.changeUserPassword(req.user);
       } else {
         data = await authService.changeHcpPassword(req.user);
@@ -50,7 +51,7 @@ export default class AuthController {
       const authService = new AuthService(req);
       const { email, userType } = req.body;
       const data = await authService.initiatePasswordResetSvc(email, userType);
-      return res.status(200).json(data);
+      return res.status(200).json({ data });
     } catch (error) {
       Response.handleError('initialtePasswordReset', error, req, res, next);
     }
@@ -58,16 +59,20 @@ export default class AuthController {
   static async validatePasswordResetToken(req, res, next) {
     try {
       const authService = new AuthService(req);
-      const resetToken = req.headers['reset-token'];
-      if (!resetToken) {
-        return res.status(400).json({
-          errror: 'missing "reset-token" in headers',
-        });
-      }
+      const { resetToken } = req.body; // see AuthMiddleware.requireResetToken
       const data = await authService.validatePasswordResetTokenSvc(resetToken);
-      return res.status(200).json(data);
+      return res.status(200).json({ message: 'success', data });
     } catch (error) {
       Response.handleError('validatePasswordResetToken', error, req, res, next);
+    }
+  }
+  static async completePasswordReset(req, res, next) {
+    try {
+      const authService = new AuthService(req);
+      const data = await authService.completePasswordResetSvc(req.body);
+      return res.status(200).json({ data });
+    } catch (error) {
+      Response.handleError('completePasswordReset', error, req, res, next);
     }
   }
   static async getUserProfile(req, res, next) {
