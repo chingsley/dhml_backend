@@ -13,6 +13,7 @@ import {
   AFRSHIP_PRINCIPAL,
   DSSHIP_PRINCIPAL,
 } from '../../shared/constants/enrollee.constants';
+import { USERTYPES } from '../../shared/constants/lists.constants';
 
 const { log } = console;
 
@@ -225,7 +226,8 @@ export default class EnrolleeService extends AppService {
       ],
     });
     this.rejectIf(
-      this.operator.userType === 'hcp' && enrollee.hcpId !== this.operator.id,
+      this.operator.userType === USERTYPES.HCP &&
+        enrollee.hcpId !== this.operator.id,
       {
         withError: 'Access Denied. AUTH004',
         errorCode: 'AUTH004',
