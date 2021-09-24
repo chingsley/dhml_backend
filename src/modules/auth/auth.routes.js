@@ -36,7 +36,7 @@ router.post(
 );
 
 router.post(
-  '/password/reset/request',
+  '/password/reset/initiate',
   AuthMiddleware.validateRequestForPasswordReset,
   AuthController.initialtePasswordReset
 );
