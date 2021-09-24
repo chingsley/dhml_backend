@@ -3,11 +3,15 @@ import bcrypt from 'bcryptjs';
 import db from '../../database/models';
 import { QueryTypes } from 'sequelize';
 import { isBoolean, isValidDate } from '../../utils/helpers';
-// import NodeMailer from '../../utils/NodeMailer';
-import { passwordMsgTemplate } from '../../utils/templates/forPassword';
+import timers from '../../utils/timers';
+import {
+  passwordMsgTemplate,
+  passwordResetTokenTemplate,
+} from '../../utils/templates/forPassword';
 import NanoId from '../../utils/NanoId';
 import appHelpers from './app.helpers';
 import Sendgrid from '../../utils/Sendgrid/index';
+import { TOKEN_TYPES } from '../../shared/constants/lists.constants';
 
 export default class AppService {
   constructor({ body, files, query, params, operator }) {
@@ -360,6 +364,11 @@ export default class AppService {
     return await NanoId.getValue({ length: 8, pool });
   }
 
+  async generateResetToken() {
+    const pool = '123456789abcdefghijkmnoqrstuvwxyz_-';
+    return await NanoId.getValue({ length: 12, pool });
+  }
+
   sendPassword(email, password) {
     // return NodeMailer.sendMail({
     //   subject: 'INTEGRATED HEALTH MANAGEMENT SYSTEM',
@@ -373,6 +382,32 @@ export default class AppService {
       html: passwordMsgTemplate(password),
     });
   }
+
+  handlePasswordResetNotification = async function (
+    user,
+    userType,
+    TokenTable
+  ) {
+    if (user) {
+      const resetToken = await this.generateResetToken();
+
+      const message = passwordResetTokenTemplate(resetToken);
+
+      await Sendgrid.send({
+        subject: 'IHIMS PASSWORD RESET',
+        email: user.email,
+        html: message,
+      });
+
+      await TokenTable.create({
+        userId: userType === 'user' ? user.userInfo.id : null,
+        hcpId: userType === 'hcp' ? user.id : null,
+        value: resetToken,
+        type: TOKEN_TYPES.PASSWORD_RESET_TOKEN,
+        expiresAt: timers.setMinutes(15),
+      });
+    }
+  };
 
   sumUp(rows, fields) {
     const initial = fields.reduce((acc, field) => {

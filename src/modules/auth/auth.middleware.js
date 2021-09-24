@@ -194,6 +194,25 @@ export default class AuthMiddleware {
     }
   }
 
+  static async validateRequestForPasswordReset(req, res, next) {
+    try {
+      const { joiFormatted } = await validateSchema(
+        authSchema.requestPasswordReset,
+        req.body
+      );
+      req.body = joiFormatted;
+      return next();
+    } catch (error) {
+      return Response.handleError(
+        'validateRequestForPasswordReset',
+        error,
+        req,
+        res,
+        next
+      );
+    }
+  }
+
   static findUserById(userId) {
     return db.User.findOneWhere(
       { id: userId },

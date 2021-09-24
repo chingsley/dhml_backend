@@ -45,6 +45,31 @@ export default class AuthController {
       Response.handleError('resendDefaultPass', error, req, res, next);
     }
   }
+  static async initialtePasswordReset(req, res, next) {
+    try {
+      const authService = new AuthService(req);
+      const { email, userType } = req.body;
+      const data = await authService.initiatePasswordResetSvc(email, userType);
+      return res.status(200).json(data);
+    } catch (error) {
+      Response.handleError('initialtePasswordReset', error, req, res, next);
+    }
+  }
+  static async validatePasswordResetToken(req, res, next) {
+    try {
+      const authService = new AuthService(req);
+      const resetToken = req.headers['reset-token'];
+      if (!resetToken) {
+        return res.status(400).json({
+          errror: 'missing "reset-token" in headers',
+        });
+      }
+      const data = await authService.validatePasswordResetTokenSvc(resetToken);
+      return res.status(200).json(data);
+    } catch (error) {
+      Response.handleError('validatePasswordResetToken', error, req, res, next);
+    }
+  }
   static async getUserProfile(req, res, next) {
     try {
       const { user, userType } = req;
