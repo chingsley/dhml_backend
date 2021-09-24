@@ -119,10 +119,28 @@ export default class AuthService extends AppService {
   initiatePasswordResetSvc = async function () {
     const { userType, email } = this.body;
     const user = await this.$findUserForPasswordReset(userType, email);
-    this.$handlePasswordResetNotification(user, userType, db.Token);
+    this.handlePasswordResetNotification(user, userType, db.Token);
     return {
       message: 'Please check your email for the password reset instructions',
       user,
+    };
+  };
+
+  validatePasswordResetTokenSvc = async function (resetToken) {
+    const token = await db.Token.findToken({ value: resetToken });
+    this.rejectIf(!token, {
+      withError: 'invalid reset token',
+      status: 401,
+      isValid: false,
+    });
+    this.rejectIf(token.isExpired, {
+      withError: 'Token has expired',
+      status: 401,
+      isValid: false,
+    });
+    return {
+      message: 'Token is valid',
+      isValid: true,
     };
   };
 
