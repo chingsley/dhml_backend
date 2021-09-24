@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import db from '../../database/models';
 import { QueryTypes } from 'sequelize';
 import { isBoolean, isValidDate } from '../../utils/helpers';
-// import NodeMailer from '../../utils/NodeMailer';
+import timers from '../../utils/timers';
 import {
   passwordMsgTemplate,
   passwordResetTokenTemplate,
@@ -383,7 +383,7 @@ export default class AppService {
     });
   }
 
-  $handlePasswordResetNotification = async function (
+  handlePasswordResetNotification = async function (
     user,
     userType,
     TokenTable
@@ -404,6 +404,7 @@ export default class AppService {
         hcpId: userType === 'hcp' ? user.id : null,
         value: resetToken,
         type: TOKEN_TYPES.PASSWORD_RESET_TOKEN,
+        expiresAt: timers.setMinutes(15),
       });
     }
   };

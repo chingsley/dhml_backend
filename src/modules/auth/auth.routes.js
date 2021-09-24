@@ -37,10 +37,11 @@ router.post(
 
 router.post(
   '/request_password_reset',
-  // AuthMiddleware.authorize(),
   AuthMiddleware.validateRequestForPasswordReset,
   AuthController.initialtePasswordReset
 );
+
+router.get('/password/reset_token', AuthController.validatePasswordResetToken);
 
 router.get(
   '/profile',

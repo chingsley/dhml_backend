@@ -12,7 +12,6 @@ module.exports = (sequelize, DataTypes) => {
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
-        unique: true,
       },
       hcpId: {
         type: DataTypes.INTEGER,
@@ -22,7 +21,6 @@ module.exports = (sequelize, DataTypes) => {
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
-        unique: true,
       },
       value: {
         type: DataTypes.STRING,
@@ -32,6 +30,15 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         validate: { isIn: [Object.values(TOKEN_TYPES)] },
+      },
+      expiresAt: {
+        type: DataTypes.DATE,
+      },
+      isExpired: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return this.expiresAt && this.expiresAt < new Date();
+        },
       },
     },
     {}
@@ -45,6 +52,9 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'hcpId',
       as: 'hcp',
     });
+  };
+  Token.findToken = function (query) {
+    return this.findOne({ where: query });
   };
   return Token;
 };
