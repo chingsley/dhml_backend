@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { USERTYPES } from '../../shared/constants/lists.constants';
 import Response from '../../utils/Response';
 import downloadFile from '../../utils/sendDownloads';
 import HcpService from './hcp.services';
@@ -46,7 +47,7 @@ export default class HcpController {
     try {
       const { user, userType } = req;
       const { hcpId } = req.params;
-      if (userType === 'hcp' && `${user.id}` !== `${hcpId}`) {
+      if (userType === USERTYPES.HCP && `${user.id}` !== `${hcpId}`) {
         return res.status(401).json({
           errors: [
             'Access denied. As an HCP user, you can only view your own enrollees',

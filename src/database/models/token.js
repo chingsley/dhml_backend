@@ -54,7 +54,13 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
   Token.findToken = function (query) {
-    return this.findOne({ where: query });
+    return this.findOne({
+      where: query,
+      include: [
+        { model: sequelize.models.User, as: 'user' },
+        { model: sequelize.models.HealthCareProvider, as: 'hcp' },
+      ],
+    });
   };
   return Token;
 };

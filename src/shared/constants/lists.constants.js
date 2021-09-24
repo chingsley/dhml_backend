@@ -103,3 +103,8 @@ export const DISEASE_PATTERN_RANGES = [
 export const TOKEN_TYPES = {
   PASSWORD_RESET_TOKEN: 'password reset token',
 };
+
+export const USERTYPES = {
+  USER: 'user',
+  HCP: 'hcp',
+};

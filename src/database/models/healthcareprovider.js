@@ -181,5 +181,15 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
 
+  HealthCareProvider.findWhere = async function (query) {
+    return this.findOne({
+      where: query,
+      include: {
+        model: sequelize.models.Password,
+        as: 'password',
+      },
+    });
+  };
+
   return HealthCareProvider;
 };

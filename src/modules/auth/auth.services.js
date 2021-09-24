@@ -14,6 +14,7 @@ import Jwt from '../../utils/Jwt';
 import { t24Hours } from '../../utils/timers';
 import AppService from '../app/app.service';
 import { throwError } from '../../shared/helpers';
+import { USERTYPES } from '../../shared/constants/lists.constants';
 
 const { JWT_SECTET } = process.env;
 
@@ -129,24 +130,60 @@ export default class AuthService extends AppService {
   validatePasswordResetTokenSvc = async function (resetToken) {
     const token = await db.Token.findToken({ value: resetToken });
     this.rejectIf(!token, {
-      withError: 'invalid reset token',
+      withError: 'Invalid reset token',
       status: 401,
-      isValid: false,
+      errorCode: 'PRT001',
     });
     this.rejectIf(token.isExpired, {
       withError: 'Token has expired',
       status: 401,
-      isValid: false,
+      errorCode: 'PRT002',
     });
-    return {
-      message: 'Token is valid',
-      isValid: true,
-    };
+    return token;
+  };
+
+  completePasswordResetSvc = async function ({
+    userType,
+    password: newPassword,
+    email,
+    resetToken,
+  }) {
+    const token = await this.validatePasswordResetTokenSvc(resetToken);
+    let password;
+    if (userType === USERTYPES.USER) {
+      const staff = await db.Staff.findWhere({ email });
+
+      this.rejectIf(!staff, { withError: 'user email not found' });
+      this.rejectIf(!staff.userInfo, { withError: 'staff not signed up' });
+      this.rejectIf(token.userId !== staff.userInfo.id, {
+        withError: 'Invalid reset token',
+        errorCode: 'PRT003',
+      });
+      password = staff.userInfo.password;
+    } else {
+      const hcp = await db.HealthCareProvider.findWhere({ email });
+
+      this.rejectIf(!hcp, { withError: 'hcp email not found' });
+      this.rejectIf(!hcp.password, { withError: 'hcp not signed up as user' });
+      this.rejectIf(token.hcpId !== hcp.id, {
+        withError: 'Invalid reset token',
+        errorCode: 'PRT003',
+      });
+      password = hcp.password;
+    }
+    await password.update({
+      value: this.hashPassword(newPassword),
+      isDefaultValue: false,
+    });
+
+    await token.destroy();
+
+    return { message: 'successfully updated password' };
   };
 
   $findUserForPasswordReset = function (userType, email) {
     let modelName, includeOption;
-    if (userType === 'user') {
+    if (userType === USERTYPES.USER) {
       // required: true => staff must have user account, else return null
       includeOption = { model: db.User, as: 'userInfo', required: true };
       modelName = 'Staff';
@@ -165,7 +202,7 @@ export default class AuthService extends AppService {
 
   findByEmail = async function (email, recordType) {
     const errorIfNotFound = `No ${recordType} found for the email ${email}`;
-    if (recordType === 'user') {
+    if (recordType === USERTYPES.USER) {
       const staff = await this.findStaffByEmail(email, {
         errorIfNotFound: `no staff exists with email: ${email}`,
       });
