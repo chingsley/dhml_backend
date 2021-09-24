@@ -52,6 +52,24 @@ export default class AuthMiddleware {
       );
     }
   }
+  static async validatepasswordResetComplete(req, res, next) {
+    try {
+      const { joiFormatted } = await validateSchema(
+        authSchema.passwordResetComplete,
+        req.body
+      );
+      req.body = joiFormatted;
+      return next();
+    } catch (error) {
+      Response.handleError(
+        'validatepasswordResetComplete',
+        error,
+        req,
+        res,
+        next
+      );
+    }
+  }
 
   /**
    *
@@ -194,6 +212,25 @@ export default class AuthMiddleware {
     }
   }
 
+  static async validateRequestForPasswordReset(req, res, next) {
+    try {
+      const { joiFormatted } = await validateSchema(
+        authSchema.requestPasswordReset,
+        req.body
+      );
+      req.body = joiFormatted;
+      return next();
+    } catch (error) {
+      return Response.handleError(
+        'validateRequestForPasswordReset',
+        error,
+        req,
+        res,
+        next
+      );
+    }
+  }
+
   static findUserById(userId) {
     return db.User.findOneWhere(
       { id: userId },
@@ -272,5 +309,20 @@ export default class AuthMiddleware {
       });
     }
     return true;
+  }
+
+  static async requireResetToken(req, res, next) {
+    try {
+      const resetToken = req.headers['reset-token'];
+      if (!resetToken) {
+        return res.status(400).json({
+          errror: 'missing "reset-token" in headers',
+        });
+      }
+      req.body.resetToken = resetToken;
+      return next();
+    } catch (error) {
+      Response.handleError('requireResetToken', error, req, res, next);
+    }
   }
 }

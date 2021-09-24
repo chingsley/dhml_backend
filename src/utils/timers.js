@@ -1,5 +1,4 @@
 const moment = require('moment');
-const { rejectIf } = require('../shared/helpers');
 
 const days = {
   setPast: (n) => moment().subtract(n, 'days').format('YYYY-MM-DD'),
@@ -41,6 +40,12 @@ const delayInSeconds = (timeout) =>
     }, timeout * 1000);
   });
 
+const setMinutes = (numOfMinutes) => {
+  let twentyMinutesLater = new Date();
+  twentyMinutesLater.setMinutes(twentyMinutesLater.getMinutes() + numOfMinutes);
+  return twentyMinutesLater;
+};
+
 const isFutureMonth = (month) =>
   new Date(month).getTime() > new Date(months.currentMonth).getTime();
 
@@ -56,4 +61,5 @@ module.exports = {
   firstDayOfLastMonth: months.firstDay(months.setPast(1)),
   delayInSeconds,
   isFutureMonth,
+  setMinutes,
 };

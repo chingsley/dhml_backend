@@ -35,6 +35,25 @@ router.post(
   AuthController.resendDefaultPass
 );
 
+router.post(
+  '/password/reset/request',
+  AuthMiddleware.validateRequestForPasswordReset,
+  AuthController.initialtePasswordReset
+);
+
+router.get(
+  '/password/reset/validate',
+  AuthMiddleware.requireResetToken,
+  AuthController.validatePasswordResetToken
+);
+
+router.post(
+  '/password/reset/complete',
+  AuthMiddleware.validatepasswordResetComplete,
+  AuthMiddleware.requireResetToken,
+  AuthController.completePasswordReset
+);
+
 router.get(
   '/profile',
   AuthMiddleware.authorize(null, {

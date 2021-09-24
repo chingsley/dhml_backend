@@ -91,6 +91,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'hcpId',
       as: 'password',
     });
+    HealthCareProvider.hasOne(models.Token, {
+      foreignKey: 'hcpId',
+      as: 'token',
+    });
     HealthCareProvider.hasMany(models.ReferalCode, {
       foreignKey: 'receivingHcpId',
       as: 'referalCodes',
@@ -174,6 +178,16 @@ module.exports = (sequelize, DataTypes) => {
     rejectIf(!this.email, {
       withError: `Request Failed. The HCP ${this.code} has no email in the system`,
       status: 422,
+    });
+  };
+
+  HealthCareProvider.findWhere = async function (query) {
+    return this.findOne({
+      where: query,
+      include: {
+        model: sequelize.models.Password,
+        as: 'password',
+      },
     });
   };
 

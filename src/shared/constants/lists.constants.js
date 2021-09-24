@@ -99,3 +99,12 @@ export const DISEASE_PATTERN_RANGES = [
   '50-59',
   '60+',
 ];
+
+export const TOKEN_TYPES = {
+  PASSWORD_RESET_TOKEN: 'password reset token',
+};
+
+export const USERTYPES = {
+  USER: 'user',
+  HCP: 'hcp',
+};
