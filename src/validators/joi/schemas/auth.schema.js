@@ -29,10 +29,6 @@ export const passwordChange = Joi.object({
 
 const passwordResetComplete = Joi.object({
   password: Joi.string().trim().regex(PASSWORD_REGEX).required(),
-  // email: Joi.string().trim().email().required(),
-  // userType: Joi.string()
-  //   .trim()
-  //   .valid(...Object.values(USERTYPES)),
 });
 
 const resendDefaultPass = Joi.object({
