@@ -143,34 +143,11 @@ export default class AuthService extends AppService {
   };
 
   completePasswordResetSvc = async function ({
-    userType,
     password: newPassword,
-    email,
     resetToken,
   }) {
     const token = await this.validatePasswordResetTokenSvc(resetToken);
-    let password;
-    if (userType === USERTYPES.USER) {
-      const staff = await db.Staff.findWhere({ email });
-
-      this.rejectIf(!staff, { withError: 'user email not found' });
-      this.rejectIf(!staff.userInfo, { withError: 'staff not signed up' });
-      this.rejectIf(token.userId !== staff.userInfo.id, {
-        withError: 'Invalid reset token',
-        errorCode: 'PRT003',
-      });
-      password = staff.userInfo.password;
-    } else {
-      const hcp = await db.HealthCareProvider.findWhere({ email });
-
-      this.rejectIf(!hcp, { withError: 'hcp email not found' });
-      this.rejectIf(!hcp.password, { withError: 'hcp not signed up as user' });
-      this.rejectIf(token.hcpId !== hcp.id, {
-        withError: 'Invalid reset token',
-        errorCode: 'PRT003',
-      });
-      password = hcp.password;
-    }
+    const password = token.user ? token.user.password : token.hcp.password;
     await password.update({
       value: this.hashPassword(newPassword),
       isDefaultValue: false,
