@@ -57,8 +57,31 @@ module.exports = (sequelize, DataTypes) => {
     return this.findOne({
       where: query,
       include: [
-        { model: sequelize.models.User, as: 'user' },
-        { model: sequelize.models.HealthCareProvider, as: 'hcp' },
+        {
+          model: sequelize.models.User,
+          as: 'user',
+          include: [
+            {
+              model: sequelize.models.Staff,
+              as: 'staffInfo',
+              attributes: ['email'],
+            },
+            {
+              model: sequelize.models.Password,
+              as: 'password',
+              attributes: ['id'],
+            },
+          ],
+        },
+        {
+          model: sequelize.models.HealthCareProvider,
+          as: 'hcp',
+          include: {
+            model: sequelize.models.Password,
+            as: 'password',
+            attributes: ['id'],
+          },
+        },
       ],
     });
   };

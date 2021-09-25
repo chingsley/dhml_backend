@@ -366,7 +366,7 @@ export default class AppService {
 
   async generateResetToken() {
     const pool = '123456789abcdefghijkmnoqrstuvwxyz_-';
-    return await NanoId.getValue({ length: 12, pool });
+    return await NanoId.getValue({ length: 16, pool });
   }
 
   sendPassword(email, password) {
