@@ -120,18 +120,56 @@ export default class EnrolleeService extends AppService {
   }
 
   async handleBulkUpload() {
-    const { enrollees: raw } = this.body;
+    let enrollees = this.body.enrollees;
     const t = await db.sequelize.transaction();
     let stop = false;
     let completed = true;
     let i = 0;
 
-    const enrollees = await this.extractDuplicateSVNs(raw);
+    const enrolleeIdNos = enrollees.map(({ enrolleeIdNo }) => enrolleeIdNo);
+    let existingEnrollees = await db.Enrollee.findAll({
+      where: { enrolleeIdNo: enrolleeIdNos },
+      attributes: ['enrolleeIdNo', 'surname', 'firstName'],
+    });
+    const existingEnrolleeIdNos = existingEnrollees.map(
+      ({ enrolleeIdNo }) => enrolleeIdNo
+    );
+    if (existingEnrollees.length > 0) {
+      // remove enrollees with existing enrolleeIdNos
+      enrollees = enrollees.filter(
+        ({ enrolleeIdNo }) => !existingEnrolleeIdNos.includes(enrolleeIdNo)
+      );
+      // console.log({ enrollees });
+      // return {
+      //   error: 'duplicate enrolleeIdNos',
+      //   existingEnrolleeIdNos,
+      // };
+    }
+    const serviceNumbers = enrollees.map(({ serviceNumber }) => serviceNumber);
+    existingEnrollees = await db.Enrollee.findAll({
+      where: { serviceNumber: serviceNumbers },
+      attributes: ['enrolleeIdNo', 'surname', 'firstName', 'serviceNumber'],
+    });
+    const existingServiceNos = existingEnrollees.map(
+      ({ serviceNumber }) => serviceNumber
+    );
+
+    if (existingServiceNos.length > 0) {
+      // remove enrollees with existing serviceNumbers
+      enrollees = enrollees.filter(
+        ({ serviceNumber }) => !existingServiceNos.includes(serviceNumber)
+      );
+      // return { error: 'duplicate serviceNumbers', existingServiceNos };
+    }
+
+    // const enrollees = await this.extractDuplicateSVNs(enrollees);
     const results = [];
+    const errors = [];
 
     // after debugging in test, change
     //this to use bulkCreate instead of the while loop
     while (enrollees[i] && !stop) {
+      // console.log('enrollees[i]', enrollees[i]);
       try {
         const result = await db.Enrollee.create(enrollees[i], {
           transaction: t,
@@ -140,6 +178,7 @@ export default class EnrolleeService extends AppService {
         i += 1;
       } catch (error) {
         log(enrollees[i], error);
+        errors.push(enrollees[i]);
         stop = true;
         completed = false;
         await t.rollback();
@@ -147,8 +186,11 @@ export default class EnrolleeService extends AppService {
     }
     if (completed) {
       await t.commit();
+      return { 'results.length': results.length };
+    } else {
+      return { errors };
     }
-    return { 'results.length': results.length };
+    // return { 'results.length': results.length };
   }
 
   async extractDuplicateSVNs(enrollees) {

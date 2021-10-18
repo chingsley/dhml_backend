@@ -25,18 +25,20 @@ const formatPayload = (dataArr) => {
       Sex: '',
     };
     newArr.push(obj);
-    const obj2 = {
-      'SVC Number': '',
-      'ID Number': '',
-      Member: 'Principal',
-      'Family Name': record['Family Name'] || '',
-      'Other Name': record['Other Name'] || '',
-      'Date Of Birth': check_date(record['Date Of Birth'])
-        ? moment(record['Date Of Birth']).format('YYYY-MM-DD')
-        : '',
-      Sex: record['sex'] || '',
-    };
-    newArr.push(obj2);
+    if (!row.omitPrincipalFromManifest) {
+      const obj2 = {
+        'SVC Number': '',
+        'ID Number': '',
+        Member: 'Principal',
+        'Family Name': record['Family Name'] || '',
+        'Other Name': record['Other Name'] || '',
+        'Date Of Birth': check_date(record['Date Of Birth'])
+          ? moment(record['Date Of Birth']).format('YYYY-MM-DD')
+          : '',
+        Sex: record['sex'] || '',
+      };
+      newArr.push(obj2);
+    }
     row.dependants.forEach(({ dataValues: ele }) => {
       const obj3 = {
         'SVC Number': '',
@@ -96,8 +98,7 @@ const generatePdf = (input, documentName) =>
           alignment: 'center',
         },
         {
-          text:
-            '\nHead Office: Plot 1323, Adesoji Aderemi Street, Gudu District, Abuja, Nigeria. 0704083787-8, 07098212850, 07037921025 ',
+          text: '\nHead Office: Plot 1323, Adesoji Aderemi Street, Gudu District, Abuja, Nigeria. 0704083787-8, 07098212850, 07037921025 ',
           style: 'subheader',
           fontSize: 14,
           bold: true,
