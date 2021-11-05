@@ -1,4 +1,4 @@
-import { Joi, stringValidate, numberValidate } from '../config';
+import { Joi, stringValidate } from '../config';
 
 export const getHcpSchema = ({ withRequiredFields = true, req = {} }) => {
   const defaultSpecialtyIds = req.method === 'POST' ? [] : null;
@@ -15,7 +15,7 @@ export const getHcpSchema = ({ withRequiredFields = true, req = {} }) => {
     bankAddress: Joi.string().trim(),
     armOfService: Joi.string().trim(),
     geopoliticalZone: Joi.string().trim(),
-    accountNumber: numberValidate(withRequiredFields),
+    accountNumber: stringValidate(withRequiredFields),
     accountName: stringValidate(withRequiredFields),
     accountType: Joi.string().trim(),
     returnPassword: Joi.bool().valid(true, false),

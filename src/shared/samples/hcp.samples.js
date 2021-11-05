@@ -35,7 +35,7 @@ function getSampleHCPs(count) {
     alternativePhoneNumber: faker.phone.phoneNumber(),
     bank: faker.random.arrayElement(banks),
     bankAddress: faker.address.secondaryAddress(),
-    accountNumber: getRandomInt(9999999999, { min: 1000000000 }),
+    accountNumber: getRandomInt(9999999999, { min: 1000000000 }).toString(),
     accountName: hcp.name,
     accountType: faker.random.arrayElement(['savings', 'current', 'corporate']),
     status: NODE_ENV === 'test' ? undefined : hcp.status,
