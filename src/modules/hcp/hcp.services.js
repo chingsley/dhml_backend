@@ -171,7 +171,25 @@ export default class HcpService extends AppService {
       where: { code: { [Op.in]: CONTROL_HCPs_ARRAY } },
     });
     const controlHcpIds = controlHcps.map((hcp) => hcp.id);
-    const data = await db.Enrollee.findAndCountAll({
+    const data1 = await this.$getSameHcpFamilies({
+      hcpId,
+      controlHcpIds,
+      date,
+    });
+    const data2 = await this.$getDifferentHcpFamilies({
+      hcpId,
+      controlHcpIds,
+      date,
+    });
+    const data = { count: 0, rows: [], hcp: null };
+    data.count = data1.count + data2.count;
+    data.rows = data.rows.concat(data1.rows, data2.rows);
+    data.hcp = await db.HealthCareProvider.findOne({ where: { id: hcpId } });
+    return data;
+  }
+
+  $getSameHcpFamilies({ hcpId, controlHcpIds, date }) {
+    return db.Enrollee.findAndCountAll({
       where: {
         hcpId,
         principalId: null,
@@ -192,10 +210,12 @@ export default class HcpService extends AppService {
         ['dateOfBirth', 'Date Of Birth'],
         ['gender', 'sex'],
         'scheme',
+        'hcpId',
       ],
       include: {
         model: db.Enrollee,
         as: 'dependants',
+        required: false,
         where: {
           hcpId: { [Op.notIn]: controlHcpIds },
           isVerified: true,
@@ -205,7 +225,6 @@ export default class HcpService extends AppService {
             ),
           },
         },
-        required: false,
         attributes: [
           ['relationshipToPrincipal', 'Member'],
           ['surname', 'Family Name'],
@@ -213,11 +232,61 @@ export default class HcpService extends AppService {
           ['dateOfBirth', 'Date Of Birth'],
           ['gender', 'Sex'],
           'scheme',
+          'hcpId',
         ],
       },
     });
-    data.hcp = await db.HealthCareProvider.findOne({ where: { id: hcpId } });
-    return data;
+  }
+  async $getDifferentHcpFamilies({ hcpId, controlHcpIds, date }) {
+    const data = await db.Enrollee.findAndCountAll({
+      where: {
+        hcpId: { [Op.not]: hcpId },
+        principalId: null,
+        // isVerified: true,
+        // dateVerified: {
+        //   [Op.lte]: new Date(
+        //     moment(date).clone().endOf('month').format('YYYY-MM-DD')
+        //   ),
+        // },
+      },
+      order: [['dateVerified', 'DESC']],
+      attributes: [
+        'serviceNumber',
+        'staffNumber',
+        ['enrolleeIdNo', 'idNumber'],
+        'hcpId',
+      ],
+      include: {
+        model: db.Enrollee,
+        as: 'dependants',
+        required: true,
+        where: {
+          [Op.and]: [{ hcpId: { [Op.notIn]: controlHcpIds } }, { hcpId }],
+          isVerified: true,
+          dateVerified: {
+            [Op.lte]: new Date(
+              moment(date).clone().endOf('month').format('YYYY-MM-DD')
+            ),
+          },
+        },
+        attributes: [
+          ['relationshipToPrincipal', 'Member'],
+          ['surname', 'Family Name'],
+          ['firstName', 'Other Name'],
+          ['dateOfBirth', 'Date Of Birth'],
+          ['gender', 'Sex'],
+          'scheme',
+          'hcpId',
+        ],
+      },
+    });
+    return {
+      count: data.count,
+      rows: data.rows.map((record) => {
+        record.dataValues.omitPrincipalFromManifest = true;
+        return record;
+      }),
+    };
   }
 
   async fetchManifest() {
