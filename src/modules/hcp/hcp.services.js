@@ -217,7 +217,7 @@ export default class HcpService extends AppService {
         as: 'dependants',
         required: false,
         where: {
-          hcpId: { [Op.notIn]: controlHcpIds },
+          [Op.and]: [{ hcpId: { [Op.notIn]: controlHcpIds } }, { hcpId }],
           isVerified: true,
           dateVerified: {
             [Op.lte]: new Date(
