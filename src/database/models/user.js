@@ -65,6 +65,14 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'flaggedById',
       as: 'flaggedCodes',
     });
+    User.hasMany(models.ReferalCode, {
+      foreignKey: 'declinedById',
+      as: 'declinedCodes',
+    });
+    User.hasMany(models.ReferalCode, {
+      foreignKey: 'claimsDeclineById',
+      as: 'claimsDelcinedCodes',
+    });
     User.hasMany(models.AuditLog, {
       foreignKey: 'userId',
       as: 'auditLogs',
