@@ -71,6 +71,11 @@ export const codeStatusUpdateSchema = Joi.object({
       .required(),
     otherwise: Joi.forbidden(),
   }),
+  claimsDeclineReason: Joi.when('status', {
+    is: CODE_STATUS.CLAIMS_DECLINED,
+    then: Joi.string().trim().required(),
+    otherwise: Joi.forbidden(),
+  }),
 }).unknown();
 
 export const schemaRefcodeIdArr = Joi.object({

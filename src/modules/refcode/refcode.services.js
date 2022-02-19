@@ -134,7 +134,13 @@ export default class RefcodeService extends AppService {
   async updateRefcodeStatus() {
     const { refcodeId } = this.params;
     const operatorId = this.operator.id;
-    const { status, stateOfGeneration, flagReason, declineReason } = this.body;
+    const {
+      status,
+      stateOfGeneration,
+      flagReason,
+      declineReason,
+      claimsDeclineReason,
+    } = this.body;
 
     const refcode = await db.ReferalCode.findById(refcodeId);
     // refcode.rejectIfCodeIsExpired();
@@ -151,11 +157,15 @@ export default class RefcodeService extends AppService {
       approvedById: null,
       flagReason: null,
       declineReason: null,
+      claimsDeclineById: null,
+      claimsDeclineReason: null,
+      claimsDeclineDate: null,
     };
 
     if (status === CODE_STATUS.DECLINED) {
       // we can decline an approved code as long it has not been claimed..
       //  - but without deleting the code, or changing the expiration date
+      refcode.disallowIf(['expired', 'claimed', 'declined']);
       updates = {
         ...updates,
         dateDeclined: new Date(),
@@ -165,6 +175,7 @@ export default class RefcodeService extends AppService {
     } else if (status === CODE_STATUS.FLAGGED) {
       // we can flag an approved code as long it has not been claimed..
       //  - but without deleting the code, or changing the expiration date
+      refcode.disallowIf(['expired', 'claimed', 'declined']);
       updates = {
         ...updates,
         dateFlagged: new Date(),
@@ -172,7 +183,7 @@ export default class RefcodeService extends AppService {
         flagReason,
       };
     } else if (status === CODE_STATUS.APPROVED) {
-      refcode.rejectIfCodeIsApproved();
+      refcode.disallowIf(['expired', 'claimed', 'declined', 'approved']);
       // if request is approved (i.e code generated), then flagged, then approved again, then:
       // ---- we do not generate a new code, but use the existing code
       // ---- we do not generate a new expiresAt date, but use the existing date
@@ -192,6 +203,27 @@ export default class RefcodeService extends AppService {
         code,
         expiresAt,
         stateOfGeneration: refcode.stateOfGeneration || stateOfGeneration,
+      };
+    } else if (status === CODE_STATUS.CLAIMS_DECLINED) {
+      // we can decline the claims associated with a refcode
+      // - will fail if the refcode has no claims yet or the claims...
+      // ... have already been declined
+      refcode.disallowIf(['claims-not-found', 'declined-claims']);
+      updates = {
+        // we will not ...updates because we don't want to reset
+        //  other status values of the refcode to null, they're not mutually exclusive
+        claimsDeclineDate: new Date(),
+        claimsDeclineById: operatorId,
+        claimsDeclineReason,
+      };
+    } else if (status === CODE_STATUS.CLAIMS_NOT_DECLINED) {
+      // we can undo claims decline
+      updates = {
+        // we will not ...updates because we don't want to reset
+        //  other status values of the refcode to null, they're not mutually exclusive
+        claimsDeclineDate: null,
+        claimsDeclineById: null,
+        claimsDeclineReason: null,
       };
     }
     this.record(`${status} code request (refcodeId: ${refcodeId})`);

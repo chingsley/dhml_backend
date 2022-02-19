@@ -38,6 +38,12 @@ class RefcodeApi {
       .get(`/api/v1/refcodes/history?${query}`)
       .set('authorization', token);
   }
+  static addClaims(payload, token) {
+    return app
+      .post('/api/v1/claims/')
+      .set('authorization', token)
+      .send(payload);
+  }
 }
 
 export default RefcodeApi;
