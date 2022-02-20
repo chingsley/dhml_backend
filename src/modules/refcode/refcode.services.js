@@ -68,16 +68,18 @@ export default class RefcodeService extends AppService {
           as: 'specialty',
           attributes: ['id', 'name'],
         },
-        ...['declinedBy', 'flaggedBy', 'approvedBy'].map((item) => ({
-          model: db.User,
-          as: item,
-          attributes: ['id', 'username'],
-          include: {
-            model: db.Staff,
-            as: 'staffInfo',
-            attributes: ['id', 'firstName', 'surname', 'staffIdNo'],
-          },
-        })),
+        ...['declinedBy', 'flaggedBy', 'approvedBy', 'claimsDeclinedBy'].map(
+          (item) => ({
+            model: db.User,
+            as: item,
+            attributes: ['id', 'username'],
+            include: {
+              model: db.Staff,
+              as: 'staffInfo',
+              attributes: ['id', 'firstName', 'surname', 'staffIdNo'],
+            },
+          })
+        ),
         {
           model: db.Enrollee,
           as: 'enrollee',

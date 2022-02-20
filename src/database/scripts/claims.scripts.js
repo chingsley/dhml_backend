@@ -7,7 +7,7 @@ export const getClaims = (__, ___, reqQuery = {}) => {
   const { limit, offset } = getPaginationParameters(reqQuery);
 
   const query = `
-  SELECT  sub.id, sub.code, sub.diagnosis, sub."numOfClaims", sub.amount, sub."claimsVerifiedOn",
+  SELECT  sub.id, sub.code, sub.diagnosis, sub."numOfClaims", sub.amount, sub."claimsVerifiedOn", sub."claimsDeclineDate",
           refhcp.name "referringHcpName", refhcp.code "referringHcpCode", rechcp.name "receivingHcpName",
           rechcp.code "receivingHcpCode", rechcp.state, e.scheme,
           (s."firstName" || ' ' || s.surname) "verifiedBy", s."staffIdNo" "verifierStaffNumber"
