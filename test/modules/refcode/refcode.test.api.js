@@ -32,6 +32,11 @@ class RefcodeApi {
   static getReferalCodes(query = '', token) {
     return app.get(`/api/v1/refcodes?${query}`).set('authorization', token);
   }
+  static getOneReferalCode(query = '', token) {
+    return app
+      .get(`/api/v1/refcodes/get-one?${query}`)
+      .set('authorization', token);
+  }
 
   static getEnrolleeCodeHistory(query, token) {
     return app
@@ -39,10 +44,16 @@ class RefcodeApi {
       .set('authorization', token);
   }
   static addClaims(payload, token) {
+    return app.post('/api/v1/claims').set('authorization', token).send(payload);
+  }
+  static getClaims(token) {
+    return app.get('/api/v1/claims').set('authorization', token);
+  }
+  static verifyClaims({ refcodeId, remarks }, token) {
     return app
-      .post('/api/v1/claims/')
+      .patch(`/api/v1/refcodes/${refcodeId}/verify-claims`)
       .set('authorization', token)
-      .send(payload);
+      .send({ remarks });
   }
 }
 

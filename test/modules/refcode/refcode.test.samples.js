@@ -90,3 +90,10 @@ export function getClaimsReqPayload(refcode) {
     ],
   };
 }
+
+export const getTotalClaimsAmt = (claims) => {
+  return claims.reduce(
+    (acc, claim) => acc + claim.unit * claim.pricePerUnit,
+    0
+  );
+};

@@ -19,7 +19,7 @@ import {
 } from '../../../src/shared/constants/lists.constants';
 import { stateCodes } from '../../../src/shared/constants/statecodes.constants';
 import { moment, months } from '../../../src/utils/timers';
-import { getClaimsReqPayload } from './refcode.test.samples';
+import { getClaimsReqPayload, getTotalClaimsAmt } from './refcode.test.samples';
 require('../../../src/prototypes/array.extensions').extendArray();
 
 const validStates = Object.keys(stateCodes);
@@ -319,6 +319,125 @@ describe('RefcodeController', () => {
       'it catches errors thrown in the try block',
       TestService.testCatchBlock(RefcodeController.getReferalCodes)
     );
+  });
+  describe('getOneRefcode (with associated claims)', () => {
+    let token,
+      res,
+      seededEnrollees,
+      referringHcps,
+      receivingHcps,
+      seededCodeRequests,
+      refcode,
+      claimsRequestPayload;
+
+    beforeAll(async () => {
+      await TestService.resetDB();
+      const { primaryHcps, secondaryHcps } = await _HcpService.seedHcps({
+        numPrimary: 2,
+        numSecondary: 3,
+      });
+      referringHcps = primaryHcps;
+      receivingHcps = secondaryHcps;
+      const { sampleStaffs } = getSampleStaffs(5);
+      await TestService.seedStaffs(sampleStaffs);
+      // get auth token
+      const data = await TestService.getToken(sampleStaffs[0], ROLES.MD);
+      token = data.token;
+
+      const { principals, dependants } = getEnrollees({
+        numOfPrincipals: 5,
+        sameSchemeDepPerPrincipal: 2,
+        vcshipDepPerPrincipal: 2,
+      });
+      const preparedPrincipals = principals.map((p, i) => {
+        if (p.scheme.toUpperCase() === 'DSSHIP') {
+          p.staffNumber = sampleStaffs[i].staffIdNo;
+        }
+        return { ...p, hcpId: primaryHcps[0].id };
+      });
+      const seededPrincipals = await TestService.seedEnrollees(
+        preparedPrincipals
+      );
+      const depsWithPrincipalId = dependants.map((d) => {
+        for (let p of seededPrincipals) {
+          const regexPrincipalEnrolleeIdNo = new RegExp(`${p.enrolleeIdNo}-`);
+          if (d.enrolleeIdNo.match(regexPrincipalEnrolleeIdNo)) {
+            return {
+              ...d,
+              principalId: p.id,
+              hcpId: p.hcpId,
+            };
+          }
+        }
+      });
+      const seededDeps = await TestService.seedEnrollees(depsWithPrincipalId);
+      seededEnrollees = [...seededPrincipals, ...seededDeps];
+      const sampleSpecialties = _SpecialityService.getSamples();
+      const seededSpecialties = await _SpecialityService.seedBulk(
+        sampleSpecialties.map((sp) => ({ ...sp, id: undefined }))
+      );
+      seededCodeRequests = await _RefcodeService.seedSampleCodeRequests({
+        enrollees: seededEnrollees,
+        specialties: seededSpecialties,
+        referringHcps,
+        receivingHcps,
+      });
+      refcode = seededCodeRequests[0];
+
+      // approve code request to generate referal code (a prerequisite for adding claims)
+      const res1 = await RefcodeApi.updateRequestStatus(
+        refcode.id,
+        {
+          status: CODE_STATUS.APPROVED,
+          stateOfGeneration: _random(validStates),
+        },
+        token
+      );
+
+      // reload refcode to get access to 'code' generated on approval
+      refcode.reloadWithAssociations();
+
+      // add claims to the refcode
+      claimsRequestPayload = getClaimsReqPayload(res1.body.data.code);
+      await RefcodeApi.addClaims(claimsRequestPayload, token);
+
+      res = await RefcodeApi.getOneReferalCode(
+        `referalCode=${refcode.code}`,
+        token
+      );
+    });
+    it('successfully returns all requests with status 200', async (done) => {
+      try {
+        const { data } = res.body;
+        expect(res.status).toEqual(200);
+        expect(data.status).toEqual(refcode.status);
+        expect(data.code).toEqual(refcode.code);
+        expect(data.id).toEqual(refcode.id);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns the assocated user operators', async (done) => {
+      try {
+        const { data } = res.body;
+        ['declinedBy', 'flaggedBy', 'approvedBy', 'claimsDeclinedBy'].forEach(
+          (field) => expect(field in data).toEqual(true)
+        );
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns all associated claims', async (done) => {
+      try {
+        const { data } = res.body;
+        expect(data.claims).toHaveLength(claimsRequestPayload.claims.length);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
   });
   describe('updateCodeRequestStatus (Approve code request)', () => {
     let token,
@@ -1177,7 +1296,7 @@ describe('RefcodeController', () => {
         // reset all prev status updates on refcode due to preceeding tests
         await _RefcodeService.resetAllStatusUpdate(refcode.id);
 
-        // approve code request to generate referal code
+        // approve code request to generate referal code ( a prerequisite for adding claims)
         const res1 = await RefcodeApi.updateRequestStatus(
           refcode.id,
           {
@@ -1229,6 +1348,19 @@ describe('RefcodeController', () => {
         );
         // sets the claimsDeclineDate as current day
         expect(moment(refcode.claimsDeclineDate).format('DDMMYY')).toEqual(
+          todaysDate
+        );
+
+        // returns fields that indicates claims were declined... in route /refcodes/get-one
+        const res3 = await RefcodeApi.getOneReferalCode(
+          `refcodeId=${refcode.id}`,
+          token
+        );
+        const data3 = res3.body.data;
+        expect(data3.claimsDeclineById).toEqual(operatorId);
+        expect(data3.claimsDeclinedBy).toHaveProperty('id', operatorId);
+        expect(data3.claimsDeclineReason).toBe(payload.claimsDeclineReason);
+        expect(moment(data3.claimsDeclineDate).format('DDMMYY')).toEqual(
           todaysDate
         );
         done();
@@ -1294,6 +1426,217 @@ describe('RefcodeController', () => {
         expect(refcode.claimsDeclineReason).toEqual(null);
         // it sets the claimsDeclineDate to null:
         expect(refcode.claimsDeclineDate).toEqual(null);
+
+        // returns fields that indicates claims were declined... in route /refcodes/get-one
+        const res3 = await RefcodeApi.getOneReferalCode(
+          `refcodeId=${refcode.id}`,
+          token
+        );
+        const data3 = res3.body.data;
+        expect(data3.claimsDeclineById).toBe(null);
+        expect(data3.claimsDeclinedBy).toBe(null);
+        expect(data3.claimsDeclineReason).toBe(null);
+        expect(data3.claimsDeclineDate).toBe(null);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+  });
+});
+
+describe('ClaimsController (Tested in the test Refcode Module', () => {
+  describe('getClaims', () => {
+    let token,
+      seededEnrollees,
+      referringHcps,
+      receivingHcps,
+      seededCodeRequests,
+      operatorId,
+      refcode;
+
+    beforeAll(async () => {
+      await TestService.resetDB();
+      const { primaryHcps, secondaryHcps } = await _HcpService.seedHcps({
+        numPrimary: 2,
+        numSecondary: 3,
+      });
+      referringHcps = primaryHcps;
+      receivingHcps = secondaryHcps;
+      const { sampleStaffs } = getSampleStaffs(5);
+      await TestService.seedStaffs(sampleStaffs);
+      const { principals, dependants } = getEnrollees({
+        numOfPrincipals: 5,
+        sameSchemeDepPerPrincipal: 2,
+        vcshipDepPerPrincipal: 2,
+      });
+      const preparedPrincipals = principals.map((p, i) => {
+        if (p.scheme.toUpperCase() === 'DSSHIP') {
+          p.staffNumber = sampleStaffs[i].staffIdNo;
+        }
+        return { ...p, hcpId: primaryHcps[0].id };
+      });
+      const seededPrincipals = await TestService.seedEnrollees(
+        preparedPrincipals
+      );
+      const depsWithPrincipalId = dependants.map((d) => {
+        for (let p of seededPrincipals) {
+          const regexPrincipalEnrolleeIdNo = new RegExp(`${p.enrolleeIdNo}-`);
+          if (d.enrolleeIdNo.match(regexPrincipalEnrolleeIdNo)) {
+            return {
+              ...d,
+              principalId: p.id,
+              hcpId: p.hcpId,
+            };
+          }
+        }
+      });
+      const seededDeps = await TestService.seedEnrollees(depsWithPrincipalId);
+      seededEnrollees = [...seededPrincipals, ...seededDeps];
+      const sampleSpecialties = _SpecialityService.getSamples();
+      const seededSpecialties = await _SpecialityService.seedBulk(
+        sampleSpecialties.map((sp) => ({ ...sp, id: undefined }))
+      );
+      seededCodeRequests = await _RefcodeService.seedSampleCodeRequests({
+        enrollees: seededEnrollees,
+        specialties: seededSpecialties,
+        referringHcps,
+        receivingHcps,
+      });
+      const data = await TestService.getToken(sampleStaffs[0], ROLES.MD);
+      token = data.token;
+      const { userId } = Jwt.decode(token);
+      operatorId = userId;
+      refcode = seededCodeRequests[0];
+      // refcodeId = seededCodeRequests[0].id;
+    });
+    it('returns refcode with claims related fields', async (done) => {
+      try {
+        // reset all prev status updates on refcode due to preceeding tests
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
+
+        // approve code request to generate referal code
+        const res1 = await RefcodeApi.updateRequestStatus(
+          refcode.id,
+          {
+            status: CODE_STATUS.APPROVED,
+            stateOfGeneration: _random(validStates),
+          },
+          token
+        );
+
+        // add claims to the refcode
+        const claimsRequestPayload = getClaimsReqPayload(res1.body.data.code);
+        await RefcodeApi.addClaims(claimsRequestPayload, token);
+
+        await refcode.reloadWithAssociations();
+
+        const res2 = await RefcodeApi.getClaims(token);
+        const response = res2.body.data.rows[0];
+        expect(res2.status).toEqual(200);
+        expect(response.id).toEqual(refcode.id);
+        expect(response.code).toEqual(refcode.code);
+        const totalClaimsAmt = getTotalClaimsAmt(claimsRequestPayload.claims);
+        expect(Number(response.amount)).toEqual(totalClaimsAmt);
+        expect(response.claimsVerifiedOn).toBe(null);
+        expect(response.claimsDeclineDate).toBe(null);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('it returns claimsDeclineDate for a refcode with declined claims', async (done) => {
+      try {
+        // delete all added claims due to preceeding tests
+        await TestService.resetDB(['Claim']);
+
+        // reset all prev status updates on refcode due to preceeding tests
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
+
+        // approve code request to generate referal code (a prerequisite for adding claims)
+        const res1 = await RefcodeApi.updateRequestStatus(
+          refcode.id,
+          {
+            status: CODE_STATUS.APPROVED,
+            stateOfGeneration: _random(validStates),
+          },
+          token
+        );
+
+        // add claims to the refcode
+        const claimsRequestPayload = getClaimsReqPayload(res1.body.data.code);
+        await RefcodeApi.addClaims(claimsRequestPayload, token);
+
+        // then decline claims
+        await RefcodeApi.updateRequestStatus(
+          refcode.id,
+          {
+            status: CODE_STATUS.CLAIMS_DECLINED,
+            claimsDeclineReason: faker.lorem.text(),
+          },
+          token
+        );
+
+        await refcode.reloadWithAssociations();
+
+        const res2 = await RefcodeApi.getClaims(token);
+        const response = res2.body.data.rows[0];
+        expect(res2.status).toEqual(200);
+        expect(response.id).toEqual(refcode.id);
+        expect(response.code).toEqual(refcode.code);
+        const totalClaimsAmt = getTotalClaimsAmt(claimsRequestPayload.claims);
+        expect(Number(response.amount)).toEqual(totalClaimsAmt);
+        expect(response.claimsVerifiedOn).toBe(null);
+        expect(response.claimsDeclineDate).not.toBe(null);
+        const todaysDate = moment().format('DDMMYY');
+        expect(moment(response.claimsDeclineDate).format('DDMMYY')).toEqual(
+          todaysDate
+        );
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('it returns claimsVerifiedOn date for a refcode with verified claims', async (done) => {
+      try {
+        // delete all added claims due to preceeding tests
+        await TestService.resetDB(['Claim']);
+
+        // reset all prev status updates on refcode due to preceeding tests
+        await _RefcodeService.resetAllStatusUpdate(refcode.id);
+
+        // approve code request to generate referal code (a prerequisite for adding claims)
+        const res1 = await RefcodeApi.updateRequestStatus(
+          refcode.id,
+          {
+            status: CODE_STATUS.APPROVED,
+            stateOfGeneration: _random(validStates),
+          },
+          token
+        );
+
+        // add claims to the refcode
+        const claimsRequestPayload = getClaimsReqPayload(res1.body.data.code);
+        await RefcodeApi.addClaims(claimsRequestPayload, token);
+
+        // then verify claims
+        const remarks = faker.lorem.text();
+        const res2 = await RefcodeApi.verifyClaims(
+          { refcodeId: refcode.id, remarks },
+          token
+        );
+        expect(res2.status).toBe(200);
+
+        await refcode.reloadWithAssociations();
+
+        // const res2 = await RefcodeApi.getClaims(token);
+        const data = res2.body.data;
+        expect(data.remarksOnClaims).toEqual(remarks);
+        expect(data.claimsVerifierId).toEqual(operatorId);
+        const todaysDate = moment().format('DDMMYY');
+        expect(moment(data.claimsVerifiedOn).format('DDMMYY')).toEqual(
+          todaysDate
+        );
         done();
       } catch (e) {
         done(e);
