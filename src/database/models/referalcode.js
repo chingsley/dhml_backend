@@ -122,6 +122,21 @@ module.exports = (sequelize, DataTypes) => {
       expiresAt: {
         type: DataTypes.DATE,
       },
+      claimsDeclineDate: {
+        type: DataTypes.DATE,
+      },
+      claimsDeclineById: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: 'Users',
+          key: 'id',
+        },
+        onDelete: 'RESTRICT',
+        onUpdate: 'CASCADE',
+      },
+      claimsDeclineReason: {
+        type: DataTypes.TEXT,
+      },
       claimsVerifiedOn: {
         type: DataTypes.DATE,
       },
@@ -202,6 +217,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'declinedById',
       as: 'declinedBy',
     });
+    ReferalCode.belongsTo(models.User, {
+      foreignKey: 'claimsDeclineById',
+      as: 'claimsDeclinedBy',
+    });
     ReferalCode.hasMany(models.Claim, {
       foreignKey: 'refcodeId',
       as: 'claims',
@@ -270,16 +289,18 @@ module.exports = (sequelize, DataTypes) => {
           model: this.sequelize.models.Specialty,
           as: 'specialty',
         },
-        ...['declinedBy', 'flaggedBy', 'approvedBy'].map((item) => ({
-          model: this.sequelize.models.User,
-          as: item,
-          attributes: ['id', 'username'],
-          include: {
-            model: this.sequelize.models.Staff,
-            as: 'staffInfo',
-            attributes: ['id', 'firstName', 'surname', 'staffIdNo'],
-          },
-        })),
+        ...['declinedBy', 'flaggedBy', 'approvedBy', 'claimsDeclinedBy'].map(
+          (item) => ({
+            model: this.sequelize.models.User,
+            as: item,
+            attributes: ['id', 'username'],
+            include: {
+              model: this.sequelize.models.Staff,
+              as: 'staffInfo',
+              attributes: ['id', 'firstName', 'surname', 'staffIdNo'],
+            },
+          })
+        ),
         {
           model: this.sequelize.models.Claim,
           as: 'claims',
@@ -300,6 +321,13 @@ module.exports = (sequelize, DataTypes) => {
       status: 403,
     });
   };
+  // ReferalCode.prototype.rejectIfCodeIsNotClaimed = function (errorMsg) {
+  //   rejectIf(!this.claimsVerifiedOn, {
+  //     withError:
+  //       errorMsg || 'Action not allowed because the code has no claims yet',
+  //     status: 403,
+  //   });
+  // };
   ReferalCode.prototype.rejectIfCodeIsDeclined = function (errorMsg) {
     rejectIf(!!this.dateDeclined, {
       withError:
@@ -328,12 +356,22 @@ module.exports = (sequelize, DataTypes) => {
       status: 403,
     });
   };
+  ReferalCode.prototype.rejectIfDeclinedClaims = function (errorMsg) {
+    rejectIf(!!this.dateDeclined, {
+      withError:
+        errorMsg ||
+        'Action not allowed because the code has already been declined',
+      status: 403,
+    });
+  };
 
   ReferalCode.prototype.disallowIf = function (arr) {
     if (arr.includes('expired')) this.rejectIfCodeIsExpired();
     if (arr.includes('claimed')) this.rejectIfCodeIsClaimed();
     if (arr.includes('declined')) this.rejectIfCodeIsDeclined();
     if (arr.includes('approved')) this.rejectIfCodeIsApproved();
+    if (arr.includes('claims-not-found')) this.rejectIfClaimsNotFound();
+    if (arr.includes('declined-claims')) this.rejectIfDeclinedClaims();
   };
   ReferalCode.getRefcodeWithEarliestVerifiedClaims = async function () {
     const [firstVerifiedEnrollee] = await this.findAll({

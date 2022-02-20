@@ -60,6 +60,40 @@ export default class _RefcodeSamples {
       payload,
     };
   }
-
-  static async;
 }
+
+export function getClaimsReqPayload(refcode) {
+  return {
+    referalCode: refcode,
+    claims: [
+      {
+        category: 'general services',
+        serviceName: 'sking graft treatment',
+        unit: 2,
+        pricePerUnit: 1.5,
+      },
+      {
+        category: 'internal medicine',
+        serviceName: 'acute malaria treatment',
+        unit: 3,
+        pricePerUnit: 1.5,
+      },
+      {
+        category: 'drug',
+        drugDosageForm: 'some value',
+        drugStrength: 'some value',
+        drugPresentation: 'some value',
+        unit: 10,
+        drugName: 'Lonart DS',
+        pricePerUnit: 9.5,
+      },
+    ],
+  };
+}
+
+export const getTotalClaimsAmt = (claims) => {
+  return claims.reduce(
+    (acc, claim) => acc + claim.unit * claim.pricePerUnit,
+    0
+  );
+};

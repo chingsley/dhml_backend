@@ -25,15 +25,15 @@ class TestService {
     return getEnrollees(options);
   }
 
-  static async resetDB(modelsArr) {
-    if (modelsArr) {
-      if (modelsArr && !Array.isArray(modelsArr)) {
+  static async resetDB(modelNamesArr) {
+    if (modelNamesArr) {
+      if (modelNamesArr && !Array.isArray(modelNamesArr)) {
         throw new Error(
-          '"resetDB" expects an optional array of models as argument'
+          '"resetDB" expects an optional array of model names as argument'
         );
       }
-      for (let i = 0; i < modelsArr.length; i++) {
-        await modelsArr[i].destroy({ where: {}, truncate: { cascade: true } });
+      for (const modelName of modelNamesArr) {
+        await db[modelName].destroy({ where: {}, truncate: { cascade: true } });
       }
     } else {
       const dbHcp = db.HealthCareProvider;
@@ -51,6 +51,7 @@ class TestService {
       await dbHcp.destroy({ where: {}, truncate: { cascade: true } });
       await db.Role.destroy({ where: {}, truncate: { cascade: true } });
       await db.HcpSpecialty.destroy({ where: {}, truncate: { cascade: true } });
+      await db.Claim.destroy({ where: {}, truncate: { cascade: true } });
       await db.ReferalCode.destroy({ where: {}, truncate: { cascade: true } });
       await db.Specialty.destroy({ where: {}, truncate: { cascade: true } });
     }

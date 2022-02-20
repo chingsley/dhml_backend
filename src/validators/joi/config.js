@@ -66,7 +66,7 @@ export const checkSqlInjectionAttack = (value) => {
   const invalidCharacterPatterns = /--|;|'|"/gi;
   rejectIf(value && value.match(invalidCharacterPatterns), {
     // eslint-disable-next-line quotes
-    withError: `Search items cannot contain such special characters as (--, ;, ', or ") are not allowed`,
+    withError: `Search items cannot contain such special characters as (--, ;, ', or ")`,
   });
   return true;
 };
