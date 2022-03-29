@@ -14,19 +14,22 @@ module.exports = {
         where: { dateApproved: { [Op.not]: null } },
         include: { model: db.HealthCareProvider, as: 'receivingHcp' },
       });
-      // const refcodeIds = approvedCodeRequests.map((refcode) => refcode.id);
       const claim = new Claims(approvedRefcodes);
       const sampleClaims = claim.getBulk({
         numDrugClaims: Math.floor(approvedRefcodes.length / 2),
         numServiceClaims: Math.floor(approvedRefcodes.length / 2),
       });
-      await queryInterface.bulkInsert('Claims', sampleClaims);
+      await queryInterface.bulkInsert('OriginalClaims', sampleClaims);
+      await queryInterface.bulkInsert(
+        'Claims',
+        sampleClaims.map((c) => ({ ...c, originalClaimId: c.id }))
+      );
     }
-    // console.log({ sampleClaims, refcodeIds, approvedCodeRequests });
   },
 
   // eslint-disable-next-line no-unused-vars
-  down: (queryInterface, Sequelize) => {
-    return queryInterface.bulkDelete('Claims', null, {});
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.bulkDelete('Claims', null, {});
+    return queryInterface.bulkDelete('OriginalClaims', null, {});
   },
 };

@@ -2,33 +2,90 @@ import { days, months } from '../../utils/timers';
 import { getClaimsFilters, getPaginationParameters } from './helpers.scripts';
 
 // eslint-disable-next-line no-unused-vars
-export const getClaims = (__, ___, reqQuery = {}) => {
+export const getClaimsSummary = (__, ___, reqQuery = {}) => {
   const { filter } = getClaimsFilters(reqQuery);
   const { limit, offset } = getPaginationParameters(reqQuery);
 
   const query = `
-  SELECT  sub.id, sub.code, sub.diagnosis, sub."numOfClaims", sub.amount, sub."claimsVerifiedOn", sub."claimsDeclineDate",
-          refhcp.name "referringHcpName", refhcp.code "referringHcpCode", rechcp.name "receivingHcpName",
-          rechcp.code "receivingHcpCode", rechcp.state, e.scheme,
-          (s."firstName" || ' ' || s.surname) "verifiedBy", s."staffIdNo" "verifierStaffNumber"
+  SELECT  sub.id, sub.code, sub.diagnosis,
+  sub."numOfClaims", sub.amount,
+  sub."originalNumOfClaims", sub."originalAmount",
+  sub."claimsVerifiedOn", sub."claimsDeclineDate",
+      refhcp.name "referringHcpName", refhcp.code "referringHcpCode", rechcp.name "receivingHcpName",
+      rechcp.code "receivingHcpCode", rechcp.state, e.scheme,
+      (s."firstName" || ' ' || s.surname) "verifiedBy", s."staffIdNo" "verifierStaffNumber"
+  FROM
+    (
+    SELECT sub2.*, sub1."numOfClaims", sub1.amount
+    FROM
+      (
+        SELECT r.*,
+            COUNT(c.id) as "numOfClaims", SUM(c.unit * c."pricePerUnit") as amount
+        FROM "ReferalCodes" r
+        JOIN "Claims" c
+          ON r.id = c."refcodeId"
+        GROUP BY r.id, r.code, r.diagnosis,r."referringHcpId", r."receivingHcpId", r."enrolleeId"
+      ) sub1
+    JOIN
+      (
+        SELECT r.*,
+            COUNT(o.id) as "originalNumOfClaims", SUM(o.unit * o."pricePerUnit") as "originalAmount"
+        FROM "ReferalCodes" r
+        JOIN "OriginalClaims" o
+          ON r.id = o."refcodeId"
+        GROUP BY r.id, r.code, r.diagnosis,r."referringHcpId", r."receivingHcpId", r."enrolleeId"
+      ) sub2
+    ON sub1.code = sub2.code
+    ) sub
+  JOIN "HealthCareProviders" refhcp
+  ON refhcp.id = sub."referringHcpId"
+  JOIN "HealthCareProviders" rechcp
+  ON rechcp.id = sub."receivingHcpId"
+  JOIN "Enrollees" e
+  ON e.id = sub."enrolleeId"
+  LEFT JOIN "Users" u
+  ON u.id = sub."claimsVerifierId"
+  LEFT JOIN "Staffs" s
+  ON s.id = u."staffId"
+  WHERE ${filter}
+  ORDER BY sub."numOfClaims" DESC
+  LIMIT ${limit}
+  OFFSET ${offset}
+  `;
+  //   console.log(query);
+  return query;
+};
+
+// eslint-disable-next-line no-unused-vars
+export const getOriginalClaimsSummary = (__, ___, reqQuery = {}) => {
+  const { filter } = getClaimsFilters(reqQuery);
+  const { limit, offset } = getPaginationParameters(reqQuery);
+
+  const query = `
+  SELECT  sub.id, sub.code, sub.diagnosis,
+  sub."numOfClaims", sub."amount",
+  sub."claimsVerifiedOn", sub."claimsDeclineDate",
+      refhcp.name "referringHcpName", refhcp.code "referringHcpCode", rechcp.name "receivingHcpName",
+      rechcp.code "receivingHcpCode", rechcp.state, e.scheme,
+      (s."firstName" || ' ' || s.surname) "verifiedBy", s."staffIdNo" "verifierStaffNumber"
   FROM (
-      SELECT r.*,
-          COUNT(c.id) as "numOfClaims", SUM(c.unit * c."pricePerUnit") as amount
-      FROM "ReferalCodes" r
-      JOIN "Claims" c
-      ON r.id = c."refcodeId"
-      GROUP BY r.id, r.code, r.diagnosis,r."referringHcpId", r."receivingHcpId", r."enrolleeId"
+  SELECT r.*,
+        COUNT(o.id) as "numOfClaims", SUM(o.unit * o."pricePerUnit") as "amount"
+  FROM "ReferalCodes" r
+  JOIN "OriginalClaims" o
+    ON r.id = o."refcodeId"
+  GROUP BY r.id, r.code, r.diagnosis,r."referringHcpId", r."receivingHcpId", r."enrolleeId"
   ) sub
   JOIN "HealthCareProviders" refhcp
-      ON refhcp.id = sub."referringHcpId"
+    ON refhcp.id = sub."referringHcpId"
   JOIN "HealthCareProviders" rechcp
-      ON rechcp.id = sub."receivingHcpId"
+    ON rechcp.id = sub."receivingHcpId"
   JOIN "Enrollees" e
-      ON e.id = sub."enrolleeId"
+    ON e.id = sub."enrolleeId"
   LEFT JOIN "Users" u
-      ON u.id = sub."claimsVerifierId"
+    ON u.id = sub."claimsVerifierId"
   LEFT JOIN "Staffs" s
-      ON s.id = u."staffId"
+ON s.id = u."staffId"
   WHERE ${filter}
   ORDER BY sub."numOfClaims" DESC
   LIMIT ${limit}
@@ -108,9 +165,10 @@ WHERE r."receivingHcpId" IN (${hcpIds.join(', ')})
 };
 
 const claimsScripts = {
-  getClaims,
+  getClaimsSummary,
   getClaimsByHcp,
   markPaidRefcodes,
   undoMarkedPaidRefcodes,
+  getOriginalClaimsSummary,
 };
 export default claimsScripts;

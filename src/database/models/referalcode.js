@@ -226,6 +226,11 @@ module.exports = (sequelize, DataTypes) => {
       as: 'claims',
       onDelete: 'CASCADE',
     });
+    ReferalCode.hasMany(models.OriginalClaim, {
+      foreignKey: 'refcodeId',
+      as: 'originalClaims',
+      onDelete: 'CASCADE',
+    });
   };
   ReferalCode.findById = async function (refcodeId) {
     const refcode = await this.findOne({
@@ -246,6 +251,10 @@ module.exports = (sequelize, DataTypes) => {
         {
           model: this.sequelize.models.Claim,
           as: 'claims',
+        },
+        {
+          model: this.sequelize.models.OriginalClaim,
+          as: 'originalClaims',
         },
       ],
     });
@@ -304,6 +313,10 @@ module.exports = (sequelize, DataTypes) => {
         {
           model: this.sequelize.models.Claim,
           as: 'claims',
+        },
+        {
+          model: this.sequelize.models.OriginalClaim,
+          as: 'originalClaims',
         },
       ],
     });

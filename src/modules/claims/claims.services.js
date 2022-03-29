@@ -1,6 +1,10 @@
+import { v4 as uuidv4 } from 'uuid';
 import AppService from '../app/app.service';
 import db from '../../database/models';
 import claimsScripts from '../../database/scripts/claims.scripts';
+import rolesConstants from '../../shared/constants/roles.constants';
+import hcpClaimsProcessor from './claims.helpers/hcp';
+import dhmlClaimsProcessor from './claims.helpers/dhml';
 
 export default class ClaimsService extends AppService {
   constructor({ body, files, query, params, user: operator }) {
@@ -12,6 +16,16 @@ export default class ClaimsService extends AppService {
     this.ReferalCodeModel = db.ReferalCode;
     this.operator = operator;
     this.refcode = null;
+
+    if (operator.role.title === rolesConstants.HCP) {
+      for (const method of Object.getOwnPropertyNames(this.hcp)) {
+        ClaimsService.prototype[method] = this.hcp[method];
+      }
+    } else {
+      for (const method of Object.getOwnPropertyNames(this.dhml)) {
+        ClaimsService.prototype[method] = this.dhml[method];
+      }
+    }
   }
 
   async addNewClaimSvc() {
@@ -19,55 +33,23 @@ export default class ClaimsService extends AppService {
     const refcode = await this.$getRefcode(referalCode);
     this.$handleRefcodeValidation(this.operator, refcode);
 
-    const preparedClaims = claims.map((claim) => ({
-      ...claim,
-      refcodeId: refcode.id,
-      preparedBy: this.operator.subjectId,
-    }));
     this.record(`Submitted claims for referal code: ${referalCode}`);
+    const { originalClaims, preparedClaims } = this.$processBulkAdditions(claims);
+    await db.OriginalClaim.bulkCreate(originalClaims);
     return db.Claim.bulkCreate(preparedClaims);
+    // return this.$handleBulkAddtions(claims);
   }
 
   async getClaimsSvc() {
-    const { operator } = this;
-    const script = claimsScripts.getClaims;
-    const nonPaginatedRows = await this.executeQuery(script, {
-      ...this.query,
-      pageSize: undefined,
-      page: undefined,
-      operator,
-    });
-    const count = nonPaginatedRows.length;
-    const rows = await this.executeQuery(script, {
-      ...this.query,
-      operator,
-    });
-    const total = nonPaginatedRows.reduce((acc, record) => {
-      acc += Number(record.amount);
-      return acc;
-    }, 0);
-    return { count, rows, total };
+    return this.$getClaims(claimsScripts);
   }
 
   async updateByIdParam() {
-    const { claimId } = this.params;
-    const claim = await this.$getClaimById(claimId);
-    const refcode = claim.referalCode;
-    this.$handleRefcodeValidation(this.operator, refcode);
-    const changes = this.body;
-    this.record(`Edited a claim (claimId: ${claimId}`);
-    await claim.update(changes);
-    return claim;
+    return this.$updateByIdParam();
   }
 
   async deleteByIdParam() {
-    const { claimId } = this.params;
-    const claim = await this.$getClaimById(claimId);
-    const refcode = claim.referalCode;
-    this.$handleRefcodeValidation(this.operator, refcode);
-    this.record(`Deleted a claim (claimId: ${claim.id}`);
-    await claim.destroy();
-    return claim;
+    return this.$deleteByIdParam();
   }
 
   async handleBulkClaimProcessing() {
@@ -80,12 +62,10 @@ export default class ClaimsService extends AppService {
 
     const refcode = await this.$getRefcode(referalCode);
     this.$handleRefcodeValidation(this.operator, refcode);
-    this.refcode = refcode;
-
     const t = await db.sequelize.transaction();
     try {
       await this.$handleBulkDelete(arrOfClaimIds, t);
-      await this.$hanldBulkUpdate(arrOfUpdates, t);
+      await this.$handleBulkUpdate(arrOfUpdates, t);
       await this.$handleBulkAddtions(arrOfNewClaims, t);
       this.record(`Edited claims associated with code ${referalCode}`);
       await t.commit();
@@ -96,59 +76,37 @@ export default class ClaimsService extends AppService {
     }
   }
 
-  async $handleBulkDelete(arrOfClaimIds, t) {
-    const claims = await this.$checkClaimIdsAssociationToRefcode(
-      arrOfClaimIds,
-      this.refcode
-    );
-    if (claims.length > 0) {
-      await db.Claim.destroy({ where: { id: arrOfClaimIds }, transaction: t });
-    }
-    return true;
-  }
-  async $hanldBulkUpdate(arrOfUpdates, t) {
-    const arrOfClaimIds = arrOfUpdates.map((claim) => claim.id);
-    const claims = await this.$checkClaimIdsAssociationToRefcode(
-      arrOfClaimIds,
-      this.refcode
-    );
-    for (const claim of claims) {
-      const changes = arrOfUpdates.find((clm) => clm.id === claim.id);
-      delete changes.id;
-      await claim.update(changes, { transaction: t });
-    }
-    return true;
-  }
   async $handleBulkAddtions(arrOfNewClaims, t) {
-    const preparedClaims = arrOfNewClaims.map((claim) => ({
-      ...claim,
-      refcodeId: this.refcode.id,
-      preparedBy: this.operator.subjectId,
-    }));
-    await db.Claim.bulkCreate(preparedClaims, { transaction: t });
-    return true;
+    const { originalClaims, preparedClaims } = this.$processBulkAdditions(arrOfNewClaims);
+    const tnx = t ? { transaction: t } : {};
+    return this.$saveBulkClaims({ originalClaims, preparedClaims }, tnx);
   }
 
-  async $checkClaimIdsAssociationToRefcode(arrOfClaimIds, refcode) {
-    const claims = await db.Claim.findAll({
-      where: { id: arrOfClaimIds },
-      include: { model: db.ReferalCode, as: 'referalCode' },
-    });
-    for (const claim of claims) {
-      this.rejectIf(claim.refcodeId !== refcode.id, {
-        withError: `Error: ${claim.id} is not associated to the code: ${this.refcode.code}`,
-      });
-    }
-    return claims;
+  $processBulkAdditions(arrOfNewClaims) {
+    const refcodeId = this.refcode.id;
+    const preparedBy = this.operator.subjectId;
+    const { preparedClaims, originalClaims } = arrOfNewClaims.reduce(
+      (acc, claim) => {
+        const id = uuidv4();
+        const originalClaimId = id;
+        acc.originalClaims.push({ ...claim, id, refcodeId, preparedBy });
+        acc.preparedClaims.push({ ...claim, id, refcodeId, preparedBy, originalClaimId });
+        // NOTE: I've made claim.id = claim.originalClaimId = originalClaim.id
+        return acc;
+      },
+      { preparedClaims: [], originalClaims: [] }
+    );
+    return { originalClaims, preparedClaims };
   }
 
-  $getRefcode(referalCode) {
-    return this.findOneRecord({
+  async $getRefcode(referalCode) {
+    const refcode = await this.findOneRecord({
       modelName: 'ReferalCode',
       where: { code: referalCode },
-      errorIfNotFound:
-        'Invalid Referal Code, please check the code and try again. REFC002',
+      errorIfNotFound: 'Invalid Referal Code, please check the code and try again. REFC002',
     });
+    this.refcode = refcode;
+    return this.refcode;
   }
 
   $handleRefcodeValidation(operator, refcode) {
@@ -158,13 +116,9 @@ export default class ClaimsService extends AppService {
     refcode.rejectIfCodeIsDeclined();
     return true;
   }
-
-  $getClaimById(claimId) {
-    return this.findOneRecord({
-      modelName: 'Claim',
-      where: { id: claimId },
-      include: { model: db.ReferalCode, as: 'referalCode' },
-      errorIfNotFound: `No claim matches the id of ${claimId}`,
-    });
-  }
 }
+
+Object.assign(ClaimsService.prototype, {
+  hcp: hcpClaimsProcessor(db),
+  dhml: dhmlClaimsProcessor(db),
+});

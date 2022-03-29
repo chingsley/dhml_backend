@@ -18,6 +18,7 @@
     "db:reset:dev": "npm run db:migrate:undo:dev && npm run db:migrate:dev",
     "seed:dev": "npm run db:reset:dev && sequelize db:seed:all --env development",
     "testingthings": "nodemon --exec babel-node ./playground/testingthings.js",
+    "testing-dynamic-mixin": "nodemon --exec babel-node ./playground/class-tests.js",
     "--------------------": "-----------------------------",
     "db:migrate:dev:mysql": "sequelize db:migrate --env mysql_development",
     "db:migrate:undo:dev:mysql": " sequelize db:migrate:undo:all --env mysql_development",
@@ -50,7 +51,9 @@
     "test:userMiddleware": "jest test/modules/user/user.middleware.spec.js --detectOpenHandles --verbose --watch",
     "test:enrolleeMiddleware": "jest test/modules/enrollee/enrollee.middleware.spec.js --detectOpenHandles --verbose --watch",
     "test:refcodeMiddleware": "jest test/modules/refcode/refcode.middleware.spec.js --detectOpenHandles --verbose --watch",
-    "test:reportsMiddleware": "jest test/modules/reports/reports.middleware.spec.js --detectOpenHandles --verbose --watch"
+    "test:reportsMiddleware": "jest test/modules/reports/reports.middleware.spec.js --detectOpenHandles --verbose --watch",
+    "--------------------------": "-----------------------------",
+    "test:claimsController": "jest test/modules/refcode/claims.controller.spec.js --detectOpenHandles --verbose --watch"
   },
   "dependencies": {
     "@babel/cli": "^7.14.5",
