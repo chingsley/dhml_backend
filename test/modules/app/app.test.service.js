@@ -28,9 +28,7 @@ class TestService {
   static async resetDB(modelNamesArr) {
     if (modelNamesArr) {
       if (modelNamesArr && !Array.isArray(modelNamesArr)) {
-        throw new Error(
-          '"resetDB" expects an optional array of model names as argument'
-        );
+        throw new Error('"resetDB" expects an optional array of model names as argument');
       }
       for (const modelName of modelNamesArr) {
         await db[modelName].destroy({ where: {}, truncate: { cascade: true } });
@@ -52,6 +50,7 @@ class TestService {
       await db.Role.destroy({ where: {}, truncate: { cascade: true } });
       await db.HcpSpecialty.destroy({ where: {}, truncate: { cascade: true } });
       await db.Claim.destroy({ where: {}, truncate: { cascade: true } });
+      await db.OriginalClaim.destroy({ where: {}, truncate: { cascade: true } });
       await db.ReferalCode.destroy({ where: {}, truncate: { cascade: true } });
       await db.Specialty.destroy({ where: {}, truncate: { cascade: true } });
     }
