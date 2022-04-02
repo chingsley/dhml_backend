@@ -3,6 +3,7 @@ const {
   getSampleUserPasswords,
   getSampleHcpPasswords,
 } = require('../../shared/samples/password.samples');
+const { loggNodeEnvWarning } = require('../helpers');
 
 // const hcpLength = getSampleHCPs().length;
 
@@ -17,7 +18,11 @@ module.exports = {
     const hcpCount = await db.HealthCareProvider.count();
     const sampleHcpPasswords = getSampleHcpPasswords('Testing*123', hcpCount);
     const samplePasswords = [...sampleUserPasswords, ...sampleHcpPasswords];
-    return queryInterface.bulkInsert('Passwords', samplePasswords);
+    try {
+      await queryInterface.bulkInsert('Passwords', samplePasswords);
+    } catch (error) {
+      loggNodeEnvWarning(error.message);
+    }
   },
 
   // eslint-disable-next-line no-unused-vars

@@ -1,7 +1,7 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  const Claim = sequelize.define(
-    'Claim',
+  const OriginalClaim = sequelize.define(
+    'OriginalClaim',
     {
       id: {
         type: DataTypes.UUID,
@@ -18,11 +18,6 @@ module.exports = (sequelize, DataTypes) => {
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
-      },
-      originalClaimId: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
-        allowNull: true,
       },
       category: {
         type: DataTypes.STRING,
@@ -48,9 +43,6 @@ module.exports = (sequelize, DataTypes) => {
       pricePerUnit: {
         type: DataTypes.DECIMAL,
       },
-      // amount: {
-      //   type: DataTypes.DECIMAL,
-      // },
       preparedBy: {
         // could be user or hcp so we can't use preparerId, as it will be referencing either hchp or user
         // for a user, preparedBy = user.staffInfo.staffIdNo
@@ -60,15 +52,15 @@ module.exports = (sequelize, DataTypes) => {
     },
     {}
   );
-  Claim.associate = function (models) {
-    Claim.belongsTo(models.ReferalCode, {
+  OriginalClaim.associate = function (models) {
+    OriginalClaim.belongsTo(models.ReferalCode, {
       foreignKey: 'refcodeId',
       as: 'referalCode',
     });
-    Claim.belongsTo(models.OriginalClaim, {
+    OriginalClaim.hasOne(models.Claim, {
       foreignKey: 'originalClaimId',
-      as: 'originalClaim',
+      as: 'claim',
     });
   };
-  return Claim;
+  return OriginalClaim;
 };

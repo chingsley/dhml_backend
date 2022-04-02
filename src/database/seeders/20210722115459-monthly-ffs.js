@@ -3,6 +3,7 @@ const SKIP_FFS_SEED = process.env.SKIP_FFS_SEED;
 const { default: claimsScripts } = require('../scripts/claims.scripts');
 const { default: ScriptRunner } = require('../../utils/ScriptRunner');
 const { months } = require('../../utils/timers');
+const { loggNodeEnvWarning } = require('../helpers');
 
 module.exports = {
   // eslint-disable-next-line no-unused-vars
@@ -12,17 +13,21 @@ module.exports = {
         return resolve();
       });
     }
-    for (const n of [4, 3, 2, 1, 0]) {
-      const date = months.setPast(n);
-      const { rows, totals } = await fetchFFSMonthlyPaymentByHcps(date);
-      const { id: mfpId } = await db.MonthlyFFSPayment.create({
-        month: months.firstDay(date),
-        totalActualAmt: totals.amount,
-        totalActualClaims: totals.claims,
-      });
-      await db.HcpMonthlyFFSPayment.bulkCreate(
-        rows.map((row) => ({ ...row, mfpId }))
-      );
+    try {
+      for (const n of [4, 3, 2, 1, 0]) {
+        const date = months.setPast(n);
+        const { rows, totals } = await fetchFFSMonthlyPaymentByHcps(date);
+        const { id: mfpId } = await db.MonthlyFFSPayment.create({
+          month: months.firstDay(date),
+          totalActualAmt: totals.amount,
+          totalActualClaims: totals.claims,
+        });
+        await db.HcpMonthlyFFSPayment.bulkCreate(
+          rows.map((row) => ({ ...row, mfpId }))
+        );
+      }
+    } catch (error) {
+      loggNodeEnvWarning(error.message);
     }
   },
 

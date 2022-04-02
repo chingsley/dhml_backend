@@ -4,6 +4,7 @@ const { months, days, moment } = require('../../utils/timers');
 dotenv.config();
 const db = require('../models');
 const { randInt } = require('../../utils/helpers');
+const { loggNodeEnvWarning } = require('../helpers');
 const armOfService = ['NAVY', 'ARMY', 'AIR FORCE', 'TRI-SERVICE'];
 const serviceStatus = ['retired', 'serving', undefined];
 const { log } = console;
@@ -46,28 +47,32 @@ if (process.env.SEED_WITH === 'LIVE_DATA') {
   module.exports = {
     // eslint-disable-next-line no-unused-vars
     up: async (queryInterface, Sequelize) => {
-      await queryInterface.bulkInsert('Enrollees', principals);
-      const seededPrincipals = await db.Enrollee.findAll({
-        where: { principalId: null },
-      });
-      const dictPrincipalId = seededPrincipals.reduce((acc, p) => {
-        acc[p.enrolleeIdNo] = p;
-        return acc;
-      }, {});
-      const dependantsWithPrincipalId = dependants.map((d) => {
-        const principalEnrolleeIdNo = d.enrolleeIdNo.split('-')[0];
-        if (!dictPrincipalId[principalEnrolleeIdNo]) {
-          log(principalEnrolleeIdNo, d);
-        }
-        return {
-          ...d,
-          principalId: dictPrincipalId[principalEnrolleeIdNo].id,
-          isVerified: dictPrincipalId[principalEnrolleeIdNo].isVerified,
-          dateVerified: dictPrincipalId[principalEnrolleeIdNo].dateVerified,
-          ...createdAt(dictPrincipalId[principalEnrolleeIdNo]),
-        };
-      });
-      await queryInterface.bulkInsert('Enrollees', dependantsWithPrincipalId);
+      try {
+        await queryInterface.bulkInsert('Enrollees', principals);
+        const seededPrincipals = await db.Enrollee.findAll({
+          where: { principalId: null },
+        });
+        const dictPrincipalId = seededPrincipals.reduce((acc, p) => {
+          acc[p.enrolleeIdNo] = p;
+          return acc;
+        }, {});
+        const dependantsWithPrincipalId = dependants.map((d) => {
+          const principalEnrolleeIdNo = d.enrolleeIdNo.split('-')[0];
+          if (!dictPrincipalId[principalEnrolleeIdNo]) {
+            log(principalEnrolleeIdNo, d);
+          }
+          return {
+            ...d,
+            principalId: dictPrincipalId[principalEnrolleeIdNo].id,
+            isVerified: dictPrincipalId[principalEnrolleeIdNo].isVerified,
+            dateVerified: dictPrincipalId[principalEnrolleeIdNo].dateVerified,
+            ...createdAt(dictPrincipalId[principalEnrolleeIdNo]),
+          };
+        });
+        await queryInterface.bulkInsert('Enrollees', dependantsWithPrincipalId);
+      } catch (error) {
+        loggNodeEnvWarning(error.message);
+      }
     },
 
     // eslint-disable-next-line no-unused-vars
@@ -99,8 +104,8 @@ if (process.env.SEED_WITH === 'LIVE_DATA') {
           'Enrollees',
           dependants.map((d) => ({ ...d, ...createdAt(d) }))
         );
-      } catch (e) {
-        log(e.message);
+      } catch (error) {
+        loggNodeEnvWarning(error.message);
       }
     },
 

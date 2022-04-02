@@ -438,6 +438,15 @@ describe('RefcodeController', () => {
         done(e);
       }
     });
+    it('returns all associated originalClaims', async (done) => {
+      try {
+        const { data } = res.body;
+        expect(data.originalClaims).toHaveLength(claimsRequestPayload.claims.length);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
   });
   describe('updateCodeRequestStatus (Approve code request)', () => {
     let token,

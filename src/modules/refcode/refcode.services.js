@@ -102,6 +102,10 @@ export default class RefcodeService extends AppService {
           model: db.Claim,
           as: 'claims',
         },
+        {
+          model: db.OriginalClaim,
+          as: 'originalClaims',
+        },
       ],
       errorIfNotFound: `No code request found for ${field}: ${value}`,
     });

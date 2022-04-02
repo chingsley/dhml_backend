@@ -4,6 +4,7 @@ const ROLES = require('../../shared/constants/roles.constants');
 const HCPs = require('../../../live_data/HealthCareProviders.json');
 // const { randInt } = require('../../utils/helpers');
 const db = require('../../database/models');
+const { loggNodeEnvWarning } = require('../helpers');
 
 // const armOfService = ['NAVY', 'ARMY', 'AIR FORCE', 'TRI-SERVICE', undefined];
 
@@ -13,16 +14,20 @@ module.exports = {
     const hcpRole = await db.Role.findOne({
       where: { title: ROLES.HCP },
     });
-    return queryInterface.bulkInsert(
-      'HealthCareProviders',
-      // getSampleHCPs().map((hcp) => ({ ...hcp, status: 'active', roleId }))
-      HCPs.map((hcp) => ({
-        ...hcp,
-        roleId: hcpRole.id,
-        // armOfService: armOfService[randInt(0, armOfService.length - 1)],
-        accountName: hcp.accountName || 'NOT SPECIFIED',
-      }))
-    );
+    try {
+      await queryInterface.bulkInsert(
+        'HealthCareProviders',
+        // getSampleHCPs().map((hcp) => ({ ...hcp, status: 'active', roleId }))
+        HCPs.map((hcp) => ({
+          ...hcp,
+          roleId: hcpRole.id,
+          // armOfService: armOfService[randInt(0, armOfService.length - 1)],
+          accountName: hcp.accountName || 'NOT SPECIFIED',
+        }))
+      );
+    } catch (error) {
+      loggNodeEnvWarning(error.message);
+    }
   },
 
   // eslint-disable-next-line no-unused-vars

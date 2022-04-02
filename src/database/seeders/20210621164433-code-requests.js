@@ -2,8 +2,8 @@ const dotenv = require('dotenv');
 dotenv.config();
 const RefcodeSample = require('../../shared/samples/refcodeRequest.samples');
 const db = require('../../database/models');
+const { loggNodeEnvWarning } = require('../helpers');
 const SKIP_FFS_SEED = process.env.SKIP_FFS_SEED;
-const { log } = console;
 
 module.exports = {
   // eslint-disable-next-line no-unused-vars
@@ -37,8 +37,8 @@ module.exports = {
         // const codeRequests = await generateSampleRequestForRefcodesForSeed(1000);
         await queryInterface.bulkInsert('ReferalCodes', codeRequests);
       }
-    } catch (e) {
-      log(e);
+    } catch (error) {
+      loggNodeEnvWarning(error.message);
     }
   },
 
