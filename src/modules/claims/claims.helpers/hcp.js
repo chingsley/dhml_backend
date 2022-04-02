@@ -2,7 +2,6 @@
 
 const hcpClaimsProcessor = (db) => ({
   async $getClaims(claimsScripts) {
-    console.log('\n\n HCP \n\n');
     const { operator } = this;
     const script = claimsScripts.getOriginalClaimsSummary;
     const nonPaginatedRows = await this.executeQuery(script, {

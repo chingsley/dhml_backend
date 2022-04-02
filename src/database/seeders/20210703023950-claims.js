@@ -1,7 +1,9 @@
 const { Op } = require('sequelize');
 const db = require('../models');
 const Claims = require('../../shared/samples/claims.sample');
+const { loggNodeEnvWarning } = require('../helpers');
 const SKIP_FFS_SEED = process.env.SKIP_FFS_SEED;
+
 module.exports = {
   // eslint-disable-next-line no-unused-vars
   up: async (queryInterface, Sequelize) => {
@@ -19,11 +21,16 @@ module.exports = {
         numDrugClaims: Math.floor(approvedRefcodes.length / 2),
         numServiceClaims: Math.floor(approvedRefcodes.length / 2),
       });
-      await queryInterface.bulkInsert('OriginalClaims', sampleClaims);
-      await queryInterface.bulkInsert(
-        'Claims',
-        sampleClaims.map((c) => ({ ...c, originalClaimId: c.id }))
-      );
+      try {
+
+        await queryInterface.bulkInsert('OriginalClaims', sampleClaims);
+        await queryInterface.bulkInsert(
+          'Claims',
+          sampleClaims.map((c) => ({ ...c, originalClaimId: c.id }))
+        );
+      } catch (error) {
+        loggNodeEnvWarning(error.message);
+      }
     }
   },
 

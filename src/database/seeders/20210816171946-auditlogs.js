@@ -4,6 +4,7 @@ const { v4: uuidv4 } = require('uuid');
 const { _random, randNum } = require('../../utils/helpers');
 const db = require('../models');
 const { months } = require('../../utils/timers');
+const { loggNodeEnvWarning } = require('../helpers');
 
 module.exports = {
   // eslint-disable-next-line no-unused-vars
@@ -43,7 +44,11 @@ module.exports = {
       }
       return auditLog;
     });
-    return queryInterface.bulkInsert('AuditLogs', auditLogs);
+    try {
+      await queryInterface.bulkInsert('AuditLogs', auditLogs);
+    } catch (error) {
+      loggNodeEnvWarning(error.message);
+    }
   },
 
   // eslint-disable-next-line no-unused-vars

@@ -405,7 +405,6 @@ describe('RefcodeController', () => {
         `referalCode=${refcode.code}`,
         token
       );
-      console.log(res.body.data.originalClaims);
     });
     it('successfully returns all requests with status 200', async (done) => {
       try {
@@ -434,6 +433,15 @@ describe('RefcodeController', () => {
       try {
         const { data } = res.body;
         expect(data.claims).toHaveLength(claimsRequestPayload.claims.length);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns all associated originalClaims', async (done) => {
+      try {
+        const { data } = res.body;
+        expect(data.originalClaims).toHaveLength(claimsRequestPayload.claims.length);
         done();
       } catch (e) {
         done(e);

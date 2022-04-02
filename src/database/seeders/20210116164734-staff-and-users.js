@@ -3,10 +3,10 @@ const getSampleStaffs = require('../../shared/samples/staff.samples');
 const getSampleUsers = require('../../shared/samples/user.samples');
 const db = require('../models');
 const ROLES = require('../../shared/constants/roles.constants');
+const { loggNodeEnvWarning } = require('../helpers');
 
 const { sampleStaffs } = getSampleStaffs();
 const { sampleUsers } = getSampleUsers(sampleStaffs.slice(0, MAX_USER_COUNT));
-const { log } = console;
 const staffCount = sampleStaffs.length;
 const userCount = sampleUsers.length;
 const ERREGEN = {
@@ -49,7 +49,7 @@ module.exports = {
         },
       ]);
     } catch (error) {
-      log('migrating Staffs: ', error.errors);
+      loggNodeEnvWarning(`migrating Staffs: ,${error.message}`);
     }
 
     try {
@@ -69,7 +69,7 @@ module.exports = {
         },
       ]);
     } catch (error) {
-      log('migrating Users: ', error.errors);
+      loggNodeEnvWarning(`migrating Users: ,${error.message}`);
     }
   },
 

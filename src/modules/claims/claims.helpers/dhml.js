@@ -2,7 +2,6 @@
 
 const dhmlClaimsProcessor = (db) => ({
   async $getClaims(claimsScripts) {
-    console.log('\n\n DHML \n\n');
     const { operator } = this;
     const script = claimsScripts.getClaimsSummary;
     const nonPaginatedRows = await this.executeQuery(script, {
