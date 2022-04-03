@@ -117,6 +117,7 @@ export default class HcpService extends AppService {
 
   async fetchAllHcp() {
     return await db.HealthCareProvider.findAndCountAll({
+      distinct: true,
       where: {
         ...this.searchRecordsBy(hcpSearchableFields),
         ...this.filterHcp(),
@@ -124,7 +125,7 @@ export default class HcpService extends AppService {
       },
       order: [['id', 'ASC']],
       ...this.paginate(),
-      include: { ...this.specialtyModel(db) },
+      include: { ...this.specialtyModel(db, this.query) },
     });
   }
 
