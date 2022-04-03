@@ -32,6 +32,13 @@ export function randNum(min, max) {
  */
 export const _random = (arr) => arr[randInt(0, arr.length - 1)];
 
+
+export const _randArr = (arr, size) => {
+  const s1 = randInt(0, arr.length - size);
+  const s2 = s1 + size;
+  return arr.slice(s1, s2);
+};
+
 export function getRandomIntArr(min, max, count) {
   let n = 0;
   const arrOfRandomIntegers = [];
