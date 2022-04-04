@@ -24,14 +24,8 @@ export default class RefcodeService extends AppService {
   async createRequestForReferalCodeSVC() {
     const { enrolleeIdNo, receivingHcpId, specialtyId } = this.body;
     // await this.validateId('HealthCareProvider', referringHcpId);
-    const referringHcp = await this.$getReferringHcpIdForCodeRequest(
-      this.operator,
-      this.body
-    );
-    const receivingHcp = await this.validateId(
-      'HealthCareProvider',
-      receivingHcpId
-    );
+    const referringHcp = await this.$getReferringHcpIdForCodeRequest(this.operator, this.body);
+    const receivingHcp = await this.validateId('HealthCareProvider', receivingHcpId);
     await receivingHcp.validateSpecialtyId(specialtyId);
     const enrollee = await this.findOneRecord({
       where: { enrolleeIdNo },
@@ -68,18 +62,16 @@ export default class RefcodeService extends AppService {
           as: 'specialty',
           attributes: ['id', 'name'],
         },
-        ...['declinedBy', 'flaggedBy', 'approvedBy', 'claimsDeclinedBy'].map(
-          (item) => ({
-            model: db.User,
-            as: item,
-            attributes: ['id', 'username'],
-            include: {
-              model: db.Staff,
-              as: 'staffInfo',
-              attributes: ['id', 'firstName', 'surname', 'staffIdNo'],
-            },
-          })
-        ),
+        ...['declinedBy', 'flaggedBy', 'approvedBy', 'claimsDeclinedBy'].map((item) => ({
+          model: db.User,
+          as: item,
+          attributes: ['id', 'username'],
+          include: {
+            model: db.Staff,
+            as: 'staffInfo',
+            attributes: ['id', 'firstName', 'surname', 'staffIdNo'],
+          },
+        })),
         {
           model: db.Enrollee,
           as: 'enrollee',
@@ -101,10 +93,12 @@ export default class RefcodeService extends AppService {
         {
           model: db.Claim,
           as: 'claims',
+          order: [['originalClaimId', 'DESC']],
         },
         {
           model: db.OriginalClaim,
           as: 'originalClaims',
+          order: [['id', 'DESC']],
         },
       ],
       errorIfNotFound: `No code request found for ${field}: ${value}`,
@@ -113,8 +107,7 @@ export default class RefcodeService extends AppService {
 
   async updateCodeRequestDetailsSV() {
     const { refcodeId } = this.params;
-    const { receivingHcpId: newReceivingHcpId, specialtyId: newSpecialtyId } =
-      this.body;
+    const { receivingHcpId: newReceivingHcpId, specialtyId: newSpecialtyId } = this.body;
 
     const refcode = await db.ReferalCode.findById(refcodeId);
     this.authorizeRefcodeRecevingHcp(this.operator, refcode);
@@ -131,22 +124,15 @@ export default class RefcodeService extends AppService {
         : refcode.receivingHcp;
       await receivingHcp.validateSpecialtyId(specialtyId);
     }
-    this.record(
-      `Updated the details of the code request (refcodeId: ${refcodeId})`
-    );
+    this.record(`Updated the details of the code request (refcodeId: ${refcodeId})`);
     return refcode.updateAndReload(this.body);
   }
 
   async updateRefcodeStatus() {
     const { refcodeId } = this.params;
     const operatorId = this.operator.id;
-    const {
-      status,
-      stateOfGeneration,
-      flagReason,
-      declineReason,
-      claimsDeclineReason,
-    } = this.body;
+    const { status, stateOfGeneration, flagReason, declineReason, claimsDeclineReason } =
+      this.body;
 
     const refcode = await db.ReferalCode.findById(refcodeId);
     // refcode.rejectIfCodeIsExpired();
@@ -248,9 +234,7 @@ export default class RefcodeService extends AppService {
       claimsVerifierId: this.operator.id,
       remarksOnClaims: remarks,
     });
-    this.record(
-      `Verified the claims for code request (refcodeId: ${refcodeId})`
-    );
+    this.record(`Verified the claims for code request (refcodeId: ${refcodeId})`);
     return data;
   }
 
@@ -264,9 +248,7 @@ export default class RefcodeService extends AppService {
     });
     const uploadedImgUrl = await Cloudinary.uploadImage(image, cloudSubFolder);
     await refcode.updateAndReload({ claimsSupportingDocument: uploadedImgUrl });
-    this.record(
-      `Uploaded claims-supporting documents (refcodeId: ${refcodeId})`
-    );
+    this.record(`Uploaded claims-supporting documents (refcodeId: ${refcodeId})`);
     return refcode;
   }
 
@@ -277,9 +259,7 @@ export default class RefcodeService extends AppService {
       withError: 'Invalid refcodeId, belongs to a different Receiving Hcp',
     });
     await refcode.updateAndReload({ claimsSupportingDocument: null });
-    this.record(
-      `Deleted claims-supporting documents (refcodeId: ${refcodeId})`
-    );
+    this.record(`Deleted claims-supporting documents (refcodeId: ${refcodeId})`);
     return refcode;
   }
 
@@ -356,10 +336,7 @@ export default class RefcodeService extends AppService {
     if (userType.toLowerCase() === 'hcp') {
       referringHcp = operator;
     } else {
-      referringHcp = await this.validateId(
-        'HealthCareProvider',
-        referringHcpId
-      );
+      referringHcp = await this.validateId('HealthCareProvider', referringHcpId);
     }
     return referringHcp;
   }
