@@ -46,14 +46,14 @@
     "test:reportsController": "jest test/modules/reports/reports.controller.spec.js --detectOpenHandles --verbose --watch",
     "test:statsController": "jest test/modules/stats/stats.controller.spec.js --detectOpenHandles --verbose --watch",
     "test:accountsController": "jest test/modules/accounts/accounts.controller.spec.js --detectOpenHandles --verbose --watch",
+    "test:claimsController": "jest test/modules/refcode/claims.controller.spec.js --detectOpenHandles --verbose --watch",
+    "test:specialtyController": "jest test/modules/specialty/specialty.controller.spec.js --detectOpenHandles --verbose --watch",
     "temp": "jest test/modules/hcp/hcp.temp.spec.js --detectOpenHandles --verbose --watch",
     "-------------------------": "-----------------------------",
     "test:userMiddleware": "jest test/modules/user/user.middleware.spec.js --detectOpenHandles --verbose --watch",
     "test:enrolleeMiddleware": "jest test/modules/enrollee/enrollee.middleware.spec.js --detectOpenHandles --verbose --watch",
     "test:refcodeMiddleware": "jest test/modules/refcode/refcode.middleware.spec.js --detectOpenHandles --verbose --watch",
-    "test:reportsMiddleware": "jest test/modules/reports/reports.middleware.spec.js --detectOpenHandles --verbose --watch",
-    "--------------------------": "-----------------------------",
-    "test:claimsController": "jest test/modules/refcode/claims.controller.spec.js --detectOpenHandles --verbose --watch"
+    "test:reportsMiddleware": "jest test/modules/reports/reports.middleware.spec.js --detectOpenHandles --verbose --watch"
   },
   "dependencies": {
     "@babel/cli": "^7.14.5",

@@ -7,7 +7,7 @@ import Jwt from '../../../src/utils/Jwt';
 import _HcpService from '../hcp/hcp.test.service';
 import getEnrollees from '../../../src/shared/samples/enrollee.samples';
 import _RefcodeService from './refcode.test.service';
-import _SpecialityService from '../speciality/speciality.test.services';
+import _SpecialityService from '../specialty/specialty.test.services';
 import { _random } from '../../../src/utils/helpers';
 import { CODE_STATUS } from '../../../src/shared/constants/lists.constants';
 import { stateCodes } from '../../../src/shared/constants/statecodes.constants';

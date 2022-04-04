@@ -23,15 +23,16 @@ export default class SpecialistService extends AppService {
       ...this.filterByHcpId(hcpId),
     });
   }
+
   filterByHcpId(hcpId) {
     return hcpId
       ? {
-          include: {
-            model: db.HcpSpecialty,
-            where: { hcpId },
-            attributes: [],
-          },
-        }
+        include: {
+          model: db.HcpSpecialty,
+          where: { hcpId },
+          attributes: [],
+        },
+      }
       : {};
   }
 }

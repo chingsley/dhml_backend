@@ -13,7 +13,7 @@ import _HcpService from './hcp.test.service';
 import getEnrollees from '../../../src/shared/samples/enrollee.samples';
 import _StaffService from '../staff/staff.test.services';
 import { MAX_STAFF_COUNT } from '../../../src/shared/constants/seeders.constants';
-// import { dateOnly, months } from '../../../src/utils/timers';
+import HcpSpecialityService from './hcp.speciality.test.services';
 
 const rateInNaira = Number(process.env.RATE_IN_NAIRA);
 const { log } = console;
@@ -293,12 +293,31 @@ describe('HcpController', () => {
       TestService.testCatchBlock(HcpController.deleteHcp)
     );
   });
+
   describe('getAllHcp', () => {
-    let token, seededHCPs;
+    const sgMailOriginalImplementation = sgMail.send;
+    const nodemailerOriginalImplementation = nodemailer.createTransport;
+    const originalNanoIdGetValue = NanoId.getValue;
+    const SAMPLE_PASSWORD = 'Testing*123';
+    beforeAll(() => {
+      sgMail.send = jest.fn().mockReturnValue({ status: 200 });
+      nodemailer.createTransport = jest.fn().mockReturnValue({
+        sendMail: jest.fn().mockReturnValue({ status: 200 }),
+      });
+      NanoId.getValue = jest.fn().mockReturnValue(SAMPLE_PASSWORD);
+    });
+    afterAll(() => {
+      nodemailer.createTransport = nodemailerOriginalImplementation;
+      sgMail.send = sgMailOriginalImplementation;
+      NanoId.getValue = originalNanoIdGetValue;
+    });
+
+    let token, seededHCPs, seededHcpSpecialties, defaultRes, hcpWithoutSpecialties, hcpWithSpecialties;
     const COUNT_HCP = 20;
     beforeAll(async () => {
       await TestService.resetDB();
       const hcps = getSampleHCPs();
+
       seededHCPs = await _HcpService.bulkInsert([
         ...hcps.slice(0, 10),
         ...hcps.slice(hcps.length - 10).map((hcp) => ({
@@ -306,16 +325,69 @@ describe('HcpController', () => {
           status: 'suspended',
         })),
       ]);
+
+      [hcpWithoutSpecialties, ...hcpWithSpecialties] = seededHCPs;
+      seededHcpSpecialties = await HcpSpecialityService.seedRandomHcpSpecialties(hcpWithSpecialties);
       const { sampleStaffs: stff } = getSampleStaffs(1);
       const data = await TestService.getToken(stff[0], ROLES.SUPERADMIN);
       token = data.token;
+      defaultRes = await HcpApi.getAll('', token);
     });
     it('returns status 200 and the total record in the db', async (done) => {
       try {
-        const res = await HcpApi.getAll('', token);
+        const res = defaultRes;
         const { data } = res.body;
         expect(res.status).toBe(200);
         expect(data.count).toEqual(COUNT_HCP);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('returns hcps that have specialties along with their specialties', async (done) => {
+      try {
+        const res = defaultRes;
+        const { data } = res.body;
+        const withSpecialties = data.rows.filter(hcp => hcp.specialties.length > 0);
+        expect(withSpecialties.length).toBeGreaterThan(0);
+
+        withSpecialties.forEach((hcp) => {
+          hcp.specialties.forEach(specialty => {
+            expect(specialty).toStrictEqual(
+              expect.objectContaining({
+                id: expect.any(String),
+                name: expect.any(String),
+              }),
+            );
+          });
+        });
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('also returns hcps that have no spcialties', async (done) => {
+      try {
+        const res = defaultRes;
+        const { data } = res.body;
+        const noSpecialtyHcp = data.rows.find(hcp => hcp.id === hcpWithoutSpecialties.id);
+        expect(noSpecialtyHcp.specialties).toHaveLength(0);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    it('can filter the hcp"s by specialtyId', async (done) => {
+      try {
+        const specialtyId = seededHcpSpecialties[0].specialtyId;
+        const query = `specialtyId=${specialtyId}`;
+        const res = await HcpApi.getAll(query, token);
+        const { data } = res.body;
+        data.rows.forEach(hcp => {
+          hcp.specialties.forEach(specialty => {
+            expect(specialty.id).toEqual(specialtyId);
+          });
+        });
         done();
       } catch (e) {
         done(e);
@@ -377,7 +449,7 @@ describe('HcpController', () => {
         done(e);
       }
     });
-    it('can search the record by any vaue', async (done) => {
+    it('can search the record by any value', async (done) => {
       try {
         const SEARCH_ITEM = seededHCPs[0].email;
         const query = `searchItem=${SEARCH_ITEM}`;

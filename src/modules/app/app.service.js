@@ -266,6 +266,8 @@ export default class AppService {
     return filterObj;
   }
 
+  // exactMatch(['specialtyId'], { mapToColum: { 'specialtyId': 'id' }})
+
   searchRecordsBy = (searchableFields) => {
     const { searchField, searchValue, searchItem } = this.query;
     const allowedFields = searchableFields.map(({ name }) => name);
@@ -429,12 +431,13 @@ export default class AppService {
     };
   }
 
-  specialtyModel(db) {
+  specialtyModel(db, { specialtyId } = {}) {
     return {
       model: db.Specialty,
       as: 'specialties',
       attributes: ['id', 'name'],
       through: { attributes: [] },
+      ...(specialtyId ? { where: { id: specialtyId } } : {})
     };
   }
 

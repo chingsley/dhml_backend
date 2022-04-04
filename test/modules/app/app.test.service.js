@@ -11,6 +11,7 @@ import getSampleHCPs from '../../../src/shared/samples/hcp.samples';
 import getEnrollees from '../../../src/shared/samples/enrollee.samples';
 import NanoId from '../../../src/utils/NanoId';
 import ROLES from '../../../src/shared/constants/roles.constants';
+import constants from '../../../src/shared/constants/roles.constants';
 
 const { AES_KEY, IV_KEY } = process.env;
 export const tomorrow = moment().add(1, 'days').format('YYYY-MM-DD');
@@ -21,6 +22,8 @@ const app = supertest(server.server);
 const cypher = new Cypher(AES_KEY, IV_KEY);
 
 class TestService {
+  static HCP = db.HealthCareProvider;
+
   static getSampleEnrollees(options) {
     return getEnrollees(options);
   }
@@ -298,6 +301,13 @@ class TestService {
       done(e);
     }
   };
+
+  static async handleHcpBulkInsert(hcpList) {
+    const hcpRole = await this.createRole(constants.HCP);
+    return this.HCP.bulkCreate(
+      hcpList.map((hcp) => ({ ...hcp, roleId: hcpRole.id }))
+    );
+  }
 }
 
 export default TestService;
