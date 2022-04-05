@@ -25,7 +25,7 @@ export default class RefcodeController {
     try {
       const refcodeService = new RefcodeService(req);
       const data = await refcodeService.getOneRefcodeSv();
-      return res.status(200).json({ message: 'verified', data });
+      return res.status(200).json({ message: 'successful', data });
     } catch (error) {
       Response.handleError('getOneRefcodeCtr', error, req, res, next);
     }

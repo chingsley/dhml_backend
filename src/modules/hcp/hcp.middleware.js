@@ -57,6 +57,7 @@ export default class HcpMiddleware {
         searchValue: Joi.string().trim(),
         searchItem: Joi.string().trim(),
         category: Joi.string().trim(),
+        specialtyId: Joi.string().trim(),
         state: Joi.string().trim(),
         date: Joi.date()
           .format('YYYY-MM-DD')

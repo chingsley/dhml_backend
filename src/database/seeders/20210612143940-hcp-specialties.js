@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 
 const { getRandomIntArr } = require('../../utils/helpers');
+const { loggNodeEnvWarning } = require('../helpers');
 const db = require('../models');
 
 module.exports = {
@@ -19,7 +20,11 @@ module.exports = {
       return hcpSpecialties;
     });
 
-    return queryInterface.bulkInsert('HcpSpecialties', allHcpSpecialties);
+    try {
+      await queryInterface.bulkInsert('HcpSpecialties', allHcpSpecialties);
+    } catch (error) {
+      loggNodeEnvWarning(error.message);
+    }
     // await Promise.all(promiseArr);
   },
 

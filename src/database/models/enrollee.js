@@ -293,6 +293,7 @@ module.exports = (sequelize, DataTypes) => {
         (depndt) => depndt.scheme === this.scheme
       );
       if (sameSchemeDependants.length > 4) {
+        // eslint-disable-next-line max-len
         const errorMsg = `The principal, ${this.firstName} ${this.surname}, has reached the limit(5) of allowed dependants under ${newDependant.scheme}`;
         throwError({
           status: 400,
@@ -309,6 +310,7 @@ module.exports = (sequelize, DataTypes) => {
           depndt.scheme !== 'VCSHIP'
       );
       if (spouse) {
+        // eslint-disable-next-line max-len
         const errorMsg = `The principal, ${this.firstName} ${this.surname}, already has a spouse registered by the name ${spouse.surname} ${spouse.firstName}. Only one spouse can be enrolled as dependant`;
         throwError({
           status: 400,

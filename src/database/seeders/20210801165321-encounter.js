@@ -5,6 +5,7 @@ const { _random, randNum } = require('../../utils/helpers');
 const db = require('../models');
 const diagnosis = require('../../../diagnosisFile.json');
 const { months } = require('../../utils/timers');
+const { loggNodeEnvWarning } = require('../helpers');
 
 module.exports = {
   // eslint-disable-next-line no-unused-vars
@@ -24,7 +25,11 @@ module.exports = {
         createdAt: months.setPast(randNum(0, 12)),
       };
     });
-    return queryInterface.bulkInsert('Encounters', encounters);
+    try {
+      await queryInterface.bulkInsert('Encounters', encounters);
+    } catch (error) {
+      loggNodeEnvWarning(error.message);
+    }
   },
 
   // eslint-disable-next-line no-unused-vars

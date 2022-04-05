@@ -24,14 +24,8 @@ export default class RefcodeService extends AppService {
   async createRequestForReferalCodeSVC() {
     const { enrolleeIdNo, receivingHcpId, specialtyId } = this.body;
     // await this.validateId('HealthCareProvider', referringHcpId);
-    const referringHcp = await this.$getReferringHcpIdForCodeRequest(
-      this.operator,
-      this.body
-    );
-    const receivingHcp = await this.validateId(
-      'HealthCareProvider',
-      receivingHcpId
-    );
+    const referringHcp = await this.$getReferringHcpIdForCodeRequest(this.operator, this.body);
+    const receivingHcp = await this.validateId('HealthCareProvider', receivingHcpId);
     await receivingHcp.validateSpecialtyId(specialtyId);
     const enrollee = await this.findOneRecord({
       where: { enrolleeIdNo },
@@ -68,7 +62,7 @@ export default class RefcodeService extends AppService {
           as: 'specialty',
           attributes: ['id', 'name'],
         },
-        ...['declinedBy', 'flaggedBy', 'approvedBy'].map((item) => ({
+        ...['declinedBy', 'flaggedBy', 'approvedBy', 'claimsDeclinedBy'].map((item) => ({
           model: db.User,
           as: item,
           attributes: ['id', 'username'],
@@ -99,6 +93,12 @@ export default class RefcodeService extends AppService {
         {
           model: db.Claim,
           as: 'claims',
+          order: [['originalClaimId', 'DESC']],
+        },
+        {
+          model: db.OriginalClaim,
+          as: 'originalClaims',
+          order: [['id', 'DESC']],
         },
       ],
       errorIfNotFound: `No code request found for ${field}: ${value}`,
@@ -107,8 +107,7 @@ export default class RefcodeService extends AppService {
 
   async updateCodeRequestDetailsSV() {
     const { refcodeId } = this.params;
-    const { receivingHcpId: newReceivingHcpId, specialtyId: newSpecialtyId } =
-      this.body;
+    const { receivingHcpId: newReceivingHcpId, specialtyId: newSpecialtyId } = this.body;
 
     const refcode = await db.ReferalCode.findById(refcodeId);
     this.authorizeRefcodeRecevingHcp(this.operator, refcode);
@@ -125,16 +124,15 @@ export default class RefcodeService extends AppService {
         : refcode.receivingHcp;
       await receivingHcp.validateSpecialtyId(specialtyId);
     }
-    this.record(
-      `Updated the details of the code request (refcodeId: ${refcodeId})`
-    );
+    this.record(`Updated the details of the code request (refcodeId: ${refcodeId})`);
     return refcode.updateAndReload(this.body);
   }
 
   async updateRefcodeStatus() {
     const { refcodeId } = this.params;
     const operatorId = this.operator.id;
-    const { status, stateOfGeneration, flagReason, declineReason } = this.body;
+    const { status, stateOfGeneration, flagReason, declineReason, claimsDeclineReason } =
+      this.body;
 
     const refcode = await db.ReferalCode.findById(refcodeId);
     // refcode.rejectIfCodeIsExpired();
@@ -151,11 +149,15 @@ export default class RefcodeService extends AppService {
       approvedById: null,
       flagReason: null,
       declineReason: null,
+      claimsDeclineById: null,
+      claimsDeclineReason: null,
+      claimsDeclineDate: null,
     };
 
     if (status === CODE_STATUS.DECLINED) {
       // we can decline an approved code as long it has not been claimed..
       //  - but without deleting the code, or changing the expiration date
+      refcode.disallowIf(['expired', 'claimed', 'declined']);
       updates = {
         ...updates,
         dateDeclined: new Date(),
@@ -165,6 +167,7 @@ export default class RefcodeService extends AppService {
     } else if (status === CODE_STATUS.FLAGGED) {
       // we can flag an approved code as long it has not been claimed..
       //  - but without deleting the code, or changing the expiration date
+      refcode.disallowIf(['expired', 'claimed', 'declined']);
       updates = {
         ...updates,
         dateFlagged: new Date(),
@@ -172,7 +175,7 @@ export default class RefcodeService extends AppService {
         flagReason,
       };
     } else if (status === CODE_STATUS.APPROVED) {
-      refcode.rejectIfCodeIsApproved();
+      refcode.disallowIf(['expired', 'claimed', 'declined', 'approved']);
       // if request is approved (i.e code generated), then flagged, then approved again, then:
       // ---- we do not generate a new code, but use the existing code
       // ---- we do not generate a new expiresAt date, but use the existing date
@@ -193,6 +196,27 @@ export default class RefcodeService extends AppService {
         expiresAt,
         stateOfGeneration: refcode.stateOfGeneration || stateOfGeneration,
       };
+    } else if (status === CODE_STATUS.CLAIMS_DECLINED) {
+      // we can decline the claims associated with a refcode
+      // - will fail if the refcode has no claims yet or the claims...
+      // ... have already been declined
+      refcode.disallowIf(['claims-not-found', 'declined-claims']);
+      updates = {
+        // we will not ...updates because we don't want to reset
+        //  other status values of the refcode to null, they're not mutually exclusive
+        claimsDeclineDate: new Date(),
+        claimsDeclineById: operatorId,
+        claimsDeclineReason,
+      };
+    } else if (status === CODE_STATUS.CLAIMS_NOT_DECLINED) {
+      // we can undo claims decline
+      updates = {
+        // we will not ...updates because we don't want to reset
+        //  other status values of the refcode to null, they're not mutually exclusive
+        claimsDeclineDate: null,
+        claimsDeclineById: null,
+        claimsDeclineReason: null,
+      };
     }
     this.record(`${status} code request (refcodeId: ${refcodeId})`);
     return refcode.updateAndReload(updates);
@@ -210,9 +234,7 @@ export default class RefcodeService extends AppService {
       claimsVerifierId: this.operator.id,
       remarksOnClaims: remarks,
     });
-    this.record(
-      `Verified the claims for code request (refcodeId: ${refcodeId})`
-    );
+    this.record(`Verified the claims for code request (refcodeId: ${refcodeId})`);
     return data;
   }
 
@@ -226,9 +248,7 @@ export default class RefcodeService extends AppService {
     });
     const uploadedImgUrl = await Cloudinary.uploadImage(image, cloudSubFolder);
     await refcode.updateAndReload({ claimsSupportingDocument: uploadedImgUrl });
-    this.record(
-      `Uploaded claims-supporting documents (refcodeId: ${refcodeId})`
-    );
+    this.record(`Uploaded claims-supporting documents (refcodeId: ${refcodeId})`);
     return refcode;
   }
 
@@ -239,9 +259,7 @@ export default class RefcodeService extends AppService {
       withError: 'Invalid refcodeId, belongs to a different Receiving Hcp',
     });
     await refcode.updateAndReload({ claimsSupportingDocument: null });
-    this.record(
-      `Deleted claims-supporting documents (refcodeId: ${refcodeId})`
-    );
+    this.record(`Deleted claims-supporting documents (refcodeId: ${refcodeId})`);
     return refcode;
   }
 
@@ -318,10 +336,7 @@ export default class RefcodeService extends AppService {
     if (userType.toLowerCase() === 'hcp') {
       referringHcp = operator;
     } else {
-      referringHcp = await this.validateId(
-        'HealthCareProvider',
-        referringHcpId
-      );
+      referringHcp = await this.validateId('HealthCareProvider', referringHcpId);
     }
     return referringHcp;
   }

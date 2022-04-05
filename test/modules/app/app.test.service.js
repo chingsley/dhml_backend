@@ -11,6 +11,7 @@ import getSampleHCPs from '../../../src/shared/samples/hcp.samples';
 import getEnrollees from '../../../src/shared/samples/enrollee.samples';
 import NanoId from '../../../src/utils/NanoId';
 import ROLES from '../../../src/shared/constants/roles.constants';
+import constants from '../../../src/shared/constants/roles.constants';
 
 const { AES_KEY, IV_KEY } = process.env;
 export const tomorrow = moment().add(1, 'days').format('YYYY-MM-DD');
@@ -21,19 +22,19 @@ const app = supertest(server.server);
 const cypher = new Cypher(AES_KEY, IV_KEY);
 
 class TestService {
+  static HCP = db.HealthCareProvider;
+
   static getSampleEnrollees(options) {
     return getEnrollees(options);
   }
 
-  static async resetDB(modelsArr) {
-    if (modelsArr) {
-      if (modelsArr && !Array.isArray(modelsArr)) {
-        throw new Error(
-          '"resetDB" expects an optional array of models as argument'
-        );
+  static async resetDB(modelNamesArr) {
+    if (modelNamesArr) {
+      if (modelNamesArr && !Array.isArray(modelNamesArr)) {
+        throw new Error('"resetDB" expects an optional array of model names as argument');
       }
-      for (let i = 0; i < modelsArr.length; i++) {
-        await modelsArr[i].destroy({ where: {}, truncate: { cascade: true } });
+      for (const modelName of modelNamesArr) {
+        await db[modelName].destroy({ where: {}, truncate: { cascade: true } });
       }
     } else {
       const dbHcp = db.HealthCareProvider;
@@ -51,6 +52,8 @@ class TestService {
       await dbHcp.destroy({ where: {}, truncate: { cascade: true } });
       await db.Role.destroy({ where: {}, truncate: { cascade: true } });
       await db.HcpSpecialty.destroy({ where: {}, truncate: { cascade: true } });
+      await db.Claim.destroy({ where: {}, truncate: { cascade: true } });
+      await db.OriginalClaim.destroy({ where: {}, truncate: { cascade: true } });
       await db.ReferalCode.destroy({ where: {}, truncate: { cascade: true } });
       await db.Specialty.destroy({ where: {}, truncate: { cascade: true } });
     }
@@ -298,6 +301,13 @@ class TestService {
       done(e);
     }
   };
+
+  static async handleHcpBulkInsert(hcpList) {
+    const hcpRole = await this.createRole(constants.HCP);
+    return this.HCP.bulkCreate(
+      hcpList.map((hcp) => ({ ...hcp, roleId: hcpRole.id }))
+    );
+  }
 }
 
 export default TestService;
