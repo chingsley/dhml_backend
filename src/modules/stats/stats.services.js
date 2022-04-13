@@ -14,7 +14,7 @@ export default class ReportService extends AppService {
 
   async getGeneralStatistics() {
     const bulkQuery = statsScripts.map((script) =>
-      this.executeQuery(script, {}, script.name)
+      this.executeQuery(script, {}, script.name) // each script is a function, and functions have names
     );
     const results = await Promise.all(bulkQuery);
     return results.reduce((acc, obj) => {
