@@ -69,6 +69,23 @@ FROM "Enrollees"
 WHERE "isVerified" = TRUE --AND DATE_TRUNC('month', "dateVerified")  = DATE_TRUNC('month', CURRENT_DATE)
 `;
 
+export const proportionOfClaimRequestsApproved = () => `
+SELECT sub1.count "approved", sub2.count "pending"
+FROM
+(
+SELECT 1 id, COUNT(*)
+FROM "ReferalCodes"
+WHERE "dateApproved" IS NOT NULL
+) sub1
+JOIN
+(
+SELECT 1 id, COUNT(*)
+FROM "ReferalCodes"
+WHERE "dateApproved" IS NULL
+) sub2
+ON sub1.id = sub2.id
+`;
+
 export default [
   activeHcps,
   hcpsByArmOfService,
@@ -79,4 +96,5 @@ export default [
   afrshipPrincipalsByServiceStatus,
   enrolleesByScheme,
   avgDurationForVerification,
+  proportionOfClaimRequestsApproved,
 ];
