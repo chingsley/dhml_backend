@@ -13,10 +13,7 @@ import SampleReferalCodes from '../../../src/shared/samples/refcode.samples';
 import _RefcodeService from './refcode.test.service';
 import _SpecialityService from '../specialty/specialty.test.services';
 import { _random } from '../../../src/utils/helpers';
-import {
-  CODE_STATUS,
-  SERVICE_STATUS,
-} from '../../../src/shared/constants/lists.constants';
+import { CODE_STATUS, SERVICE_STATUS } from '../../../src/shared/constants/lists.constants';
 import { stateCodes } from '../../../src/shared/constants/statecodes.constants';
 import { moment, months } from '../../../src/utils/timers';
 import { getClaimsReqPayload, getTotalClaimsAmt } from './refcode.test.samples';
@@ -26,13 +23,7 @@ const validStates = Object.keys(stateCodes);
 
 describe('RefcodeController', () => {
   describe('createRequestForRefcodeCTRL', () => {
-    let token,
-      res,
-      seededEnrollee,
-      referringHcp,
-      receivingHcp,
-      payload,
-      speciality;
+    let token, res, seededEnrollee, referringHcp, receivingHcp, payload, speciality;
     beforeAll(async () => {
       await TestService.resetDB();
       const {
@@ -46,10 +37,7 @@ describe('RefcodeController', () => {
       receivingHcp = secondaryHcp;
 
       const { principals } = getEnrollees({ numOfPrincipals: 1 });
-      [seededEnrollee] = await TestService.seedAfrshipPrincipals(
-        principals,
-        primaryHcp
-      );
+      [seededEnrollee] = await TestService.seedAfrshipPrincipals(principals, primaryHcp);
       speciality = await _SpecialityService.seedOne();
       await receivingHcp.addSpecialties([speciality.id]);
       payload = SampleReferalCodes.generateSampleRefcodeRequest({
@@ -201,9 +189,7 @@ describe('RefcodeController', () => {
         }
         return { ...p, hcpId: primaryHcps[0].id };
       });
-      const seededPrincipals = await TestService.seedEnrollees(
-        preparedPrincipals
-      );
+      const seededPrincipals = await TestService.seedEnrollees(preparedPrincipals);
       const depsWithPrincipalId = dependants.map((d) => {
         for (let p of seededPrincipals) {
           const regexPrincipalEnrolleeIdNo = new RegExp(`${p.enrolleeIdNo}-`);
@@ -285,10 +271,7 @@ describe('RefcodeController', () => {
           for (let { id } of data.rows) {
             expect(fetchedCodes.includes(id)).toBe(false);
           }
-          fetchedCodes = [
-            ...fetchedCodes,
-            ...data.rows.map((refcode) => refcode.code),
-          ];
+          fetchedCodes = [...fetchedCodes, ...data.rows.map((refcode) => refcode.code)];
         }
         done();
       } catch (e) {
@@ -355,9 +338,7 @@ describe('RefcodeController', () => {
         }
         return { ...p, hcpId: primaryHcps[0].id };
       });
-      const seededPrincipals = await TestService.seedEnrollees(
-        preparedPrincipals
-      );
+      const seededPrincipals = await TestService.seedEnrollees(preparedPrincipals);
       const depsWithPrincipalId = dependants.map((d) => {
         for (let p of seededPrincipals) {
           const regexPrincipalEnrolleeIdNo = new RegExp(`${p.enrolleeIdNo}-`);
@@ -401,10 +382,7 @@ describe('RefcodeController', () => {
       claimsRequestPayload = getClaimsReqPayload(res1.body.data.code);
       await RefcodeApi.addClaims(claimsRequestPayload, token);
 
-      res = await RefcodeApi.getOneReferalCode(
-        `referalCode=${refcode.code}`,
-        token
-      );
+      res = await RefcodeApi.getOneReferalCode(`referalCode=${refcode.code}`, token);
     });
     it('successfully returns all requests with status 200', async (done) => {
       try {
@@ -421,8 +399,8 @@ describe('RefcodeController', () => {
     it('returns the assocated user operators', async (done) => {
       try {
         const { data } = res.body;
-        ['declinedBy', 'flaggedBy', 'approvedBy', 'claimsDeclinedBy'].forEach(
-          (field) => expect(field in data).toEqual(true)
+        ['declinedBy', 'flaggedBy', 'approvedBy', 'claimsDeclinedBy'].forEach((field) =>
+          expect(field in data).toEqual(true)
         );
         done();
       } catch (e) {
@@ -480,9 +458,7 @@ describe('RefcodeController', () => {
         }
         return { ...p, hcpId: primaryHcps[0].id };
       });
-      const seededPrincipals = await TestService.seedEnrollees(
-        preparedPrincipals
-      );
+      const seededPrincipals = await TestService.seedEnrollees(preparedPrincipals);
       const depsWithPrincipalId = dependants.map((d) => {
         for (let p of seededPrincipals) {
           const regexPrincipalEnrolleeIdNo = new RegExp(`${p.enrolleeIdNo}-`);
@@ -558,11 +534,8 @@ describe('RefcodeController', () => {
     it('ensures the generated code has the correct state code', async (done) => {
       try {
         const { data } = res.body;
-        const inputStateCode =
-          stateCodes[payload.stateOfGeneration.toLowerCase()];
-        const outputStateCode = data.code
-          .match(/^[A-Z]{2,3}\//)[0]
-          .match(/[A-Z]{2,3}/)[0];
+        const inputStateCode = stateCodes[payload.stateOfGeneration.toLowerCase()];
+        const outputStateCode = data.code.match(/^[A-Z]{2,3}\//)[0].match(/[A-Z]{2,3}/)[0];
         expect(inputStateCode).toEqual(outputStateCode);
         done();
       } catch (e) {
@@ -631,9 +604,7 @@ describe('RefcodeController', () => {
         await _RefcodeService.resetAllStatusUpdate(refcode.id);
         res = await RefcodeApi.updateRequestStatus(refcode.id, payload, token);
         const { data } = res.body;
-        const encodedServiceCode = data.code
-          .match(/\/[A-Z]{1,2}/)[0]
-          .match(/[A-Z]{1,2}/)[0];
+        const encodedServiceCode = data.code.match(/\/[A-Z]{1,2}/)[0].match(/[A-Z]{1,2}/)[0];
         expect(encodedServiceCode).toBe('S');
         await afrshipEnrollee.update({ serviceStatus: originalServiceStatus });
         done();
@@ -654,9 +625,7 @@ describe('RefcodeController', () => {
         await _RefcodeService.resetAllStatusUpdate(refcode.id);
         res = await RefcodeApi.updateRequestStatus(refcode.id, payload, token);
         const { data } = res.body;
-        const encodedServiceCode = data.code
-          .match(/\/[A-Z]{1,2}/)[0]
-          .match(/[A-Z]{1,2}/)[0];
+        const encodedServiceCode = data.code.match(/\/[A-Z]{1,2}/)[0].match(/[A-Z]{1,2}/)[0];
         expect(encodedServiceCode).toBe('AD');
         await enrollee.update({ serviceStatus: originalServiceStatus });
         done();
@@ -677,9 +646,7 @@ describe('RefcodeController', () => {
         await _RefcodeService.resetAllStatusUpdate(refcode.id);
         res = await RefcodeApi.updateRequestStatus(refcode.id, payload, token);
         const { data } = res.body;
-        const encodedServiceCode = data.code
-          .match(/\/[A-Z]{1,2}/)[0]
-          .match(/[A-Z]{1,2}/)[0];
+        const encodedServiceCode = data.code.match(/\/[A-Z]{1,2}/)[0].match(/[A-Z]{1,2}/)[0];
         expect(encodedServiceCode).toBe('R');
         await afrshipEnrollee.update({ serviceStatus: originalServiceStatus });
         done();
@@ -695,11 +662,7 @@ describe('RefcodeController', () => {
         const refcode = seededCodeRequests[1];
         await _RefcodeService.resetAllStatusUpdate(refcode.id);
         await refcode.update({ expiresAt: months.setPast(2) });
-        const res = await RefcodeApi.updateRequestStatus(
-          refcode.id,
-          payload,
-          token
-        );
+        const res = await RefcodeApi.updateRequestStatus(refcode.id, payload, token);
         const {
           errors: [error],
         } = res.body;
@@ -719,16 +682,11 @@ describe('RefcodeController', () => {
         const refcode = seededCodeRequests[1];
         await _RefcodeService.resetAllStatusUpdate(refcode.id);
         await refcode.update({ claimsVerifiedOn: months.setPast(2) });
-        const res = await RefcodeApi.updateRequestStatus(
-          refcode.id,
-          payload,
-          token
-        );
+        const res = await RefcodeApi.updateRequestStatus(refcode.id, payload, token);
         const {
           errors: [error],
         } = res.body;
-        const expectedError =
-          'Action not allowed because the code has verified claims';
+        const expectedError = 'Action not allowed because the code has verified claims';
         expect(res.status).toBe(403);
         expect(error).toBe(expectedError);
         done();
@@ -744,16 +702,11 @@ describe('RefcodeController', () => {
         const refcode = seededCodeRequests[1];
         await _RefcodeService.resetAllStatusUpdate(refcode.id);
         await refcode.update({ dateDeclined: months.setPast(2) });
-        const res = await RefcodeApi.updateRequestStatus(
-          refcode.id,
-          payload,
-          token
-        );
+        const res = await RefcodeApi.updateRequestStatus(refcode.id, payload, token);
         const {
           errors: [error],
         } = res.body;
-        const expectedError =
-          'Action not allowed because the code has already been declined';
+        const expectedError = 'Action not allowed because the code has already been declined';
         expect(res.status).toBe(403);
         expect(error).toBe(expectedError);
         done();
@@ -798,9 +751,7 @@ describe('RefcodeController', () => {
         }
         return { ...p, hcpId: primaryHcps[0].id };
       });
-      const seededPrincipals = await TestService.seedEnrollees(
-        preparedPrincipals
-      );
+      const seededPrincipals = await TestService.seedEnrollees(preparedPrincipals);
       const depsWithPrincipalId = dependants.map((d) => {
         for (let p of seededPrincipals) {
           const regexPrincipalEnrolleeIdNo = new RegExp(`${p.enrolleeIdNo}-`);
@@ -885,16 +836,8 @@ describe('RefcodeController', () => {
         const payload1 = { status: APPROVED, stateOfGeneration };
         const payload2 = { status: FLAGGED, flagReason };
         const refcodeId = seededCodeRequests[1].id;
-        const res1 = await RefcodeApi.updateRequestStatus(
-          refcodeId,
-          payload1,
-          token
-        );
-        const res2 = await RefcodeApi.updateRequestStatus(
-          refcodeId,
-          payload2,
-          token
-        );
+        const res1 = await RefcodeApi.updateRequestStatus(refcodeId, payload1, token);
+        const res2 = await RefcodeApi.updateRequestStatus(refcodeId, payload2, token);
         const { data: data1 } = res1.body;
         const { data: data2 } = res2.body;
         expect(data1.status).toBe(APPROVED);
@@ -914,11 +857,7 @@ describe('RefcodeController', () => {
         const refcode = seededCodeRequests[1];
         await _RefcodeService.resetAllStatusUpdate(refcode.id);
         await refcode.update({ expiresAt: months.setPast(2) });
-        const res = await RefcodeApi.updateRequestStatus(
-          refcode.id,
-          payload,
-          token
-        );
+        const res = await RefcodeApi.updateRequestStatus(refcode.id, payload, token);
         const {
           errors: [error],
         } = res.body;
@@ -938,16 +877,11 @@ describe('RefcodeController', () => {
         const refcode = seededCodeRequests[1];
         await _RefcodeService.resetAllStatusUpdate(refcode.id);
         await refcode.update({ claimsVerifiedOn: months.setPast(2) });
-        const res = await RefcodeApi.updateRequestStatus(
-          refcode.id,
-          payload,
-          token
-        );
+        const res = await RefcodeApi.updateRequestStatus(refcode.id, payload, token);
         const {
           errors: [error],
         } = res.body;
-        const expectedError =
-          'Action not allowed because the code has verified claims';
+        const expectedError = 'Action not allowed because the code has verified claims';
         expect(res.status).toBe(403);
         expect(error).toBe(expectedError);
         done();
@@ -963,16 +897,11 @@ describe('RefcodeController', () => {
         const refcode = seededCodeRequests[1];
         await _RefcodeService.resetAllStatusUpdate(refcode.id);
         await refcode.update({ dateDeclined: months.setPast(2) });
-        const res = await RefcodeApi.updateRequestStatus(
-          refcode.id,
-          payload,
-          token
-        );
+        const res = await RefcodeApi.updateRequestStatus(refcode.id, payload, token);
         const {
           errors: [error],
         } = res.body;
-        const expectedError =
-          'Action not allowed because the code has already been declined';
+        const expectedError = 'Action not allowed because the code has already been declined';
         expect(res.status).toBe(403);
         expect(error).toBe(expectedError);
         done();
@@ -1013,9 +942,7 @@ describe('RefcodeController', () => {
         }
         return { ...p, hcpId: primaryHcps[0].id };
       });
-      const seededPrincipals = await TestService.seedEnrollees(
-        preparedPrincipals
-      );
+      const seededPrincipals = await TestService.seedEnrollees(preparedPrincipals);
       const depsWithPrincipalId = dependants.map((d) => {
         for (let p of seededPrincipals) {
           const regexPrincipalEnrolleeIdNo = new RegExp(`${p.enrolleeIdNo}-`);
@@ -1100,16 +1027,8 @@ describe('RefcodeController', () => {
         const payload1 = { status: APPROVED, stateOfGeneration };
         const payload2 = { status: DECLINED, declineReason };
         const refcodeId = seededCodeRequests[1].id;
-        const res1 = await RefcodeApi.updateRequestStatus(
-          refcodeId,
-          payload1,
-          token
-        );
-        const res2 = await RefcodeApi.updateRequestStatus(
-          refcodeId,
-          payload2,
-          token
-        );
+        const res1 = await RefcodeApi.updateRequestStatus(refcodeId, payload1, token);
+        const res2 = await RefcodeApi.updateRequestStatus(refcodeId, payload2, token);
         const { data: data1 } = res1.body;
         const { data: data2 } = res2.body;
         expect(data1.status).toBe(APPROVED);
@@ -1129,11 +1048,7 @@ describe('RefcodeController', () => {
         const refcode = seededCodeRequests[1];
         await _RefcodeService.resetAllStatusUpdate(refcode.id);
         await refcode.update({ expiresAt: months.setPast(2) });
-        const res = await RefcodeApi.updateRequestStatus(
-          refcode.id,
-          payload,
-          token
-        );
+        const res = await RefcodeApi.updateRequestStatus(refcode.id, payload, token);
         const {
           errors: [error],
         } = res.body;
@@ -1153,16 +1068,11 @@ describe('RefcodeController', () => {
         const refcode = seededCodeRequests[1];
         await _RefcodeService.resetAllStatusUpdate(refcode.id);
         await refcode.update({ claimsVerifiedOn: months.setPast(2) });
-        const res = await RefcodeApi.updateRequestStatus(
-          refcode.id,
-          payload,
-          token
-        );
+        const res = await RefcodeApi.updateRequestStatus(refcode.id, payload, token);
         const {
           errors: [error],
         } = res.body;
-        const expectedError =
-          'Action not allowed because the code has verified claims';
+        const expectedError = 'Action not allowed because the code has verified claims';
         expect(res.status).toBe(403);
         expect(error).toBe(expectedError);
         done();
@@ -1178,16 +1088,11 @@ describe('RefcodeController', () => {
         const refcode = seededCodeRequests[1];
         await _RefcodeService.resetAllStatusUpdate(refcode.id);
         await refcode.update({ dateDeclined: months.setPast(2) });
-        const res = await RefcodeApi.updateRequestStatus(
-          refcode.id,
-          payload,
-          token
-        );
+        const res = await RefcodeApi.updateRequestStatus(refcode.id, payload, token);
         const {
           errors: [error],
         } = res.body;
-        const expectedError =
-          'Action not allowed because the code has already been declined';
+        const expectedError = 'Action not allowed because the code has already been declined';
         expect(res.status).toBe(403);
         expect(error).toBe(expectedError);
         done();
@@ -1226,9 +1131,7 @@ describe('RefcodeController', () => {
         }
         return { ...p, hcpId: primaryHcps[0].id };
       });
-      const seededPrincipals = await TestService.seedEnrollees(
-        preparedPrincipals
-      );
+      const seededPrincipals = await TestService.seedEnrollees(preparedPrincipals);
       const depsWithPrincipalId = dependants.map((d) => {
         for (let p of seededPrincipals) {
           const regexPrincipalEnrolleeIdNo = new RegExp(`${p.enrolleeIdNo}-`);
@@ -1266,11 +1169,7 @@ describe('RefcodeController', () => {
         // claimsDeclineReason: faker.lorem.text(),
       };
       try {
-        const res = await RefcodeApi.updateRequestStatus(
-          refcode.id,
-          payload,
-          token
-        );
+        const res = await RefcodeApi.updateRequestStatus(refcode.id, payload, token);
         const { errors } = res.body;
         const expectedErr = '"claimsDeclineReason" is required';
         expect(errors[0]).toBe(expectedErr);
@@ -1286,11 +1185,7 @@ describe('RefcodeController', () => {
         claimsDeclineReason: faker.lorem.text(),
       };
       try {
-        const res = await RefcodeApi.updateRequestStatus(
-          refcode.id,
-          payload,
-          token
-        );
+        const res = await RefcodeApi.updateRequestStatus(refcode.id, payload, token);
         const { errors } = res.body;
         const expectedErr = 'No Claims found for the referal code';
         expect(errors[0]).toBe(expectedErr);
@@ -1324,11 +1219,7 @@ describe('RefcodeController', () => {
           status: CODE_STATUS.CLAIMS_DECLINED,
           claimsDeclineReason: faker.lorem.text(),
         };
-        const res2 = await RefcodeApi.updateRequestStatus(
-          refcode.id,
-          payload,
-          token
-        );
+        const res2 = await RefcodeApi.updateRequestStatus(refcode.id, payload, token);
         const data = res2.body.data;
         // --- check response body --- //
         // returns the id of the refcode:
@@ -1341,9 +1232,7 @@ describe('RefcodeController', () => {
         expect(data.claimsDeclineReason).toMatch(payload.claimsDeclineReason);
         // sets the claimsDeclineDate as current day
         const todaysDate = moment().format('DDMMYY');
-        expect(moment(data.claimsDeclineDate).format('DDMMYY')).toEqual(
-          todaysDate
-        );
+        expect(moment(data.claimsDeclineDate).format('DDMMYY')).toEqual(todaysDate);
 
         // --- check database changes -- //
         await refcode.reloadWithAssociations();
@@ -1352,26 +1241,17 @@ describe('RefcodeController', () => {
         // records the id of the user that declined the claims
         expect(refcode.claimsDeclineById).toEqual(operatorId);
         // returns the claimsDeclineReason
-        expect(refcode.claimsDeclineReason).toMatch(
-          payload.claimsDeclineReason
-        );
+        expect(refcode.claimsDeclineReason).toMatch(payload.claimsDeclineReason);
         // sets the claimsDeclineDate as current day
-        expect(moment(refcode.claimsDeclineDate).format('DDMMYY')).toEqual(
-          todaysDate
-        );
+        expect(moment(refcode.claimsDeclineDate).format('DDMMYY')).toEqual(todaysDate);
 
         // returns fields that indicates claims were declined... in route /refcodes/get-one
-        const res3 = await RefcodeApi.getOneReferalCode(
-          `refcodeId=${refcode.id}`,
-          token
-        );
+        const res3 = await RefcodeApi.getOneReferalCode(`refcodeId=${refcode.id}`, token);
         const data3 = res3.body.data;
         expect(data3.claimsDeclineById).toEqual(operatorId);
         expect(data3.claimsDeclinedBy).toHaveProperty('id', operatorId);
         expect(data3.claimsDeclineReason).toBe(payload.claimsDeclineReason);
-        expect(moment(data3.claimsDeclineDate).format('DDMMYY')).toEqual(
-          todaysDate
-        );
+        expect(moment(data3.claimsDeclineDate).format('DDMMYY')).toEqual(todaysDate);
         done();
       } catch (e) {
         done(e);
@@ -1409,14 +1289,10 @@ describe('RefcodeController', () => {
         // records the id of the user that declined the claims
         expect(refcode.claimsDeclineById).toEqual(operatorId);
         // returns the claimsDeclineReason
-        expect(refcode.claimsDeclineReason).toMatch(
-          payload.claimsDeclineReason
-        );
+        expect(refcode.claimsDeclineReason).toMatch(payload.claimsDeclineReason);
         // sets the claimsDeclineDate as current day
         const todaysDate = moment().format('DDMMYY');
-        expect(moment(refcode.claimsDeclineDate).format('DDMMYY')).toEqual(
-          todaysDate
-        );
+        expect(moment(refcode.claimsDeclineDate).format('DDMMYY')).toEqual(todaysDate);
 
         // unod the claims decline
         await RefcodeApi.updateRequestStatus(
@@ -1437,10 +1313,7 @@ describe('RefcodeController', () => {
         expect(refcode.claimsDeclineDate).toEqual(null);
 
         // returns fields that indicates claims were declined... in route /refcodes/get-one
-        const res3 = await RefcodeApi.getOneReferalCode(
-          `refcodeId=${refcode.id}`,
-          token
-        );
+        const res3 = await RefcodeApi.getOneReferalCode(`refcodeId=${refcode.id}`, token);
         const data3 = res3.body.data;
         expect(data3.claimsDeclineById).toBe(null);
         expect(data3.claimsDeclinedBy).toBe(null);
@@ -1485,9 +1358,7 @@ describe('ClaimsController (Tested in the test Refcode Module', () => {
         }
         return { ...p, hcpId: primaryHcps[0].id };
       });
-      const seededPrincipals = await TestService.seedEnrollees(
-        preparedPrincipals
-      );
+      const seededPrincipals = await TestService.seedEnrollees(preparedPrincipals);
       const depsWithPrincipalId = dependants.map((d) => {
         for (let p of seededPrincipals) {
           const regexPrincipalEnrolleeIdNo = new RegExp(`${p.enrolleeIdNo}-`);
@@ -1598,9 +1469,7 @@ describe('ClaimsController (Tested in the test Refcode Module', () => {
         expect(response.claimsVerifiedOn).toBe(null);
         expect(response.claimsDeclineDate).not.toBe(null);
         const todaysDate = moment().format('DDMMYY');
-        expect(moment(response.claimsDeclineDate).format('DDMMYY')).toEqual(
-          todaysDate
-        );
+        expect(moment(response.claimsDeclineDate).format('DDMMYY')).toEqual(todaysDate);
         done();
       } catch (e) {
         done(e);
@@ -1630,10 +1499,7 @@ describe('ClaimsController (Tested in the test Refcode Module', () => {
 
         // then verify claims
         const remarks = faker.lorem.text();
-        const res2 = await RefcodeApi.verifyClaims(
-          { refcodeId: refcode.id, remarks },
-          token
-        );
+        const res2 = await RefcodeApi.verifyClaims({ refcodeId: refcode.id, remarks }, token);
         expect(res2.status).toBe(200);
 
         await refcode.reloadWithAssociations();
@@ -1643,9 +1509,7 @@ describe('ClaimsController (Tested in the test Refcode Module', () => {
         expect(data.remarksOnClaims).toEqual(remarks);
         expect(data.claimsVerifierId).toEqual(operatorId);
         const todaysDate = moment().format('DDMMYY');
-        expect(moment(data.claimsVerifiedOn).format('DDMMYY')).toEqual(
-          todaysDate
-        );
+        expect(moment(data.claimsVerifiedOn).format('DDMMYY')).toEqual(todaysDate);
         done();
       } catch (e) {
         done(e);

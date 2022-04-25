@@ -72,7 +72,8 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
       requestedBy: {
-        // could be user or hcp so we can't use requesterId, as it will be referencing either hchp or user
+        // could be user or hcp so we can't use requesterId,
+        // as it will be referencing either hchp or user
         // for a user, requestedBy = user.staffInfo.staffIdNo
         // for hcp, requestedBy = hcp.code
         type: DataTypes.STRING,
@@ -157,6 +158,12 @@ module.exports = (sequelize, DataTypes) => {
       },
       monthPaidFor: {
         type: DataTypes.DATE,
+      },
+      codeGeneratedAt: {
+        type: DataTypes.DATE,
+      },
+      specialtyCode: {
+        type: DataTypes.TEXT, // // at the time of refcode generation
       },
       status: {
         type: DataTypes.VIRTUAL,
@@ -262,6 +269,9 @@ module.exports = (sequelize, DataTypes) => {
     rejectIf(!refcode, { withError: errorIfNotFound });
     return refcode;
   };
+  ReferalCode.findByCode = async function (code) {
+    return this.findOne({ where: { code } });
+  };
   ReferalCode.prototype.updateAndReload = async function (changes) {
     await this.update(changes);
     await this.reloadWithAssociations();
@@ -298,18 +308,16 @@ module.exports = (sequelize, DataTypes) => {
           model: this.sequelize.models.Specialty,
           as: 'specialty',
         },
-        ...['declinedBy', 'flaggedBy', 'approvedBy', 'claimsDeclinedBy'].map(
-          (item) => ({
-            model: this.sequelize.models.User,
-            as: item,
-            attributes: ['id', 'username'],
-            include: {
-              model: this.sequelize.models.Staff,
-              as: 'staffInfo',
-              attributes: ['id', 'firstName', 'surname', 'staffIdNo'],
-            },
-          })
-        ),
+        ...['declinedBy', 'flaggedBy', 'approvedBy', 'claimsDeclinedBy'].map((item) => ({
+          model: this.sequelize.models.User,
+          as: item,
+          attributes: ['id', 'username'],
+          include: {
+            model: this.sequelize.models.Staff,
+            as: 'staffInfo',
+            attributes: ['id', 'firstName', 'surname', 'staffIdNo'],
+          },
+        })),
         {
           model: this.sequelize.models.Claim,
           as: 'claims',
@@ -329,8 +337,7 @@ module.exports = (sequelize, DataTypes) => {
   };
   ReferalCode.prototype.rejectIfCodeIsClaimed = function (errorMsg) {
     rejectIf(!!this.claimsVerifiedOn, {
-      withError:
-        errorMsg || 'Action not allowed because the code has verified claims',
+      withError: errorMsg || 'Action not allowed because the code has verified claims',
       status: 403,
     });
   };
@@ -343,23 +350,19 @@ module.exports = (sequelize, DataTypes) => {
   // };
   ReferalCode.prototype.rejectIfCodeIsDeclined = function (errorMsg) {
     rejectIf(!!this.dateDeclined, {
-      withError:
-        errorMsg ||
-        'Action not allowed because the code has already been declined',
+      withError: errorMsg || 'Action not allowed because the code has already been declined',
       status: 403,
     });
   };
   ReferalCode.prototype.rejectIfCodeIsApproved = function (errorMsg) {
     rejectIf(!!this.dateApproved, {
-      withError:
-        errorMsg || 'Action not allowed because the code has been approved',
+      withError: errorMsg || 'Action not allowed because the code has been approved',
       status: 403,
     });
   };
   ReferalCode.prototype.rejectIfNotApproved = function (errorMsg) {
     rejectIf(!this.dateApproved, {
-      withError:
-        errorMsg || 'Action not allowed because the code has NOT been approved',
+      withError: errorMsg || 'Action not allowed because the code has NOT been approved',
       status: 403,
     });
   };
@@ -371,9 +374,7 @@ module.exports = (sequelize, DataTypes) => {
   };
   ReferalCode.prototype.rejectIfDeclinedClaims = function (errorMsg) {
     rejectIf(!!this.dateDeclined, {
-      withError:
-        errorMsg ||
-        'Action not allowed because the code has already been declined',
+      withError: errorMsg || 'Action not allowed because the code has already been declined',
       status: 403,
     });
   };

@@ -4,7 +4,7 @@ import AppService from '../app/app.service';
 import db from '../../database/models';
 import codeFactory from './refcode.factory';
 import { stateCodes } from '../../shared/constants/statecodes.constants';
-import { fetchAllRefcodes } from '../../database/scripts/refcode.scripts';
+import refcodeScripts from '../../database/scripts/refcode.scripts';
 import { refcodeSearchableFields } from '../../shared/attributes/refcode.attributes';
 import { CODE_STATUS } from '../../shared/constants/lists.constants';
 import { months } from '../../utils/timers';
@@ -20,6 +20,7 @@ export default class RefcodeService extends AppService {
     this.params = params;
     this.ReferalCodeModel = db.ReferalCode;
     this.operator = operator;
+    this.refcodeScripts = refcodeScripts;
   }
   async createRequestForReferalCodeSVC() {
     const { enrolleeIdNo, receivingHcpId, specialtyId } = this.body;
@@ -193,6 +194,8 @@ export default class RefcodeService extends AppService {
         dateApproved: new Date(),
         approvedById: operatorId,
         code,
+        codeGeneratedAt: refcode.codeGeneratedAt || new Date(),
+        specialtyCode: refcode.specialty.code,
         expiresAt,
         stateOfGeneration: refcode.stateOfGeneration || stateOfGeneration,
       };
@@ -275,6 +278,7 @@ export default class RefcodeService extends AppService {
   }
 
   async getRefcodes() {
+    const { fetchAllRefcodes } = this.refcodeScripts;
     const nonPaginatedRows = await this.executeQuery(fetchAllRefcodes, {
       ...this.query,
       pageSize: undefined,

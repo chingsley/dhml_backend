@@ -1,11 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { stateCodes } from '../constants/statecodes.constants';
 const faker = require('faker');
-const {
-  _random,
-  getServiceStatusCode,
-  randInt,
-} = require('../../utils/helpers');
+const { _random, getServiceStatusCode, randInt } = require('../../utils/helpers');
 const { moment, days, months } = require('../../utils/timers');
 const { states } = require('../constants/lists.constants');
 
@@ -39,7 +35,7 @@ class RefcodeSample {
   getOneApproved({
     enrollee = _random(this.enrollees),
     approvedById = _random(this.userIds),
-    dateApproved = days.setPast(randInt(1, 14)),
+    dateApproved = days.setPast(randInt(0, 14)), // FROM NOW TO 14 DAYS AGO
     stateOfGeneration = _random(Object.keys(stateCodes)),
   } = {}) {
     const request = this.getOne(enrollee);
@@ -59,6 +55,8 @@ class RefcodeSample {
       dateApproved,
       approvedById,
       stateOfGeneration,
+      codeGeneratedAt: dateApproved,
+      specialtyCode,
     };
   }
 
@@ -74,12 +72,7 @@ class RefcodeSample {
     };
   }
 
-  getDummyCode({
-    stateCode,
-    specialtyCode,
-    enrolleeServiceStatus,
-    dateApproved,
-  }) {
+  getDummyCode({ stateCode, specialtyCode, enrolleeServiceStatus, dateApproved }) {
     const date = moment(dateApproved).format('DDMMYY');
     const serviceStatus = getServiceStatusCode(enrolleeServiceStatus);
 
@@ -98,7 +91,10 @@ class RefcodeSample {
   getBulkSamples({ numPending = 0, numApproved = 0, numVerified = 0 } = {}) {
     if (numPending + numApproved + numVerified > this.enrollees.length) {
       throw new Error(
-        `numPending(${numPending}) + numApproved(${numApproved}) cannot be greater than no. of enrollees(${this.enrollees.lenght})`
+        `
+        numPending(${numPending}) + numApproved(${numApproved})
+         cannot be greater than no. of enrollees(${this.enrollees.lenght})
+        `
       );
     }
     const pendingRequests = [];
@@ -114,17 +110,13 @@ class RefcodeSample {
 
     // generate approved codes
     while (count < numPending + numApproved) {
-      approvedRequests.push(
-        this.getOneApproved({ enrollee: this.enrollees[count] })
-      );
+      approvedRequests.push(this.getOneApproved({ enrollee: this.enrollees[count] }));
       count++;
     }
 
     // generate verified codes
     while (count < endCount) {
-      verifiedRequests.push(
-        this.getOneVerified({ enrollee: this.enrollees[count] })
-      );
+      verifiedRequests.push(this.getOneVerified({ enrollee: this.enrollees[count] }));
       count++;
     }
     return [...pendingRequests, ...approvedRequests, ...verifiedRequests];

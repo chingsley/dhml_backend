@@ -36,13 +36,7 @@ export default class AppService {
 
   async validateUnique(
     fields,
-    {
-      model,
-      reqBody,
-      resourceId = undefined,
-      resourceType,
-      nonStringDataTypes = [],
-    }
+    { model, reqBody, resourceId = undefined, resourceType, nonStringDataTypes = [] }
   ) {
     for (let field of fields) {
       const value = reqBody[field];
@@ -95,9 +89,7 @@ export default class AppService {
     if (!record && isRequired) {
       this.throwError({
         status: status || 400,
-        error: errorIfNotFound
-          ? [errorIfNotFound]
-          : [`Missing record for ${modelName}`],
+        error: errorIfNotFound ? [errorIfNotFound] : [`Missing record for ${modelName}`],
         errorCode,
       });
     }
@@ -118,8 +110,7 @@ export default class AppService {
       ],
     });
     this.rejectIf(rejectCurrentMonth && capSum.isCurrentMonth, {
-      withError:
-        'Operation not allowed on current running capitation until month end',
+      withError: 'Operation not allowed on current running capitation until month end',
     });
 
     return capSum;
@@ -176,12 +167,9 @@ export default class AppService {
   async executeQuery(queryFunction, reqQuery, key) {
     const { dialect, database } = db.sequelize.options;
     // console.log(queryFunction(dialect, database, reqQuery));
-    const rows = await db.sequelize.query(
-      queryFunction(dialect, database, reqQuery),
-      {
-        type: QueryTypes.SELECT,
-      }
-    );
+    const rows = await db.sequelize.query(queryFunction(dialect, database, reqQuery), {
+      type: QueryTypes.SELECT,
+    });
     if (key) {
       return { [key]: rows };
     } else {
@@ -229,8 +217,9 @@ export default class AppService {
   /**
    *
    * @param {array} arrOfFields array of fields to filterBy
-   * @param {object [optional]} map an object that maps the query param to the actual field name in the table
-   * map essentially says (for e.g): 'if you see 'hcpName' in the param, look for 'name' in the hcp table
+   * @param {object [optional]} map an object that maps the query param to
+   * the actual field name in the table map essentially says (for e.g):
+   * 'if you see 'hcpName' in the param, look for 'name' in the hcp table
    * b/c the field 'name' is what we have in the hcp table, not hcpName.
    * If no map is specified, it searches the table fields by the keys in the req params,
    * e.g the param firstName='John', when map is empty will search in the table where 'firstName'
@@ -347,10 +336,7 @@ export default class AppService {
   async createDefaultPassword(idObj, trnx) {
     const defaultPass = await this.generateDefaultPwd();
     if (trnx) {
-      await db.Password.create(
-        { ...idObj, value: this.hashPassword(defaultPass) },
-        trnx
-      );
+      await db.Password.create({ ...idObj, value: this.hashPassword(defaultPass) }, trnx);
     } else {
       await db.Password.create({
         ...idObj,
@@ -361,8 +347,7 @@ export default class AppService {
   }
 
   async generateDefaultPwd() {
-    const pool =
-      '123456789ABCDEFGHJKLMNQRSTUVWXYZabcdefghijkmnoqrstuvwxyz*$#@!^_-+&';
+    const pool = '123456789ABCDEFGHJKLMNQRSTUVWXYZabcdefghijkmnoqrstuvwxyz*$#@!^_-+&';
     return await NanoId.getValue({ length: 8, pool });
   }
 
@@ -385,11 +370,7 @@ export default class AppService {
     });
   }
 
-  handlePasswordResetNotification = async function (
-    user,
-    userType,
-    TokenTable
-  ) {
+  handlePasswordResetNotification = async function (user, userType, TokenTable) {
     if (user) {
       const resetToken = await this.generateResetToken();
 
@@ -437,7 +418,7 @@ export default class AppService {
       as: 'specialties',
       attributes: ['id', 'name'],
       through: { attributes: [] },
-      ...(specialtyId ? { where: { id: specialtyId } } : {})
+      ...(specialtyId ? { where: { id: specialtyId } } : {}),
     };
   }
 
@@ -456,8 +437,7 @@ export default class AppService {
       const hcpId = operator.id;
       this.rejectIf(refcode.receivingHcpId !== hcpId, {
         withError:
-          withError ||
-          'Invalid Referal Code, please check the code and try again. REFC003',
+          withError || 'Invalid Referal Code, please check the code and try again. REFC003',
         status: 401,
       });
     }
