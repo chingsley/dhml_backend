@@ -82,7 +82,8 @@ module.exports = {
           type: Sequelize.STRING,
         },
         requestedBy: {
-          // could be user or hcp so we can't use requesterId, as it will be referencing either hchp or user
+          // could be user or hcp so we can't use requesterId,
+          //  as it will be referencing either hchp or user
           // for a user, requestedBy = user.staffInfo.staffIdNo
           // for hcp, requestedBy = hcp.code
           type: Sequelize.STRING,

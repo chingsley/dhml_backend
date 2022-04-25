@@ -23,7 +23,7 @@
     "no-console": [2, { "allow": ["warn", "error"] }],
     "import/no-unresolved": [0],
     "no-unused-vars": ["error", { "argsIgnorePattern": "next|_", "varsIgnorePattern": "_" }],
-    "max-len": ["error", { "code": 150 }],
+    "max-len": ["error", { "code": 100 }],
 
     // jest rules
     "jest/no-disabled-tests": "warn",

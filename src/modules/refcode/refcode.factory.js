@@ -1,43 +1,40 @@
-import { Op } from 'sequelize';
 import { getServiceStatusCode } from '../../utils/helpers';
-import { days, moment } from '../../utils/timers';
-// import NanoId from '../../utils/NanoId';
+import { moment } from '../../utils/timers';
+import { throwError } from '../../shared/helpers';
 
 const codeFactory = {
-  async generateReferalCode({ enrolleeServiceStatus, stateCode, specialty }) {
+  async generateReferalCode(codeData, tryCount = 0) {
+    const { enrolleeServiceStatus, stateCode, specialty } = codeData;
+    // console.log({ tryCount });
     const date = moment().format('DDMMYY');
-    const n = await this.getCodeSerialNo(specialty.id);
+    const n = await this.getCodeSerialNo(specialty.code);
     const serviceStatus = getServiceStatusCode(enrolleeServiceStatus);
-    return `${stateCode}/${date}/022/${specialty.code}-${n}/${serviceStatus}`;
+    const code = `${stateCode}/${date}/022/${specialty.code}-${n}/${serviceStatus}`;
+    const duplicateFound = await this.ReferalCodeModel.findByCode(code);
+    if (duplicateFound) {
+      if (tryCount > 2) {
+        this.throwCodeGenerationFailure();
+      }
+      await this.generateReferalCode(codeData, ++tryCount);
+    }
+    return code;
   },
 
-  /**
-   * get count of same-specialty code requests approved today (using dateApproved);
-   * return count+1;
-   */
-  async getCodeSerialNo(specialtyId) {
-    const today12Midnight = new Date(days.today);
-    const copy = new Date(days.today);
-    const tomorrow12Midnight = new Date(copy.setDate(copy.getDate() + 1));
-    const currentCount = await this.ReferalCodeModel.count({
-      where: {
-        dateApproved: {
-          [Op.between]: [today12Midnight, tomorrow12Midnight],
-        },
-        specialtyId,
-      },
+  // get count of same-specialty codes generated today
+  async getCodeSerialNo(specialtyCode) {
+    const { countTodaysCodeBySpecialty: script } = this.refcodeScripts;
+    const [{ count }] = await this.executeQuery(script, { specialtyCode });
+    return Number(count) + 1;
+  },
+
+  throwCodeGenerationFailure() {
+    throwError({
+      status: 500,
+      error: [
+        'System busy, cannot generate code at the moment, please try again shortly, REF99',
+      ],
     });
-    return currentCount + 1;
   },
-
-  // async getProxyCode() {
-  //   return NanoId.getValue({
-  //     length: 8,
-  //     model: this.ReferalCodeModel,
-  //     fields: ['proxyCode'],
-  //     checkDuplicates: true,
-  //   });
-  // },
 };
 
 export default codeFactory;

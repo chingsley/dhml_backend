@@ -1,14 +1,11 @@
+/* eslint-disable max-len */
 import {
   HOD_MEDICAL,
   MD,
   TIER_1_MEDICAL,
   TIER_2_MEDICAL,
 } from '../../shared/constants/roles.constants';
-import {
-  getPaginationParameters,
-  generateSearchQuery,
-  tableAlias,
-} from './helpers.scripts';
+import { getPaginationParameters, generateSearchQuery, tableAlias } from './helpers.scripts';
 const { r, sub } = tableAlias;
 
 const filterByOperatorRoleAndLocation = (operator) => {
@@ -25,7 +22,7 @@ const filterByOperatorRoleAndLocation = (operator) => {
   }
 };
 
-export const fetchAllRefcodes = (dialect, dbName, reqQuery = {}) => {
+const fetchAllRefcodes = (dialect, dbName, reqQuery = {}) => {
   const { limit, offset } = getPaginationParameters(reqQuery);
   const { searchItem, isFlagged, operator } = reqQuery;
   const generalSearch = generateSearchQuery(searchItem, [
@@ -51,7 +48,7 @@ staff2."surname"||' '||staff2."firstName" "flaggedBy",
 staff3."surname"||' '||staff3."firstName" "approvedBy"
 FROM
 (
-SELECT 
+SELECT
   r.id, r.code, r."dateDeclined", r."dateFlagged", r."dateApproved", r."declinedById",
   r."flaggedById", r."approvedById", r.diagnosis, r."clinicalFindings", r."requestState", r."requestedBy",
   e."enrolleeIdNo", e.rank, e.surname||' '||e."firstName" "name", e.scheme, e.gender,
@@ -59,7 +56,7 @@ SELECT
   recvhcp.name "receivingHcp", recvhcp."code" "receivingHcpCode",
   s.name "specialty",
   CASE WHEN r."dateDeclined" IS NOT NULL THEN 'DECLINED'
-      WHEN r."dateFlagged" IS NOT NULL THEN 'FLAGGED'      
+      WHEN r."dateFlagged" IS NOT NULL THEN 'FLAGGED'
       WHEN r."dateApproved" IS NOT NULL THEN 'APPROVED'
       ELSE 'PENDING'
   END AS status
@@ -94,6 +91,22 @@ OFFSET ${offset}
   return query;
 };
 
+// export const countTodaysCodeBySpecialty = (specialtyCode) => {
+const countTodaysCodeBySpecialty = (dialect, dbName, reqQuery = {}) => {
+  const { specialtyCode } = reqQuery;
+  return `
+  SELECT COUNT(*)
+  FROM "ReferalCodes"
+  WHERE "codeGeneratedAt"::timestamp::date = CURRENT_DATE
+    AND "specialtyCode" = '${specialtyCode}';
+  `;
+};
+
 function filterByFlaggedStatus(isFlagged) {
   return isFlagged ? `AND ${r}."dateFlagged" IS NOT NULL` : '--';
 }
+
+export default {
+  countTodaysCodeBySpecialty,
+  fetchAllRefcodes,
+};
